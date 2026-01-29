@@ -691,7 +691,6 @@ function loadConfigToModal() {
     document.getElementById('minOrderAmount').value = currentConfig.min_order_amount;
     document.getElementById('targetOrderAmount').value = currentConfig.target_order_amount;
     document.getElementById('cancelUnfilledSeconds').value = currentConfig.cancel_unfilled_seconds;
-    document.getElementById('cancelOnTpPriceBelowMarket').checked = currentConfig.cancel_on_tp_price_below_market;
     document.getElementById('cancelOnEntryPriceBelowMarket').checked = currentConfig.cancel_on_entry_price_below_market;
     document.getElementById('cancelOnEntryPriceAboveMarket').checked = currentConfig.cancel_on_entry_price_above_market;
     document.getElementById('tradeFeePercentage').value = currentConfig.trade_fee_percentage || 0.07;
@@ -770,7 +769,6 @@ async function saveConfig() {
         min_order_amount: parseFloat(document.getElementById('minOrderAmount').value),
         target_order_amount: parseFloat(document.getElementById('targetOrderAmount').value),
         cancel_unfilled_seconds: parseInt(document.getElementById('cancelUnfilledSeconds').value),
-        cancel_on_tp_price_below_market: document.getElementById('cancelOnTpPriceBelowMarket').checked,
         cancel_on_entry_price_below_market: document.getElementById('cancelOnEntryPriceBelowMarket').checked,
         cancel_on_entry_price_above_market: document.getElementById('cancelOnEntryPriceAboveMarket').checked,
         trade_fee_percentage: parseFloat(document.getElementById('tradeFeePercentage').value),

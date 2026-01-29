@@ -2050,12 +2050,8 @@ class TradingBotEngine:
             
             # Short Specific (Literal Checks)
             elif signal == -1: 
-                # "Short: Cancel if TP price is below market price"
-                if self.config.get('cancel_on_tp_price_below_market') and pending_tp < current_market_price:
-                    should_cancel = True
-                    cancel_msg = f"Short: Cancel if TP price is below market price (TP {pending_tp:.2f} < Market {current_market_price:.2f})"
                 # "Short: Cancel if Entry price is below market price"
-                elif self.config.get('cancel_on_entry_price_below_market') and limit_price < current_market_price:
+                if self.config.get('cancel_on_entry_price_below_market') and limit_price < current_market_price:
                     should_cancel = True
                     cancel_msg = f"Short: Cancel if Entry price is below market price (Entry {limit_price:.2f} < Market {current_market_price:.2f})"
             
