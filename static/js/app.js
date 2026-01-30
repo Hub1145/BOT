@@ -4,6 +4,7 @@ let currentConfig = null;
 const configModal = new bootstrap.Modal(document.getElementById('configModal'));
 let isBotRunning = false;
 let orderExpirationCache = {}; // Cache to store calcualted expiration timestamps
+let lastUsedAmount = 0; // Track last known used amount for Auto-Cal calculation
 
 document.addEventListener('DOMContentLoaded', () => {
     initializeTheme();
@@ -98,7 +99,10 @@ function setupEventListeners() {
         // actually UI has no disabled logic for times input yet, let's add it if needed
         saveLiveConfigs();
     });
-    document.getElementById('pnlAutoCalTimes').addEventListener('change', saveLiveConfigs);
+    document.getElementById('pnlAutoCalTimes').addEventListener('change', () => {
+        updateAutoCalDisplay();
+        saveLiveConfigs();
+    });
 
     document.getElementById('tradeFeePercentage').addEventListener('change', () => {
         saveLiveConfigs();
@@ -299,7 +303,17 @@ function updateAccountMetrics(data) {
         netProfitElement.classList.remove('text-success', 'text-danger');
     }
 
+    // New Advanced Profit Analytics
+    document.getElementById('totalTradeProfit').textContent = `$${(data.total_trade_profit || 0).toFixed(2)}`;
+    document.getElementById('totalTradeLoss').textContent = `$${(data.total_trade_loss || 0).toFixed(2)}`;
+    document.getElementById('netTradeProfit').textContent = `$${(data.net_trade_profit || 0).toFixed(2)}`;
+
     document.getElementById('totalTrades').textContent = data.total_trades !== undefined ? data.total_trades : '0';
+
+    // Update daily report if present
+    if (data.daily_reports) {
+        updateDailyReport(data.daily_reports);
+    }
 
     // Calculate fee breakdown based on user's formula
     const feeRate = currentConfig?.trade_fee_percentage || 0.07;
@@ -314,6 +328,47 @@ function updateAccountMetrics(data) {
     document.getElementById('usedFee').textContent = `$${Number(usedFee).toFixed(2)}`;
     document.getElementById('remainingFee').textContent = `$${Number(remainingFee).toFixed(2)}`;
     document.getElementById('feeRateDisplay').textContent = `${Number(feeRate).toFixed(3)}%`;
+
+    lastUsedAmount = usedAmount;
+    updateAutoCalDisplay();
+}
+
+function updateDailyReport(reports) {
+    const tableBody = document.getElementById('dailyReportTableBody');
+    if (!tableBody) return;
+
+    if (!reports || reports.length === 0) {
+        tableBody.innerHTML = '<tr><td colspan="4" class="text-center text-muted py-4">No report data available yet.</td></tr>';
+        return;
+    }
+
+    // Sort reports by date descending
+    const sortedReports = [...reports].sort((a, b) => b.date.localeCompare(a.date));
+
+    tableBody.innerHTML = sortedReports.map(report => `
+        <tr>
+            <td>${report.date}</td>
+            <td>$${report.total_capital.toFixed(2)}</td>
+            <td class="${report.net_trade_profit >= 0 ? 'text-success' : 'text-danger'}">
+                $${report.net_trade_profit.toFixed(2)}
+            </td>
+            <td>
+                <span class="badge ${report.compound_interest >= 1 ? 'bg-success' : 'bg-danger'}">
+                    ${((report.compound_interest - 1) * 100).toFixed(2)}%
+                </span>
+                <small class="text-muted ms-1">(${report.compound_interest.toFixed(4)})</small>
+            </td>
+        </tr>
+    `).join('');
+}
+
+function updateAutoCalDisplay() {
+    const times = parseFloat(document.getElementById('pnlAutoCalTimes').value) || 0;
+    const autoCalValue = lastUsedAmount * times;
+    const displayElement = document.getElementById('pnlAutoCalDisplay');
+    if (displayElement) {
+        displayElement.value = autoCalValue.toFixed(2);
+    }
 }
 
 function updatePositionDisplay(positionData) {
@@ -664,6 +719,7 @@ async function loadConfig() {
         if (feeInput) {
             feeInput.value = currentConfig.trade_fee_percentage !== undefined ? currentConfig.trade_fee_percentage : 0.07;
         }
+        updateAutoCalDisplay();
     } catch (error) {
         console.error('Error loading config:', error);
         showNotification('Failed to load configuration', 'error');

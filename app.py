@@ -64,7 +64,8 @@ def update_config():
             'trigger_price', 'tp_mode', 'tp_type', 'use_chg_open_close', 'min_chg_open_close',
             'max_chg_open_close', 'use_chg_high_low', 'min_chg_high_low', 'max_chg_high_low',
             'use_chg_high_close', 'min_chg_high_close', 'max_chg_high_close', 'candlestick_timeframe',
-            'use_candlestick_conditions', 'log_level', 'use_pnl_auto_cancel', 'pnl_auto_cancel_threshold', 'okx_pos_mode', 'trade_fee_percentage'
+            'use_candlestick_conditions', 'log_level', 'use_pnl_auto_cancel', 'pnl_auto_cancel_threshold', 'okx_pos_mode', 'trade_fee_percentage',
+            'use_pnl_auto_manual', 'pnl_auto_manual_threshold', 'use_pnl_auto_cal', 'pnl_auto_cal_times'
         ]
 
         # Update current_config with only allowed and present keys from new_config
@@ -77,12 +78,23 @@ def update_config():
                     updates_made = True
 
         if bot_engine and bot_engine.is_running:
-             # If running, we generally don't want to allow hot-swapping crucial config that might break state
-             # But if the user insists, we might need a force flag. For now, keep safety check.
-            return jsonify({'success': False, 'message': 'Please stop the bot before updating configuration'}), 400
- 
+             # Check if any sensitive parameter is being updated while the bot is running
+             sensitive_params = [
+                 'okx_api_key', 'okx_api_secret', 'okx_passphrase', 
+                 'symbol', 'okx_pos_mode', 'leverage', 'mode'
+             ]
+             for key in new_config.keys():
+                 if key in sensitive_params and current_config.get(key) != new_config.get(key):
+                     return jsonify({'success': False, 'message': f'Cannot change {key} while bot is running. Please stop the bot first.'}), 400
+        
         if updates_made:
             save_config(current_config)
+
+            if bot_engine:
+                # Update the bot's internal config object without a full restart
+                # This ensures the bot uses the new PnL targets/offsets immediately
+                bot_engine.config = current_config
+                bot_engine.log("Configuration updated live from dashboard.", level="info")
 
             def background_init():
                 global bot_engine
@@ -369,4 +381,4 @@ def handle_emergency_sl(data=None):
 
 
 if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0', port=5000, debug=False, use_reloader=False, log_output=True, allow_unsafe_werkzeug=True)
+    socketio.run(app, host='0.0.0.0', port=5000, debug=False, use_reloader=False, log_output=True)

@@ -244,7 +244,19 @@ class TradingBotEngine:
         self.confirmed_subscriptions = set()
         self.credentials_invalid = False
         
-        # Initialize rate limiter for API request throttling
+        # Initialize persistent analytics
+        self.analytics_path = "analytics.json"
+        self.total_trade_profit = 0.0
+        self.total_trade_loss = 0.0
+        self.net_trade_profit = 0.0
+        self.daily_reports = []
+        self._load_analytics()
+
+        # Concurrency Guards for Authoritative Exit
+        self.exit_lock = threading.Lock()
+        self.authoritative_exit_in_progress = False
+
+        # Initialize rate limiter for API request throttling (RESTORED)
         self.rate_limiter = RateLimiter()
 
         self.intervals = {
@@ -1197,11 +1209,13 @@ class TradingBotEngine:
 
                 if exit_order_response and exit_order_response.get('ordId'):
                     self.log(f"✓ Market close order placed for {open_qty} {self.config['symbol']} ({side})", level="info")
+                    self.log(f"✅ Close Position (TP Partial): {side.upper()} {self.config['symbol']} | Qty: {open_qty}", level="info")
                 
                 time.sleep(1)
                 self._cancel_all_exit_orders_and_reset(f"TP hit - {side} closed", side=side)
             else:
                 self.log(f"OKX {side.upper()} position fully closed or not found. No market close needed.", level="info")
+                self.log(f"✅ Close Position (TP): {side.upper()} {self.config['symbol']}", level="info")
                 self._cancel_all_exit_orders_and_reset(f"TP hit - {side} fully closed", side=side)
 
             with self.tp_hit_lock:
@@ -1392,6 +1406,7 @@ class TradingBotEngine:
             time.sleep(0.5)
 
             self.log(f"Cancelling {side.upper()} TP order and resetting state...", level="info")
+            self.log(f"✅ Close Position (SL): {side.upper()} {self.config['symbol']}", level="info")
             self._cancel_all_exit_orders_and_reset(f"SL hit - {side} closed by exchange", side=side)
 
             with self.sl_hit_lock:
@@ -1543,6 +1558,12 @@ class TradingBotEngine:
         Authoritative Account Reset: Fetches ALL positions and orders directly from OKX
         and closes/cancels everything to leave NOTHING behind.
         """
+        with self.exit_lock:
+            if self.authoritative_exit_in_progress:
+                self.log(f"Join: Authoritative exit already in progress. Ignoring trigger: {reason}", level="debug")
+                return
+            self.authoritative_exit_in_progress = True
+
         try:
             target_symbol = self.config['symbol']
             self.log(f"=== EMERGENCY EXIT === Reason: {reason} | Symbol: {target_symbol}", level="info")
@@ -1571,6 +1592,7 @@ class TradingBotEngine:
                             
                             if exit_order and exit_order.get('ordId'):
                                 self.log(f"✓ Position closed. Order ID: {exit_order.get('ordId')}", level="info")
+                                self.log(f"✅ Close Position (Auth): {pos_side_raw.upper()} {target_symbol} | Reason: {reason}", level="info")
                             else:
                                 self.log(f"⚠️ Market exit for {pos_side_raw.upper()} failed or rejected.", level="warning")
 
@@ -1588,10 +1610,12 @@ class TradingBotEngine:
                 self.pending_entry_ids = []
                 self.pending_entry_order_details = {}
 
-            self.log("=== EMERGENCY EXIT COMPLETE === Account cleared for symbol.", level="info")
-
         except Exception as e:
-            self.log(f"Exception in _execute_trade_exit: {e}", level="error")
+            self.log(f"CRITICAL ERROR in _execute_trade_exit: {e}", level="error")
+        finally:
+            with self.exit_lock:
+                self.authoritative_exit_in_progress = False
+            self.log("=== EMERGENCY EXIT COMPLETE === Account cleared for symbol.", level="info")
 
     def _cancel_all_exit_orders_and_reset(self, reason, side=None):
         # Determine sides to reset
@@ -1653,6 +1677,7 @@ class TradingBotEngine:
                             close_order = self._okx_place_order(self.config['symbol'], close_side, abs(size_rv), order_type="Market", reduce_only=True, posSide=pos_side, tdMode=mgn_mode)
                             if close_order and close_order.get('ordId'):
                                 self.log(f"✓ Position close order placed: {close_order.get('ordId')}", level="info")
+                                self.log(f"✅ Close Position (Manual): {pos_side.upper()} {self.config['symbol']} | Qty: {abs(size_rv)}", level="info")
                                 any_closed = True
                             else:
                                 self.log(f"❌ Failed to place close order for {pos_side} position", level="error")
@@ -1835,7 +1860,7 @@ class TradingBotEngine:
                 passed = (current_price < long_safety)
                 signal = 1
                 limit_p = current_price - entry_price_offset
-            else:
+            else: # short
                 safety_p = short_safety
                 passed = (current_price > short_safety)
                 signal = -1
@@ -2348,34 +2373,94 @@ class TradingBotEngine:
             path_recent = "/api/v5/trade/fills"
             response = self._okx_request("GET", path_recent, params=params)
             
-            total_pnl = 0.0
+            # Local session PnL (resets every start)
+            session_pnl = 0.0
             
             if response and response.get('code') == '0':
                 fills = response.get('data', [])
                 
-                # Calculate time window (only include fills from current session)
+                # Fetch only fills from current session for 'self.net_profit' (Auto-Exit trigger)
                 start_time_limit = self.bot_start_time
 
+                # Reset persistent trade analytics before re-calculating from the limit window (Simple approach)
+                # Note: In a production bot, we'd append new fills to a database.
+                # Here we strictly scan the last 100 fills to determine Win/Loss/Net for the symbol.
+                temp_total_profit = 0.0
+                temp_total_loss = 0.0
+                
                 for fill in fills:
-                     fill_ts = int(fill.get('ts', 0))
-                     if fill_ts < start_time_limit:
-                         continue
-
-                     # 'pnl' field contains realized profit for closing trades
-                     # For opening trades it is usually 0. 
-                     # Fee is separate 'fee', usually negative.
-                     # Net PnL = pnl + fee
                      pnl = safe_float(fill.get('pnl', 0))
                      fee = safe_float(fill.get('fee', 0))
-                     total_pnl += (pnl + fee) # Fee is usually negative, so adding it subtracts cost
-            
-            # Simple approach: strictly sum up last 100 fills PnL.
-            # Limitation: partial view. 
-            self.net_profit = total_pnl
-            self.log(f"Calculated Net Profit from {len(response.get('data', []))} fills: {self.net_profit}", level="debug")
+                     fill_net = pnl + fee
+                     
+                     fill_ts = int(fill.get('ts', 0))
+                     if fill_ts >= start_time_limit:
+                         session_pnl += fill_net
+
+                     if fill_net > 0:
+                         temp_total_profit += fill_net
+                     else:
+                         temp_total_loss += abs(fill_net)
+                
+                self.total_trade_profit = temp_total_profit
+                self.total_trade_loss = temp_total_loss
+                self.net_trade_profit = temp_total_profit - temp_total_loss
+                self.net_profit = session_pnl # This is what triggers Auto-Exit (Current session)
+                
+                self._save_analytics()
+            return session_pnl
 
         except Exception as e:
-            self.log(f"Error calculating Net Profit: {e}", level="debug")
+            self.log(f"Exception in _calculate_net_profit_from_fills: {e}", level="error")
+            return 0.0
+
+    def _load_analytics(self):
+        try:
+            import os
+            import json
+            if os.path.exists(self.analytics_path):
+                with open(self.analytics_path, 'r') as f:
+                    data = json.load(f)
+                    self.daily_reports = data.get('daily_reports', [])
+            else:
+                self.daily_reports = []
+        except Exception as e:
+            self.log(f"Error loading analytics: {e}", level="error")
+
+    def _save_analytics(self):
+        try:
+            import json
+            data = {
+                'daily_reports': self.daily_reports
+            }
+            with open(self.analytics_path, 'w') as f:
+                json.dump(data, f, indent=4)
+        except Exception as e:
+            self.log(f"Error saving analytics: {e}", level="error")
+
+    def _check_and_save_daily_report(self):
+        """Snapshots daily performance at UTC midnight."""
+        now = datetime.now(timezone.utc)
+        today_str = now.strftime('%Y-%m-%d')
+        
+        # Check if already saved for today
+        if self.daily_reports and self.daily_reports[-1].get('date') == today_str:
+            return
+
+        # Prepare new report
+        prev_capital = self.daily_reports[-1].get('total_capital', self.total_equity) if self.daily_reports else self.total_equity
+        compound_interest = (self.total_equity / prev_capital) if prev_capital > 0 else 1.0
+
+        report = {
+            'date': today_str,
+            'total_capital': self.total_equity,
+            'net_trade_profit': self.net_trade_profit,
+            'compound_interest': round(compound_interest, 4)
+        }
+        
+        self.daily_reports.append(report)
+        self.log(f"📅 Daily Report Saved for {today_str}: Capital ${self.total_equity:.2f}, Net Profit ${self.net_trade_profit:.2f}", level="info")
+        self._save_analytics()
 
     def _periodic_account_info_update(self, initial_fetch=False):
         if initial_fetch:
@@ -2655,15 +2740,16 @@ class TradingBotEngine:
                  exit_reason = f"Auto-Cal Profit Target: ${self.net_profit:.2f} >= {cal_times}× ${used_amount_notional:.2f} = ${cal_threshold:.2f}"
 
         if auto_exit_triggered:
+             # Guard check before spawning thread to avoid redundant logs
+             with self.exit_lock:
+                 if self.authoritative_exit_in_progress:
+                     return
+
              self.log(f"🎯 AUTHORITATIVE AUTO-EXIT TRIGGERED: {exit_reason}", level="WARNING")
              self.log(f"(Includes Manual Positions) Closing all trades for {self.config['symbol']}", level="INFO")
              
-             # STOP the bot to prevent re-triggering and further trading
-             self.is_running = False
-             self.emit('bot_status', {'running': False})
-             
              # We trigger the authoritative exit logic (Exchange Sweep)
-             threading.Thread(target=self._execute_trade_exit, args=("Auto-Exit on Profit Target Reached",), daemon=True).start()
+             threading.Thread(target=self._execute_trade_exit, args=(exit_reason,), daemon=True).start()
 
 
         # Sync pending_entry_ids with active orders from OKX
@@ -2722,8 +2808,14 @@ class TradingBotEngine:
             'remaining_amount': remaining_amount_notional, 
             'total_balance': total_balance,
             'available_balance': available_balance,
-            'net_profit': self.net_profit # Uses directly summed PnL
+            'net_profit': self.net_profit, # Uses directly summed PnL
+            'total_trade_profit': self.total_trade_profit,
+            'total_trade_loss': self.total_trade_loss,
+            'net_trade_profit': self.net_trade_profit,
+            'daily_reports': self.daily_reports
         })
+        
+        self._check_and_save_daily_report()
         
         self.log(f"Account Update | Balance: ${total_balance:.2f} | Active Positions: {active_positions_count} | Pending: {len(formatted_open_trades)}", level="debug")
 
