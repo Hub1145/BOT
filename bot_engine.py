@@ -932,14 +932,9 @@ class TradingBotEngine:
         self.log(f"OKX WebSocket error: {error}", level="error")
 
     def _on_websocket_close(self, ws_app, close_status_code, close_msg):
-        self.log("OKX WebSocket closed.", level="debug")
-        if not self.stop_event.is_set():
-            self.log('Attempting to reconnect WebSocket...', level="debug")
-            time.sleep(5)
-            self.ws_thread = threading.Thread(target=self._initialize_websocket_and_start_main_loop, daemon=True)
-            self.ws_thread.start()
-        else:
-            self.log('WebSocket will not reconnect as bot is stopped.', level="debug")
+        self.log(f"OKX WebSocket closed. Status: {close_status_code}, Msg: {close_msg}", level="debug")
+        # No longer spawning a new thread here. 
+        # The reconnection is now handled by the loop in _initialize_websocket_and_start_main_loop.
 
     def connect(self): # This method will be called from start()
         ws_url = self._get_ws_url()
@@ -2242,6 +2237,11 @@ class TradingBotEngine:
             self.log("Trading loop started.", level="debug")
 
             while not self.stop_event.is_set():
+                # Reconnection Trigger: Exit if WS is closed/changing
+                if not self.ws or not getattr(self.ws, 'sock', None) or not self.ws.sock.connected:
+                     self.log("WebSocket connection lost or closed. Exiting trading loop for reconnect.", level="debug")
+                     return
+
                 if not self.is_running:
                     time.sleep(1)
                     continue
@@ -2306,49 +2306,69 @@ class TradingBotEngine:
     def _initialize_websocket_and_start_main_loop(self):
         self.log("OKX BOT STARTING", level="info")
         try:
-            self.ws_client = self._initialize_websocket()
-            if self.ws_client is None:
-                self.log("Failed to initialize WebSocket. Exiting.", level="error")
-                return
+            # Reconnection Loop for the WebSocket
+            while not self.stop_event.is_set():
+                try:
+                    self.ws_client = self._initialize_websocket()
+                    if self.ws_client is None:
+                        self.log("Failed to initialize WebSocket. Retrying in 10s...", level="error")
+                        time.sleep(10)
+                        continue
 
-            # For public WebSocket, no authentication is needed. Subscriptions are sent directly on_open.
-            self.log("Connecting to public market data...", level="debug")
-            
-            # Start the WebSocket in a separate thread
-            ws_thread = threading.Thread(target=self.ws_client.run_forever, daemon=True)
-            ws_thread.start()
-            self.log("WebSocket connection established.", level="debug")
+                    # For public WebSocket, no authentication is needed. Subscriptions are sent directly on_open.
+                    self.log("Connecting to public market data...", level="debug")
+                    
+                    # Start the WebSocket in a separate thread (this runs the run_forever block)
+                    ws_watch_thread = threading.Thread(target=self.ws_client.run_forever, daemon=True)
+                    ws_watch_thread.start()
+                    self.log("WebSocket connection initiated.", level="debug")
 
-            self.log("Syncing with market data...", level="debug")
-            if not self.ws_subscriptions_ready.wait(timeout=20): # Longer timeout for subscriptions
-                self.log("WebSocket subscriptions not ready within timeout. Exiting.", level="error")
-                return
+                    self.log("Syncing with market data...", level="debug")
+                    if not self.ws_subscriptions_ready.wait(timeout=20): # Longer timeout for subscriptions
+                        self.log("WebSocket subscriptions not ready within timeout. Reconnecting...", level="error")
+                        try: self.ws_client.close()
+                        except: pass
+                        time.sleep(5)
+                        continue
 
-            # Fetch historical data for the selected timeframe - Fetch 300 candles for indicator safety
-            timeframe = self.config.get('candlestick_timeframe', '1m')
-            # Assuming ~300 candles. 
-            interval_sec = self.intervals.get(timeframe, 60)
-            start_dt = datetime.now(timezone.utc) - timedelta(seconds=interval_sec * 300)
-            end_dt = datetime.now(timezone.utc)
-            self._fetch_initial_historical_data(self.config['symbol'], timeframe, start_dt.strftime('%Y-%m-%d'), end_dt.strftime('%Y-%m-%d'))
+                    # Fetch historical data for the selected timeframe - Fetch 300 candles for indicator safety
+                    timeframe = self.config.get('candlestick_timeframe', '1m')
+                    interval_sec = self.intervals.get(timeframe, 60)
+                    start_dt = datetime.now(timezone.utc) - timedelta(seconds=interval_sec * 300)
+                    end_dt = datetime.now(timezone.utc)
+                    self._fetch_initial_historical_data(self.config['symbol'], timeframe, start_dt.strftime('%Y-%m-%d'), end_dt.strftime('%Y-%m-%d'))
+                    
+                    self.bot_startup_complete = True
+                    self.log("Bot startup sequence complete.", level="info")
 
-            # Initial account information is no longer updated in real-time via private WebSocket.
-            # The bot will not track account balance or available equity in real-time.
-            # This might impact functionality that relies on account balance checks.
-            
-            self.bot_startup_complete = True
-            self.log("Bot startup sequence complete.", level="info")
+                    # Perform initial account fetch
+                    self._periodic_account_info_update(initial_fetch=True)
+                    self.log("Initial account balance fetched.", level="info")
+        
+                    # Start background managers if not already running
+                    if not getattr(self, 'account_info_updater_thread', None) or not self.account_info_updater_thread.is_alive():
+                        self.account_info_updater_thread = threading.Thread(target=self._periodic_account_info_update, args=(False,), daemon=True)
+                        self.account_info_updater_thread.start()
+                    
+                    if not getattr(self, 'mgmt_thread', None) or not self.mgmt_thread.is_alive():
+                        self.mgmt_thread = threading.Thread(target=self._unified_management_loop, daemon=True)
+                        self.mgmt_thread.start()
 
-            # Perform an initial account info update to populate available_balance
-            self._periodic_account_info_update(initial_fetch=True)
-            self.log("Initial account balance fetched.", level="info")
- 
-            # Start a periodic task to update account info and emit to frontend
-            self.account_info_updater_thread = threading.Thread(target=self._periodic_account_info_update, args=(False,), daemon=True)
-            self.account_info_updater_thread.start()
- 
-            self._main_trading_logic()
- 
+                    # Start trading logic
+                    # This method now needs to respond to stop_event and WS closure
+                    self._main_trading_logic()
+                    
+                    # If _main_trading_logic returns, check if we need to reconnect or stop
+                    if self.stop_event.is_set():
+                        break
+                    
+                    self.log("Main trading logic returned. Reconnecting WebSocket in 5s...", level="info")
+                    time.sleep(5)
+
+                except Exception as loop_e:
+                    self.log(f"Error in WebSocket Reconnect Loop: {loop_e}", level="error")
+                    time.sleep(5)
+
         except Exception as e:
             self.log(f"CRITICAL ERROR in _initialize_websocket_and_start_main_loop: {e}", level="error")
         finally:
@@ -2731,14 +2751,25 @@ class TradingBotEngine:
                  exit_reason = f"Auto-Manual Profit Target: ${self.net_profit:.2f} >= ${manual_threshold:.2f}"
 
         # Check Auto-Cal Profit (Dynamic Threshold)
+        # Use Used Fee (leveraged) instead of Used Notional for dynamic targets
         if self.config.get('use_pnl_auto_cal', False) and not auto_exit_triggered and used_amount_notional > 0:
-             cal_times = self.config.get('pnl_auto_cal_times', 4)
-             cal_threshold = cal_times * used_amount_notional
-             
-             if self.net_profit >= cal_threshold:
-                 auto_exit_triggered = True
-                 exit_reason = f"Auto-Cal Profit Target: ${self.net_profit:.2f} >= {cal_times}× ${used_amount_notional:.2f} = ${cal_threshold:.2f}"
+            cal_times = self.config.get('pnl_auto_cal_times', 4)
+            trade_fee_pct = self.config.get('trade_fee_percentage', 0.07)
+            current_used_fee = used_amount_notional * (trade_fee_pct / 100.0)
+            cal_threshold = cal_times * current_used_fee
+            if self.net_profit >= cal_threshold:
+                auto_exit_triggered = True
+                exit_reason = f"Auto-Cal Profit Target: ${self.net_profit:.2f} >= ${cal_threshold:.2f} ({cal_times}x Fee)"
 
+        # Check Auto-Cal Loss (Dynamic Loss Threshold)
+        if self.config.get('use_pnl_auto_cal_loss', False) and not auto_exit_triggered and used_amount_notional > 0:
+            loss_times = self.config.get('pnl_auto_cal_loss_times', 1.5)
+            trade_fee_pct = self.config.get('trade_fee_percentage', 0.07)
+            current_used_fee = used_amount_notional * (trade_fee_pct / 100.0)
+            loss_threshold = -(current_used_fee * loss_times)
+            if self.net_profit <= loss_threshold:
+                auto_exit_triggered = True
+                exit_reason = f"Auto-Cal Loss Target: ${self.net_profit:.2f} <= ${loss_threshold:.2f} ({loss_times}x Fee)"
         if auto_exit_triggered:
              # Guard check before spawning thread to avoid redundant logs
              with self.exit_lock:
@@ -3072,3 +3103,75 @@ class TradingBotEngine:
         except Exception as e:
             self.log(f"Error during Emergency SL: {e}", level="error")
             self.emit('error', {'message': f'Emergency SL failed: {e}'})
+    def apply_live_config_update(self, new_config):
+        """
+        Dynamically applies certain config updates while the bot is running.
+        Returns a dictionary with status and warning messages.
+        """
+        warnings = []
+        old_symbol = self.config.get('symbol')
+        new_symbol = new_config.get('symbol')
+        old_lev = self.config.get('leverage')
+        new_lev = new_config.get('leverage')
+        old_pos_mode = self.config.get('okx_pos_mode')
+        new_pos_mode = new_config.get('okx_pos_mode')
+
+        # 1. Update internal config object
+        self.config = new_config
+        self.log("Applying live configuration updates...", level="info")
+
+        # 2. Handle Leverage Change
+        if new_lev != old_lev:
+            self.log(f"Leverage change detected: {old_lev} -> {new_lev}. Updating on exchange...", level="info")
+            lev_success = False
+            if new_pos_mode == 'long_short_mode':
+                l_ok = self._okx_set_leverage(new_symbol, new_lev, pos_side="long")
+                s_ok = self._okx_set_leverage(new_symbol, new_lev, pos_side="short")
+                lev_success = l_ok and s_ok
+            else:
+                lev_success = self._okx_set_leverage(new_symbol, new_lev, pos_side="net")
+            
+            if lev_success:
+                self.log(f"✅ Leverage successfully updated to {new_lev}x", level="info")
+            else:
+                warnings.append(f"Failed to update leverage to {new_lev}x on exchange.")
+
+        # 3. Handle Symbol Change (Sensitive)
+        if new_symbol != old_symbol:
+            # Check for open positions
+            in_pos = False
+            with self.position_lock:
+                # We check the authoritative state in self.in_position which is synced with the exchange
+                in_pos = any(self.in_position.values())
+            
+            if in_pos:
+                self.log(f"⚠️ Cannot change symbol to {new_symbol} while positions are open for {old_symbol}. Reverting symbol config.", level="warning")
+                self.config['symbol'] = old_symbol
+                warnings.append(f"Symbol change to {new_symbol} blocked: Please close existing positions for {old_symbol} first.")
+            else:
+                self.log(f"🔄 Switching symbol from {old_symbol} to {new_symbol}...", level="info")
+                
+                # Update subscription target
+                self.subscribed_instrument = new_symbol
+                
+                # Stop WebSocket to clear old subscriptions
+                if self.ws:
+                    self.ws.close()
+                
+                # Fetch new product info
+                if self._fetch_product_info(new_symbol):
+                    # Set leverage for the new symbol
+                    if new_pos_mode == 'long_short_mode':
+                        self._okx_set_leverage(new_symbol, new_lev, pos_side="long")
+                        self._okx_set_leverage(new_symbol, new_lev, pos_side="short")
+                    else:
+                        self._okx_set_leverage(new_symbol, new_lev, pos_side="net")
+                    
+                    self.log(f"✅ Successfully swapped to {new_symbol}.", level="info")
+                else:
+                    self.log(f"❌ Failed to fetch info for {new_symbol}. Reverting to {old_symbol}.", level="error")
+                    self.config['symbol'] = old_symbol
+                    warnings.append(f"Failed to switch to {new_symbol}: could not fetch product info.")
+                    # Restart WS with old symbol if needed (it will restart automatically in the loop)
+
+        return {"success": True, "warnings": warnings}

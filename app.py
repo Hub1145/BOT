@@ -65,7 +65,8 @@ def update_config():
             'max_chg_open_close', 'use_chg_high_low', 'min_chg_high_low', 'max_chg_high_low',
             'use_chg_high_close', 'min_chg_high_close', 'max_chg_high_close', 'candlestick_timeframe',
             'use_candlestick_conditions', 'log_level', 'use_pnl_auto_cancel', 'pnl_auto_cancel_threshold', 'okx_pos_mode', 'trade_fee_percentage',
-            'use_pnl_auto_manual', 'pnl_auto_manual_threshold', 'use_pnl_auto_cal', 'pnl_auto_cal_times'
+            'use_pnl_auto_manual', 'pnl_auto_manual_threshold', 'use_pnl_auto_cal', 'pnl_auto_cal_times',
+            'use_pnl_auto_cal_loss', 'pnl_auto_cal_loss_times'
         ]
 
         # Update current_config with only allowed and present keys from new_config
@@ -78,37 +79,36 @@ def update_config():
                     updates_made = True
 
         if bot_engine and bot_engine.is_running:
-             # Check if any sensitive parameter is being updated while the bot is running
-             sensitive_params = [
-                 'okx_api_key', 'okx_api_secret', 'okx_passphrase', 
-                 'symbol', 'okx_pos_mode', 'leverage', 'mode'
-             ]
-             for key in new_config.keys():
-                 if key in sensitive_params and current_config.get(key) != new_config.get(key):
-                     return jsonify({'success': False, 'message': f'Cannot change {key} while bot is running. Please stop the bot first.'}), 400
+             # Relaxed restrictions: Let the engine handle sensitive swaps dynamically
+             # We only block things that absolutely cannot be changed (none currently identified as engine handles them)
+             pass
         
         if updates_made:
             save_config(current_config)
 
-            if bot_engine:
-                # Update the bot's internal config object without a full restart
-                # This ensures the bot uses the new PnL targets/offsets immediately
-                bot_engine.config = current_config
+            warning_msg = None
+            if bot_engine and bot_engine.is_running:
+                # Update the bot's internal config object and trigger dynamic updates
+                result = bot_engine.apply_live_config_update(current_config)
+                if result.get('warnings'):
+                    warning_msg = " | ".join(result['warnings'])
                 bot_engine.log("Configuration updated live from dashboard.", level="info")
+            elif bot_engine:
+                 # If not running, just sync the config object
+                 bot_engine.config = current_config
 
             def background_init():
                 global bot_engine
-                # Ensure bot engine exists and has latest config
+                # Ensure bot engine exists
                 if not bot_engine:
                     bot_engine = TradingBotEngine(config_file, emit_to_client)
-                else:
-                    bot_engine.config = bot_engine._load_config()
 
                 # If not trading, we still refresh credentials for background monitoring
                 if not bot_engine.is_running:
                     bot_engine.start(passive_monitoring=True)
                 else:
                     # If already running, we might need to apply new credentials if they changed
+                    # (Though credentials are usually considered sensitive and blocked if changed while running)
                     bot_engine._apply_api_credentials()
                 
                 # Check if the currently selected credentials are valid
@@ -119,7 +119,13 @@ def update_config():
             import threading
             threading.Thread(target=background_init, daemon=True).start()
             
-        return jsonify({'success': True, 'message': 'Configuration updated successfully'})
+            final_msg = 'Configuration updated successfully'
+            if warning_msg:
+                final_msg += f" (Note: {warning_msg})"
+            
+            return jsonify({'success': True, 'message': final_msg})
+        else:
+            return jsonify({'success': True, 'message': 'No changes detected'})
 
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)}), 500
@@ -274,7 +280,10 @@ def handle_connect(sid):
             'total_balance': total_balance,
             'available_balance': available_balance,
             'net_profit': bot_engine.net_profit,
-            'total_trades': len(bot_engine.open_trades)
+            'total_trades': len(bot_engine.open_trades),
+            'net_trade_profit': bot_engine.net_trade_profit,
+            'total_trade_profit': bot_engine.total_trade_profit,
+            'total_trade_loss': bot_engine.total_trade_loss
         }, room=sid)
         
         emit('trades_update', {'trades': bot_engine.open_trades}, room=sid)
@@ -381,4 +390,4 @@ def handle_emergency_sl(data=None):
 
 
 if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0', port=5000, debug=False, use_reloader=False, log_output=True, allow_unsafe_werkzeug=True)
+    socketio.run(app, host='0.0.0.0', port=5000, debug=False, use_reloader=False, log_output=True)

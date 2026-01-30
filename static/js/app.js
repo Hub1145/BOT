@@ -4,7 +4,7 @@ let currentConfig = null;
 const configModal = new bootstrap.Modal(document.getElementById('configModal'));
 let isBotRunning = false;
 let orderExpirationCache = {}; // Cache to store calcualted expiration timestamps
-let lastUsedAmount = 0; // Track last known used amount for Auto-Cal calculation
+let lastUsedFee = 0; // Track last known used fee for Auto-Cal calculation
 
 document.addEventListener('DOMContentLoaded', () => {
     initializeTheme();
@@ -88,25 +88,35 @@ function setupEventListeners() {
     toggleCandlestickInputs();
 
     // PnL Auto-Cancel listeners (New Dual Mode)
-    document.getElementById('usePnlAutoManual').addEventListener('change', saveLiveConfigs);
+    document.getElementById('usePnlAutoManual').addEventListener('change', (e) => {
+        const state = e.target.checked ? 'ACTIVATED' : 'DEACTIVATED';
+        addConsoleLog({ message: `Auto-Manual Profit: ${state}`, level: 'info' });
+        saveLiveConfigs();
+    });
     document.getElementById('pnlAutoManualThreshold').addEventListener('change', saveLiveConfigs);
 
-    document.getElementById('usePnlAutoCal').addEventListener('change', () => {
-        // Toggle input enabled state locally for immediate feedback
-        const isChecked = document.getElementById('usePnlAutoCal').checked;
-        const timesInput = document.getElementById('pnlAutoCalTimes');
-        // timesInput is always enabled on config level? No, let's keep it enabled or disabled
-        // actually UI has no disabled logic for times input yet, let's add it if needed
+    document.getElementById('usePnlAutoCal').addEventListener('change', (e) => {
+        const state = e.target.checked ? 'ACTIVATED' : 'DEACTIVATED';
+        addConsoleLog({ message: `Auto-Cal Profit: ${state}`, level: 'info' });
         saveLiveConfigs();
     });
-    document.getElementById('pnlAutoCalTimes').addEventListener('change', () => {
+    document.getElementById('pnlAutoCalTimes').addEventListener('input', () => {
         updateAutoCalDisplay();
-        saveLiveConfigs();
     });
+    document.getElementById('pnlAutoCalTimes').addEventListener('change', saveLiveConfigs);
 
-    document.getElementById('tradeFeePercentage').addEventListener('change', () => {
+    // Auto-Cal Loss listeners
+    document.getElementById('usePnlAutoCalLoss').addEventListener('change', (e) => {
+        const state = e.target.checked ? 'ACTIVATED' : 'DEACTIVATED';
+        addConsoleLog({ message: `Auto-Cal Loss (Close All): ${state}`, level: 'info' });
         saveLiveConfigs();
     });
+    document.getElementById('pnlAutoCalLossTimes').addEventListener('input', () => {
+        updateAutoCalDisplay();
+    });
+    document.getElementById('pnlAutoCalLossTimes').addEventListener('change', saveLiveConfigs);
+
+    document.getElementById('tradeFeePercentage').addEventListener('change', saveLiveConfigs);
 
     // Refresh Fees Button
     document.getElementById('refreshFeesBtn').addEventListener('click', () => {
@@ -250,6 +260,9 @@ function setupSocketListeners() {
 
     socket.on('connect', () => {
         console.log('WebSocket connected');
+        // Clear console on reconnect to avoid duplicate history logs
+        const consoleEl = document.getElementById('consoleOutput');
+        if (consoleEl) consoleEl.innerHTML = '';
         loadStatus();
     });
 
@@ -329,7 +342,7 @@ function updateAccountMetrics(data) {
     document.getElementById('remainingFee').textContent = `$${Number(remainingFee).toFixed(2)}`;
     document.getElementById('feeRateDisplay').textContent = `${Number(feeRate).toFixed(3)}%`;
 
-    lastUsedAmount = usedAmount;
+    lastUsedFee = usedFee;
     updateAutoCalDisplay();
 }
 
@@ -363,12 +376,17 @@ function updateDailyReport(reports) {
 }
 
 function updateAutoCalDisplay() {
-    const times = parseFloat(document.getElementById('pnlAutoCalTimes').value) || 0;
-    const autoCalValue = lastUsedAmount * times;
-    const displayElement = document.getElementById('pnlAutoCalDisplay');
-    if (displayElement) {
-        displayElement.value = autoCalValue.toFixed(2);
-    }
+    // Profit
+    const profitTimes = parseFloat(document.getElementById('pnlAutoCalTimes').value) || 0;
+    const autoProfitValue = lastUsedFee * profitTimes;
+    const profitDisplay = document.getElementById('pnlAutoCalDisplay');
+    if (profitDisplay) profitDisplay.value = autoProfitValue.toFixed(2);
+
+    // Loss
+    const lossTimes = parseFloat(document.getElementById('pnlAutoCalLossTimes').value) || 0;
+    const autoLossValue = lastUsedFee * lossTimes;
+    const lossDisplay = document.getElementById('pnlAutoCalLossDisplay');
+    if (lossDisplay) lossDisplay.value = autoLossValue.toFixed(2);
 }
 
 function updatePositionDisplay(positionData) {
@@ -708,7 +726,17 @@ async function loadConfig() {
         const elCalTimes = document.getElementById('pnlAutoCalTimes');
         if (elCalTimes) elCalTimes.value = calTimes;
 
-        // Legacy fallback (if config is old)
+        // Auto-Cal Loss
+        const useAutoCalLoss = currentConfig.use_pnl_auto_cal_loss !== undefined ? currentConfig.use_pnl_auto_cal_loss : false;
+        const calLossTimes = currentConfig.pnl_auto_cal_loss_times !== undefined ? currentConfig.pnl_auto_cal_loss_times : 1.5;
+
+        const elUseCalLoss = document.getElementById('usePnlAutoCalLoss');
+        if (elUseCalLoss) elUseCalLoss.checked = useAutoCalLoss;
+
+        const elCalLossTimes = document.getElementById('pnlAutoCalLossTimes');
+        if (elCalLossTimes) elCalLossTimes.value = calLossTimes;
+
+        // Legacy fallback
         if (currentConfig.use_pnl_auto_cancel !== undefined && currentConfig.use_pnl_auto_manual === undefined) {
             if (elUseManual) elUseManual.checked = currentConfig.use_pnl_auto_cancel;
             if (elManualThresh) elManualThresh.value = currentConfig.pnl_auto_cancel_threshold;
@@ -872,7 +900,9 @@ async function saveConfig() {
         use_pnl_auto_manual: document.getElementById('usePnlAutoManual') ? document.getElementById('usePnlAutoManual').checked : (currentConfig.use_pnl_auto_manual || false),
         pnl_auto_manual_threshold: document.getElementById('pnlAutoManualThreshold') ? parseFloat(document.getElementById('pnlAutoManualThreshold').value) : (currentConfig.pnl_auto_manual_threshold || 100.0),
         use_pnl_auto_cal: document.getElementById('usePnlAutoCal') ? document.getElementById('usePnlAutoCal').checked : (currentConfig.use_pnl_auto_cal || false),
-        pnl_auto_cal_times: document.getElementById('pnlAutoCalTimes') ? parseFloat(document.getElementById('pnlAutoCalTimes').value) : (currentConfig.pnl_auto_cal_times || 4.0)
+        pnl_auto_cal_times: document.getElementById('pnlAutoCalTimes') ? parseFloat(document.getElementById('pnlAutoCalTimes').value) : (currentConfig.pnl_auto_cal_times || 4.0),
+        use_pnl_auto_cal_loss: document.getElementById('usePnlAutoCalLoss') ? document.getElementById('usePnlAutoCalLoss').checked : (currentConfig.use_pnl_auto_cal_loss || false),
+        pnl_auto_cal_loss_times: document.getElementById('pnlAutoCalLossTimes') ? parseFloat(document.getElementById('pnlAutoCalLossTimes').value) : (currentConfig.pnl_auto_cal_loss_times || 1.5)
     };
 
     try {
@@ -909,6 +939,8 @@ async function saveLiveConfigs() {
         pnl_auto_manual_threshold: parseFloat(document.getElementById('pnlAutoManualThreshold').value),
         use_pnl_auto_cal: document.getElementById('usePnlAutoCal').checked,
         pnl_auto_cal_times: parseFloat(document.getElementById('pnlAutoCalTimes').value),
+        use_pnl_auto_cal_loss: document.getElementById('usePnlAutoCalLoss').checked,
+        pnl_auto_cal_loss_times: parseFloat(document.getElementById('pnlAutoCalLossTimes').value),
         trade_fee_percentage: parseFloat(document.getElementById('tradeFeePercentage').value)
     };
 
@@ -928,6 +960,8 @@ async function saveLiveConfigs() {
             currentConfig.pnl_auto_manual_threshold = liveConfig.pnl_auto_manual_threshold;
             currentConfig.use_pnl_auto_cal = liveConfig.use_pnl_auto_cal;
             currentConfig.pnl_auto_cal_times = liveConfig.pnl_auto_cal_times;
+            currentConfig.use_pnl_auto_cal_loss = liveConfig.use_pnl_auto_cal_loss;
+            currentConfig.pnl_auto_cal_loss_times = liveConfig.pnl_auto_cal_loss_times;
             currentConfig.trade_fee_percentage = liveConfig.trade_fee_percentage;
         } else {
             // Revert UI on error (e.g. bot running error)
@@ -935,6 +969,8 @@ async function saveLiveConfigs() {
             document.getElementById('pnlAutoManualThreshold').value = currentConfig.pnl_auto_manual_threshold;
             document.getElementById('usePnlAutoCal').checked = currentConfig.use_pnl_auto_cal;
             document.getElementById('pnlAutoCalTimes').value = currentConfig.pnl_auto_cal_times;
+            document.getElementById('usePnlAutoCalLoss').checked = currentConfig.use_pnl_auto_cal_loss;
+            document.getElementById('pnlAutoCalLossTimes').value = currentConfig.pnl_auto_cal_loss_times;
             document.getElementById('tradeFeePercentage').value = currentConfig.trade_fee_percentage;
             showNotification(data.message, 'error');
         }
