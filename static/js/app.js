@@ -86,13 +86,20 @@ function setupEventListeners() {
     // Call on load to set initial state
     toggleCandlestickInputs();
 
-    // PnL Auto-Cancel listeners
-    document.getElementById('usePnlAutoCancel').addEventListener('change', () => {
+    // PnL Auto-Cancel listeners (New Dual Mode)
+    document.getElementById('usePnlAutoManual').addEventListener('change', saveLiveConfigs);
+    document.getElementById('pnlAutoManualThreshold').addEventListener('change', saveLiveConfigs);
+
+    document.getElementById('usePnlAutoCal').addEventListener('change', () => {
+        // Toggle input enabled state locally for immediate feedback
+        const isChecked = document.getElementById('usePnlAutoCal').checked;
+        const timesInput = document.getElementById('pnlAutoCalTimes');
+        // timesInput is always enabled on config level? No, let's keep it enabled or disabled
+        // actually UI has no disabled logic for times input yet, let's add it if needed
         saveLiveConfigs();
     });
-    document.getElementById('pnlAutoCancelThreshold').addEventListener('change', () => {
-        saveLiveConfigs();
-    });
+    document.getElementById('pnlAutoCalTimes').addEventListener('change', saveLiveConfigs);
+
     document.getElementById('tradeFeePercentage').addEventListener('change', () => {
         saveLiveConfigs();
     });
@@ -625,12 +632,31 @@ async function loadConfig() {
         const response = await fetch('/api/config');
         currentConfig = await response.json();
 
-        // Sync PnL Auto-Cancel UI
-        if (currentConfig.use_pnl_auto_cancel !== undefined) {
-            document.getElementById('usePnlAutoCancel').checked = currentConfig.use_pnl_auto_cancel;
-        }
-        if (currentConfig.pnl_auto_cancel_threshold !== undefined) {
-            document.getElementById('pnlAutoCancelThreshold').value = currentConfig.pnl_auto_cancel_threshold;
+        // Sync PnL Auto-Cancel UI (New Dual Mode)
+        // Auto-Manual
+        const useAutoManual = currentConfig.use_pnl_auto_manual !== undefined ? currentConfig.use_pnl_auto_manual : false;
+        const manualThreshold = currentConfig.pnl_auto_manual_threshold !== undefined ? currentConfig.pnl_auto_manual_threshold : 100.0;
+
+        const elUseManual = document.getElementById('usePnlAutoManual');
+        if (elUseManual) elUseManual.checked = useAutoManual;
+
+        const elManualThresh = document.getElementById('pnlAutoManualThreshold');
+        if (elManualThresh) elManualThresh.value = manualThreshold;
+
+        // Auto-Cal
+        const useAutoCal = currentConfig.use_pnl_auto_cal !== undefined ? currentConfig.use_pnl_auto_cal : false;
+        const calTimes = currentConfig.pnl_auto_cal_times !== undefined ? currentConfig.pnl_auto_cal_times : 4.0;
+
+        const elUseCal = document.getElementById('usePnlAutoCal');
+        if (elUseCal) elUseCal.checked = useAutoCal;
+
+        const elCalTimes = document.getElementById('pnlAutoCalTimes');
+        if (elCalTimes) elCalTimes.value = calTimes;
+
+        // Legacy fallback (if config is old)
+        if (currentConfig.use_pnl_auto_cancel !== undefined && currentConfig.use_pnl_auto_manual === undefined) {
+            if (elUseManual) elUseManual.checked = currentConfig.use_pnl_auto_cancel;
+            if (elManualThresh) elManualThresh.value = currentConfig.pnl_auto_cancel_threshold;
         }
 
         // Initial dashboard trade fee % sync
@@ -725,18 +751,8 @@ function loadConfigToModal() {
     if (autCancelThreshold) autCancelThreshold.value = currentConfig.pnl_auto_cancel_threshold;
 }
 
-// Helper to keep dashboard and modal in sync
-document.addEventListener('change', (e) => {
-    if (e.target.id === 'usePnlAutoCancel') {
-        document.getElementById('usePnlAutoCancelModal').checked = e.target.checked;
-    } else if (e.target.id === 'usePnlAutoCancelModal') {
-        document.getElementById('usePnlAutoCancel').checked = e.target.checked;
-    } else if (e.target.id === 'pnlAutoCancelThreshold') {
-        document.getElementById('pnlAutoCancelThresholdModal').value = e.target.value;
-    } else if (e.target.id === 'pnlAutoCancelThresholdModal') {
-        document.getElementById('pnlAutoCancelThreshold').value = e.target.value;
-    }
-});
+// Helper to keep dashboard and modal in sync - Removed old PnL sync listeners as modal update is pending
+// TODO: Update modal with new fields if needed.
 
 async function saveConfig() {
     const newConfig = {
@@ -796,9 +812,11 @@ async function saveConfig() {
         candlestick_timeframe: document.getElementById('candlestickTimeframe').value,
         okx_pos_mode: document.getElementById('okxPosMode').value,
 
-        // PnL Auto-Cancel
-        use_pnl_auto_cancel: document.getElementById('usePnlAutoCancel').checked,
-        pnl_auto_cancel_threshold: parseFloat(document.getElementById('pnlAutoCancelThreshold').value)
+        // PnL Auto-Cancel (New Dual Mode)
+        use_pnl_auto_manual: document.getElementById('usePnlAutoManual') ? document.getElementById('usePnlAutoManual').checked : (currentConfig.use_pnl_auto_manual || false),
+        pnl_auto_manual_threshold: document.getElementById('pnlAutoManualThreshold') ? parseFloat(document.getElementById('pnlAutoManualThreshold').value) : (currentConfig.pnl_auto_manual_threshold || 100.0),
+        use_pnl_auto_cal: document.getElementById('usePnlAutoCal') ? document.getElementById('usePnlAutoCal').checked : (currentConfig.use_pnl_auto_cal || false),
+        pnl_auto_cal_times: document.getElementById('pnlAutoCalTimes') ? parseFloat(document.getElementById('pnlAutoCalTimes').value) : (currentConfig.pnl_auto_cal_times || 4.0)
     };
 
     try {
@@ -831,8 +849,10 @@ async function saveLiveConfigs() {
     if (!currentConfig) return;
 
     const liveConfig = {
-        use_pnl_auto_cancel: document.getElementById('usePnlAutoCancel').checked,
-        pnl_auto_cancel_threshold: parseFloat(document.getElementById('pnlAutoCancelThreshold').value),
+        use_pnl_auto_manual: document.getElementById('usePnlAutoManual').checked,
+        pnl_auto_manual_threshold: parseFloat(document.getElementById('pnlAutoManualThreshold').value),
+        use_pnl_auto_cal: document.getElementById('usePnlAutoCal').checked,
+        pnl_auto_cal_times: parseFloat(document.getElementById('pnlAutoCalTimes').value),
         trade_fee_percentage: parseFloat(document.getElementById('tradeFeePercentage').value)
     };
 
@@ -848,13 +868,17 @@ async function saveLiveConfigs() {
         if (data.success) {
             showNotification('Auto-Exit settings saved', 'success');
             // Update local currentConfig but don't reload everything
-            currentConfig.use_pnl_auto_cancel = liveConfig.use_pnl_auto_cancel;
-            currentConfig.pnl_auto_cancel_threshold = liveConfig.pnl_auto_cancel_threshold;
+            currentConfig.use_pnl_auto_manual = liveConfig.use_pnl_auto_manual;
+            currentConfig.pnl_auto_manual_threshold = liveConfig.pnl_auto_manual_threshold;
+            currentConfig.use_pnl_auto_cal = liveConfig.use_pnl_auto_cal;
+            currentConfig.pnl_auto_cal_times = liveConfig.pnl_auto_cal_times;
             currentConfig.trade_fee_percentage = liveConfig.trade_fee_percentage;
         } else {
             // Revert UI on error (e.g. bot running error)
-            document.getElementById('usePnlAutoCancel').checked = currentConfig.use_pnl_auto_cancel;
-            document.getElementById('pnlAutoCancelThreshold').value = currentConfig.pnl_auto_cancel_threshold;
+            document.getElementById('usePnlAutoManual').checked = currentConfig.use_pnl_auto_manual;
+            document.getElementById('pnlAutoManualThreshold').value = currentConfig.pnl_auto_manual_threshold;
+            document.getElementById('usePnlAutoCal').checked = currentConfig.use_pnl_auto_cal;
+            document.getElementById('pnlAutoCalTimes').value = currentConfig.pnl_auto_cal_times;
             document.getElementById('tradeFeePercentage').value = currentConfig.trade_fee_percentage;
             showNotification(data.message, 'error');
         }

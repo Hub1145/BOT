@@ -24,6 +24,79 @@ okx_api_secret = ""
 okx_passphrase = ""
 okx_rest_api_base_url = "https://www.okx.com"
 
+# Rate Limiter Class - Token Bucket Algorithm
+class RateLimiter:
+    """
+    Token bucket rate limiter to prevent API rate limit errors.
+    Supports different rate limits for different endpoint categories.
+    """
+    def __init__(self):
+        self.locks = {}
+        self.buckets = {}
+        
+        # Define rate limits per endpoint category (requests per second)
+        # OKX limits: ~20-60 req/2s depending on endpoint
+        self.limits = {
+            'account': {'rate': 3, 'capacity': 6},      # Account endpoints: 3 req/s, burst 6
+            'trade': {'rate': 3, 'capacity': 6},        # Trade endpoints: 3 req/s, burst 6
+            'market': {'rate': 10, 'capacity': 20},     # Market data: 10 req/s, burst 20
+            'public': {'rate': 10, 'capacity': 20},     # Public endpoints: 10 req/s, burst 20
+            'default': {'rate': 5, 'capacity': 10}      # Default: 5 req/s, burst 10
+        }
+        
+        # Initialize buckets
+        for category in self.limits:
+            self.locks[category] = threading.Lock()
+            self.buckets[category] = {
+                'tokens': self.limits[category]['capacity'],
+                'last_update': time.time()
+            }
+    
+    def _get_category(self, path):
+        """Determine endpoint category from API path"""
+        if '/account/' in path:
+            return 'account'
+        elif '/trade/' in path:
+            return 'trade'
+        elif '/market/' in path:
+            return 'market'
+        elif '/public/' in path:
+            return 'public'
+        else:
+            return 'default'
+    
+    def acquire(self, path, tokens=1):
+        """
+        Acquire tokens before making a request.
+        Blocks if insufficient tokens available.
+        """
+        category = self._get_category(path)
+        lock = self.locks[category]
+        
+        with lock:
+            while True:
+                now = time.time()
+                bucket = self.buckets[category]
+                limit = self.limits[category]
+                
+                # Refill tokens based on time elapsed
+                time_passed = now - bucket['last_update']
+                bucket['tokens'] = min(
+                    limit['capacity'],
+                    bucket['tokens'] + time_passed * limit['rate']
+                )
+                bucket['last_update'] = now
+                
+                # Check if we have enough tokens
+                if bucket['tokens'] >= tokens:
+                    bucket['tokens'] -= tokens
+                    return
+                
+                # Calculate wait time for next token
+                tokens_needed = tokens - bucket['tokens']
+                wait_time = tokens_needed / limit['rate']
+                time.sleep(min(wait_time, 0.5))  # Sleep max 0.5s at a time
+
 # Placeholder for PRODUCT_INFO, will be populated by fetch_product_info
 PRODUCT_INFO = {
     "pricePrecision": None,
@@ -170,6 +243,9 @@ class TradingBotEngine:
         self.total_trades_count = 0 # Persistent counter for individual fills
         self.confirmed_subscriptions = set()
         self.credentials_invalid = False
+        
+        # Initialize rate limiter for API request throttling
+        self.rate_limiter = RateLimiter()
 
         self.intervals = {
             '1m': 60, '3m': 180, '5m': 300, '15m': 900, '30m': 1800,
@@ -515,6 +591,9 @@ class TradingBotEngine:
                 return None
 
             try:
+                # Acquire rate limit token before making request
+                self.rate_limiter.acquire(path)
+                
                 req_func = getattr(requests, method.lower(), None)
                 if not req_func:
                     self.log(f"Unsupported HTTP method: {method}", level="error")
@@ -910,17 +989,20 @@ class TradingBotEngine:
 
     def _okx_place_order(self, symbol, side, qty, price=None, order_type="Market",
                         time_in_force=None, reduce_only=False,
-                        stop_loss_price=None, take_profit_price=None, posSide=None, verbose=True):
+                        stop_loss_price=None, take_profit_price=None, posSide=None, verbose=True, tdMode=None):
         try:
             path = "/api/v5/trade/order"
             price_precision = PRODUCT_INFO.get('pricePrecision', 4)
             qty_precision = PRODUCT_INFO.get('qtyPrecision', 8)
 
             order_qty_str = f"{qty:.{qty_precision}f}"
+            
+            # Use provided tdMode or default to config
+            trade_mode = tdMode if tdMode else self.config.get('mode', 'cross')
 
             body = {
                 "instId": symbol,
-                "tdMode": self.config.get('mode', 'cross'),
+                "tdMode": trade_mode,
                 "side": side.lower(),
                 "ordType": order_type.lower(),
                 "sz": order_qty_str,
@@ -1019,17 +1101,17 @@ class TradingBotEngine:
                 "algoId": algo_id,
             }]
 
-            self.log(f"Cancelling OKX algo order {str(algo_id)[:12]}...", level="info")
+            self.log(f"Cancelling OKX algo order {str(algo_id)[:12]}...", level="debug")
             response = self._okx_request("POST", path, body_dict=body)
 
             if response and response.get('code') == '0':
-                self.log(f"✓ Algo order cancelled", level="info")
+                self.log(f"✓ Algo order cancelled", level="debug")
                 return True
             elif response and response.get('code') == '51001':
-                self.log(f"Algo order already filled/cancelled (OK)", level="info")
+                self.log(f"Algo order already filled/cancelled (OK)", level="debug")
                 return True
             else:
-                self.log(f"Failed to cancel algo order (OK, continuing): {response.get('msg') if response else 'No response'}", level="warning")
+                self.log(f"Failed to cancel algo order (OK, continuing): {response.get('msg') if response else 'No response'}", level="debug")
                 return False
         except Exception as e:
             self.log(f"Exception in _okx_cancel_algo_order: {e}", level="error")
@@ -1477,18 +1559,21 @@ class TradingBotEngine:
                     if pos.get('instId') == target_symbol:
                         pos_qty = safe_float(pos.get('pos', '0'))
                         pos_side_raw = pos.get('posSide', 'net')
+                        mgn_mode = pos.get('mgnMode') # Extract margin mode (cross/isolated)
                         
                         if abs(pos_qty) > 0:
                             # Determine close side (If qty > 0 [Long], Sell. If qty < 0 [Short], Buy)
                             close_side = "Sell" if pos_qty > 0 else "Buy"
                             
-                            self.log(f"Force closing {pos_side_raw.upper()} position: {abs(pos_qty)} {target_symbol} @ Market", level="info")
-                            exit_order = self._okx_place_order(target_symbol, close_side, abs(pos_qty), order_type="Market", reduce_only=True, posSide=pos_side_raw)
+                            self.log(f"Force closing {pos_side_raw.upper()} position: {abs(pos_qty)} {target_symbol} @ Market (Mode: {mgn_mode})", level="info")
+                            # Pass mgn_mode as tdMode to ensure we address the position in the correct margin account
+                            exit_order = self._okx_place_order(target_symbol, close_side, abs(pos_qty), order_type="Market", reduce_only=True, posSide=pos_side_raw, tdMode=mgn_mode)
                             
                             if exit_order and exit_order.get('ordId'):
                                 self.log(f"✓ Position closed. Order ID: {exit_order.get('ordId')}", level="info")
                             else:
                                 self.log(f"⚠️ Market exit for {pos_side_raw.upper()} failed or rejected.", level="warning")
+
 
             # 2. Batch Cancel ALL pending orders for this symbol (Limit & Algo)
             # We call batch_cancel_orders which performs the exchange-wide sweep
@@ -1551,16 +1636,21 @@ class TradingBotEngine:
                     if pos.get('instId') == self.config['symbol']:
                         size_rv = safe_float(pos.get('pos', 0))
                         if abs(size_rv) > 0:
-                            # Detect side from pos negative/positive or posSide
+                            # Detect posSide and margin mode. TRUST THE EXCHANGE DATA.
                             pos_side = pos.get('posSide')
-                            if pos_side == 'net' or not pos_side:
-                                pos_side = 'short' if size_rv < 0 else 'long'
+                            if not pos_side:
+                                pos_side = 'net'
+                                
+                            mgn_mode = pos.get('mgnMode')
+
+                            self.log(f"⚠️ Found open {pos_side} position: {size_rv} {self.config['symbol']} (Mode: {mgn_mode})", level="warning")
                             
-                            self.log(f"⚠️ Found open {pos_side} OKX position: {size_rv} {self.config['symbol']}", level="warning")
-                            # If size_rv is negative (short), we must BUY to close
+                            # If size_rv is negative (short), we must BUY to close. This applies to Net mode too (negative size = short).
                             close_side = "Buy" if size_rv < 0 else "Sell"
+                            
                             self.log(f"Closing {abs(size_rv)} {self.config['symbol']} with market {close_side} order (posSide: {pos_side})", level="info")
-                            close_order = self._okx_place_order(self.config['symbol'], close_side, abs(size_rv), order_type="Market", reduce_only=True, posSide=pos_side)
+                            # Use explicit tdMode and posSide from the position data
+                            close_order = self._okx_place_order(self.config['symbol'], close_side, abs(size_rv), order_type="Market", reduce_only=True, posSide=pos_side, tdMode=mgn_mode)
                             if close_order and close_order.get('ordId'):
                                 self.log(f"✓ Position close order placed: {close_order.get('ordId')}", level="info")
                                 any_closed = True
@@ -1888,6 +1978,10 @@ class TradingBotEngine:
                 
                 # Trigger an immediate account info update to refresh values
                 threading.Thread(target=self._fetch_and_emit_account_info, daemon=True).start()
+                
+                # Small delay between batch orders to prevent rate limiting
+                if i < batch_size - 1:  # Don't delay after last order
+                    time.sleep(0.2)
             else:
                 self.log(f"Order placement failed", level="error")
 
@@ -2089,21 +2183,10 @@ class TradingBotEngine:
                 # Note: Only cancel if trading is active or we still have tracked pending orders
                 self._check_cancel_conditions()
 
-                # 2. PnL-Based Auto-Exit Check (Now works even in Stop mode)
-                use_auto_cancel = self.config.get('use_pnl_auto_cancel', False)
-                threshold = self.config.get('pnl_auto_cancel_threshold', 100.0)
-                if use_auto_cancel and self.net_profit >= threshold:
-                    self.log(f"PNL TARGET HIT! Profit ${self.net_profit:.2f} >= ${threshold:.2f}. Triggering Auto-Exit Liquidate.", level="critical")
-                    
-                    # Stop trading logic if active
-                    self.is_running = False
-                    
-                    # Cancel all pending orders and close all positions
-                    self._close_all_entry_orders()
-                    self._check_and_close_any_open_position()
-                    self.emit('bot_status', {'running': False})
-                    self.log("Auto-Exit Liquidate Complete.", level="info")
-                    # We don't exit the thread, as we want to continue monitoring
+                # 2. PnL-Based Auto-Exit Check
+                # Removed: This is now handled authoritatively in _fetch_and_emit_account_info
+                # to ensure atomic execution and correct 'Used Amount' calculation.
+
                 
                 # 3. Connection Health: Stale Price Monitor
                 price_age = now - self.last_price_update_time
@@ -2533,13 +2616,7 @@ class TradingBotEngine:
         self.net_profit = self.net_profit + total_unrealized_pnl
         
         # 3. GLOBAL AUTO-EXIT: Check if the enabled profit target is met across all positions
-        if self.config.get('use_pnl_auto_cancel', False):
-             pnl_threshold = self.config.get('pnl_auto_cancel_threshold', 100.0)
-             if self.net_profit >= pnl_threshold:
-                 self.log(f"🎯 AUTHORITATIVE AUTO-EXIT TRIGGERED: Total Profit ${self.net_profit:.2f} >= Target ${pnl_threshold:.2f}", level="warning")
-                 self.log(f"(Includes Manual Positions) Closing all trades for {self.config['symbol']}", level="info")
-                 # We trigger the authoritative exit logic (Exchange Sweep)
-                 threading.Thread(target=self._execute_trade_exit, args=("Auto-Exit on Profit Target Reached",), daemon=True).start()
+        # Auto-Exit Check moved to after Used Amount calculation
         
         # If stopped, we explicitly keep 'Used' at 0 for a clean session start
         if not self.is_running:
@@ -2554,6 +2631,40 @@ class TradingBotEngine:
         
         with self.position_lock:
             self.used_amount_notional = used_amount_notional
+
+        # 3. GLOBAL AUTO-EXIT: Check if the enabled profit target is met across all positions
+        # Independent checks for Auto-Manual (Fixed) and Auto-Cal (Dynamic)
+        # Placed here to use the final calculated 'used_amount_notional'
+        auto_exit_triggered = False
+        exit_reason = ""
+
+        # Check Auto-Manual Profit (Fixed Threshold)
+        if self.config.get('use_pnl_auto_manual', False):
+             manual_threshold = self.config.get('pnl_auto_manual_threshold', 100.0)
+             if self.net_profit >= manual_threshold:
+                 auto_exit_triggered = True
+                 exit_reason = f"Auto-Manual Profit Target: ${self.net_profit:.2f} >= ${manual_threshold:.2f}"
+
+        # Check Auto-Cal Profit (Dynamic Threshold)
+        if self.config.get('use_pnl_auto_cal', False) and not auto_exit_triggered and used_amount_notional > 0:
+             cal_times = self.config.get('pnl_auto_cal_times', 4)
+             cal_threshold = cal_times * used_amount_notional
+             
+             if self.net_profit >= cal_threshold:
+                 auto_exit_triggered = True
+                 exit_reason = f"Auto-Cal Profit Target: ${self.net_profit:.2f} >= {cal_times}× ${used_amount_notional:.2f} = ${cal_threshold:.2f}"
+
+        if auto_exit_triggered:
+             self.log(f"🎯 AUTHORITATIVE AUTO-EXIT TRIGGERED: {exit_reason}", level="WARNING")
+             self.log(f"(Includes Manual Positions) Closing all trades for {self.config['symbol']}", level="INFO")
+             
+             # STOP the bot to prevent re-triggering and further trading
+             self.is_running = False
+             self.emit('bot_status', {'running': False})
+             
+             # We trigger the authoritative exit logic (Exchange Sweep)
+             threading.Thread(target=self._execute_trade_exit, args=("Auto-Exit on Profit Target Reached",), daemon=True).start()
+
 
         # Sync pending_entry_ids with active orders from OKX
         active_okx_ids = [t['id'] for t in formatted_open_trades]
