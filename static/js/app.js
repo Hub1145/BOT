@@ -116,6 +116,28 @@ function setupEventListeners() {
     });
     document.getElementById('pnlAutoCalLossTimes').addEventListener('change', saveLiveConfigs);
 
+    // Auto-Cal Size (Profit) listeners
+    document.getElementById('useSizeAutoCal').addEventListener('change', (e) => {
+        const state = e.target.checked ? 'ACTIVATED' : 'DEACTIVATED';
+        addConsoleLog({ message: `Auto-Cal Size (Profit): ${state}`, level: 'info' });
+        saveLiveConfigs();
+    });
+    document.getElementById('sizeAutoCalTimes').addEventListener('input', () => {
+        updateAutoCalDisplay();
+    });
+    document.getElementById('sizeAutoCalTimes').addEventListener('change', saveLiveConfigs);
+
+    // Auto-Cal Size Loss listeners
+    document.getElementById('useSizeAutoCalLoss').addEventListener('change', (e) => {
+        const state = e.target.checked ? 'ACTIVATED' : 'DEACTIVATED';
+        addConsoleLog({ message: `Auto-Cal Size Loss: ${state}`, level: 'info' });
+        saveLiveConfigs();
+    });
+    document.getElementById('sizeAutoCalLossTimes').addEventListener('input', () => {
+        updateAutoCalDisplay();
+    });
+    document.getElementById('sizeAutoCalLossTimes').addEventListener('change', saveLiveConfigs);
+
     document.getElementById('tradeFeePercentage').addEventListener('change', saveLiveConfigs);
 
     // Refresh Fees Button
@@ -384,9 +406,22 @@ function updateAutoCalDisplay() {
 
     // Loss
     const lossTimes = parseFloat(document.getElementById('pnlAutoCalLossTimes').value) || 0;
-    const autoLossValue = lastUsedFee * lossTimes;
+    const autoLossValue = -(lastUsedFee * lossTimes);
     const lossDisplay = document.getElementById('pnlAutoCalLossDisplay');
     if (lossDisplay) lossDisplay.value = autoLossValue.toFixed(2);
+
+    // Auto-Cal Size (Profit) (NEW)
+    const sizeProfitTimes = parseFloat(document.getElementById('sizeAutoCalTimes').value) || 0;
+    // Uses same Size Fee basis as requested
+    const autoSizeProfitValue = lastUsedFee * sizeProfitTimes;
+    const sizeProfitDisplay = document.getElementById('sizeAutoCalDisplay');
+    if (sizeProfitDisplay) sizeProfitDisplay.value = autoSizeProfitValue.toFixed(2);
+
+    // Auto-Cal Size Loss (NEW)
+    const sizeLossTimes = parseFloat(document.getElementById('sizeAutoCalLossTimes').value) || 0;
+    const autoSizeLossValue = -(lastUsedFee * sizeLossTimes);
+    const sizeLossDisplay = document.getElementById('sizeAutoCalLossDisplay');
+    if (sizeLossDisplay) sizeLossDisplay.value = autoSizeLossValue.toFixed(2);
 }
 
 function updatePositionDisplay(positionData) {
@@ -736,6 +771,26 @@ async function loadConfig() {
         const elCalLossTimes = document.getElementById('pnlAutoCalLossTimes');
         if (elCalLossTimes) elCalLossTimes.value = calLossTimes;
 
+        // Auto-Cal Size (Profit)
+        const useSizeAutoCal = currentConfig.use_size_auto_cal !== undefined ? currentConfig.use_size_auto_cal : false;
+        const sizeCalTimes = currentConfig.size_auto_cal_times !== undefined ? currentConfig.size_auto_cal_times : 2.0;
+
+        const elUseSizeCal = document.getElementById('useSizeAutoCal');
+        if (elUseSizeCal) elUseSizeCal.checked = useSizeAutoCal;
+
+        const elSizeCalTimes = document.getElementById('sizeAutoCalTimes');
+        if (elSizeCalTimes) elSizeCalTimes.value = sizeCalTimes;
+
+        // Auto-Cal Size Loss
+        const useSizeAutoCalLoss = currentConfig.use_size_auto_cal_loss !== undefined ? currentConfig.use_size_auto_cal_loss : false;
+        const sizeCalLossTimes = currentConfig.size_auto_cal_loss_times !== undefined ? currentConfig.size_auto_cal_loss_times : 1.5;
+
+        const elUseSizeCalLoss = document.getElementById('useSizeAutoCalLoss');
+        if (elUseSizeCalLoss) elUseSizeCalLoss.checked = useSizeAutoCalLoss;
+
+        const elSizeCalLossTimes = document.getElementById('sizeAutoCalLossTimes');
+        if (elSizeCalLossTimes) elSizeCalLossTimes.value = sizeCalLossTimes;
+
         // Legacy fallback
         if (currentConfig.use_pnl_auto_cancel !== undefined && currentConfig.use_pnl_auto_manual === undefined) {
             if (elUseManual) elUseManual.checked = currentConfig.use_pnl_auto_cancel;
@@ -828,11 +883,11 @@ function loadConfigToModal() {
     document.getElementById('candlestickTimeframe').value = currentConfig.candlestick_timeframe;
     document.getElementById('okxPosMode').value = currentConfig.okx_pos_mode || 'net_mode';
 
-    // PnL Auto-Cancel (Modal Sync)
+    // PnL Auto-Cancel (Modal Sync -> Maps to Auto-Manual Profit)
     const autCancelCheck = document.getElementById('usePnlAutoCancelModal');
     const autCancelThreshold = document.getElementById('pnlAutoCancelThresholdModal');
-    if (autCancelCheck) autCancelCheck.checked = currentConfig.use_pnl_auto_cancel;
-    if (autCancelThreshold) autCancelThreshold.value = currentConfig.pnl_auto_cancel_threshold;
+    if (autCancelCheck) autCancelCheck.checked = currentConfig.use_pnl_auto_manual || false;
+    if (autCancelThreshold) autCancelThreshold.value = currentConfig.pnl_auto_manual_threshold || 100.0;
 }
 
 // Helper to keep dashboard and modal in sync - Removed old PnL sync listeners as modal update is pending
@@ -896,9 +951,10 @@ async function saveConfig() {
         candlestick_timeframe: document.getElementById('candlestickTimeframe').value,
         okx_pos_mode: document.getElementById('okxPosMode').value,
 
-        // PnL Auto-Cancel (New Dual Mode)
-        use_pnl_auto_manual: document.getElementById('usePnlAutoManual') ? document.getElementById('usePnlAutoManual').checked : (currentConfig.use_pnl_auto_manual || false),
-        pnl_auto_manual_threshold: document.getElementById('pnlAutoManualThreshold') ? parseFloat(document.getElementById('pnlAutoManualThreshold').value) : (currentConfig.pnl_auto_manual_threshold || 100.0),
+        // PnL Auto-Cancel (New Dual Mode - Unified with Modal)
+        // If modal inputs exist, use them. Otherwise use dashboard/current config.
+        use_pnl_auto_manual: document.getElementById('usePnlAutoCancelModal') ? document.getElementById('usePnlAutoCancelModal').checked : (document.getElementById('usePnlAutoManual') ? document.getElementById('usePnlAutoManual').checked : currentConfig.use_pnl_auto_manual),
+        pnl_auto_manual_threshold: document.getElementById('pnlAutoCancelThresholdModal') ? parseFloat(document.getElementById('pnlAutoCancelThresholdModal').value) : (document.getElementById('pnlAutoManualThreshold') ? parseFloat(document.getElementById('pnlAutoManualThreshold').value) : currentConfig.pnl_auto_manual_threshold),
         use_pnl_auto_cal: document.getElementById('usePnlAutoCal') ? document.getElementById('usePnlAutoCal').checked : (currentConfig.use_pnl_auto_cal || false),
         pnl_auto_cal_times: document.getElementById('pnlAutoCalTimes') ? parseFloat(document.getElementById('pnlAutoCalTimes').value) : (currentConfig.pnl_auto_cal_times || 4.0),
         use_pnl_auto_cal_loss: document.getElementById('usePnlAutoCalLoss') ? document.getElementById('usePnlAutoCalLoss').checked : (currentConfig.use_pnl_auto_cal_loss || false),
@@ -941,6 +997,13 @@ async function saveLiveConfigs() {
         pnl_auto_cal_times: parseFloat(document.getElementById('pnlAutoCalTimes').value),
         use_pnl_auto_cal_loss: document.getElementById('usePnlAutoCalLoss').checked,
         pnl_auto_cal_loss_times: parseFloat(document.getElementById('pnlAutoCalLossTimes').value),
+
+        // Auto-Cal Size (New)
+        use_size_auto_cal: document.getElementById('useSizeAutoCal').checked,
+        size_auto_cal_times: parseFloat(document.getElementById('sizeAutoCalTimes').value),
+        use_size_auto_cal_loss: document.getElementById('useSizeAutoCalLoss').checked,
+        size_auto_cal_loss_times: parseFloat(document.getElementById('sizeAutoCalLossTimes').value),
+
         trade_fee_percentage: parseFloat(document.getElementById('tradeFeePercentage').value)
     };
 

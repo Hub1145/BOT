@@ -108,6 +108,46 @@
                                     style="width: 60px;" step="0.1" min="0.1">
                             </div>
                         </div>
+
+                        <!-- Auto-Cal Size (Profit) Row -->
+                        <div
+                            class="d-flex align-items-center justify-content-between flex-wrap gap-2 mt-2 pt-2 border-top border-secondary border-opacity-25">
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="form-check form-switch m-0">
+                                    <input class="form-check-input" type="checkbox" id="useSizeAutoCal">
+                                    <label class="form-check-label fw-bold" for="useSizeAutoCal">Auto-Cal Size
+                                        (Profit)</label>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="text-secondary small text-uppercase fw-bold">Target Size Profit ($)</span>
+                                <input type="number" class="form-control form-control-sm" id="sizeAutoCalDisplay"
+                                    style="width: 80px;" readonly placeholder="Auto">
+                                <span class="text-secondary small text-uppercase fw-bold ms-2">Times</span>
+                                <input type="number" class="form-control form-control-sm" id="sizeAutoCalTimes"
+                                    style="width: 60px;" step="0.1" min="0.1">
+                            </div>
+                        </div>
+
+                        <!-- Auto-Cal Size (Loss) Row -->
+                        <div
+                            class="d-flex align-items-center justify-content-between flex-wrap gap-2 mt-2 pt-2 border-top border-secondary border-opacity-25">
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="form-check form-switch m-0">
+                                    <input class="form-check-input" type="checkbox" id="useSizeAutoCalLoss">
+                                    <label class="form-check-label fw-bold text-danger"
+                                        for="useSizeAutoCalLoss">Auto-Cal Size Loss</label>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="text-secondary small text-uppercase fw-bold">Target Size Loss ($)</span>
+                                <input type="number" class="form-control form-control-sm" id="sizeAutoCalLossDisplay"
+                                    style="width: 80px;" readonly placeholder="Auto">
+                                <span class="text-secondary small text-uppercase fw-bold ms-2">Times</span>
+                                <input type="number" class="form-control form-control-sm" id="sizeAutoCalLossTimes"
+                                    style="width: 60px;" step="0.1" min="0.1">
+                            </div>
+                        </div>
                     </div>
                 </div>
 

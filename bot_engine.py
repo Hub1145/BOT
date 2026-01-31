@@ -341,6 +341,12 @@ class TradingBotEngine:
         
         if not passive_monitoring:
             self.log('Bot starting trading logic...', 'info')
+            # Reset session-based trade metrics for a clean start
+            self.total_trade_profit = 0.0
+            self.total_trade_loss = 0.0
+            self.net_trade_profit = 0.0
+            self.total_trades_count = 0
+            self.log('Session trade metrics reset.', 'info')
         else:
             self.log('Bot starting background monitoring...', 'info')
         
@@ -2425,7 +2431,7 @@ class TradingBotEngine:
                 self.total_trade_profit = temp_total_profit
                 self.total_trade_loss = temp_total_loss
                 self.net_trade_profit = temp_total_profit - temp_total_loss
-                self.net_profit = session_pnl # This is what triggers Auto-Exit (Current session)
+                # self.net_profit = session_pnl # REMOVED: User wants Net Profit to be UPL for open positions only
                 
                 self._save_analytics()
             return session_pnl
@@ -2716,9 +2722,10 @@ class TradingBotEngine:
                     total_unrealized_pnl += safe_float(pos.get('upl', '0'))
                     active_positions_count += 1
 
-        # Combined Real-time Net Profit (Realized + Live Unrealized)
-        # We always add unrealized PnL so the user sees their position performance on page load
-        self.net_profit = self.net_profit + total_unrealized_pnl
+        # Combined Real-time Net Profit
+        # Per User Request: "Net Profit as the pnl for open positions only"
+        # We explicitly SET it to Unrealized PnL (Floating Profit/Loss)
+        self.net_profit = total_unrealized_pnl
         
         # 3. GLOBAL AUTO-EXIT: Check if the enabled profit target is met across all positions
         # Auto-Exit Check moved to after Used Amount calculation
@@ -2770,6 +2777,28 @@ class TradingBotEngine:
             if self.net_profit <= loss_threshold:
                 auto_exit_triggered = True
                 exit_reason = f"Auto-Cal Loss Target: ${self.net_profit:.2f} <= ${loss_threshold:.2f} ({loss_times}x Fee)"
+
+        # Check Auto-Cal Size (Profit) - Dynamic Target based on Size Fee
+        # Target = Size Fee * Times
+        if self.config.get('use_size_auto_cal', False) and not auto_exit_triggered and used_amount_notional > 0:
+            size_times = self.config.get('size_auto_cal_times', 2.0)
+            trade_fee_pct = self.config.get('trade_fee_percentage', 0.07)
+            current_size_fee = used_amount_notional * (trade_fee_pct / 100.0)
+            size_target = current_size_fee * size_times
+            if self.net_profit >= size_target:
+                auto_exit_triggered = True
+                exit_reason = f"Auto-Cal Size Target: ${self.net_profit:.2f} >= ${size_target:.2f} ({size_times}x Size Fee)"
+
+        # Check Auto-Cal Size (Loss) - Dynamic Target based on Size Fee
+        # Loss Target = -(Size Fee * Times)
+        if self.config.get('use_size_auto_cal_loss', False) and not auto_exit_triggered and used_amount_notional > 0:
+            size_loss_times = self.config.get('size_auto_cal_loss_times', 1.5)
+            trade_fee_pct = self.config.get('trade_fee_percentage', 0.07)
+            current_size_fee = used_amount_notional * (trade_fee_pct / 100.0)
+            size_loss_threshold = -(current_size_fee * size_loss_times)
+            if self.net_profit <= size_loss_threshold:
+                auto_exit_triggered = True
+                exit_reason = f"Auto-Cal Size Loss Target: ${self.net_profit:.2f} <= ${size_loss_threshold:.2f} ({size_loss_times}x Size Fee)"
         if auto_exit_triggered:
              # Guard check before spawning thread to avoid redundant logs
              with self.exit_lock:
