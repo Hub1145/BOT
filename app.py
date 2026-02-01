@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, send_file
 from flask_socketio import SocketIO, emit
 import json
 import logging
@@ -129,6 +129,46 @@ def update_config():
 
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)}), 500
+
+@app.route('/api/shutdown', methods=['POST'])
+def shutdown():
+    global bot_engine
+    if bot_engine:
+        bot_engine.stop_bot()
+    
+    # Save config before shutdown
+    config = load_config()
+    save_config(config)
+    
+    func = request.environ.get('werkzeug.server.shutdown')
+    if func is None:
+        return jsonify({'success': False, 'message': 'Not running with the Werkzeug Server'})
+    
+    func()
+    return jsonify({'success': True, 'message': 'Server shutting down...'})
+
+@app.route('/api/download_logs')
+def download_logs():
+    try:
+        log_file = 'debug.log'
+        if not os.path.exists(log_file):
+             return jsonify({'error': 'Log file not found'}), 404
+        
+        # Flush handlers to ensure latest logs are written
+        for handler in logging.getLogger().handlers:
+            if isinstance(handler, logging.FileHandler): # Only flush file handlers
+                handler.flush()
+            
+        return send_file(
+            log_file,
+            mimetype='text/plain',
+            as_attachment=True,
+            download_name='bot_log.log'
+        )
+    except Exception as e:
+        logging.error(f'Error downloading logs: {str(e)}', exc_info=True)
+        return jsonify({'error': str(e)}), 500
+
 @app.route('/api/test_api_key', methods=['POST'])
 def test_api_key_route():
     try:
@@ -324,13 +364,13 @@ def handle_start_bot(data=None):
         try:
             bot_engine.start()
             if bot_engine.is_running:
-                emit('bot_status', {'running': True}) # Explicitly emit status after starting
+                socketio.emit('bot_status', {'running': True}) # Broadcast status to all
                 emit('success', {'message': 'Bot started successfully'})
             else:
                 # If bot_engine.start() returned False internally (e.g. position mode error),
                 # it already emitted its own error log and 'bot_status': False.
                 # However, we'll re-sync just in case.
-                emit('bot_status', {'running': False})
+                socketio.emit('bot_status', {'running': False})
         except Exception as e:
             logging.error(f'Error during bot_engine instantiation or start: {str(e)}', exc_info=True)
             emit('error', {'message': f'Failed to start bot: {str(e)}'})
@@ -348,7 +388,7 @@ def handle_stop_bot(data=None):
             return
 
         bot_engine.stop()
-        emit('bot_status', {'running': False}) # Explicitly emit status after stopping
+        socketio.emit('bot_status', {'running': False}) # Broadcast status to all
         emit('success', {'message': 'Bot stopped successfully'})
 
     except Exception as e:
@@ -390,4 +430,4 @@ def handle_emergency_sl(data=None):
 
 
 if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0', port=5000, debug=False, use_reloader=False, log_output=True, allow_unsafe_werkzeug=True)
+    socketio.run(app, host='0.0.0.0', port=5000, debug=False, use_reloader=False, log_output=True)

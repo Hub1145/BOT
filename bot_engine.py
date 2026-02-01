@@ -171,13 +171,13 @@ class TradingBotEngine:
         console_handler.setLevel(logging.INFO) # Console gets INFO and higher
         root_logger.addHandler(console_handler)
 
-        # FileHandler for debug.log (DEBUG and higher, only if log_level is DEBUG)
-        if numeric_level == logging.DEBUG:
-            file_handler = logging.FileHandler('debug.log')
-            file_formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-            file_handler.setFormatter(file_formatter)
-            file_handler.setLevel(logging.DEBUG) # File gets DEBUG and higher
-            root_logger.addHandler(file_handler)
+        # FileHandler for debug.log
+        file_handler = logging.FileHandler('debug.log', encoding='utf-8')
+        file_formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+        file_handler.setFormatter(file_formatter)
+        file_handler.setLevel(numeric_level) # File level matches config level
+        root_logger.addHandler(file_handler)
+        logging.info('Logger initialized. Writing to debug.log')
 
         self._apply_api_credentials()
 
@@ -816,7 +816,7 @@ class TradingBotEngine:
             response = self._okx_request("POST", path, body_dict=body)
 
             if response and response.get('code') == '0':
-                self.log(f"✓ Leverage set to {leverage_val}x for {symbol} ({pos_side})", level="info")
+                self.log(f"[OK] Leverage set to {leverage_val}x for {symbol} ({pos_side})", level="info")
                 return True
             else:
                 self.log(f"Failed to set leverage for {symbol}: {response.get('msg') if response else 'No response'}", level="error")
@@ -834,7 +834,7 @@ class TradingBotEngine:
             if get_response and get_response.get('code') == '0':
                 current_mode = get_response['data'][0].get('posMode')
                 if current_mode == mode_val:
-                    self.log(f"✓ Position mode already confirmed: {mode_val}", level="debug")
+                    self.log(f"[OK] Position mode already confirmed: {mode_val}", level="debug")
                     return True
                 else:
                     self.log(f"Position mode mismatch (Current: {current_mode}, Target: {mode_val}). Attempting update...", level="info")
@@ -848,10 +848,10 @@ class TradingBotEngine:
             response = self._okx_request("POST", path_set, body_dict=body)
             
             if response and response.get('code') == '0':
-                self.log(f"✓ Position mode set to {mode_val}", level="info")
+                self.log(f"[OK] Position mode set to {mode_val}", level="info")
                 return True
             elif response and response.get('code') == '51000': # Already in this mode (backup check)
-                self.log(f"✓ Position mode already confirmed: {mode_val}", level="debug")
+                self.log(f"[OK] Position mode already confirmed: {mode_val}", level="debug")
                 return True
             else:
                 self.log(f"Failed to set position mode: {response.get('msg') if response else 'No response'}", level="error")
@@ -1036,6 +1036,31 @@ class TradingBotEngine:
             if reduce_only:
                 body["reduceOnly"] = True
 
+            # Attach TP/SL via attachAlgoOrds (Correct V5 Structure)
+            attach_algo_list = []
+            algo_details = {}
+            has_algo = False
+            
+            # Ensure posSide is passed to algo if present in parent order (Critical for Long/Short mode)
+            if "posSide" in body:
+                algo_details["posSide"] = body["posSide"]
+
+            if take_profit_price and safe_float(take_profit_price) > 0:
+                algo_details["tpTriggerPx"] = str(take_profit_price)
+                algo_details["tpOrdPx"] = "-1" # Market TP
+                algo_details["tpTriggerPxType"] = "last"
+                has_algo = True
+
+            if stop_loss_price and safe_float(stop_loss_price) > 0:
+                algo_details["slTriggerPx"] = str(stop_loss_price)
+                algo_details["slOrdPx"] = "-1" # Market SL
+                algo_details["slTriggerPxType"] = "last"
+                has_algo = True
+                
+            if has_algo:
+                attach_algo_list.append(algo_details)
+                body["attachAlgoOrds"] = attach_algo_list
+
             self.log(f"DEBUG: Order placement request body: {body}", level="debug")
             if verbose:
                 self.log(f"Placing {order_type} {side} order for {order_qty_str} {symbol} at {price}", level="info")
@@ -1046,14 +1071,17 @@ class TradingBotEngine:
                 order_data = response.get('data', [])
                 if order_data and order_data[0].get('ordId'):
                     if verbose:
-                        self.log(f"✓ Order placed: OrderID={order_data[0]['ordId']}", level="info")
+                        self.log(f"[OK] Order placed: OrderID={order_data[0]['ordId']}", level="info")
+                    
+                    # Trigger immediate account refresh for UI responsiveness
+                    threading.Thread(target=self._fetch_and_emit_account_info, daemon=True).start()
                     return order_data[0]
                 else:
-                    self.log(f"✗ Order placement failed: No order ID in response. Response: {response}", level="error")
+                    self.log(f"[FAIL] Order placement failed: No order ID in response. Response: {response}", level="error")
                     return None
             else:
                 error_msg = response.get('msg', 'Unknown error') if response else 'No response'
-                self.log(f"✗ Order placement failed: {error_msg}. Response: {response}", level="error")
+                self.log(f"[FAIL] Order placement failed: {error_msg}. Response: {response}", level="error")
                 return None
         except Exception as e:
             self.log(f"Exception in _okx_place_order: {e}", level="error")
@@ -1069,13 +1097,13 @@ class TradingBotEngine:
                 data = response.get('data', [])
                 if data and (data[0].get('algoId') or data[0].get('ordId')):
                     if verbose:
-                        self.log(f"✓ Algo order placed", level="info")
+                        self.log(f"[OK] Algo order placed", level="info")
                     return data[0]
                 else:
-                    self.log(f"✗ Algo order placed but no algoId/ordId returned: {response}", level="error")
+                    self.log(f"[FAIL] Algo order placed but no algoId/ordId returned: {response}", level="error")
                     return None
             else:
-                self.log(f"✗ Algo order failed: {response}", level="debug")
+                self.log(f"[FAIL] Algo order failed: {response}", level="debug")
                 return None
         except Exception as e:
             self.log(f"Exception in _okx_place_algo_order: {e}", level="debug")
@@ -1093,7 +1121,7 @@ class TradingBotEngine:
             response = self._okx_request("POST", path, body_dict=body)
 
             if response and response.get('code') == '0':
-                self.log(f"✓ Order cancelled", level="info")
+                self.log(f"[OK] Order cancelled", level="info")
                 return True
             elif response and response.get('code') == '51001':
                 self.log(f"Order already filled/cancelled (OK)", level="info")
@@ -1118,7 +1146,7 @@ class TradingBotEngine:
             response = self._okx_request("POST", path, body_dict=body)
 
             if response and response.get('code') == '0':
-                self.log(f"✓ Algo order cancelled", level="debug")
+                self.log(f"[OK] Algo order cancelled", level="debug")
                 return True
             elif response and response.get('code') == '51001':
                 self.log(f"Algo order already filled/cancelled (OK)", level="debug")
@@ -1158,7 +1186,7 @@ class TradingBotEngine:
                     self.log(f"Error processing OKX order: {e}", level="error")
 
             if cancelled_count > 0:
-                self.log(f"✓ Closed {cancelled_count} unfilled linear entry orders", level="info")
+                self.log(f"[OK] Closed {cancelled_count} unfilled linear entry orders", level="info")
             else:
                 self.log(f"No unfilled linear entry orders to close (OK)", level="info")
 
@@ -1173,7 +1201,7 @@ class TradingBotEngine:
 
         try:
             self.log("=" * 80, level="info")
-            self.log(f"🎯 TP HIT ({side.upper()}) - EXECUTING PROTOCOL", level="info")
+            self.log(f"[TARGET] TP HIT ({side.upper()}) - EXECUTING PROTOCOL", level="info")
             self.log("=" * 80, level="info")
 
             self.log("Step 1: Closing unfilled entry orders...", level="info")
@@ -1209,20 +1237,20 @@ class TradingBotEngine:
                 exit_order_response = self._okx_place_order(self.config['symbol'], close_side, open_qty, order_type="Market", reduce_only=True, posSide=side)
 
                 if exit_order_response and exit_order_response.get('ordId'):
-                    self.log(f"✓ Market close order placed for {open_qty} {self.config['symbol']} ({side})", level="info")
-                    self.log(f"✅ Close Position (TP Partial): {side.upper()} {self.config['symbol']} | Qty: {open_qty}", level="info")
+                    self.log(f"[OK] Market close order placed for {open_qty} {self.config['symbol']} ({side})", level="info")
+                    self.log(f"[DONE] Close Position (TP Partial): {side.upper()} {self.config['symbol']} | Qty: {open_qty}", level="info")
                 
                 time.sleep(1)
                 self._cancel_all_exit_orders_and_reset(f"TP hit - {side} closed", side=side)
             else:
                 self.log(f"OKX {side.upper()} position fully closed or not found. No market close needed.", level="info")
-                self.log(f"✅ Close Position (TP): {side.upper()} {self.config['symbol']}", level="info")
+                self.log(f"[DONE] Close Position (TP): {side.upper()} {self.config['symbol']}", level="info")
                 self._cancel_all_exit_orders_and_reset(f"TP hit - {side} fully closed", side=side)
 
             with self.tp_hit_lock:
                 self.tp_hit_triggered = False
 
-            self.log(f"✓ {side.upper()} TP HIT PROTOCOL COMPLETE", level="info")
+            self.log(f"[OK] {side.upper()} TP HIT PROTOCOL COMPLETE", level="info")
 
         except Exception as e:
             self.log(f"Exception in _handle_tp_hit ({side}): {e}", level="error")
@@ -1253,7 +1281,7 @@ class TradingBotEngine:
                                 self.log(f"Found active {pos_side} position: {size_rv} - closing...", level="info")
                                 exit_order_response = self._okx_place_order(self.config['symbol'], close_side, abs(size_rv), order_type="Market", reduce_only=True, posSide=pos_side)
                                 if exit_order_response and exit_order_response.get('ordId'):
-                                    self.log(f"✓ {pos_side.upper()} close order placed", level="info")
+                                    self.log(f"[OK] {pos_side.upper()} close order placed", level="info")
                                 else:
                                     self.log(f"⚠ {pos_side.upper()} close failed (OK if closed)", level="warning")
                                 time.sleep(0.5)
@@ -1276,14 +1304,14 @@ class TradingBotEngine:
                 body = {"timeOut": "0", "instType": "SWAP"}
                 response = self._okx_request("POST", path, body_dict=body)
                 if response and response.get('code') == '0':
-                    self.log(f"✓ All OKX orders cancelled", level="info")
+                    self.log(f"[OK] All OKX orders cancelled", level="info")
                 else:
                     self.log(f"⚠ All OKX orders cancel response: {response} (OK)", level="warning")
             except Exception as e:
                 self.log(f"Error force cancelling OKX orders: {e} (OK, continuing)", level="error")
 
             self.log("=" * 80, level="info")
-            self.log("✓ EOD EXIT COMPLETE (OKX)", level="info")
+            self.log("[OK] EOD EXIT COMPLETE (OKX)", level="info")
             self.log("=" * 80, level="info")
 
             self._cancel_all_exit_orders_and_reset("EOD Exit")
@@ -1407,12 +1435,15 @@ class TradingBotEngine:
             time.sleep(0.5)
 
             self.log(f"Cancelling {side.upper()} TP order and resetting state...", level="info")
-            self.log(f"✅ Close Position (SL): {side.upper()} {self.config['symbol']}", level="info")
+            self.log(f"[DONE] Close Position (SL): {side.upper()} {self.config['symbol']}", level="info")
             self._cancel_all_exit_orders_and_reset(f"SL hit - {side} closed by exchange", side=side)
+            
+            # Trigger immediate account refresh for UI responsiveness
+            threading.Thread(target=self._fetch_and_emit_account_info, daemon=True).start()
 
             with self.sl_hit_lock:
                 self.sl_hit_triggered = False
-            self.log(f"✓ {side.upper()} SL CLEANUP COMPLETE", level="info")
+            self.log(f"[OK] {side.upper()} SL CLEANUP COMPLETE", level="info")
         except Exception as e:
             self.log(f"Exception in _handle_sl_hit ({side}): {e}", level="error")
             self._cancel_all_exit_orders_and_reset(f"SL hit - {side} forced reset", side=side)
@@ -1500,51 +1531,86 @@ class TradingBotEngine:
             self.log(f"Entry: ${actual_entry_price:.2f} | Qty: {actual_qty}", level="info")
             self.log(f"TP: ${tp_price:.2f} | SL: ${sl_price:.2f}", level="info")
 
+            # Check for existing TP/SL orders (Atomic Fallback Check)
+            existing_tp = False
+            existing_sl = False
+            try:
+                algo_path = "/api/v5/trade/orders-algo-pending"
+                algo_params = {"instId": self.config['symbol'], "ordType": "conditional"}
+                algo_res = self._okx_request("GET", algo_path, params=algo_params)
+                if algo_res and algo_res.get('code') == '0':
+                    for ord in algo_res.get('data', []):
+                         # Check if order is for this position side (Long/Short)
+                         # OKX 'posSide' in algo order details usually matches 'long'/'short' or 'net'
+                         # We check direction: Long Pos -> Sell Order, Short Pos -> Buy Order
+                         if actual_side == 'long' and ord['side'] == 'sell':
+                             if ord.get('slTriggerPx') and safe_float(ord['slTriggerPx']) > 0: existing_sl = True
+                             if ord.get('tpTriggerPx') and safe_float(ord['tpTriggerPx']) > 0: existing_tp = True
+                         elif actual_side == 'short' and ord['side'] == 'buy':
+                             if ord.get('slTriggerPx') and safe_float(ord['slTriggerPx']) > 0: existing_sl = True
+                             if ord.get('tpTriggerPx') and safe_float(ord['tpTriggerPx']) > 0: existing_tp = True
+                
+                self.log(f"Atomic TP/SL Check: TP={'Found' if existing_tp else 'Missing'}, SL={'Found' if existing_sl else 'Missing'}", level="debug")
+
+            except Exception as e:
+                 self.log(f"Failed to check existing algo orders: {e}", level="warning")
+
             price_precision = PRODUCT_INFO.get('pricePrecision', 4)
             qty_precision = PRODUCT_INFO.get('qtyPrecision', 8)
 
             # Place TP and SL as algo (conditional) orders via /api/v5/trade/order-algo
-            tp_body = {
-                "instId": self.config['symbol'],
-                "tdMode": self.config.get('mode', 'cross'),
-                "side": exit_order_side,
-                "posSide": actual_side, # In Hedge Mode we use actual_side, in Net it's usually net or ignored
-                "ordType": "conditional",
-                "sz": f"{(abs(actual_qty) * (self.config.get('tp_amount', 100) / 100)):.{qty_precision}f}",
-                "tpTriggerPx": f"{tp_price:.{price_precision}f}",
-                "tpOrdPx": "-1" if self.config.get('tp_mode', 'market') == 'market' else f"{tp_price:.{price_precision}f}",
-                "reduceOnly": "true"
-            }
+            # ONLY IF MISSING (Smart Fallback)
+            if not existing_tp:
+                tp_body = {
+                    "instId": self.config['symbol'],
+                    "tdMode": self.config.get('mode', 'cross'),
+                    "side": exit_order_side,
+                    "posSide": actual_side, # In Hedge Mode we use actual_side, in Net it's usually net or ignored
+                    "ordType": "conditional",
+                    "sz": f"{(abs(actual_qty) * (self.config.get('tp_amount', 100) / 100)):.{qty_precision}f}",
+                    "tpTriggerPx": f"{tp_price:.{price_precision}f}",
+                    "tpOrdPx": "-1" if self.config.get('tp_mode', 'market') == 'market' else f"{tp_price:.{price_precision}f}",
+                    "reduceOnly": "true"
+                }
 
-            tp_order = self._okx_place_algo_order(tp_body)
-            if tp_order and (tp_order.get('algoId') or tp_order.get('ordId')):
+                tp_order = self._okx_place_algo_order(tp_body)
+            else:
+                self.log("TP algo order already exists (Atomic). Skipping redundant placement.", level="info")
+                tp_order = {'ordId': 'atomic_existing'} # Fake response to satisfy checks logic if needed, or just proceed
+
+            if (not existing_tp and tp_order and (tp_order.get('algoId') or tp_order.get('ordId'))) or existing_tp:
                 algo_id = tp_order.get('algoId') or tp_order.get('ordId')
                 with self.position_lock:
                     self.position_exit_orders[actual_side]['tp'] = algo_id
-                self.log(f"✓ TP algo order placed for {actual_side.upper()} at ${tp_price:.2f}", level="info")
+                self.log(f"[OK] TP algo order placed for {actual_side.upper()} at ${tp_price:.2f}", level="info")
             else:
                 self.log(f"❌ Failed to place TP algo order: {tp_order}", level="error")
                 self._execute_trade_exit(f"Failed to place TP for {actual_side}", side=actual_side)
                 return
 
-            sl_body = {
-                "instId": self.config['symbol'],
-                "tdMode": self.config.get('mode', 'cross'),
-                "side": exit_order_side,
-                "posSide": actual_side,
-                "ordType": "conditional",
-                "sz": f"{(abs(actual_qty) * (self.config.get('sl_amount', 100) / 100)):.{qty_precision}f}",
-                "slTriggerPx": f"{sl_price:.{price_precision}f}",
-                "slOrdPx": "-1", # market
-                "reduceOnly": "true"
-            }
+            if not existing_sl:
+                sl_body = {
+                    "instId": self.config['symbol'],
+                    "tdMode": self.config.get('mode', 'cross'),
+                    "side": exit_order_side,
+                    "posSide": actual_side,
+                    "ordType": "conditional",
+                    "sz": f"{(abs(actual_qty) * (self.config.get('sl_amount', 100) / 100)):.{qty_precision}f}",
+                    "slTriggerPx": f"{sl_price:.{price_precision}f}",
+                    "slOrdPx": "-1", # market
+                    "reduceOnly": "true"
+                }
 
-            sl_order = self._okx_place_algo_order(sl_body)
-            if sl_order and (sl_order.get('algoId') or sl_order.get('ordId')):
+                sl_order = self._okx_place_algo_order(sl_body)
+            else:
+                 self.log("SL algo order already exists (Atomic). Skipping redundant placement.", level="info")
+                 sl_order = {'ordId': 'atomic_existing'}
+
+            if (not existing_sl and sl_order and (sl_order.get('algoId') or sl_order.get('ordId'))) or existing_sl:
                 algo_id = sl_order.get('algoId') or sl_order.get('ordId')
                 with self.position_lock:
                     self.position_exit_orders[actual_side]['sl'] = algo_id
-                self.log(f"✓ SL algo order placed for {actual_side.upper()} at ${sl_price:.2f}", level="info")
+                self.log(f"[OK] SL algo order placed for {actual_side.upper()} at ${sl_price:.2f}", level="info")
             else:
                 self.log(f"❌ Failed to place SL algo order: {sl_order}", level="error")
                 self._execute_trade_exit(f"Failed to place SL for {actual_side}", side=actual_side)
@@ -1592,8 +1658,8 @@ class TradingBotEngine:
                             exit_order = self._okx_place_order(target_symbol, close_side, abs(pos_qty), order_type="Market", reduce_only=True, posSide=pos_side_raw, tdMode=mgn_mode)
                             
                             if exit_order and exit_order.get('ordId'):
-                                self.log(f"✓ Position closed. Order ID: {exit_order.get('ordId')}", level="info")
-                                self.log(f"✅ Close Position (Auth): {pos_side_raw.upper()} {target_symbol} | Reason: {reason}", level="info")
+                                self.log(f"[OK] Position closed. Order ID: {exit_order.get('ordId')}", level="info")
+                                self.log(f"[DONE] Close Position (Auth): {pos_side_raw.upper()} {target_symbol} | Reason: {reason}", level="info")
                             else:
                                 self.log(f"⚠️ Market exit for {pos_side_raw.upper()} failed or rejected.", level="warning")
 
@@ -1677,8 +1743,8 @@ class TradingBotEngine:
                             # Use explicit tdMode and posSide from the position data
                             close_order = self._okx_place_order(self.config['symbol'], close_side, abs(size_rv), order_type="Market", reduce_only=True, posSide=pos_side, tdMode=mgn_mode)
                             if close_order and close_order.get('ordId'):
-                                self.log(f"✓ Position close order placed: {close_order.get('ordId')}", level="info")
-                                self.log(f"✅ Close Position (Manual): {pos_side.upper()} {self.config['symbol']} | Qty: {abs(size_rv)}", level="info")
+                                self.log(f"[OK] Position close order placed: {close_order.get('ordId')}", level="info")
+                                self.log(f"[DONE] Close Position (Manual): {pos_side.upper()} {self.config['symbol']} | Qty: {abs(size_rv)}", level="info")
                                 any_closed = True
                             else:
                                 self.log(f"❌ Failed to place close order for {pos_side} position", level="error")
@@ -1984,7 +2050,8 @@ class TradingBotEngine:
             self.log(log_str, level="info")
             
             p_side_entry = "long" if signal == 1 else "short"
-            entry_order_response = self._okx_place_order(self.config['symbol'], "Buy" if signal == 1 else "Sell", qty_contracts, price=current_limit_price, order_type="Limit", time_in_force="GoodTillCancel", posSide=p_side_entry, verbose=False)
+            # Pass TP/SL params for atomic placement
+            entry_order_response = self._okx_place_order(self.config['symbol'], "Buy" if signal == 1 else "Sell", qty_contracts, price=current_limit_price, order_type="Limit", time_in_force="GoodTillCancel", posSide=p_side_entry, take_profit_price=tp_px, stop_loss_price=sl_px, verbose=False)
 
             if entry_order_response and entry_order_response.get('ordId'):
                 order_id = entry_order_response['ordId']
@@ -2415,18 +2482,19 @@ class TradingBotEngine:
                 temp_total_loss = 0.0
                 
                 for fill in fills:
-                     pnl = safe_float(fill.get('pnl', 0))
-                     fee = safe_float(fill.get('fee', 0))
-                     fill_net = pnl + fee
-                     
                      fill_ts = int(fill.get('ts', 0))
                      if fill_ts >= start_time_limit:
+                         pnl = safe_float(fill.get('pnl', 0))
+                         fee = safe_float(fill.get('fee', 0))
+                         fill_net = pnl + fee
                          session_pnl += fill_net
 
-                     if fill_net > 0:
-                         temp_total_profit += fill_net
-                     else:
-                         temp_total_loss += abs(fill_net)
+                         if fill_net > 0:
+                             temp_total_profit += fill_net
+                         else:
+                             temp_total_loss += abs(fill_net)
+
+
                 
                 self.total_trade_profit = temp_total_profit
                 self.total_trade_loss = temp_total_loss
@@ -2704,6 +2772,7 @@ class TradingBotEngine:
         if leverage <= 0: leverage = 1
 
         used_amount_notional = 0.0
+        okx_pos_notional = 0.0 # Clean position size (without pending checks)
         total_unrealized_pnl = 0.0
         active_positions_count = 0
         
@@ -2717,6 +2786,7 @@ class TradingBotEngine:
                     # 1. CAPITAL ISOLATION: Only count positions towards 'Used' if bot is running
                     if self.is_running:
                         used_amount_notional += pos_notional
+                        okx_pos_notional += pos_notional
                     
                     # 2. GLOBAL PnL: Always count 'upl' for the dashboard display
                     total_unrealized_pnl += safe_float(pos.get('upl', '0'))
@@ -2733,6 +2803,7 @@ class TradingBotEngine:
         # If stopped, we explicitly keep 'Used' at 0 for a clean session start
         if not self.is_running:
             used_amount_notional = 0.0
+            okx_pos_notional = 0.0
         
         with self.trade_data_lock:
             for trade in self.open_trades:
@@ -2758,32 +2829,33 @@ class TradingBotEngine:
                  exit_reason = f"Auto-Manual Profit Target: ${self.net_profit:.2f} >= ${manual_threshold:.2f}"
 
         # Check Auto-Cal Profit (Dynamic Threshold)
-        # Use Used Fee (leveraged) instead of Used Notional for dynamic targets
-        if self.config.get('use_pnl_auto_cal', False) and not auto_exit_triggered and used_amount_notional > 0:
+        # Use SIZE FEE (okx_pos_notional) as requested
+        if self.config.get('use_pnl_auto_cal', False) and not auto_exit_triggered and okx_pos_notional > 0:
             cal_times = self.config.get('pnl_auto_cal_times', 4)
             trade_fee_pct = self.config.get('trade_fee_percentage', 0.07)
-            current_used_fee = used_amount_notional * (trade_fee_pct / 100.0)
-            cal_threshold = cal_times * current_used_fee
+            # Use okx_pos_notional for fee calculation!
+            current_size_fee = okx_pos_notional * (trade_fee_pct / 100.0)
+            cal_threshold = cal_times * current_size_fee
             if self.net_profit >= cal_threshold:
                 auto_exit_triggered = True
                 exit_reason = f"Auto-Cal Profit Target: ${self.net_profit:.2f} >= ${cal_threshold:.2f} ({cal_times}x Fee)"
 
         # Check Auto-Cal Loss (Dynamic Loss Threshold)
-        if self.config.get('use_pnl_auto_cal_loss', False) and not auto_exit_triggered and used_amount_notional > 0:
+        if self.config.get('use_pnl_auto_cal_loss', False) and not auto_exit_triggered and okx_pos_notional > 0:
             loss_times = self.config.get('pnl_auto_cal_loss_times', 1.5)
             trade_fee_pct = self.config.get('trade_fee_percentage', 0.07)
-            current_used_fee = used_amount_notional * (trade_fee_pct / 100.0)
-            loss_threshold = -(current_used_fee * loss_times)
+            current_size_fee = okx_pos_notional * (trade_fee_pct / 100.0)
+            loss_threshold = -(current_size_fee * loss_times)
             if self.net_profit <= loss_threshold:
                 auto_exit_triggered = True
                 exit_reason = f"Auto-Cal Loss Target: ${self.net_profit:.2f} <= ${loss_threshold:.2f} ({loss_times}x Fee)"
 
         # Check Auto-Cal Size (Profit) - Dynamic Target based on Size Fee
         # Target = Size Fee * Times
-        if self.config.get('use_size_auto_cal', False) and not auto_exit_triggered and used_amount_notional > 0:
+        if self.config.get('use_size_auto_cal', False) and not auto_exit_triggered and okx_pos_notional > 0:
             size_times = self.config.get('size_auto_cal_times', 2.0)
             trade_fee_pct = self.config.get('trade_fee_percentage', 0.07)
-            current_size_fee = used_amount_notional * (trade_fee_pct / 100.0)
+            current_size_fee = okx_pos_notional * (trade_fee_pct / 100.0)
             size_target = current_size_fee * size_times
             if self.net_profit >= size_target:
                 auto_exit_triggered = True
@@ -2791,13 +2863,14 @@ class TradingBotEngine:
 
         # Check Auto-Cal Size (Loss) - Dynamic Target based on Size Fee
         # Loss Target = -(Size Fee * Times)
-        if self.config.get('use_size_auto_cal_loss', False) and not auto_exit_triggered and used_amount_notional > 0:
+        if self.config.get('use_size_auto_cal_loss', False) and not auto_exit_triggered and okx_pos_notional > 0:
             size_loss_times = self.config.get('size_auto_cal_loss_times', 1.5)
             trade_fee_pct = self.config.get('trade_fee_percentage', 0.07)
-            current_size_fee = used_amount_notional * (trade_fee_pct / 100.0)
+            current_size_fee = okx_pos_notional * (trade_fee_pct / 100.0)
             size_loss_threshold = -(current_size_fee * size_loss_times)
             if self.net_profit <= size_loss_threshold:
                 auto_exit_triggered = True
+                # Use exit reason
                 exit_reason = f"Auto-Cal Size Loss Target: ${self.net_profit:.2f} <= ${size_loss_threshold:.2f} ({size_loss_times}x Size Fee)"
         if auto_exit_triggered:
              # Guard check before spawning thread to avoid redundant logs
@@ -2805,7 +2878,7 @@ class TradingBotEngine:
                  if self.authoritative_exit_in_progress:
                      return
 
-             self.log(f"🎯 AUTHORITATIVE AUTO-EXIT TRIGGERED: {exit_reason}", level="WARNING")
+             self.log(f"[TARGET] AUTHORITATIVE AUTO-EXIT TRIGGERED: {exit_reason}", level="WARNING")
              self.log(f"(Includes Manual Positions) Closing all trades for {self.config['symbol']}", level="INFO")
              
              # We trigger the authoritative exit logic (Exchange Sweep)
@@ -2864,6 +2937,7 @@ class TradingBotEngine:
             'max_allowed_used_display': max_allowed_display, 
             'max_amount_display': max_amount_display,
             'used_amount': used_amount_notional, 
+            'size_amount': okx_pos_notional, # New pure position size
             'trade_fees': trade_fees,
             'remaining_amount': remaining_amount_notional, 
             'total_balance': total_balance,
@@ -2877,7 +2951,7 @@ class TradingBotEngine:
         
         self._check_and_save_daily_report()
         
-        self.log(f"Account Update | Balance: ${total_balance:.2f} | Active Positions: {active_positions_count} | Pending: {len(formatted_open_trades)}", level="debug")
+        self.log(f"Account Update | Used: ${used_amount_notional:.2f} | Size: ${okx_pos_notional:.2f} | Pending: {len(formatted_open_trades)}", level="debug")
 
     def test_api_credentials(self):
         # Store current global API settings
@@ -3029,7 +3103,7 @@ class TradingBotEngine:
                             tp_order = self._okx_place_algo_order(tp_body, verbose=False)
                             if tp_order and (tp_order.get('algoId') or tp_order.get('ordId')):
                                 self.position_exit_orders[side_key]['tp'] = tp_order.get('algoId') or tp_order.get('ordId')
-                                self.log(f"🎯 {side_key.upper()} TP Set: {new_tp:.{price_precision}f}", level="info")
+                                self.log(f"[TARGET] {side_key.upper()} TP Set: {new_tp:.{price_precision}f}", level="info")
                             
                             sl_body = {
                                 "instId": self.config['symbol'],
@@ -3047,7 +3121,7 @@ class TradingBotEngine:
                             sl_order = self._okx_place_algo_order(sl_body, verbose=False)
                             if sl_order and (sl_order.get('algoId') or sl_order.get('ordId')):
                                 self.position_exit_orders[side_key]['sl'] = sl_order.get('algoId') or sl_order.get('ordId')
-                                self.log(f"🎯 {side_key.upper()} SL Set: {new_sl:.{price_precision}f}", level="info")
+                                self.log(f"[TARGET] {side_key.upper()} SL Set: {new_sl:.{price_precision}f}", level="info")
                             
                             self.current_take_profit[side_key] = new_tp
                             self.current_stop_loss[side_key] = new_sl
@@ -3113,7 +3187,7 @@ class TradingBotEngine:
                             time.sleep(0.1)
 
             if cancelled_count > 0:
-                self.log(f"✅ Cancelled {cancelled_count} pending orders.", level="info")
+                self.log(f"[DONE] Cancelled {cancelled_count} pending orders.", level="info")
             else:
                 self.log("No orders to cancel.", level="warning")
                 self.emit('warning', {'message': 'No pending orders found to cancel.'})
@@ -3161,7 +3235,7 @@ class TradingBotEngine:
                 lev_success = self._okx_set_leverage(new_symbol, new_lev, pos_side="net")
             
             if lev_success:
-                self.log(f"✅ Leverage successfully updated to {new_lev}x", level="info")
+                self.log(f"[DONE] Leverage successfully updated to {new_lev}x", level="info")
             else:
                 warnings.append(f"Failed to update leverage to {new_lev}x on exchange.")
 
@@ -3196,7 +3270,7 @@ class TradingBotEngine:
                     else:
                         self._okx_set_leverage(new_symbol, new_lev, pos_side="net")
                     
-                    self.log(f"✅ Successfully swapped to {new_symbol}.", level="info")
+                    self.log(f"[DONE] Successfully swapped to {new_symbol}.", level="info")
                 else:
                     self.log(f"❌ Failed to fetch info for {new_symbol}. Reverting to {old_symbol}.", level="error")
                     self.config['symbol'] = old_symbol

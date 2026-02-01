@@ -171,11 +171,16 @@
                                     <span class="text-muted small">Rate:</span>
                                     <span class="text-muted small" id="feeRateDisplay">0.07%</span>
                                 </div>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="text-info small fw-bold">Size Fee:</span>
+                                    <span class="text-info small fw-bold" id="sizeFeeDisplay">$0.00</span>
+                                </div>
                             </div>
                             <div class="d-flex flex-column align-items-end gap-2">
                                 <div class="d-flex align-items-center gap-1">
                                     <span class="text-secondary small text-uppercase fw-bold"
-                                        style="font-size: 0.7rem;">Fee %</span>
+                                        style="font-size: 0.7rem;">Fee
+                                        %</span>
                                     <input type="number" class="form-control form-control-sm" id="tradeFeePercentage"
                                         style="width: 60px; font-size: 0.75rem;" step="0.001">
                                 </div>
@@ -283,7 +288,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <!-- Box 4: Net Profit & Trades -->
+                                    <!-- Box 4: Profits & Trades -->
                                     <div class="col-6 col-md-3">
                                         <div class="stat-card">
                                             <div class="stat-item mb-3">
@@ -293,6 +298,18 @@
                                             <div class="stat-item">
                                                 <div class="stat-label">Trades</div>
                                                 <div class="stat-value" id="totalTrades">0</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Box 5: Size Amount (New) -->
+                                    <div class="col-6 col-md-3">
+                                        <div class="stat-card"
+                                            style="height: 100%; display: flex; align-items: center; justify-content: center;">
+                                            <div class="stat-item text-center">
+                                                <div class="stat-label mb-1"
+                                                    style="font-size: 0.85rem; letter-spacing: 0.5px;">SIZE AMOUNT</div>
+                                                <div class="stat-value text-info" id="sizeAmountDisplay"
+                                                    style="font-size: 1.5rem;">$0.00</div>
                                             </div>
                                         </div>
                                     </div>
@@ -306,9 +323,15 @@
                         <div class="card mb-3">
                             <div class="card-header d-flex justify-content-between align-items-center">
                                 <h5 class="mb-0"><i class="bi bi-terminal"></i> Console Output</h5>
-                                <button class="btn btn-sm btn-outline-secondary" id="clearConsoleBtn">
-                                    <i class="bi bi-trash"></i> Clear
-                                </button>
+                                <div class="btn-group">
+                                    <button class="btn btn-sm btn-outline-secondary" id="downloadLogsBtn"
+                                        title="Download Log File">
+                                        <i class="bi bi-download"></i> Download
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-secondary" id="clearConsoleBtn">
+                                        <i class="bi bi-trash"></i> Clear
+                                    </button>
+                                </div>
                             </div>
                             <div class="card-body p-0">
                                 <div id="consoleOutput" class="console-output"></div>

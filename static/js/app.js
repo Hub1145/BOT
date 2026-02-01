@@ -3,8 +3,10 @@ const socket = io();
 let currentConfig = null;
 const configModal = new bootstrap.Modal(document.getElementById('configModal'));
 let isBotRunning = false;
+let isTransitioning = false;
 let orderExpirationCache = {}; // Cache to store calcualted expiration timestamps
 let lastUsedFee = 0; // Track last known used fee for Auto-Cal calculation
+let lastSizeFee = 0; // Track last known Size Fee for Auto-Cal Size calculation
 
 document.addEventListener('DOMContentLoaded', () => {
     initializeTheme();
@@ -38,13 +40,30 @@ function setupEventListeners() {
 
     document.getElementById('startStopBtn').addEventListener('click', () => {
         const btn = document.getElementById('startStopBtn');
-        btn.disabled = true; // Disable button to prevent double clicks
+        btn.disabled = true;
+        isTransitioning = true; // Mark as transitioning to block early status syncs
 
         if (isBotRunning) {
+            // Optimistic Update: Stopping
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Stopping...';
+            btn.className = 'btn btn-warning w-100'; // Transition color
             socket.emit('stop_bot');
         } else {
+            // Optimistic Update: Starting
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Starting...';
+            btn.className = 'btn btn-info w-100'; // Transition color
             socket.emit('start_bot');
         }
+
+        // Safety timeout to re-enable button if response is lost
+        setTimeout(() => {
+            if (isTransitioning) {
+                console.warn('Start/Stop timeout - re-enabling button');
+                isTransitioning = false;
+                btn.disabled = false;
+                loadStatus(); // Force state sync
+            }
+        }, 8000); // Increased to 8s to account for slow initialization
     });
 
     document.getElementById('configBtn').addEventListener('click', () => {
@@ -59,6 +78,10 @@ function setupEventListeners() {
     document.getElementById('clearConsoleBtn').addEventListener('click', () => {
         socket.emit('clear_console');
         document.getElementById('consoleOutput').innerHTML = '<p class="text-muted">Console cleared</p>';
+    });
+
+    document.getElementById('downloadLogsBtn').addEventListener('click', () => {
+        window.location.href = '/api/download_logs';
     });
 
     // Event listener for Emergency SL button
@@ -81,6 +104,25 @@ function setupEventListeners() {
             socket.emit('batch_cancel_orders');
         }
     });
+
+    // Manual Fee Refresh
+    const refreshFeesBtn = document.getElementById('refreshFeesBtn');
+    if (refreshFeesBtn) {
+        refreshFeesBtn.addEventListener('click', () => {
+            loadConfig();
+            loadStatus();
+        });
+    }
+
+    // Refresh trade metric on fee percentage change
+    const feeInput = document.getElementById('tradeFeePercentage');
+    if (feeInput) {
+        feeInput.addEventListener('change', () => {
+            if (currentConfig) {
+                currentConfig.trade_fee_percentage = parseFloat(feeInput.value);
+            }
+        });
+    }
 
     // Event listener for useCandlestickConditions checkbox
     document.getElementById('useCandlestickConditions').addEventListener('change', toggleCandlestickInputs);
@@ -278,6 +320,8 @@ function setupSocketListeners() {
         // Re-enable start/stop button if it was disabled during an attempt
         const btn = document.getElementById('startStopBtn');
         if (btn) btn.disabled = false;
+        isTransitioning = false; // Stop the transition block
+        loadStatus(); // Re-sync to current real state
     });
 
     socket.on('connect', () => {
@@ -294,24 +338,35 @@ function setupSocketListeners() {
 }
 
 function updateBotStatus(running) {
+    // If we are currently transitioning (Starting/Stopping), don't let 
+    // early status polls from background threads flicker the UI back.
+    // Only accept the update if it matches the EXPECTED transition outcome.
+    if (isTransitioning) {
+        if (running === isBotRunning) {
+            // This is likely an old state being echoed back (e.g. from a poll while it was starting)
+            // Keep the "Starting..." or "Stopping..." UI visible.
+            return;
+        }
+        // If we get here, the state has actually CHANGED as requested (e.g. false -> true)
+        isTransitioning = false;
+    }
+
     isBotRunning = running;
     const statusBadge = document.getElementById('botStatus');
     const startStopBtn = document.getElementById('startStopBtn');
-    const btnIcon = startStopBtn.querySelector('i');
-    const btnText = startStopBtn.querySelector('span');
 
     if (running) {
         statusBadge.textContent = 'Running';
         statusBadge.className = 'badge status-badge running';
-        startStopBtn.className = 'btn btn-danger';
-        btnIcon.className = 'bi bi-stop-fill';
-        btnText.textContent = 'Stop';
+        startStopBtn.className = 'btn btn-danger w-100';
+        // Rebuild content: Icon + Text
+        startStopBtn.innerHTML = '<i class="bi bi-stop-fill"></i> <span id="btnText">Stop</span>';
     } else {
         statusBadge.textContent = 'Stopped';
         statusBadge.className = 'badge status-badge stopped';
-        startStopBtn.className = 'btn btn-success';
-        btnIcon.className = 'bi bi-play-fill';
-        btnText.textContent = 'Start';
+        startStopBtn.className = 'btn btn-success w-100';
+        // Rebuild content: Icon + Text
+        startStopBtn.innerHTML = '<i class="bi bi-play-fill"></i> <span id="btnText">Start</span>';
     }
     startStopBtn.disabled = false; // Re-enable the button
 }
@@ -351,11 +406,14 @@ function updateAccountMetrics(data) {
     }
 
     // Calculate fee breakdown based on user's formula
-    const feeRate = currentConfig?.trade_fee_percentage || 0.07;
+    const feeInput = document.getElementById('tradeFeePercentage');
+    const feeRate = feeInput ? parseFloat(feeInput.value) : (currentConfig?.trade_fee_percentage || 0.07);
     const usedAmount = data.used_amount || 0;
+    const sizeAmount = data.size_amount || 0; // New distinct Position Size
     const remainingAmount = data.remaining_amount || 0;
 
     const usedFee = (usedAmount * feeRate) / 100;
+    const sizeFee = (sizeAmount * feeRate) / 100; // Correct Size Fee
     const remainingFee = (remainingAmount * feeRate) / 100;
     const totalFee = usedFee + remainingFee;
 
@@ -363,8 +421,13 @@ function updateAccountMetrics(data) {
     document.getElementById('usedFee').textContent = `$${Number(usedFee).toFixed(2)}`;
     document.getElementById('remainingFee').textContent = `$${Number(remainingFee).toFixed(2)}`;
     document.getElementById('feeRateDisplay').textContent = `${Number(feeRate).toFixed(3)}%`;
+    // Size Amount Display (Updated to use actual Size Amount)
+    document.getElementById('sizeAmountDisplay').textContent = `$${Number(sizeAmount).toFixed(2)}`;
+    // New Size Fee Display
+    document.getElementById('sizeFeeDisplay').textContent = `$${Number(sizeFee).toFixed(2)}`;
 
     lastUsedFee = usedFee;
+    lastSizeFee = sizeFee; // Track for Auto-Cal Size updates
     updateAutoCalDisplay();
 }
 
@@ -412,14 +475,14 @@ function updateAutoCalDisplay() {
 
     // Auto-Cal Size (Profit) (NEW)
     const sizeProfitTimes = parseFloat(document.getElementById('sizeAutoCalTimes').value) || 0;
-    // Uses same Size Fee basis as requested
-    const autoSizeProfitValue = lastUsedFee * sizeProfitTimes;
+    // Uses Size Fee basis as requested
+    const autoSizeProfitValue = lastSizeFee * sizeProfitTimes;
     const sizeProfitDisplay = document.getElementById('sizeAutoCalDisplay');
     if (sizeProfitDisplay) sizeProfitDisplay.value = autoSizeProfitValue.toFixed(2);
 
     // Auto-Cal Size Loss (NEW)
     const sizeLossTimes = parseFloat(document.getElementById('sizeAutoCalLossTimes').value) || 0;
-    const autoSizeLossValue = -(lastUsedFee * sizeLossTimes);
+    const autoSizeLossValue = -(lastSizeFee * sizeLossTimes);
     const sizeLossDisplay = document.getElementById('sizeAutoCalLossDisplay');
     if (sizeLossDisplay) sizeLossDisplay.value = autoSizeLossValue.toFixed(2);
 }

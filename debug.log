@@ -1,0 +1,1457 @@
+2026-02-01 10:04:47,499 - INFO - Bot starting background monitoring...
+2026-02-01 10:04:47,699 - INFO - 127.0.0.1 - - [01/Feb/2026 10:04:47] "GET /socket.io/?EIO=4&transport=polling&t=PmOSf1_&sid=2YcOooqkbyKSFt_iAAAA HTTP/1.1" 200 -
+2026-02-01 10:04:47,934 - INFO - 127.0.0.1 - - [01/Feb/2026 10:04:47] "GET /socket.io/?EIO=4&transport=polling&t=PmOSfBc&sid=2YcOooqkbyKSFt_iAAAA HTTP/1.1" 200 -
+2026-02-01 10:04:52,003 - INFO - OKX server time synchronized. Offset: -35ms
+2026-02-01 10:04:53,588 - INFO - Bot initialized. Starting live connection threads...
+2026-02-01 10:04:53,589 - INFO - OKX BOT STARTING
+2026-02-01 10:04:53,591 - INFO - 127.0.0.1 - - [01/Feb/2026 10:04:53] "POST /socket.io/?EIO=4&transport=polling&t=PmOSf1-&sid=2YcOooqkbyKSFt_iAAAA HTTP/1.1" 200 -
+2026-02-01 10:04:54,883 - INFO - Websocket connected
+2026-02-01 10:04:54,884 - INFO - OKX WebSocket connection opened.
+2026-02-01 10:04:55,026 - INFO - Client disconnected
+2026-02-01 10:04:55,028 - INFO - 127.0.0.1 - - [01/Feb/2026 10:04:55] "GET /socket.io/?EIO=4&transport=websocket&sid=2YcOooqkbyKSFt_iAAAA HTTP/1.1" 200 -
+2026-02-01 10:04:56,908 - INFO - 127.0.0.1 - - [01/Feb/2026 10:04:56] "GET / HTTP/1.1" 200 -
+2026-02-01 10:04:57,925 - INFO - 127.0.0.1 - - [01/Feb/2026 10:04:57] "GET /static/js/app.js HTTP/1.1" 200 -
+2026-02-01 10:04:57,933 - INFO - 127.0.0.1 - - [01/Feb/2026 10:04:57] "GET /static/css/style.css HTTP/1.1" 200 -
+2026-02-01 10:04:58,257 - INFO - Bot startup sequence complete.
+2026-02-01 10:04:58,291 - INFO - 127.0.0.1 - - [01/Feb/2026 10:04:58] "GET /socket.io/?EIO=4&transport=polling&t=PmOShjB HTTP/1.1" 200 -
+2026-02-01 10:04:58,618 - INFO - 127.0.0.1 - - [01/Feb/2026 10:04:58] "GET /api/config HTTP/1.1" 200 -
+2026-02-01 10:04:58,648 - INFO - Client connected: None
+2026-02-01 10:04:58,655 - INFO - 127.0.0.1 - - [01/Feb/2026 10:04:58] "POST /socket.io/?EIO=4&transport=polling&t=PmOShku&sid=R6r6Et9EADFQcX2LAAAC HTTP/1.1" 200 -
+2026-02-01 10:04:58,696 - INFO - 127.0.0.1 - - [01/Feb/2026 10:04:58] "GET /socket.io/?EIO=4&transport=polling&t=PmOShkv&sid=R6r6Et9EADFQcX2LAAAC HTTP/1.1" 200 -
+2026-02-01 10:05:02,467 - INFO - 127.0.0.1 - - [01/Feb/2026 10:05:02] "GET /api/status HTTP/1.1" 200 -
+2026-02-01 10:05:03,029 - INFO - Cancelling OKX order 326934938825...
+2026-02-01 10:05:05,088 - INFO - Cancelling OKX order 326934931755...
+2026-02-01 10:05:05,373 - INFO - Initial account balance fetched.
+2026-02-01 10:05:06,245 - INFO - 127.0.0.1 - - [01/Feb/2026 10:05:06] "GET /api/status HTTP/1.1" 200 -
+2026-02-01 10:05:14,757 - INFO - 127.0.0.1 - - [01/Feb/2026 10:05:14] "GET /api/status HTTP/1.1" 200 -
+2026-02-01 10:05:25,203 - INFO - Cancelling OKX order 326935038129...
+2026-02-01 10:05:28,114 - INFO - Cancelling OKX order 326935046655...
+2026-02-01 10:05:59,116 - INFO - Cancelling OKX order 326935152640...
+2026-02-01 10:10:00,008 - INFO - Client disconnected
+2026-02-01 10:10:00,009 - INFO - 127.0.0.1 - - [01/Feb/2026 10:10:00] "GET /socket.io/?EIO=4&transport=websocket&sid=R6r6Et9EADFQcX2LAAAC HTTP/1.1" 200 -
+2026-02-01 10:10:00,341 - INFO - 127.0.0.1 - - [01/Feb/2026 10:10:00] "GET / HTTP/1.1" 200 -
+2026-02-01 10:10:00,374 - INFO - 127.0.0.1 - - [01/Feb/2026 10:10:00] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-02-01 10:10:00,676 - INFO - 127.0.0.1 - - [01/Feb/2026 10:10:00] "GET /static/js/app.js HTTP/1.1" 200 -
+2026-02-01 10:10:01,019 - INFO - 127.0.0.1 - - [01/Feb/2026 10:10:01] "GET /socket.io/?EIO=4&transport=polling&t=PmOTrZy HTTP/1.1" 200 -
+2026-02-01 10:10:01,050 - INFO - 127.0.0.1 - - [01/Feb/2026 10:10:01] "GET /api/config HTTP/1.1" 200 -
+2026-02-01 10:10:01,288 - INFO - Client connected: None
+2026-02-01 10:10:01,292 - INFO - 127.0.0.1 - - [01/Feb/2026 10:10:01] "POST /socket.io/?EIO=4&transport=polling&t=PmOTre_&sid=Gos-pCe8DSXSLdi9AAAE HTTP/1.1" 200 -
+2026-02-01 10:10:01,337 - INFO - 127.0.0.1 - - [01/Feb/2026 10:10:01] "GET /socket.io/?EIO=4&transport=polling&t=PmOTrf0&sid=Gos-pCe8DSXSLdi9AAAE HTTP/1.1" 200 -
+2026-02-01 10:10:06,270 - INFO - 127.0.0.1 - - [01/Feb/2026 10:10:06] "GET /api/status HTTP/1.1" 200 -
+2026-02-01 10:10:06,288 - INFO - 127.0.0.1 - - [01/Feb/2026 10:10:06] "GET / HTTP/1.1" 200 -
+2026-02-01 10:10:06,663 - INFO - 127.0.0.1 - - [01/Feb/2026 10:10:06] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-02-01 10:10:06,887 - INFO - 127.0.0.1 - - [01/Feb/2026 10:10:06] "[36mGET /static/js/app.js HTTP/1.1[0m" 304 -
+2026-02-01 10:10:07,216 - INFO - 127.0.0.1 - - [01/Feb/2026 10:10:07] "GET /socket.io/?EIO=4&transport=polling&t=PmOTt4k HTTP/1.1" 200 -
+2026-02-01 10:10:07,225 - INFO - 127.0.0.1 - - [01/Feb/2026 10:10:07] "GET /api/config HTTP/1.1" 200 -
+2026-02-01 10:10:07,593 - INFO - Client connected: None
+2026-02-01 10:10:07,596 - INFO - 127.0.0.1 - - [01/Feb/2026 10:10:07] "POST /socket.io/?EIO=4&transport=polling&t=PmOTt9s&sid=u8xS7Hnn_kKzAy81AAAG HTTP/1.1" 200 -
+2026-02-01 10:10:07,671 - INFO - 127.0.0.1 - - [01/Feb/2026 10:10:07] "GET /socket.io/?EIO=4&transport=polling&t=PmOTt9t&sid=u8xS7Hnn_kKzAy81AAAG HTTP/1.1" 200 -
+2026-02-01 10:10:11,601 - INFO - 127.0.0.1 - - [01/Feb/2026 10:10:11] "GET /api/status HTTP/1.1" 200 -
+2026-02-01 10:10:13,302 - INFO - Bot starting trading logic...
+2026-02-01 10:10:13,307 - INFO - Session trade metrics reset.
+2026-02-01 10:10:16,567 - INFO - OKX server time synchronized. Offset: -30ms
+2026-02-01 10:10:16,649 - INFO - 127.0.0.1 - - [01/Feb/2026 10:10:16] "GET /api/status HTTP/1.1" 200 -
+2026-02-01 10:10:21,606 - INFO - 127.0.0.1 - - [01/Feb/2026 10:10:21] "GET /api/status HTTP/1.1" 200 -
+2026-02-01 10:10:23,285 - INFO - Checking for and closing any existing open positions...
+2026-02-01 10:10:24,759 - INFO - No open OKX positions found to close.
+2026-02-01 10:10:25,120 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:10:25,131 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:10:25,140 - INFO - Check Entry Condition
+2026-02-01 10:10:25,141 - INFO - Entry-1:LONG Market 2442.79, Safety:2970.32, Passed
+2026-02-01 10:10:25,143 - INFO - Entry-3:Remaining: 5000.00 > Target 100: Passed
+2026-02-01 10:10:25,145 - INFO - Entry-4:Remaining: 5000.00 > Min 100: Passed
+2026-02-01 10:10:25,147 - INFO - Place Order Batch 1
+2026-02-01 10:10:25,155 - INFO - Batch1-1:M:2442.79|En:2441.79|Tp:2442.39|SL:2411.79|100|Long|Isolated
+2026-02-01 10:10:27,101 - INFO - Batch1-2:M:2442.79|En:2440.79|Tp:2441.39|SL:2410.79|100|Long|Isolated
+2026-02-01 10:10:28,755 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-01 10:10:32,001 - INFO - Cancel Order 3269363561914843136 (Long: Cancel if Entry price is above market price (Entry 2441.79 > Market 2441.67))
+2026-02-01 10:10:32,019 - INFO - Cancelling OKX order 326936356191...
+2026-02-01 10:10:32,439 - INFO - Syncing TP/SL for LONG position. Avg Price: 2441.79
+2026-02-01 10:10:38,346 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-01 10:10:38,758 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:10:38,767 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:10:38,769 - INFO - Check Entry Condition
+2026-02-01 10:10:38,779 - INFO - Entry-1:LONG Market 2440.44, Safety:2970.32, Passed
+2026-02-01 10:10:38,786 - INFO - Entry-3:Remaining: 4804.70 > Target 100: Passed
+2026-02-01 10:10:38,797 - INFO - Entry-4:Remaining: 4804.70 > Min 100: Passed
+2026-02-01 10:10:38,804 - INFO - Place Order Batch 2
+2026-02-01 10:10:38,817 - INFO - Batch2-1:M:2440.44|En:2439.44|Tp:2440.04|SL:2409.44|100|Long|Isolated
+2026-02-01 10:10:41,328 - INFO - Batch2-2:M:2441.67|En:2438.44|Tp:2439.04|SL:2408.44|100|Long|Isolated
+2026-02-01 10:10:44,065 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-01 10:10:44,682 - INFO - Client disconnected
+2026-02-01 10:10:44,688 - INFO - 127.0.0.1 - - [01/Feb/2026 10:10:44] "GET /socket.io/?EIO=4&transport=websocket&sid=u8xS7Hnn_kKzAy81AAAG HTTP/1.1" 200 -
+2026-02-01 10:10:45,082 - INFO - 127.0.0.1 - - [01/Feb/2026 10:10:45] "GET /api/download_logs HTTP/1.1" 200 -
+2026-02-01 10:10:54,076 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:10:54,091 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:10:54,144 - INFO - Check Entry Condition
+2026-02-01 10:10:54,150 - INFO - Entry-1:LONG Market 2442.00, Safety:2970.32, Passed
+2026-02-01 10:10:54,151 - INFO - Entry-3:Remaining: 4802.45 > Target 100: Passed
+2026-02-01 10:10:54,152 - INFO - Entry-4:Remaining: 4802.45 > Min 100: Passed
+2026-02-01 10:10:54,153 - INFO - Place Order Batch 3
+2026-02-01 10:10:54,154 - INFO - Batch3-1:M:2442.00|En:2441.00|Tp:2441.60|SL:2411.00|100|Long|Isolated
+2026-02-01 10:10:55,945 - INFO - Batch3-2:M:2442.00|En:2440.00|Tp:2440.60|SL:2410.00|100|Long|Isolated
+2026-02-01 10:10:57,535 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-01 10:11:07,541 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:11:07,542 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:11:07,543 - INFO - Check Entry Condition
+2026-02-01 10:11:07,544 - INFO - Entry-1:LONG Market 2440.62, Safety:2970.32, Passed
+2026-02-01 10:11:07,544 - INFO - Entry-3:Remaining: 4607.21 > Target 100: Passed
+2026-02-01 10:11:07,545 - INFO - Entry-4:Remaining: 4607.21 > Min 100: Passed
+2026-02-01 10:11:07,546 - INFO - Place Order Batch 4
+2026-02-01 10:11:07,547 - INFO - Batch4-1:M:2440.62|En:2439.62|Tp:2440.22|SL:2409.62|100|Long|Isolated
+2026-02-01 10:11:09,177 - INFO - Batch4-2:M:2440.62|En:2438.62|Tp:2439.22|SL:2408.62|100|Long|Isolated
+2026-02-01 10:11:11,195 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-01 10:11:18,208 - INFO - 127.0.0.1 - - [01/Feb/2026 10:11:18] "GET /socket.io/?EIO=4&transport=polling&t=PmOU8Uy HTTP/1.1" 200 -
+2026-02-01 10:11:18,216 - INFO - Client connected: None
+2026-02-01 10:11:18,223 - INFO - 127.0.0.1 - - [01/Feb/2026 10:11:18] "POST /socket.io/?EIO=4&transport=polling&t=PmOU8V4&sid=bnnJeQWz2qeFWm_hAAAI HTTP/1.1" 200 -
+2026-02-01 10:11:18,536 - INFO - 127.0.0.1 - - [01/Feb/2026 10:11:18] "GET /socket.io/?EIO=4&transport=polling&t=PmOU8V5&sid=bnnJeQWz2qeFWm_hAAAI HTTP/1.1" 200 -
+2026-02-01 10:11:18,906 - INFO - 127.0.0.1 - - [01/Feb/2026 10:11:18] "GET /api/status HTTP/1.1" 200 -
+2026-02-01 10:11:21,280 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:11:21,282 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:11:21,285 - INFO - Check Entry Condition
+2026-02-01 10:11:21,287 - INFO - Entry-1:LONG Market 2440.95, Safety:2970.32, Passed
+2026-02-01 10:11:21,291 - INFO - Entry-3:Remaining: 4507.28 > Target 100: Passed
+2026-02-01 10:11:21,293 - INFO - Entry-4:Remaining: 4507.28 > Min 100: Passed
+2026-02-01 10:11:21,295 - INFO - Place Order Batch 5
+2026-02-01 10:11:21,296 - INFO - Batch5-1:M:2440.95|En:2439.95|Tp:2440.55|SL:2409.95|100|Long|Isolated
+2026-02-01 10:11:22,961 - INFO - Batch5-2:M:2440.95|En:2438.95|Tp:2439.55|SL:2408.95|100|Long|Isolated
+2026-02-01 10:11:25,065 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-01 10:11:35,074 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:11:35,084 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:11:35,088 - INFO - Check Entry Condition
+2026-02-01 10:11:35,100 - INFO - Entry-1:LONG Market 2440.50, Safety:2970.32, Passed
+2026-02-01 10:11:35,104 - INFO - Entry-3:Remaining: 4309.68 > Target 100: Passed
+2026-02-01 10:11:35,107 - INFO - Entry-4:Remaining: 4309.68 > Min 100: Passed
+2026-02-01 10:11:35,116 - INFO - Place Order Batch 6
+2026-02-01 10:11:35,119 - INFO - Batch6-1:M:2440.50|En:2439.50|Tp:2440.10|SL:2409.50|100|Long|Isolated
+2026-02-01 10:11:37,193 - INFO - Batch6-2:M:2440.50|En:2438.50|Tp:2439.10|SL:2408.50|100|Long|Isolated
+2026-02-01 10:11:39,784 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-01 10:11:49,786 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:11:49,790 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:11:49,796 - INFO - Check Entry Condition
+2026-02-01 10:11:49,801 - INFO - Entry-1:LONG Market 2444.00, Safety:2970.32, Passed
+2026-02-01 10:11:49,805 - INFO - Entry-3:Remaining: 4112.12 > Target 100: Passed
+2026-02-01 10:11:49,808 - INFO - Entry-4:Remaining: 4112.12 > Min 100: Passed
+2026-02-01 10:11:49,810 - INFO - Place Order Batch 7
+2026-02-01 10:11:49,814 - INFO - Batch7-1:M:2444.00|En:2443.00|Tp:2443.60|SL:2413.00|100|Long|Isolated
+2026-02-01 10:11:51,720 - INFO - Batch7-2:M:2444.00|En:2442.00|Tp:2442.60|SL:2412.00|100|Long|Isolated
+2026-02-01 10:11:53,541 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-01 10:11:54,199 - INFO - Bot trading logic paused. Background monitoring remains active.
+2026-02-01 10:11:58,349 - INFO - Bot starting trading logic...
+2026-02-01 10:11:58,351 - INFO - Session trade metrics reset.
+2026-02-01 10:12:02,218 - INFO - OKX server time synchronized. Offset: 47ms
+2026-02-01 10:12:03,552 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-01 10:12:04,859 - INFO - 127.0.0.1 - - [01/Feb/2026 10:12:04] "GET /api/status HTTP/1.1" 200 -
+2026-02-01 10:12:08,748 - INFO - Checking for and closing any existing open positions...
+2026-02-01 10:12:10,185 - INFO - Closing 4.44 ETH-USDT-SWAP with market Sell order (posSide: long)
+2026-02-01 10:12:10,186 - INFO - Placing Market Sell order for 4.44 ETH-USDT-SWAP at None
+2026-02-01 10:12:13,554 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:12:13,556 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:12:13,559 - INFO - Check Entry Condition
+2026-02-01 10:12:13,561 - INFO - Entry-1:LONG Market 2428.12, Safety:2970.32, Passed
+2026-02-01 10:12:13,563 - INFO - Entry-3:Remaining: 5000.00 > Target 100: Passed
+2026-02-01 10:12:13,565 - INFO - Entry-4:Remaining: 5000.00 > Min 100: Passed
+2026-02-01 10:12:13,566 - INFO - Place Order Batch 8
+2026-02-01 10:12:13,567 - INFO - Batch8-1:M:2428.12|En:2427.12|Tp:2427.72|SL:2397.12|100|Long|Isolated
+2026-02-01 10:12:15,481 - INFO - Batch8-2:M:2426.67|En:2426.12|Tp:2426.72|SL:2396.12|100|Long|Isolated
+2026-02-01 10:12:17,288 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-01 10:12:22,899 - INFO - Cancel Order 3269367262331158528 (Long: Cancel if Entry price is above market price (Entry 2426.12 > Market 2425.48))
+2026-02-01 10:12:22,900 - INFO - Cancelling OKX order 326936726233...
+2026-02-01 10:12:22,986 - INFO - Syncing TP/SL for LONG position. Avg Price: 2426.62
+2026-02-01 10:12:23,513 - INFO - Syncing TP/SL for LONG position. Avg Price: 2426.62
+2026-02-01 10:12:27,294 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:12:27,296 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:12:27,300 - INFO - Check Entry Condition
+2026-02-01 10:12:29,253 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-01 10:12:30,784 - INFO - Syncing TP/SL for LONG position. Avg Price: 2426.62
+2026-02-01 10:12:37,221 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-01 10:12:37,221 - INFO - Entry-1:LONG Market 2427.08, Safety:2970.32, Passed
+2026-02-01 10:12:37,226 - INFO - Entry-3:Remaining: 4900.51 > Target 100: Passed
+2026-02-01 10:12:37,228 - INFO - Entry-4:Remaining: 4900.51 > Min 100: Passed
+2026-02-01 10:12:37,230 - INFO - Place Order Batch 9
+2026-02-01 10:12:45,415 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-01 10:12:45,415 - INFO - Batch9-1:M:2427.08|En:2426.08|Tp:2426.68|SL:2396.08|100|Long|Isolated
+2026-02-01 10:12:47,268 - INFO - Batch9-2:M:2427.08|En:2425.08|Tp:2425.68|SL:2395.08|100|Long|Isolated
+2026-02-01 10:12:48,927 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-01 10:12:56,564 - INFO - Cancel Order 3269368269870088192 (Long: Cancel if Entry price is above market price (Entry 2426.08 > Market 2426.04))
+2026-02-01 10:12:56,565 - INFO - Cancelling OKX order 326936826987...
+2026-02-01 10:12:58,934 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:12:58,936 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:12:58,938 - INFO - Check Entry Condition
+2026-02-01 10:12:58,939 - INFO - Entry-1:LONG Market 2426.04, Safety:2970.32, Passed
+2026-02-01 10:12:58,941 - INFO - Entry-3:Remaining: 4801.10 > Target 100: Passed
+2026-02-01 10:12:58,943 - INFO - Entry-4:Remaining: 4801.10 > Min 100: Passed
+2026-02-01 10:12:58,944 - INFO - Place Order Batch 10
+2026-02-01 10:12:58,945 - INFO - Batch10-1:M:2426.04|En:2425.04|Tp:2425.64|SL:2395.04|100|Long|Isolated
+2026-02-01 10:12:59,614 - INFO - Cancel Order 3269368269870088192 (Long: Cancel if Entry price is above market price (Entry 2426.08 > Market 2426.04))
+2026-02-01 10:12:59,615 - INFO - Cancelling OKX order 326936826987...
+2026-02-01 10:13:00,764 - INFO - Batch10-2:M:2426.04|En:2424.04|Tp:2424.64|SL:2394.04|100|Long|Isolated
+2026-02-01 10:13:02,954 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-01 10:13:12,957 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:13:12,958 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:13:12,961 - INFO - Check Entry Condition
+2026-02-01 10:13:12,963 - INFO - Entry-1:LONG Market 2428.12, Safety:2970.32, Passed
+2026-02-01 10:13:12,973 - INFO - Entry-3:Remaining: 4701.76 > Target 100: Passed
+2026-02-01 10:13:12,976 - INFO - Entry-4:Remaining: 4701.76 > Min 100: Passed
+2026-02-01 10:13:12,982 - INFO - Place Order Batch 11
+2026-02-01 10:13:12,987 - INFO - Batch11-1:M:2428.12|En:2427.12|Tp:2427.72|SL:2397.12|100|Long|Isolated
+2026-02-01 10:13:14,707 - INFO - Batch11-2:M:2430.70|En:2426.12|Tp:2426.72|SL:2396.12|100|Long|Isolated
+2026-02-01 10:13:17,421 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-01 10:13:27,423 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:13:27,424 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:13:27,425 - INFO - Check Entry Condition
+2026-02-01 10:13:27,426 - INFO - Entry-1:LONG Market 2429.17, Safety:2970.32, Passed
+2026-02-01 10:13:27,428 - INFO - Entry-3:Remaining: 4502.78 > Target 100: Passed
+2026-02-01 10:13:27,429 - INFO - Entry-4:Remaining: 4502.78 > Min 100: Passed
+2026-02-01 10:13:27,430 - INFO - Place Order Batch 12
+2026-02-01 10:13:27,431 - INFO - Batch12-1:M:2429.17|En:2428.17|Tp:2428.77|SL:2398.17|100|Long|Isolated
+2026-02-01 10:13:30,038 - INFO - Batch12-2:M:2428.57|En:2427.17|Tp:2427.77|SL:2397.17|100|Long|Isolated
+2026-02-01 10:13:33,076 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-01 10:13:43,078 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:13:43,079 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:13:43,081 - INFO - Check Entry Condition
+2026-02-01 10:13:43,082 - INFO - Entry-1:LONG Market 2428.50, Safety:2970.32, Passed
+2026-02-01 10:13:43,083 - INFO - Entry-3:Remaining: 4303.71 > Target 100: Passed
+2026-02-01 10:13:43,085 - INFO - Entry-4:Remaining: 4303.71 > Min 100: Passed
+2026-02-01 10:13:43,087 - INFO - Place Order Batch 13
+2026-02-01 10:13:43,089 - INFO - Batch13-1:M:2428.50|En:2427.50|Tp:2428.10|SL:2397.50|100|Long|Isolated
+2026-02-01 10:13:45,136 - INFO - Batch13-2:M:2428.43|En:2426.50|Tp:2427.10|SL:2396.50|100|Long|Isolated
+2026-02-01 10:13:47,379 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-01 10:13:50,247 - INFO - Cancel Order 3269369185637646336 (Long: Cancel if Entry price is above market price (Entry 2427.12 > Market 2427.08))
+2026-02-01 10:13:50,252 - INFO - Cancelling OKX order 326936918563...
+2026-02-01 10:13:52,065 - INFO - Cancel Order 3269369702644334592 (Long: Cancel if Entry price is above market price (Entry 2428.17 > Market 2427.08))
+2026-02-01 10:13:52,075 - INFO - Cancelling OKX order 326936970264...
+2026-02-01 10:13:53,728 - INFO - Cancel Order 3269369808978329600 (Long: Cancel if Entry price is above market price (Entry 2427.17 > Market 2427.08))
+2026-02-01 10:13:53,730 - INFO - Cancelling OKX order 326936980897...
+2026-02-01 10:13:54,204 - INFO - Syncing TP/SL for LONG position. Avg Price: 2427.10
+2026-02-01 10:13:55,815 - INFO - Cancel Order 3269370207235883008 (Long: Cancel if Entry price is above market price (Entry 2427.50 > Market 2427.08))
+2026-02-01 10:13:55,817 - INFO - Cancelling OKX order 326937020723...
+2026-02-01 10:13:57,382 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:13:57,384 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:13:57,385 - INFO - Check Entry Condition
+2026-02-01 10:13:59,622 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-01 10:13:59,624 - INFO - Entry-1:LONG Market 2425.87, Safety:2970.32, Passed
+2026-02-01 10:13:59,629 - INFO - Entry-3:Remaining: 3905.74 > Target 100: Passed
+2026-02-01 10:13:59,631 - INFO - Entry-4:Remaining: 3905.74 > Min 100: Passed
+2026-02-01 10:13:59,633 - INFO - Place Order Batch 14
+2026-02-01 10:13:59,634 - INFO - Batch14-1:M:2425.54|En:2424.87|Tp:2425.47|SL:2394.87|100|Long|Isolated
+2026-02-01 10:14:00,624 - INFO - Cancel Order 3269369283515924480 (Long: Cancel if Entry price is above market price (Entry 2426.12 > Market 2425.54))
+2026-02-01 10:14:00,625 - INFO - Cancelling OKX order 326936928351...
+2026-02-01 10:14:01,351 - INFO - Syncing TP/SL for LONG position. Avg Price: 2427.10
+2026-02-01 10:14:02,069 - INFO - Cancel Order 3269370294007644160 (Long: Cancel if Entry price is above market price (Entry 2426.50 > Market 2425.54))
+2026-02-01 10:14:02,071 - INFO - Cancelling OKX order 326937029400...
+2026-02-01 10:14:09,194 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-01 10:14:09,195 - INFO - Batch14-2:M:2426.89|En:2423.87|Tp:2424.47|SL:2393.87|100|Long|Isolated
+2026-02-01 10:14:11,030 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-01 10:14:21,031 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:14:21,033 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:14:21,035 - INFO - Check Entry Condition
+2026-02-01 10:14:21,036 - INFO - Entry-1:LONG Market 2430.70, Safety:2970.32, Passed
+2026-02-01 10:14:21,037 - INFO - Entry-3:Remaining: 4502.96 > Target 100: Passed
+2026-02-01 10:14:21,040 - INFO - Entry-4:Remaining: 4502.96 > Min 100: Passed
+2026-02-01 10:14:21,041 - INFO - Place Order Batch 15
+2026-02-01 10:14:21,043 - INFO - Batch15-1:M:2430.70|En:2429.70|Tp:2430.30|SL:2399.70|100|Long|Isolated
+2026-02-01 10:14:22,927 - INFO - Batch15-2:M:2430.31|En:2428.70|Tp:2429.30|SL:2398.70|100|Long|Isolated
+2026-02-01 10:14:24,738 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-01 10:14:26,238 - INFO - Cancelling OKX order 326936832681...
+2026-02-01 10:14:34,741 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:14:34,742 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:14:34,744 - INFO - Check Entry Condition
+2026-02-01 10:14:34,745 - INFO - Entry-1:LONG Market 2430.70, Safety:2970.32, Passed
+2026-02-01 10:14:34,746 - INFO - Entry-3:Remaining: 4403.19 > Target 100: Passed
+2026-02-01 10:14:34,748 - INFO - Entry-4:Remaining: 4403.19 > Min 100: Passed
+2026-02-01 10:14:34,749 - INFO - Place Order Batch 16
+2026-02-01 10:14:34,751 - INFO - Batch16-1:M:2430.70|En:2429.70|Tp:2430.30|SL:2399.70|100|Long|Isolated
+2026-02-01 10:14:36,667 - INFO - Batch16-2:M:2430.70|En:2428.70|Tp:2429.30|SL:2398.70|100|Long|Isolated
+2026-02-01 10:14:38,278 - INFO - Cancelling OKX order 326936872282...
+2026-02-01 10:14:38,866 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-01 10:14:40,467 - INFO - Cancelling OKX order 326936879758...
+2026-02-01 10:14:48,885 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:14:48,886 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:14:48,888 - INFO - Check Entry Condition
+2026-02-01 10:14:48,889 - INFO - Entry-1:LONG Market 2431.50, Safety:2970.32, Passed
+2026-02-01 10:14:48,890 - INFO - Entry-3:Remaining: 4402.81 > Target 100: Passed
+2026-02-01 10:14:48,892 - INFO - Entry-4:Remaining: 4402.81 > Min 100: Passed
+2026-02-01 10:14:48,892 - INFO - Place Order Batch 17
+2026-02-01 10:14:48,894 - INFO - Batch17-1:M:2431.50|En:2430.50|Tp:2431.10|SL:2400.50|100|Long|Isolated
+2026-02-01 10:14:51,071 - INFO - Batch17-2:M:2433.12|En:2429.50|Tp:2430.10|SL:2399.50|100|Long|Isolated
+2026-02-01 10:14:52,887 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-01 10:15:02,891 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:15:02,892 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:15:02,893 - INFO - Check Entry Condition
+2026-02-01 10:15:02,894 - INFO - Entry-1:LONG Market 2431.25, Safety:2970.32, Passed
+2026-02-01 10:15:02,895 - INFO - Entry-3:Remaining: 4203.55 > Target 100: Passed
+2026-02-01 10:15:02,896 - INFO - Entry-4:Remaining: 4203.55 > Min 100: Passed
+2026-02-01 10:15:02,897 - INFO - Place Order Batch 18
+2026-02-01 10:15:02,897 - INFO - Batch18-1:M:2431.25|En:2430.25|Tp:2430.85|SL:2400.25|100|Long|Isolated
+2026-02-01 10:15:04,699 - INFO - Batch18-2:M:2431.25|En:2429.25|Tp:2429.85|SL:2399.25|100|Long|Isolated
+2026-02-01 10:15:06,577 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-01 10:15:16,581 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:15:16,582 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:15:16,583 - INFO - Check Entry Condition
+2026-02-01 10:15:16,584 - INFO - Entry-1:LONG Market 2430.70, Safety:2970.32, Passed
+2026-02-01 10:15:16,586 - INFO - Entry-3:Remaining: 4004.31 > Target 100: Passed
+2026-02-01 10:15:16,587 - INFO - Entry-4:Remaining: 4004.31 > Min 100: Passed
+2026-02-01 10:15:16,588 - INFO - Place Order Batch 19
+2026-02-01 10:15:16,589 - INFO - Batch19-1:M:2430.70|En:2429.70|Tp:2430.30|SL:2399.70|100|Long|Isolated
+2026-02-01 10:15:18,676 - INFO - Batch19-2:M:2430.70|En:2428.70|Tp:2429.30|SL:2398.70|100|Long|Isolated
+2026-02-01 10:15:20,675 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-01 10:15:30,677 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:15:30,678 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:15:30,679 - INFO - Check Entry Condition
+2026-02-01 10:15:30,680 - INFO - Entry-1:LONG Market 2434.33, Safety:2970.32, Passed
+2026-02-01 10:15:30,681 - INFO - Entry-3:Remaining: 3805.12 > Target 100: Passed
+2026-02-01 10:15:30,682 - INFO - Entry-4:Remaining: 3805.12 > Min 100: Passed
+2026-02-01 10:15:30,684 - INFO - Place Order Batch 20
+2026-02-01 10:15:30,685 - INFO - Batch20-1:M:2434.33|En:2433.33|Tp:2433.93|SL:2403.33|100|Long|Isolated
+2026-02-01 10:15:32,318 - INFO - Cancelling OKX order 326937075759...
+2026-02-01 10:15:32,444 - INFO - Batch20-2:M:2434.33|En:2432.33|Tp:2432.93|SL:2402.33|100|Long|Isolated
+2026-02-01 10:15:34,931 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-01 10:15:44,341 - INFO - Cancelling OKX order 326937108223...
+2026-02-01 10:15:44,933 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:15:44,969 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:15:44,977 - INFO - Check Entry Condition
+2026-02-01 10:15:44,979 - INFO - Entry-1:LONG Market 2435.54, Safety:2970.32, Passed
+2026-02-01 10:15:45,013 - INFO - Entry-3:Remaining: 3705.05 > Target 100: Passed
+2026-02-01 10:15:45,032 - INFO - Entry-4:Remaining: 3705.05 > Min 100: Passed
+2026-02-01 10:15:45,033 - INFO - Place Order Batch 21
+2026-02-01 10:15:45,036 - INFO - Batch21-1:M:2435.54|En:2434.54|Tp:2435.14|SL:2404.54|100|Long|Isolated
+2026-02-01 10:15:47,017 - INFO - Batch21-2:M:2433.33|En:2433.54|Tp:2434.14|SL:2403.54|100|Long|Isolated
+2026-02-01 10:15:47,225 - INFO - Cancel Order 3269374301547675648 (Long: Cancel if Entry price is above market price (Entry 2434.54 > Market 2433.33))
+2026-02-01 10:15:47,226 - INFO - Cancelling OKX order 326937430154...
+2026-02-01 10:15:48,686 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-01 10:15:57,562 - INFO - Cancelling OKX order 326937154260...
+2026-02-01 10:15:58,687 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:15:58,690 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:15:58,695 - INFO - Check Entry Condition
+2026-02-01 10:15:58,697 - INFO - Entry-1:LONG Market 2434.33, Safety:2970.32, Passed
+2026-02-01 10:15:58,699 - INFO - Entry-3:Remaining: 3704.63 > Target 100: Passed
+2026-02-01 10:15:58,700 - INFO - Entry-4:Remaining: 3704.63 > Min 100: Passed
+2026-02-01 10:15:58,701 - INFO - Place Order Batch 22
+2026-02-01 10:15:58,702 - INFO - Batch22-1:M:2434.33|En:2433.33|Tp:2433.93|SL:2403.33|100|Long|Isolated
+2026-02-01 10:15:59,697 - INFO - Cancelling OKX order 326937147401...
+2026-02-01 10:16:00,516 - INFO - Batch22-2:M:2434.33|En:2432.33|Tp:2432.93|SL:2402.33|100|Long|Isolated
+2026-02-01 10:16:02,518 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-01 10:16:08,822 - INFO - Cancelling OKX order 326937201243...
+2026-02-01 10:16:10,681 - INFO - Cancelling OKX order 326937193599...
+2026-02-01 10:16:12,520 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:16:12,521 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:16:12,522 - INFO - Check Entry Condition
+2026-02-01 10:16:12,523 - INFO - Entry-1:LONG Market 2433.12, Safety:2970.32, Passed
+2026-02-01 10:16:12,524 - INFO - Entry-3:Remaining: 3903.89 > Target 100: Passed
+2026-02-01 10:16:12,525 - INFO - Entry-4:Remaining: 3903.89 > Min 100: Passed
+2026-02-01 10:16:12,525 - INFO - Place Order Batch 23
+2026-02-01 10:16:12,527 - INFO - Batch23-1:M:2433.12|En:2432.12|Tp:2432.72|SL:2402.12|100|Long|Isolated
+2026-02-01 10:16:14,491 - INFO - Batch23-2:M:2434.76|En:2431.12|Tp:2431.72|SL:2401.12|100|Long|Isolated
+2026-02-01 10:16:16,586 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-01 10:16:26,589 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:16:26,590 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:16:26,591 - INFO - Check Entry Condition
+2026-02-01 10:16:26,592 - INFO - Entry-1:LONG Market 2433.33, Safety:2970.32, Passed
+2026-02-01 10:16:26,593 - INFO - Entry-3:Remaining: 4003.46 > Target 100: Passed
+2026-02-01 10:16:26,594 - INFO - Entry-4:Remaining: 4003.46 > Min 100: Passed
+2026-02-01 10:16:26,596 - INFO - Place Order Batch 24
+2026-02-01 10:16:26,597 - INFO - Batch24-1:M:2433.33|En:2432.33|Tp:2432.93|SL:2402.33|100|Long|Isolated
+2026-02-01 10:16:28,115 - INFO - Cancelling OKX order 326937248692...
+2026-02-01 10:16:28,336 - INFO - Batch24-2:M:2433.33|En:2431.33|Tp:2431.93|SL:2401.33|100|Long|Isolated
+2026-02-01 10:16:30,069 - INFO - Cancelling OKX order 326937241914...
+2026-02-01 10:16:30,230 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-01 10:16:40,234 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:16:40,235 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:16:40,236 - INFO - Check Entry Condition
+2026-02-01 10:16:40,237 - INFO - Entry-1:LONG Market 2435.54, Safety:2970.32, Passed
+2026-02-01 10:16:40,238 - INFO - Entry-3:Remaining: 4003.31 > Target 100: Passed
+2026-02-01 10:16:40,239 - INFO - Entry-4:Remaining: 4003.31 > Min 100: Passed
+2026-02-01 10:16:40,240 - INFO - Place Order Batch 25
+2026-02-01 10:16:40,241 - INFO - Batch25-1:M:2435.54|En:2434.54|Tp:2435.14|SL:2404.54|100|Long|Isolated
+2026-02-01 10:16:41,802 - INFO - Cancelling OKX order 326937294631...
+2026-02-01 10:16:42,114 - INFO - Batch25-2:M:2435.54|En:2433.54|Tp:2434.14|SL:2403.54|100|Long|Isolated
+2026-02-01 10:16:44,466 - INFO - Cancelling OKX order 326937287669...
+2026-02-01 10:16:44,823 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-01 10:16:48,471 - INFO - Cancelling OKX order 326937334444...
+2026-02-01 10:16:50,989 - INFO - Cancel Order 3269376143484665856 (Long: Cancel if Entry price is above market price (Entry 2434.54 > Market 2434.37))
+2026-02-01 10:16:50,990 - INFO - Cancelling OKX order 326937614348...
+2026-02-01 10:16:54,382 - INFO - Syncing TP/SL for LONG position. Avg Price: 2434.04
+2026-02-01 10:16:54,891 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:16:54,977 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:16:55,092 - INFO - Check Entry Condition
+2026-02-01 10:16:56,453 - INFO - Syncing TP/SL for LONG position. Avg Price: 2434.04
+2026-02-01 10:17:01,503 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-01 10:17:03,231 - INFO - Syncing TP/SL for LONG position. Avg Price: 2434.04
+2026-02-01 10:17:10,339 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-01 10:17:16,415 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-01 10:17:16,415 - INFO - Entry-1:LONG Market 2433.12, Safety:2970.32, Passed
+2026-02-01 10:17:16,419 - INFO - Entry-3:Remaining: 4002.96 > Target 100: Passed
+2026-02-01 10:17:16,421 - INFO - Entry-4:Remaining: 4002.96 > Min 100: Passed
+2026-02-01 10:17:16,422 - INFO - Place Order Batch 26
+2026-02-01 10:17:16,424 - INFO - Batch26-1:M:2435.54|En:2432.12|Tp:2432.72|SL:2402.12|100|Long|Isolated
+2026-02-01 10:17:18,309 - INFO - Batch26-2:M:2435.54|En:2431.12|Tp:2431.72|SL:2401.12|100|Long|Isolated
+2026-02-01 10:17:19,999 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-01 10:17:21,338 - INFO - Cancelling OKX order 326937341889...
+2026-02-01 10:17:23,134 - INFO - Cancelling OKX order 326937389775...
+2026-02-01 10:17:30,001 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:17:30,003 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:17:30,006 - INFO - Check Entry Condition
+2026-02-01 10:17:30,014 - INFO - Entry-1:LONG Market 2436.75, Safety:2970.32, Passed
+2026-02-01 10:17:30,016 - INFO - Entry-3:Remaining: 4202.35 > Target 100: Passed
+2026-02-01 10:17:30,023 - INFO - Entry-4:Remaining: 4202.35 > Min 100: Passed
+2026-02-01 10:17:30,025 - INFO - Place Order Batch 27
+2026-02-01 10:17:30,026 - INFO - Batch27-1:M:2436.75|En:2435.75|Tp:2436.35|SL:2405.75|100|Long|Isolated
+2026-02-01 10:17:32,082 - INFO - Batch27-2:M:2436.75|En:2434.75|Tp:2435.35|SL:2404.75|100|Long|Isolated
+2026-02-01 10:17:33,982 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-01 10:17:40,997 - INFO - Cancelling OKX order 326937482328...
+2026-02-01 10:17:43,986 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:17:43,987 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:17:43,988 - INFO - Check Entry Condition
+2026-02-01 10:17:43,989 - INFO - Entry-1:LONG Market 2437.96, Safety:2970.32, Passed
+2026-02-01 10:17:43,990 - INFO - Entry-3:Remaining: 4102.39 > Target 100: Passed
+2026-02-01 10:17:43,991 - INFO - Entry-4:Remaining: 4102.39 > Min 100: Passed
+2026-02-01 10:17:43,992 - INFO - Place Order Batch 28
+2026-02-01 10:17:43,993 - INFO - Batch28-1:M:2437.96|En:2436.96|Tp:2437.56|SL:2406.96|100|Long|Isolated
+2026-02-01 10:17:45,849 - INFO - Batch28-2:M:2437.96|En:2435.96|Tp:2436.56|SL:2405.96|100|Long|Isolated
+2026-02-01 10:17:47,722 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-01 10:17:52,120 - INFO - Cancelling OKX order 326937521614...
+2026-02-01 10:17:53,815 - INFO - Cancelling OKX order 326937529546...
+2026-02-01 10:17:56,475 - INFO - Cancel Order 3269377821206265856 (Long: Cancel if Entry price is above market price (Entry 2435.75 > Market 2435.54))
+2026-02-01 10:17:56,475 - INFO - Cancelling OKX order 326937782120...
+2026-02-01 10:17:57,753 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:17:57,757 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:17:57,762 - INFO - Check Entry Condition
+2026-02-01 10:17:57,766 - INFO - Entry-1:LONG Market 2435.54, Safety:2970.32, Passed
+2026-02-01 10:17:57,770 - INFO - Entry-3:Remaining: 4102.24 > Target 100: Passed
+2026-02-01 10:17:57,772 - INFO - Entry-4:Remaining: 4102.24 > Min 100: Passed
+2026-02-01 10:17:57,775 - INFO - Place Order Batch 29
+2026-02-01 10:17:57,776 - INFO - Batch29-1:M:2435.54|En:2434.54|Tp:2435.14|SL:2404.54|100|Long|Isolated
+2026-02-01 10:17:57,918 - INFO - Cancel Order 3269378355157942272 (Long: Cancel if Entry price is above market price (Entry 2435.96 > Market 2435.54))
+2026-02-01 10:17:57,919 - INFO - Cancelling OKX order 326937835515...
+2026-02-01 10:17:59,704 - INFO - Batch29-2:M:2435.54|En:2433.54|Tp:2434.14|SL:2403.54|100|Long|Isolated
+2026-02-01 10:18:01,778 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-01 10:18:08,000 - INFO - Cancelling OKX order 326937568325...
+2026-02-01 10:18:09,621 - INFO - Cancelling OKX order 326937575321...
+2026-02-01 10:18:11,782 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:18:11,786 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:18:11,789 - INFO - Check Entry Condition
+2026-02-01 10:18:11,793 - INFO - Entry-1:LONG Market 2436.75, Safety:2970.32, Passed
+2026-02-01 10:18:11,796 - INFO - Entry-3:Remaining: 4301.78 > Target 100: Passed
+2026-02-01 10:18:11,800 - INFO - Entry-4:Remaining: 4301.78 > Min 100: Passed
+2026-02-01 10:18:11,802 - INFO - Place Order Batch 30
+2026-02-01 10:18:11,806 - INFO - Batch30-1:M:2436.75|En:2435.75|Tp:2436.35|SL:2405.75|100|Long|Isolated
+2026-02-01 10:18:13,547 - INFO - Batch30-2:M:2437.96|En:2434.75|Tp:2435.35|SL:2404.75|100|Long|Isolated
+2026-02-01 10:18:15,290 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-01 10:18:25,294 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:18:25,296 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:18:25,297 - INFO - Check Entry Condition
+2026-02-01 10:18:25,297 - INFO - Entry-1:LONG Market 2437.96, Safety:2970.32, Passed
+2026-02-01 10:18:25,298 - INFO - Entry-3:Remaining: 4301.50 > Target 100: Passed
+2026-02-01 10:18:25,299 - INFO - Entry-4:Remaining: 4301.50 > Min 100: Passed
+2026-02-01 10:18:25,300 - INFO - Place Order Batch 31
+2026-02-01 10:18:25,302 - INFO - Batch31-1:M:2437.96|En:2436.96|Tp:2437.56|SL:2406.96|100|Long|Isolated
+2026-02-01 10:18:27,323 - INFO - Batch31-2:M:2437.96|En:2435.96|Tp:2436.56|SL:2405.96|100|Long|Isolated
+2026-02-01 10:18:29,303 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-01 10:18:36,882 - INFO - Syncing TP/SL for LONG position. Avg Price: 2436.96
+2026-02-01 10:18:39,308 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:18:39,309 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:18:39,311 - INFO - Check Entry Condition
+2026-02-01 10:18:43,322 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-01 10:18:43,323 - INFO - Entry-1:LONG Market 2436.46, Safety:2970.32, Passed
+2026-02-01 10:18:43,326 - INFO - Entry-3:Remaining: 4201.58 > Target 100: Passed
+2026-02-01 10:18:43,328 - INFO - Entry-4:Remaining: 4201.58 > Min 100: Passed
+2026-02-01 10:18:43,329 - INFO - Place Order Batch 32
+2026-02-01 10:18:43,330 - INFO - Batch32-1:M:2437.43|En:2435.46|Tp:2436.06|SL:2405.46|100|Long|Isolated
+2026-02-01 10:18:45,097 - INFO - Syncing TP/SL for LONG position. Avg Price: 2436.96
+2026-02-01 10:18:50,621 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-01 10:18:50,824 - INFO - Batch32-2:M:2439.17|En:2434.46|Tp:2435.06|SL:2404.46|100|Long|Isolated
+2026-02-01 10:18:52,706 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-01 10:18:55,401 - INFO - Cancelling OKX order 326937742358...
+2026-02-01 10:18:56,985 - INFO - Cancelling OKX order 326937736479...
+2026-02-01 10:19:02,709 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:19:02,710 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:19:02,712 - INFO - Check Entry Condition
+2026-02-01 10:19:02,713 - INFO - Entry-1:LONG Market 2440.37, Safety:2970.32, Passed
+2026-02-01 10:19:02,714 - INFO - Entry-3:Remaining: 4101.83 > Target 100: Passed
+2026-02-01 10:19:02,716 - INFO - Entry-4:Remaining: 4101.83 > Min 100: Passed
+2026-02-01 10:19:02,717 - INFO - Place Order Batch 33
+2026-02-01 10:19:02,717 - INFO - Batch33-1:M:2440.37|En:2439.37|Tp:2439.97|SL:2409.37|100|Long|Isolated
+2026-02-01 10:19:04,932 - INFO - Batch33-2:M:2439.23|En:2438.37|Tp:2438.97|SL:2408.37|100|Long|Isolated
+2026-02-01 10:19:06,121 - INFO - Cancelling OKX order 326937789764...
+2026-02-01 10:19:06,532 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-01 10:19:13,470 - INFO - Syncing TP/SL for LONG position. Avg Price: 2439.37
+2026-02-01 10:19:16,534 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:19:16,535 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:19:16,536 - INFO - Check Entry Condition
+2026-02-01 10:19:18,498 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-01 10:19:18,500 - INFO - Entry-1:LONG Market 2439.17, Safety:2970.32, Passed
+2026-02-01 10:19:18,502 - INFO - Entry-3:Remaining: 4203.49 > Target 100: Passed
+2026-02-01 10:19:18,503 - INFO - Entry-4:Remaining: 4203.49 > Min 100: Passed
+2026-02-01 10:19:18,505 - INFO - Place Order Batch 34
+2026-02-01 10:19:18,508 - INFO - Batch34-1:M:2441.58|En:2438.17|Tp:2438.77|SL:2408.17|100|Long|Isolated
+2026-02-01 10:19:20,497 - INFO - Batch34-2:M:2441.58|En:2437.17|Tp:2437.77|SL:2407.17|100|Long|Isolated
+2026-02-01 10:19:22,253 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-01 10:19:29,645 - INFO - Cancelling OKX order 326937874865...
+2026-02-01 10:19:32,059 - INFO - Cancelling OKX order 326937882508...
+2026-02-01 10:19:32,259 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:19:32,260 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:19:32,262 - INFO - Check Entry Condition
+2026-02-01 10:19:32,263 - INFO - Entry-1:LONG Market 2440.62, Safety:2970.32, Passed
+2026-02-01 10:19:32,265 - INFO - Entry-3:Remaining: 4101.18 > Target 100: Passed
+2026-02-01 10:19:32,266 - INFO - Entry-4:Remaining: 4101.18 > Min 100: Passed
+2026-02-01 10:19:32,268 - INFO - Place Order Batch 35
+2026-02-01 10:19:32,268 - INFO - Batch35-1:M:2440.62|En:2439.62|Tp:2440.22|SL:2409.62|100|Long|Isolated
+2026-02-01 10:19:34,517 - INFO - Batch35-2:M:2440.62|En:2438.62|Tp:2439.22|SL:2408.62|100|Long|Isolated
+2026-02-01 10:19:36,200 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-01 10:19:41,552 - INFO - Cancel Order 3269379277703495680 (Long: Cancel if Entry price is above market price (Entry 2434.75 > Market 2433.22))
+2026-02-01 10:19:41,553 - INFO - Cancelling OKX order 326937927770...
+2026-02-01 10:19:42,212 - INFO - Syncing TP/SL for LONG position. Avg Price: 2436.95
+2026-02-01 10:19:43,415 - INFO - Cancel Order 3269379753975103488 (Long: Cancel if Entry price is above market price (Entry 2435.96 > Market 2433.22))
+2026-02-01 10:19:43,417 - INFO - Cancelling OKX order 326937975397...
+2026-02-01 10:19:45,107 - INFO - Cancel Order 3269380280343478272 (Long: Cancel if Entry price is above market price (Entry 2435.46 > Market 2433.22))
+2026-02-01 10:19:45,109 - INFO - Cancelling OKX order 326938028034...
+2026-02-01 10:19:46,202 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:19:46,203 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:19:46,205 - INFO - Check Entry Condition
+2026-02-01 10:19:46,961 - INFO - Cancel Order 3269380534417637376 (Long: Cancel if Entry price is above market price (Entry 2434.46 > Market 2433.22))
+2026-02-01 10:19:46,962 - INFO - Cancelling OKX order 326938053441...
+2026-02-01 10:19:48,594 - INFO - Cancel Order 3269380998374768640 (Long: Cancel if Entry price is above market price (Entry 2438.37 > Market 2433.22))
+2026-02-01 10:19:48,595 - INFO - Cancelling OKX order 326938099837...
+2026-02-01 10:19:49,368 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-01 10:19:49,370 - INFO - === EMERGENCY EXIT === Reason: Auto-Cal Profit Target: $1.15 >= $0.75 (1.2x Fee) | Symbol: ETH-USDT-SWAP
+2026-02-01 10:19:49,372 - INFO - Entry-1:LONG Market 2433.22, Safety:2970.32, Passed
+2026-02-01 10:19:49,376 - INFO - Entry-3:Remaining: 3303.99 > Target 100: Passed
+2026-02-01 10:19:49,380 - INFO - Entry-4:Remaining: 3303.99 > Min 100: Passed
+2026-02-01 10:19:49,382 - INFO - Place Order Batch 36
+2026-02-01 10:19:49,384 - INFO - Batch36-1:M:2433.22|En:2432.22|Tp:2432.82|SL:2402.22|100|Long|Isolated
+2026-02-01 10:19:50,033 - INFO - Cancel Order 3269381465016254464 (Long: Cancel if Entry price is above market price (Entry 2438.17 > Market 2433.22))
+2026-02-01 10:19:50,049 - INFO - Cancelling OKX order 326938146501...
+2026-02-01 10:19:51,421 - INFO - Syncing TP/SL for LONG position. Avg Price: 2436.95
+2026-02-01 10:19:51,520 - INFO - Force closing LONG position: 3.68 ETH-USDT-SWAP @ Market (Mode: isolated)
+2026-02-01 10:19:51,526 - INFO - Placing Market Sell order for 3.68 ETH-USDT-SWAP at None
+2026-02-01 10:19:51,738 - INFO - Cancel Order 3269381528736120832 (Long: Cancel if Entry price is above market price (Entry 2437.17 > Market 2433.22))
+2026-02-01 10:19:51,758 - INFO - Cancelling OKX order 326938152873...
+2026-02-01 10:19:53,122 - INFO - Syncing TP/SL for LONG position. Avg Price: 2436.95
+2026-02-01 10:19:54,104 - INFO - Initiating batch order cancellation...
+2026-02-01 10:19:54,140 - INFO - Cancel Order 3269381930248454144 (Long: Cancel if Entry price is above market price (Entry 2439.62 > Market 2433.22))
+2026-02-01 10:19:54,141 - INFO - Cancelling OKX order 326938193024...
+2026-02-01 10:19:56,261 - INFO - Cancel Order 3269381993699885056 (Long: Cancel if Entry price is above market price (Entry 2438.62 > Market 2433.22))
+2026-02-01 10:19:56,276 - INFO - Cancelling OKX order 326938199369...
+2026-02-01 10:19:58,872 - WARNING - No orders to cancel.
+2026-02-01 10:20:02,670 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-01 10:20:02,671 - INFO - Batch36-2:M:2429.37|En:2431.22|Tp:2431.82|SL:2401.22|100|Long|Isolated
+2026-02-01 10:20:11,677 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-01 10:20:11,679 - INFO - === EMERGENCY EXIT COMPLETE === Account cleared for symbol.
+2026-02-01 10:20:11,683 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-01 10:20:12,678 - INFO - Cancel Order 3269382953524412416 (Long: Cancel if Entry price is above market price (Entry 2431.22 > Market 2430.70))
+2026-02-01 10:20:12,698 - INFO - Cancelling OKX order 326938295352...
+2026-02-01 10:20:15,392 - INFO - Syncing TP/SL for LONG position. Avg Price: 2431.09
+2026-02-01 10:20:21,689 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:20:21,690 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:20:21,691 - INFO - Check Entry Condition
+2026-02-01 10:20:24,931 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-01 10:20:24,934 - INFO - Entry-1:LONG Market 2431.91, Safety:2970.32, Passed
+2026-02-01 10:20:24,938 - INFO - Entry-3:Remaining: 4900.28 > Target 100: Passed
+2026-02-01 10:20:24,941 - INFO - Entry-4:Remaining: 4900.28 > Min 100: Passed
+2026-02-01 10:20:24,943 - INFO - Place Order Batch 37
+2026-02-01 10:20:24,944 - INFO - Batch37-1:M:2430.21|En:2430.91|Tp:2431.51|SL:2400.91|100|Long|Isolated
+2026-02-01 10:20:26,987 - INFO - Batch37-2:M:2430.21|En:2429.91|Tp:2430.51|SL:2399.91|100|Long|Isolated
+2026-02-01 10:20:28,882 - INFO - Syncing TP/SL for LONG position. Avg Price: 2431.00
+2026-02-01 10:20:29,002 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-01 10:20:38,736 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-01 10:20:39,180 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:20:39,190 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:20:39,200 - INFO - Check Entry Condition
+2026-02-01 10:20:39,223 - INFO - Entry-1:LONG Market 2430.00, Safety:2970.32, Passed
+2026-02-01 10:20:39,228 - INFO - Entry-3:Remaining: 4800.66 > Target 100: Passed
+2026-02-01 10:20:39,239 - INFO - Entry-4:Remaining: 4800.66 > Min 100: Passed
+2026-02-01 10:20:39,258 - INFO - Place Order Batch 38
+2026-02-01 10:20:39,266 - INFO - Batch38-1:M:2430.00|En:2429.00|Tp:2429.60|SL:2399.00|100|Long|Isolated
+2026-02-01 10:20:40,914 - INFO - Syncing TP/SL for LONG position. Avg Price: 2431.00
+2026-02-01 10:20:49,233 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-01 10:20:49,443 - INFO - Batch38-2:M:2430.00|En:2428.00|Tp:2428.60|SL:2398.00|100|Long|Isolated
+2026-02-01 10:20:50,248 - INFO - Cancel Order 3269383761313808384 (Long: Cancel if Entry price is above market price (Entry 2429.91 > Market 2429.61))
+2026-02-01 10:20:50,254 - INFO - Cancelling OKX order 326938376131...
+2026-02-01 10:20:51,128 - INFO - Syncing TP/SL for LONG position. Avg Price: 2430.64
+2026-02-01 10:20:59,289 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-01 10:20:59,293 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-01 10:21:09,296 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:21:09,297 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:21:09,299 - INFO - Check Entry Condition
+2026-02-01 10:21:09,300 - INFO - Entry-1:LONG Market 2431.91, Safety:2970.32, Passed
+2026-02-01 10:21:09,301 - INFO - Entry-3:Remaining: 4601.55 > Target 100: Passed
+2026-02-01 10:21:09,302 - INFO - Entry-4:Remaining: 4601.55 > Min 100: Passed
+2026-02-01 10:21:09,304 - INFO - Place Order Batch 39
+2026-02-01 10:21:09,305 - INFO - Batch39-1:M:2431.91|En:2430.91|Tp:2431.51|SL:2400.91|100|Long|Isolated
+2026-02-01 10:21:10,957 - INFO - Batch39-2:M:2431.91|En:2429.91|Tp:2430.51|SL:2399.91|100|Long|Isolated
+2026-02-01 10:21:12,817 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-01 10:21:22,820 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:21:22,821 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:21:22,822 - INFO - Check Entry Condition
+2026-02-01 10:21:22,823 - INFO - Entry-1:LONG Market 2435.74, Safety:2970.32, Passed
+2026-02-01 10:21:22,824 - INFO - Entry-3:Remaining: 4800.86 > Target 100: Passed
+2026-02-01 10:21:22,825 - INFO - Entry-4:Remaining: 4800.86 > Min 100: Passed
+2026-02-01 10:21:22,826 - INFO - Place Order Batch 40
+2026-02-01 10:21:22,827 - INFO - Batch40-1:M:2435.74|En:2434.74|Tp:2435.34|SL:2404.74|100|Long|Isolated
+2026-02-01 10:21:25,529 - INFO - Batch40-2:M:2435.74|En:2433.74|Tp:2434.34|SL:2403.74|100|Long|Isolated
+2026-02-01 10:21:29,106 - ERROR - API request timeout (Attempt 1/3)
+2026-02-01 10:21:29,116 - ERROR - API request timeout (Attempt 1/3)
+2026-02-01 10:21:29,167 - ERROR - API request timeout (Attempt 1/3)
+2026-02-01 10:21:41,492 - ERROR - API request timeout (Attempt 1/3)
+2026-02-01 10:21:41,508 - ERROR - API request timeout (Attempt 1/3)
+2026-02-01 10:21:41,695 - ERROR - API request timeout (Attempt 1/3)
+2026-02-01 10:21:53,761 - ERROR - OKX API HTTP Error (GET /api/v5/account/balance): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/balance?ccy=USDT (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000018C30A84B60>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 10:21:53,761 - ERROR - OKX API HTTP Error (GET /api/v5/trade/orders-pending): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000018C30AA24B0>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 10:21:53,762 - ERROR - OKX API HTTP Error (POST /api/v5/trade/order): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/trade/order (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000018C30ABBD40>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 10:22:00,144 - ERROR - API request timeout (Attempt 2/3)
+2026-02-01 10:22:00,145 - ERROR - API request timeout (Attempt 2/3)
+2026-02-01 10:22:00,191 - ERROR - API request timeout (Attempt 2/3)
+2026-02-01 10:22:07,049 - ERROR - OKX API HTTP Error (GET /api/v5/account/balance): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/balance?ccy=USDT (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000018C30D4F5C0>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 10:22:07,051 - ERROR - OKX API HTTP Error (GET /api/v5/trade/orders-pending): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000018C30D4C680>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 10:22:07,053 - ERROR - OKX API HTTP Error (GET /api/v5/account/balance): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/balance?ccy=USDT (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000018C30A85760>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 10:22:07,056 - ERROR - OKX API HTTP Error (GET /api/v5/account/balance): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/balance?ccy=USDT (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000018C30A85790>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 10:22:07,058 - ERROR - OKX API HTTP Error (POST /api/v5/trade/order): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/trade/order (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000018C30D4F500>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 10:22:07,059 - ERROR - OKX API HTTP Error (GET /api/v5/trade/orders-pending): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000018C30A84800>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 10:22:07,105 - ERROR - Order placement failed
+2026-02-01 10:22:07,107 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-01 10:22:15,186 - INFO - Syncing TP/SL for LONG position. Avg Price: 2434.74
+2026-02-01 10:22:17,108 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:22:17,109 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:22:17,111 - INFO - Check Entry Condition
+2026-02-01 10:22:24,221 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-01 10:22:24,222 - INFO - Entry-1:LONG Market 2434.33, Safety:2970.32, Passed
+2026-02-01 10:22:24,228 - INFO - Entry-3:Remaining: 4501.75 > Target 100: Passed
+2026-02-01 10:22:24,231 - INFO - Entry-4:Remaining: 4501.75 > Min 100: Passed
+2026-02-01 10:22:24,233 - INFO - Place Order Batch 41
+2026-02-01 10:22:24,234 - INFO - Batch41-1:M:2434.33|En:2433.33|Tp:2433.93|SL:2403.33|100|Long|Isolated
+2026-02-01 10:22:26,295 - INFO - Batch41-2:M:2435.54|En:2432.33|Tp:2432.93|SL:2402.33|100|Long|Isolated
+2026-02-01 10:22:26,627 - INFO - Syncing TP/SL for LONG position. Avg Price: 2434.74
+2026-02-01 10:22:35,001 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-01 10:22:35,006 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-01 10:22:36,005 - INFO - Cancelling OKX order 326938451430...
+2026-02-01 10:22:37,400 - INFO - Cancelling OKX order 326938417383...
+2026-02-01 10:22:45,011 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:22:45,012 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:22:45,013 - INFO - Check Entry Condition
+2026-02-01 10:22:45,023 - INFO - Entry-1:LONG Market 2434.50, Safety:2970.32, Passed
+2026-02-01 10:22:45,024 - INFO - Entry-3:Remaining: 4501.63 > Target 100: Passed
+2026-02-01 10:22:45,032 - INFO - Entry-4:Remaining: 4501.63 > Min 100: Passed
+2026-02-01 10:22:45,036 - INFO - Place Order Batch 42
+2026-02-01 10:22:45,039 - INFO - Batch42-1:M:2434.50|En:2433.50|Tp:2434.10|SL:2403.50|100|Long|Isolated
+2026-02-01 10:22:46,084 - INFO - Cancelling OKX order 326938523576...
+2026-02-01 10:22:46,812 - INFO - Batch42-2:M:2434.50|En:2432.50|Tp:2433.10|SL:2402.50|100|Long|Isolated
+2026-02-01 10:22:47,680 - INFO - Cancelling OKX order 326938516660...
+2026-02-01 10:22:49,339 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-01 10:22:59,346 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:22:59,348 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:22:59,349 - INFO - Check Entry Condition
+2026-02-01 10:22:59,350 - INFO - Entry-1:LONG Market 2434.50, Safety:2970.32, Passed
+2026-02-01 10:22:59,352 - INFO - Entry-3:Remaining: 4601.00 > Target 100: Passed
+2026-02-01 10:22:59,354 - INFO - Entry-4:Remaining: 4601.00 > Min 100: Passed
+2026-02-01 10:22:59,355 - INFO - Place Order Batch 43
+2026-02-01 10:22:59,356 - INFO - Batch43-1:M:2434.50|En:2433.50|Tp:2434.10|SL:2403.50|100|Long|Isolated
+2026-02-01 10:23:01,864 - INFO - Batch43-2:M:2437.96|En:2432.50|Tp:2433.10|SL:2402.50|100|Long|Isolated
+2026-02-01 10:23:03,941 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-01 10:23:13,945 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:23:13,947 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:23:13,949 - INFO - Check Entry Condition
+2026-02-01 10:23:13,950 - INFO - Entry-1:LONG Market 2439.17, Safety:2970.32, Passed
+2026-02-01 10:23:13,952 - INFO - Entry-3:Remaining: 4401.50 > Target 100: Passed
+2026-02-01 10:23:13,955 - INFO - Entry-4:Remaining: 4401.50 > Min 100: Passed
+2026-02-01 10:23:13,957 - INFO - Place Order Batch 44
+2026-02-01 10:23:13,959 - INFO - Batch44-1:M:2439.17|En:2438.17|Tp:2438.77|SL:2408.17|100|Long|Isolated
+2026-02-01 10:23:15,946 - INFO - Batch44-2:M:2439.17|En:2437.17|Tp:2437.77|SL:2407.17|100|Long|Isolated
+2026-02-01 10:23:18,083 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-01 10:23:28,085 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:23:28,086 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:23:28,088 - INFO - Check Entry Condition
+2026-02-01 10:23:28,089 - INFO - Entry-1:LONG Market 2440.95, Safety:2970.32, Passed
+2026-02-01 10:23:28,090 - INFO - Entry-3:Remaining: 4201.61 > Target 100: Passed
+2026-02-01 10:23:28,092 - INFO - Entry-4:Remaining: 4201.61 > Min 100: Passed
+2026-02-01 10:23:28,093 - INFO - Place Order Batch 45
+2026-02-01 10:23:28,095 - INFO - Batch45-1:M:2440.95|En:2439.95|Tp:2440.55|SL:2409.95|100|Long|Isolated
+2026-02-01 10:23:30,033 - INFO - Batch45-2:M:2440.95|En:2438.95|Tp:2439.55|SL:2408.95|100|Long|Isolated
+2026-02-01 10:23:32,165 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-01 10:23:42,186 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:23:42,269 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:23:42,318 - INFO - Check Entry Condition
+2026-02-01 10:23:42,443 - INFO - Entry-1:LONG Market 2441.58, Safety:2970.32, Passed
+2026-02-01 10:23:42,449 - INFO - Entry-3:Remaining: 4004.01 > Target 100: Passed
+2026-02-01 10:23:42,452 - INFO - Entry-4:Remaining: 4004.01 > Min 100: Passed
+2026-02-01 10:23:42,455 - INFO - Place Order Batch 46
+2026-02-01 10:23:42,459 - INFO - Batch46-1:M:2441.58|En:2440.58|Tp:2441.18|SL:2410.58|100|Long|Isolated
+2026-02-01 10:23:44,469 - INFO - Batch46-2:M:2440.37|En:2439.58|Tp:2440.18|SL:2409.58|100|Long|Isolated
+2026-02-01 10:23:46,245 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-01 10:23:49,708 - INFO - Cancel Order 3269390317648494592 (Long: Cancel if Entry price is above market price (Entry 2440.58 > Market 2440.37))
+2026-02-01 10:23:49,710 - INFO - Cancelling OKX order 326939031764...
+2026-02-01 10:23:56,247 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:23:56,248 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:23:56,250 - INFO - Check Entry Condition
+2026-02-01 10:23:56,254 - INFO - Entry-1:LONG Market 2440.50, Safety:2970.32, Passed
+2026-02-01 10:23:56,257 - INFO - Entry-3:Remaining: 3906.43 > Target 100: Passed
+2026-02-01 10:23:56,261 - INFO - Entry-4:Remaining: 3906.43 > Min 100: Passed
+2026-02-01 10:23:56,264 - INFO - Place Order Batch 47
+2026-02-01 10:23:56,270 - INFO - Batch47-1:M:2440.50|En:2439.50|Tp:2440.10|SL:2409.50|100|Long|Isolated
+2026-02-01 10:23:58,604 - INFO - Batch47-2:M:2440.44|En:2438.50|Tp:2439.10|SL:2408.50|100|Long|Isolated
+2026-02-01 10:24:00,622 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-01 10:24:01,506 - INFO - Cancelling OKX order 326938769238...
+2026-02-01 10:24:04,096 - INFO - Cancel Order 3269389832350744576 (Long: Cancel if Entry price is above market price (Entry 2439.95 > Market 2439.22))
+2026-02-01 10:24:04,097 - INFO - Cancelling OKX order 326938983235...
+2026-02-01 10:24:06,208 - INFO - Cancel Order 3269390382240776192 (Long: Cancel if Entry price is above market price (Entry 2439.58 > Market 2439.22))
+2026-02-01 10:24:06,212 - INFO - Cancelling OKX order 326939038224...
+2026-02-01 10:24:08,262 - INFO - Syncing TP/SL for LONG position. Avg Price: 2439.68
+2026-02-01 10:24:10,624 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:24:10,652 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:24:10,658 - INFO - Check Entry Condition
+2026-02-01 10:24:17,239 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-01 10:24:17,240 - INFO - Entry-1:LONG Market 2439.22, Safety:2970.32, Passed
+2026-02-01 10:24:17,244 - INFO - Entry-3:Remaining: 4003.81 > Target 100: Passed
+2026-02-01 10:24:17,247 - INFO - Entry-4:Remaining: 4003.81 > Min 100: Passed
+2026-02-01 10:24:17,249 - INFO - Place Order Batch 48
+2026-02-01 10:24:17,251 - INFO - Batch48-1:M:2439.17|En:2438.22|Tp:2438.82|SL:2408.22|100|Long|Isolated
+2026-02-01 10:24:19,343 - INFO - Batch48-2:M:2439.17|En:2437.22|Tp:2437.82|SL:2407.22|100|Long|Isolated
+2026-02-01 10:24:21,639 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-01 10:24:23,534 - INFO - Cancelling OKX order 326938775633...
+2026-02-01 10:24:25,340 - INFO - Cancelling OKX order 326938775633...
+2026-02-01 10:24:27,130 - INFO - Cancelling OKX order 326938838642...
+2026-02-01 10:24:29,033 - INFO - Cancelling OKX order 326938847336...
+2026-02-01 10:24:31,641 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:24:31,642 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:24:31,643 - INFO - Check Entry Condition
+2026-02-01 10:24:31,644 - INFO - Entry-1:LONG Market 2441.58, Safety:2970.32, Passed
+2026-02-01 10:24:31,645 - INFO - Entry-3:Remaining: 4001.23 > Target 100: Passed
+2026-02-01 10:24:31,647 - INFO - Entry-4:Remaining: 4001.23 > Min 100: Passed
+2026-02-01 10:24:31,647 - INFO - Place Order Batch 49
+2026-02-01 10:24:31,648 - INFO - Batch49-1:M:2441.58|En:2440.58|Tp:2441.18|SL:2410.58|100|Long|Isolated
+2026-02-01 10:24:34,985 - INFO - Batch49-2:M:2440.34|En:2439.58|Tp:2440.18|SL:2409.58|100|Long|Isolated
+2026-02-01 10:24:36,827 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-01 10:24:39,505 - INFO - Cancelling OKX order 326938888373...
+2026-02-01 10:24:40,513 - INFO - Syncing TP/SL for LONG position. Avg Price: 2440.34
+2026-02-01 10:24:41,837 - INFO - Syncing TP/SL for LONG position. Avg Price: 2440.34
+2026-02-01 10:24:46,829 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:24:46,830 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:24:46,831 - INFO - Check Entry Condition
+2026-02-01 10:24:51,152 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-01 10:24:51,153 - INFO - Cancelling OKX order 326938896423...
+2026-02-01 10:24:51,154 - INFO - Entry-1:LONG Market 2439.58, Safety:2970.32, Passed
+2026-02-01 10:24:51,161 - INFO - Entry-3:Remaining: 4005.54 > Target 100: Passed
+2026-02-01 10:24:51,163 - INFO - Entry-4:Remaining: 4005.54 > Min 100: Passed
+2026-02-01 10:24:51,164 - INFO - Place Order Batch 50
+2026-02-01 10:25:22,876 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-01 10:25:22,876 - INFO - Batch50-1:M:2439.17|En:2438.58|Tp:2439.18|SL:2408.58|100|Long|Isolated
+2026-02-01 10:25:22,877 - INFO - Cancelling OKX order 326938943892...
+2026-02-01 10:25:32,735 - INFO - Cancelling OKX order 326938936010...
+2026-02-01 10:25:42,840 - ERROR - OKX API HTTP Error (POST /api/v5/trade/order): Status=N/A, Error=('Connection aborted.', RemoteDisconnected('Remote end closed connection without response')). Response: No response text
+2026-02-01 10:25:47,258 - ERROR - OKX API HTTP Error (GET /api/v5/account/positions): Status=N/A, Error=('Connection aborted.', RemoteDisconnected('Remote end closed connection without response')). Response: No response text
+2026-02-01 10:25:52,164 - ERROR - API request timeout (Attempt 1/3)
+2026-02-01 10:26:00,465 - CRITICAL - CRITICAL: Invalid API credentials detected (Status=401, Code=50102). Suppressing further API errors.
+2026-02-01 10:27:21,393 - ERROR - Connection timed out - goodbye
+2026-02-01 10:32:24,975 - INFO - Client disconnected
+2026-02-01 10:32:24,977 - INFO - 127.0.0.1 - - [01/Feb/2026 10:32:24] "GET /socket.io/?EIO=4&transport=websocket&sid=bnnJeQWz2qeFWm_hAAAI HTTP/1.1" 200 -
+2026-02-01 10:32:25,334 - INFO - 127.0.0.1 - - [01/Feb/2026 10:32:25] "GET / HTTP/1.1" 200 -
+2026-02-01 10:32:25,399 - INFO - 127.0.0.1 - - [01/Feb/2026 10:32:25] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-02-01 10:32:25,609 - INFO - 127.0.0.1 - - [01/Feb/2026 10:32:25] "GET /static/js/app.js HTTP/1.1" 200 -
+2026-02-01 10:32:25,983 - INFO - 127.0.0.1 - - [01/Feb/2026 10:32:25] "GET /api/config HTTP/1.1" 200 -
+2026-02-01 10:32:25,997 - INFO - 127.0.0.1 - - [01/Feb/2026 10:32:25] "GET /socket.io/?EIO=4&transport=polling&t=PmOYzwX HTTP/1.1" 200 -
+2026-02-01 10:32:26,210 - INFO - Client connected: None
+2026-02-01 10:32:26,240 - INFO - 127.0.0.1 - - [01/Feb/2026 10:32:26] "POST /socket.io/?EIO=4&transport=polling&t=PmOY-0v&sid=i7y85Abo8ECz07-iAAAK HTTP/1.1" 200 -
+2026-02-01 10:32:26,379 - INFO - 127.0.0.1 - - [01/Feb/2026 10:32:26] "GET /api/status HTTP/1.1" 200 -
+2026-02-01 10:32:26,383 - INFO - 127.0.0.1 - - [01/Feb/2026 10:32:26] "GET /socket.io/?EIO=4&transport=polling&t=PmOY-0y&sid=i7y85Abo8ECz07-iAAAK HTTP/1.1" 200 -
+2026-02-01 10:32:26,534 - INFO - 127.0.0.1 - - [01/Feb/2026 10:32:26] "GET /api/status HTTP/1.1" 200 -
+2026-02-01 10:32:40,628 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-01 10:32:42,569 - INFO - Bot starting trading logic...
+2026-02-01 10:32:42,574 - INFO - Session trade metrics reset.
+2026-02-01 10:32:47,742 - INFO - OKX server time synchronized. Offset: 160ms
+2026-02-01 10:32:50,656 - INFO - Main trading logic returned. Reconnecting WebSocket in 5s...
+2026-02-01 10:32:51,704 - INFO - 127.0.0.1 - - [01/Feb/2026 10:32:51] "GET /api/status HTTP/1.1" 200 -
+2026-02-01 10:32:55,093 - INFO - Cancelling OKX order 326939157144...
+2026-02-01 10:32:57,622 - INFO - Websocket connected
+2026-02-01 10:32:57,624 - INFO - OKX WebSocket connection opened.
+2026-02-01 10:32:58,113 - INFO - Cancelling OKX order 326939148457...
+2026-02-01 10:32:58,259 - INFO - Bot startup sequence complete.
+2026-02-01 10:32:58,668 - INFO - Checking for and closing any existing open positions...
+2026-02-01 10:33:00,904 - INFO - Cancelling OKX order 326939087146...
+2026-02-01 10:33:01,193 - INFO - No open OKX positions found to close.
+2026-02-01 10:33:05,568 - INFO - Cancelling OKX order 326938991150...
+2026-02-01 10:36:22,817 - INFO - Logger initialized. Writing to debug.log
+2026-02-01 10:36:22,820 - INFO - Bot starting background monitoring...
+2026-02-01 10:36:22,822 - INFO - 127.0.0.1 - - [01/Feb/2026 10:36:22] "GET /socket.io/?EIO=4&transport=polling&t=PmOZtkn&sid=jj8vnhd8rBHjj5heAAAA HTTP/1.1" 200 -
+2026-02-01 10:36:22,870 - INFO - 127.0.0.1 - - [01/Feb/2026 10:36:22] "GET /socket.io/?EIO=4&transport=polling&t=PmOZtrH&sid=jj8vnhd8rBHjj5heAAAA HTTP/1.1" 200 -
+2026-02-01 10:36:28,532 - INFO - OKX server time synchronized. Offset: -1ms
+2026-02-01 10:36:31,449 - INFO - Bot initialized. Starting live connection threads...
+2026-02-01 10:36:31,452 - INFO - OKX BOT STARTING
+2026-02-01 10:36:31,455 - INFO - 127.0.0.1 - - [01/Feb/2026 10:36:31] "POST /socket.io/?EIO=4&transport=polling&t=PmOZtkl&sid=jj8vnhd8rBHjj5heAAAA HTTP/1.1" 200 -
+2026-02-01 10:36:32,961 - INFO - Websocket connected
+2026-02-01 10:36:32,971 - INFO - OKX WebSocket connection opened.
+2026-02-01 10:36:34,499 - INFO - 127.0.0.1 - - [01/Feb/2026 10:36:34] "GET /api/status HTTP/1.1" 200 -
+2026-02-01 10:36:36,811 - INFO - Bot startup sequence complete.
+2026-02-01 10:36:43,486 - INFO - 127.0.0.1 - - [01/Feb/2026 10:36:43] "GET /api/status HTTP/1.1" 200 -
+2026-02-01 10:36:43,681 - INFO - Bot starting trading logic...
+2026-02-01 10:36:43,685 - INFO - Session trade metrics reset.
+2026-02-01 10:36:44,780 - INFO - Initial account balance fetched.
+2026-02-01 10:36:49,160 - INFO - OKX server time synchronized. Offset: -14ms
+2026-02-01 10:36:57,032 - INFO - 127.0.0.1 - - [01/Feb/2026 10:36:57] "GET /api/status HTTP/1.1" 200 -
+2026-02-01 10:36:59,955 - INFO - Checking for and closing any existing open positions...
+2026-02-01 10:37:02,862 - INFO - No open OKX positions found to close.
+2026-02-01 10:37:03,004 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:37:03,006 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:37:03,012 - INFO - Check Entry Condition
+2026-02-01 10:37:03,014 - INFO - Entry-1:LONG Market 2445.21, Safety:2970.32, Passed
+2026-02-01 10:37:03,015 - INFO - Entry-3:Remaining: 5000.00 > Target 100: Passed
+2026-02-01 10:37:03,016 - INFO - Entry-4:Remaining: 5000.00 > Min 100: Passed
+2026-02-01 10:37:03,017 - INFO - Place Order Batch 1
+2026-02-01 10:37:03,019 - INFO - Batch1-1:M:2445.21|En:2444.21|Tp:2444.81|SL:2414.21|100|Long|Isolated
+2026-02-01 10:37:06,157 - INFO - Batch1-2:M:2447.63|En:2443.21|Tp:2443.81|SL:2413.21|100|Long|Isolated
+2026-02-01 10:37:08,957 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-01 10:37:18,960 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:37:19,023 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:37:19,057 - INFO - Check Entry Condition
+2026-02-01 10:37:19,088 - INFO - Entry-1:LONG Market 2446.42, Safety:2970.32, Passed
+2026-02-01 10:37:19,117 - INFO - Entry-3:Remaining: 4804.50 > Target 100: Passed
+2026-02-01 10:37:19,151 - INFO - Entry-4:Remaining: 4804.50 > Min 100: Passed
+2026-02-01 10:37:19,175 - INFO - Place Order Batch 2
+2026-02-01 10:37:19,197 - INFO - Batch2-1:M:2446.42|En:2445.42|Tp:2446.02|SL:2415.42|100|Long|Isolated
+2026-02-01 10:37:22,421 - INFO - Batch2-2:M:2446.42|En:2444.42|Tp:2445.02|SL:2414.42|100|Long|Isolated
+2026-02-01 10:37:25,646 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-01 10:37:35,710 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:37:35,766 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:37:35,819 - INFO - Check Entry Condition
+2026-02-01 10:37:35,868 - INFO - Entry-1:LONG Market 2447.92, Safety:2970.32, Passed
+2026-02-01 10:37:36,008 - INFO - Entry-3:Remaining: 4608.91 > Target 100: Passed
+2026-02-01 10:37:36,083 - INFO - Entry-4:Remaining: 4608.91 > Min 100: Passed
+2026-02-01 10:37:36,138 - INFO - Place Order Batch 3
+2026-02-01 10:37:36,201 - INFO - Batch3-1:M:2447.92|En:2446.92|Tp:2447.52|SL:2416.92|100|Long|Isolated
+2026-02-01 10:37:40,340 - INFO - Batch3-2:M:2446.42|En:2445.92|Tp:2446.52|SL:2415.92|100|Long|Isolated
+2026-02-01 10:37:42,641 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-01 10:37:49,663 - INFO - Syncing TP/SL for LONG position. Avg Price: 2446.09
+2026-02-01 10:37:52,645 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:37:52,648 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:37:52,650 - INFO - Check Entry Condition
+2026-02-01 10:37:59,823 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-01 10:37:59,832 - INFO - Entry-1:LONG Market 2445.13, Safety:2970.32, Passed
+2026-02-01 10:37:59,851 - INFO - Entry-3:Remaining: 4511.03 > Target 100: Passed
+2026-02-01 10:37:59,860 - INFO - Entry-4:Remaining: 4511.03 > Min 100: Passed
+2026-02-01 10:37:59,927 - INFO - Place Order Batch 4
+2026-02-01 10:37:59,955 - INFO - Batch4-1:M:2445.13|En:2444.13|Tp:2444.73|SL:2414.13|100|Long|Isolated
+2026-02-01 10:38:03,839 - INFO - Syncing TP/SL for LONG position. Avg Price: 2446.09
+2026-02-01 10:38:13,956 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-01 10:38:14,168 - INFO - Batch4-2:M:2445.90|En:2443.13|Tp:2443.73|SL:2413.13|100|Long|Isolated
+2026-02-01 10:38:17,360 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-01 10:38:27,371 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:38:27,375 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:38:27,384 - INFO - Check Entry Condition
+2026-02-01 10:38:27,390 - INFO - Entry-1:LONG Market 2447.06, Safety:2970.32, Passed
+2026-02-01 10:38:27,396 - INFO - Entry-3:Remaining: 4511.24 > Target 100: Passed
+2026-02-01 10:38:27,402 - INFO - Entry-4:Remaining: 4511.24 > Min 100: Passed
+2026-02-01 10:38:27,408 - INFO - Place Order Batch 5
+2026-02-01 10:38:27,413 - INFO - Batch5-1:M:2447.06|En:2446.06|Tp:2446.66|SL:2416.06|100|Long|Isolated
+2026-02-01 10:38:30,174 - INFO - Batch5-2:M:2445.90|En:2445.06|Tp:2445.66|SL:2415.06|100|Long|Isolated
+2026-02-01 10:38:33,525 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-01 10:38:42,085 - INFO - Cancelling OKX order 326941721320...
+2026-02-01 10:38:43,529 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:38:43,533 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:38:43,536 - INFO - Check Entry Condition
+2026-02-01 10:38:43,539 - INFO - Entry-1:LONG Market 2447.63, Safety:2970.32, Passed
+2026-02-01 10:38:43,550 - INFO - Entry-3:Remaining: 4315.59 > Target 100: Passed
+2026-02-01 10:38:43,564 - INFO - Entry-4:Remaining: 4315.59 > Min 100: Passed
+2026-02-01 10:38:43,568 - INFO - Place Order Batch 6
+2026-02-01 10:38:43,583 - INFO - Batch6-1:M:2447.63|En:2446.63|Tp:2447.23|SL:2416.63|100|Long|Isolated
+2026-02-01 10:38:44,616 - INFO - Cancelling OKX order 326941732285...
+2026-02-01 10:38:47,317 - INFO - Batch6-2:M:2447.63|En:2445.63|Tp:2446.23|SL:2415.63|100|Long|Isolated
+2026-02-01 10:38:50,233 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-01 10:39:00,240 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:39:00,242 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:39:00,244 - INFO - Check Entry Condition
+2026-02-01 10:39:00,246 - INFO - Entry-1:LONG Market 2447.63, Safety:2970.32, Passed
+2026-02-01 10:39:00,248 - INFO - Entry-3:Remaining: 4315.40 > Target 100: Passed
+2026-02-01 10:39:00,250 - INFO - Entry-4:Remaining: 4315.40 > Min 100: Passed
+2026-02-01 10:39:00,252 - INFO - Place Order Batch 7
+2026-02-01 10:39:00,254 - INFO - Batch7-1:M:2447.63|En:2446.63|Tp:2447.23|SL:2416.63|100|Long|Isolated
+2026-02-01 10:39:02,647 - INFO - Cancelling OKX order 326941787627...
+2026-02-01 10:39:02,907 - INFO - Batch7-2:M:2448.83|En:2445.63|Tp:2446.23|SL:2415.63|100|Long|Isolated
+2026-02-01 10:39:05,837 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-01 10:39:15,841 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:39:15,850 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:39:15,867 - INFO - Check Entry Condition
+2026-02-01 10:39:15,875 - INFO - Entry-1:LONG Market 2448.96, Safety:2970.32, Passed
+2026-02-01 10:39:15,880 - INFO - Entry-3:Remaining: 4315.40 > Target 100: Passed
+2026-02-01 10:39:15,891 - INFO - Entry-4:Remaining: 4315.40 > Min 100: Passed
+2026-02-01 10:39:15,900 - INFO - Place Order Batch 8
+2026-02-01 10:39:15,912 - INFO - Batch8-1:M:2448.96|En:2447.96|Tp:2448.56|SL:2417.96|100|Long|Isolated
+2026-02-01 10:39:18,127 - INFO - Batch8-2:M:2448.00|En:2446.96|Tp:2447.56|SL:2416.96|100|Long|Isolated
+2026-02-01 10:39:20,453 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-01 10:39:30,458 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:39:30,469 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:39:30,476 - INFO - Check Entry Condition
+2026-02-01 10:39:30,484 - INFO - Entry-1:LONG Market 2450.04, Safety:2970.32, Passed
+2026-02-01 10:39:30,497 - INFO - Entry-3:Remaining: 4119.61 > Target 100: Passed
+2026-02-01 10:39:30,497 - INFO - Entry-4:Remaining: 4119.61 > Min 100: Passed
+2026-02-01 10:39:30,500 - INFO - Place Order Batch 9
+2026-02-01 10:39:30,504 - INFO - Batch9-1:M:2450.04|En:2449.04|Tp:2449.64|SL:2419.04|100|Long|Isolated
+2026-02-01 10:39:32,354 - INFO - Batch9-2:M:2450.04|En:2448.04|Tp:2448.64|SL:2418.04|100|Long|Isolated
+2026-02-01 10:39:35,139 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-01 10:39:42,376 - INFO - Cancelling OKX order 326941916204...
+2026-02-01 10:39:45,167 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:39:45,168 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:39:45,170 - INFO - Check Entry Condition
+2026-02-01 10:39:45,170 - INFO - Entry-1:LONG Market 2451.25, Safety:2970.32, Passed
+2026-02-01 10:39:45,172 - INFO - Entry-3:Remaining: 4021.68 > Target 100: Passed
+2026-02-01 10:39:45,173 - INFO - Entry-4:Remaining: 4021.68 > Min 100: Passed
+2026-02-01 10:39:45,175 - INFO - Place Order Batch 10
+2026-02-01 10:39:45,177 - INFO - Batch10-1:M:2451.25|En:2450.25|Tp:2450.85|SL:2420.25|100|Long|Isolated
+2026-02-01 10:39:47,311 - INFO - Batch10-2:M:2451.25|En:2449.25|Tp:2449.85|SL:2419.25|100|Long|Isolated
+2026-02-01 10:39:49,503 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-01 10:39:55,336 - INFO - Cancelling OKX order 326941961405...
+2026-02-01 10:39:59,506 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:39:59,508 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 10:39:59,509 - INFO - Check Entry Condition
+2026-02-01 10:39:59,510 - INFO - Entry-1:LONG Market 2451.25, Safety:2970.32, Passed
+2026-02-01 10:39:59,513 - INFO - Entry-3:Remaining: 3923.47 > Target 100: Passed
+2026-02-01 10:39:59,515 - INFO - Entry-4:Remaining: 3923.47 > Min 100: Passed
+2026-02-01 10:39:59,517 - INFO - Place Order Batch 11
+2026-02-01 10:39:59,523 - INFO - Batch11-1:M:2451.25|En:2450.25|Tp:2450.85|SL:2420.25|100|Long|Isolated
+2026-02-01 10:40:02,115 - INFO - Batch11-2:M:2451.25|En:2449.25|Tp:2449.85|SL:2419.25|100|Long|Isolated
+2026-02-01 10:40:57,472 - INFO - Logger initialized. Writing to debug.log
+2026-02-01 10:40:57,476 - INFO - Bot starting background monitoring...
+2026-02-01 10:40:57,557 - INFO - 127.0.0.1 - - [01/Feb/2026 10:40:57] "GET /socket.io/?EIO=4&transport=polling&t=PmOawqN&sid=2qg6BVAhpI3830HyAAAA HTTP/1.1" 200 -
+2026-02-01 10:40:57,568 - INFO - 127.0.0.1 - - [01/Feb/2026 10:40:57] "GET /socket.io/?EIO=4&transport=polling&t=PmOawvS&sid=2qg6BVAhpI3830HyAAAA HTTP/1.1" 200 -
+2026-02-01 10:41:03,677 - INFO - OKX server time synchronized. Offset: -247ms
+2026-02-01 10:41:05,628 - INFO - Bot initialized. Starting live connection threads...
+2026-02-01 10:41:05,646 - INFO - OKX BOT STARTING
+2026-02-01 10:41:05,650 - INFO - 127.0.0.1 - - [01/Feb/2026 10:41:05] "POST /socket.io/?EIO=4&transport=polling&t=PmOawqM&sid=2qg6BVAhpI3830HyAAAA HTTP/1.1" 200 -
+2026-02-01 10:41:07,486 - INFO - Websocket connected
+2026-02-01 10:41:07,491 - INFO - OKX WebSocket connection opened.
+2026-02-01 10:41:10,734 - INFO - Bot startup sequence complete.
+2026-02-01 10:41:13,506 - INFO - 127.0.0.1 - - [01/Feb/2026 10:41:13] "GET /api/status HTTP/1.1" 200 -
+2026-02-01 10:41:13,918 - INFO - Cancelling OKX order 326942221912...
+2026-02-01 10:41:16,088 - INFO - [OK] Order cancelled
+2026-02-01 10:41:16,090 - INFO - Cancelling OKX order 326942172889...
+2026-02-01 10:41:17,655 - INFO - Initial account balance fetched.
+2026-02-01 10:41:18,776 - INFO - [OK] Order cancelled
+2026-02-01 10:41:18,778 - INFO - Cancelling OKX order 326942123849...
+2026-02-01 10:41:20,818 - INFO - [OK] Order cancelled
+2026-02-01 10:41:20,819 - INFO - Cancelling OKX order 326942114058...
+2026-02-01 10:41:23,593 - INFO - [OK] Order cancelled
+2026-02-01 10:41:23,594 - INFO - Cancelling OKX order 326942072125...
+2026-02-01 10:41:25,447 - INFO - [OK] Order cancelled
+2026-02-01 10:41:25,447 - INFO - Cancelling OKX order 326942060102...
+2026-02-01 10:41:27,728 - INFO - [OK] Order cancelled
+2026-02-01 10:41:27,738 - INFO - Cancelling OKX order 326942015354...
+2026-02-01 10:41:30,220 - INFO - [OK] Order cancelled
+2026-02-01 10:41:30,227 - INFO - Cancelling OKX order 326942003442...
+2026-02-01 10:41:32,161 - INFO - [OK] Order cancelled
+2026-02-01 10:41:33,165 - INFO - Cancelling OKX order 326942312093...
+2026-02-01 10:41:35,329 - INFO - [OK] Order cancelled
+2026-02-01 10:41:35,330 - INFO - Cancelling OKX order 326942271123...
+2026-02-01 10:41:37,154 - INFO - [OK] Order cancelled
+2026-02-01 10:41:37,155 - INFO - Cancelling OKX order 326942262841...
+2026-02-01 10:41:39,304 - INFO - [OK] Order cancelled
+2026-02-01 10:48:04,035 - INFO - 127.0.0.1 - - [01/Feb/2026 10:48:04] "GET / HTTP/1.1" 200 -
+2026-02-01 10:48:04,569 - INFO - 127.0.0.1 - - [01/Feb/2026 10:48:04] "GET /static/css/style.css HTTP/1.1" 200 -
+2026-02-01 10:48:04,743 - INFO - 127.0.0.1 - - [01/Feb/2026 10:48:04] "GET /static/js/app.js HTTP/1.1" 200 -
+2026-02-01 10:48:04,892 - INFO - 127.0.0.1 - - [01/Feb/2026 10:48:04] "GET /socket.io/?EIO=4&transport=polling&t=PmOcZD9 HTTP/1.1" 200 -
+2026-02-01 10:48:05,207 - INFO - 127.0.0.1 - - [01/Feb/2026 10:48:05] "GET /api/config HTTP/1.1" 200 -
+2026-02-01 10:48:05,249 - INFO - Client connected: None
+2026-02-01 10:48:05,263 - INFO - 127.0.0.1 - - [01/Feb/2026 10:48:05] "POST /socket.io/?EIO=4&transport=polling&t=PmOcZEd&sid=iXNvo4AXrbcjQyqsAAAC HTTP/1.1" 200 -
+2026-02-01 10:48:05,282 - INFO - 127.0.0.1 - - [01/Feb/2026 10:48:05] "GET /socket.io/?EIO=4&transport=polling&t=PmOcZEe&sid=iXNvo4AXrbcjQyqsAAAC HTTP/1.1" 200 -
+2026-02-01 10:48:13,724 - INFO - 127.0.0.1 - - [01/Feb/2026 10:48:13] "GET /api/status HTTP/1.1" 200 -
+2026-02-01 10:48:23,113 - INFO - 127.0.0.1 - - [01/Feb/2026 10:48:23] "GET /api/status HTTP/1.1" 200 -
+2026-02-01 10:59:29,238 - INFO - Client disconnected
+2026-02-01 10:59:29,268 - INFO - 127.0.0.1 - - [01/Feb/2026 10:59:29] "GET /socket.io/?EIO=4&transport=websocket&sid=2qg6BVAhpI3830HyAAAA HTTP/1.1" 200 -
+2026-02-01 11:03:24,514 - ERROR - API request timeout (Attempt 1/3)
+2026-02-01 11:03:25,119 - ERROR - API request timeout (Attempt 1/3)
+2026-02-01 11:03:37,565 - ERROR - OKX API HTTP Error (GET /api/v5/account/balance): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/balance?ccy=USDT (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F84CB0B90>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:03:37,598 - ERROR - OKX API HTTP Error (GET /api/v5/account/balance): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/balance?ccy=USDT (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F856F7830>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:03:51,657 - ERROR - OKX API HTTP Error (GET /api/v5/account/balance): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/balance?ccy=USDT (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F84CB2300>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:03:51,661 - ERROR - OKX API HTTP Error (GET /api/v5/account/balance): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/balance?ccy=USDT (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F84CB2540>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:04:03,728 - ERROR - OKX API HTTP Error (GET /api/v5/trade/orders-pending): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019FFFD28800>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:04:03,729 - ERROR - OKX API HTTP Error (GET /api/v5/trade/orders-pending): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F8571BDD0>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:04:09,731 - ERROR - OKX WebSocket error: Connection to remote host was lost.
+2026-02-01 11:04:09,736 - ERROR - Connection to remote host was lost. - goodbye
+2026-02-01 11:04:10,659 - INFO - Main trading logic returned. Reconnecting WebSocket in 5s...
+2026-02-01 11:04:16,787 - ERROR - OKX API HTTP Error (GET /api/v5/trade/orders-pending): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F856F72C0>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:04:16,789 - ERROR - OKX API HTTP Error (GET /api/v5/trade/orders-pending): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F856F7530>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:04:16,795 - ERROR - OKX API HTTP Error (GET /api/v5/market/history-candles): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/market/history-candles?bar=15m&before=1769904000000&instId=ETH-USDT-SWAP&limit=100 (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F85718530>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:04:27,739 - ERROR - OKX WebSocket error: [Errno 11001] getaddrinfo failed
+2026-02-01 11:04:27,743 - ERROR - [Errno 11001] getaddrinfo failed - goodbye
+2026-02-01 11:04:29,902 - ERROR - OKX API HTTP Error (GET /api/v5/market/history-candles): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/market/history-candles?bar=15m&before=1769904000000&instId=ETH-USDT-SWAP&limit=100 (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F8571B2F0>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:04:29,902 - ERROR - OKX API HTTP Error (GET /api/v5/trade/orders-pending): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F84CB2510>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:04:29,904 - ERROR - OKX API HTTP Error (GET /api/v5/trade/orders-pending): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F84CB1F10>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:04:41,959 - ERROR - OKX API HTTP Error (GET /api/v5/account/positions): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/positions?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F8574CCB0>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:04:41,961 - ERROR - OKX API HTTP Error (GET /api/v5/account/positions): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/positions?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F8574CFB0>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:04:41,963 - ERROR - OKX API HTTP Error (GET /api/v5/market/history-candles): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/market/history-candles?bar=15m&before=1769904000000&instId=ETH-USDT-SWAP&limit=100 (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F84CB2990>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:04:41,995 - ERROR - Error fetching OKX klines: None
+2026-02-01 11:04:42,002 - ERROR - Failed to fetch data for 15m
+2026-02-01 11:04:42,010 - INFO - Bot startup sequence complete.
+2026-02-01 11:04:54,083 - ERROR - OKX API HTTP Error (GET /api/v5/account/balance): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/balance?ccy=USDT (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F84CB25D0>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:04:54,085 - ERROR - OKX API HTTP Error (GET /api/v5/account/positions): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/positions?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F85718EC0>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:04:54,090 - ERROR - OKX API HTTP Error (GET /api/v5/account/positions): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/positions?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F8571AED0>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:05:07,171 - ERROR - OKX API HTTP Error (GET /api/v5/account/balance): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/balance?ccy=USDT (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F856F7590>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:05:07,172 - ERROR - OKX API HTTP Error (GET /api/v5/account/positions): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/positions?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F856F7320>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:05:07,175 - ERROR - OKX API HTTP Error (GET /api/v5/account/positions): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/positions?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F856F0890>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:05:08,198 - WARNING - WARNING: Market price is STALE (118.5s). Re-initializing WebSocket...
+2026-02-01 11:05:20,252 - ERROR - OKX API HTTP Error (GET /api/v5/account/balance): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/balance?ccy=USDT (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F84CB2930>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:05:20,255 - ERROR - OKX API HTTP Error (GET /api/v5/account/balance): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/balance?ccy=USDT (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F85718410>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:05:20,257 - ERROR - OKX API HTTP Error (GET /api/v5/account/balance): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/balance?ccy=USDT (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F8571BE30>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:05:32,305 - ERROR - OKX API HTTP Error (GET /api/v5/trade/orders-pending): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F8574D190>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:05:32,306 - ERROR - OKX API HTTP Error (GET /api/v5/account/balance): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/balance?ccy=USDT (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F8574D8E0>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:05:32,308 - ERROR - OKX API HTTP Error (GET /api/v5/account/balance): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/balance?ccy=USDT (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F8574C1D0>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:05:45,380 - ERROR - OKX API HTTP Error (GET /api/v5/trade/orders-pending): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F84CB2B70>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:05:45,381 - ERROR - OKX API HTTP Error (GET /api/v5/account/balance): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/balance?ccy=USDT (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F8571B1D0>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:05:45,383 - ERROR - OKX API HTTP Error (GET /api/v5/account/balance): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/balance?ccy=USDT (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F85719E80>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:05:57,437 - ERROR - OKX API HTTP Error (GET /api/v5/trade/orders-pending): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F856F7C50>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:05:57,442 - ERROR - OKX API HTTP Error (GET /api/v5/trade/orders-pending): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F856F4260>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:05:57,442 - ERROR - OKX API HTTP Error (GET /api/v5/trade/orders-pending): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F8574D5B0>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:06:09,526 - ERROR - OKX API HTTP Error (GET /api/v5/account/positions): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/positions?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F84CB2630>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:06:09,527 - ERROR - OKX API HTTP Error (GET /api/v5/trade/orders-pending): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F8571BBC0>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:06:09,529 - ERROR - OKX API HTTP Error (GET /api/v5/trade/orders-pending): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F856F3CB0>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:06:22,590 - ERROR - OKX API HTTP Error (GET /api/v5/account/positions): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/positions?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F8574C9E0>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:06:22,594 - ERROR - OKX API HTTP Error (GET /api/v5/trade/orders-pending): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F8574CD10>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:06:22,595 - ERROR - OKX API HTTP Error (GET /api/v5/trade/orders-pending): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F8574E0F0>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:06:34,706 - ERROR - OKX API HTTP Error (GET /api/v5/account/positions): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/positions?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F85718E60>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:06:34,707 - ERROR - OKX API HTTP Error (GET /api/v5/account/positions): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/positions?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F84CB20C0>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:06:34,708 - ERROR - OKX API HTTP Error (GET /api/v5/account/positions): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/positions?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F856F21E0>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:06:34,722 - INFO - Initial account balance fetched.
+2026-02-01 11:06:34,726 - INFO - Main trading logic returned. Reconnecting WebSocket in 5s...
+2026-02-01 11:06:47,765 - ERROR - OKX API HTTP Error (GET /api/v5/account/positions): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/positions?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F8574E7E0>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:06:47,767 - ERROR - OKX API HTTP Error (GET /api/v5/market/history-candles): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/market/history-candles?bar=15m&before=1769904000000&instId=ETH-USDT-SWAP&limit=100 (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F8574FB00>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:06:47,769 - ERROR - OKX API HTTP Error (GET /api/v5/account/positions): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/positions?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F8574E9F0>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:06:51,815 - ERROR - OKX WebSocket error: [Errno 11001] getaddrinfo failed
+2026-02-01 11:06:51,822 - ERROR - [Errno 11001] getaddrinfo failed - goodbye
+2026-02-01 11:07:00,877 - ERROR - OKX API HTTP Error (GET /api/v5/market/history-candles): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/market/history-candles?bar=15m&before=1769904000000&instId=ETH-USDT-SWAP&limit=100 (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F84CB1F40>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:07:00,879 - ERROR - OKX API HTTP Error (GET /api/v5/account/positions): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/positions?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F85719C40>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:07:00,881 - ERROR - OKX API HTTP Error (GET /api/v5/account/positions): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/positions?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F8574C8F0>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:07:01,919 - WARNING - WARNING: Market price is STALE (113.7s). Re-initializing WebSocket...
+2026-02-01 11:07:13,968 - ERROR - OKX API HTTP Error (GET /api/v5/account/balance): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/balance?ccy=USDT (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F8574DCA0>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:07:13,970 - ERROR - OKX API HTTP Error (GET /api/v5/market/history-candles): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/market/history-candles?bar=15m&before=1769904000000&instId=ETH-USDT-SWAP&limit=100 (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F85778320>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:07:13,971 - ERROR - OKX API HTTP Error (GET /api/v5/account/balance): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/balance?ccy=USDT (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F85778D10>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:07:13,991 - ERROR - Error fetching OKX klines: None
+2026-02-01 11:07:14,001 - ERROR - Failed to fetch data for 15m
+2026-02-01 11:07:14,003 - INFO - Bot startup sequence complete.
+2026-02-01 11:07:26,053 - ERROR - OKX API HTTP Error (GET /api/v5/account/balance): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/balance?ccy=USDT (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F8571BC20>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:07:26,056 - ERROR - OKX API HTTP Error (GET /api/v5/account/balance): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/balance?ccy=USDT (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019FFFD28800>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:07:26,057 - ERROR - OKX API HTTP Error (GET /api/v5/account/balance): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/balance?ccy=USDT (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F8574D9A0>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:07:39,169 - ERROR - OKX API HTTP Error (GET /api/v5/account/balance): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/balance?ccy=USDT (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F85778E00>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:07:39,170 - ERROR - OKX API HTTP Error (GET /api/v5/account/balance): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/balance?ccy=USDT (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F85779730>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:07:39,174 - ERROR - OKX API HTTP Error (GET /api/v5/account/balance): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/balance?ccy=USDT (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F8574F500>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:07:51,250 - ERROR - OKX API HTTP Error (GET /api/v5/trade/orders-pending): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F8574E0F0>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:07:51,252 - ERROR - OKX API HTTP Error (GET /api/v5/trade/orders-pending): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F8574E240>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:07:51,253 - ERROR - OKX API HTTP Error (GET /api/v5/account/balance): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/balance?ccy=USDT (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F8574D8E0>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:03,345 - ERROR - OKX API HTTP Error (GET /api/v5/trade/orders-pending): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F8574C890>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:03,346 - ERROR - OKX API HTTP Error (GET /api/v5/trade/orders-pending): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F8450AE40>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:03,349 - ERROR - OKX API HTTP Error (GET /api/v5/trade/orders-pending): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F8571A660>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:05,064 - ERROR - OKX API HTTP Error (GET /api/v5/trade/orders-pending): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F8574F590>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:05,380 - ERROR - OKX API HTTP Error (GET /api/v5/trade/orders-pending): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019FFFD28800>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:05,381 - ERROR - OKX API HTTP Error (GET /api/v5/trade/orders-pending): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F8574EF90>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:05,404 - ERROR - OKX API HTTP Error (GET /api/v5/account/positions): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/positions?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F8574EA80>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:05,429 - ERROR - OKX API HTTP Error (GET /api/v5/account/positions): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/positions?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F8574EDB0>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:06,438 - ERROR - OKX API HTTP Error (GET /api/v5/account/positions): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/positions?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019FFFD28800>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:06,453 - ERROR - OKX API HTTP Error (GET /api/v5/account/positions): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/positions?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F8574E9F0>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:07,076 - ERROR - OKX API HTTP Error (GET /api/v5/trade/orders-pending): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F8574F9B0>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:07,094 - ERROR - OKX API HTTP Error (GET /api/v5/account/positions): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/positions?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F8571B0E0>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:08,123 - ERROR - OKX API HTTP Error (GET /api/v5/account/positions): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/positions?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F857191F0>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:08,453 - ERROR - OKX API HTTP Error (GET /api/v5/account/positions): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/positions?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F8574F5C0>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:08,475 - ERROR - OKX API HTTP Error (GET /api/v5/account/positions): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/positions?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F8574F2C0>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:09,461 - WARNING - WARNING: Market price is STALE (67.5s). Re-initializing WebSocket...
+2026-02-01 11:08:09,470 - ERROR - OKX API HTTP Error (GET /api/v5/account/balance): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/balance?ccy=USDT (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F8571BC50>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:10,161 - ERROR - OKX API HTTP Error (GET /api/v5/account/positions): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/positions?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F856F7EF0>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:10,177 - INFO - Initial account balance fetched.
+2026-02-01 11:08:10,183 - INFO - Main trading logic returned. Reconnecting WebSocket in 5s...
+2026-02-01 11:08:10,486 - ERROR - OKX API HTTP Error (GET /api/v5/account/balance): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/balance?ccy=USDT (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F856F6E10>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:12,499 - ERROR - OKX API HTTP Error (GET /api/v5/account/balance): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/balance?ccy=USDT (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F856F41A0>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:12,514 - ERROR - OKX API HTTP Error (GET /api/v5/trade/orders-pending): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F8571B590>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:13,529 - ERROR - OKX API HTTP Error (GET /api/v5/trade/orders-pending): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F8574F380>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:15,192 - ERROR - OKX WebSocket error: [Errno 11001] getaddrinfo failed
+2026-02-01 11:08:15,197 - ERROR - [Errno 11001] getaddrinfo failed - goodbye
+2026-02-01 11:08:15,201 - ERROR - OKX API HTTP Error (GET /api/v5/market/history-candles): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/market/history-candles?bar=15m&before=1769904000000&instId=ETH-USDT-SWAP&limit=100 (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F856F5190>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:15,546 - ERROR - OKX API HTTP Error (GET /api/v5/trade/orders-pending): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F856F62A0>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:15,564 - ERROR - OKX API HTTP Error (GET /api/v5/account/positions): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/positions?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F856F2420>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:16,226 - ERROR - OKX API HTTP Error (GET /api/v5/market/history-candles): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/market/history-candles?bar=15m&before=1769904000000&instId=ETH-USDT-SWAP&limit=100 (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F856F6990>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:16,580 - ERROR - OKX API HTTP Error (GET /api/v5/account/positions): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/positions?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F8574F260>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:18,260 - ERROR - OKX API HTTP Error (GET /api/v5/market/history-candles): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/market/history-candles?bar=15m&before=1769904000000&instId=ETH-USDT-SWAP&limit=100 (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F8574EC30>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:18,268 - ERROR - Error fetching OKX klines: None
+2026-02-01 11:08:18,273 - ERROR - Failed to fetch data for 15m
+2026-02-01 11:08:18,279 - INFO - Bot startup sequence complete.
+2026-02-01 11:08:18,295 - ERROR - OKX API HTTP Error (GET /api/v5/account/balance): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/balance?ccy=USDT (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F85718A70>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:18,502 - ERROR - OKX API HTTP Error (GET /api/v5/account/balance): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/balance?ccy=USDT (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F856F3FB0>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:18,597 - ERROR - OKX API HTTP Error (GET /api/v5/account/positions): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/positions?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F84CB2D20>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:19,316 - ERROR - OKX API HTTP Error (GET /api/v5/account/balance): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/balance?ccy=USDT (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F8574E720>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:19,521 - ERROR - OKX API HTTP Error (GET /api/v5/account/balance): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/balance?ccy=USDT (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F8574F320>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:19,619 - ERROR - OKX API HTTP Error (GET /api/v5/account/balance): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/balance?ccy=USDT (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F856F2F30>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:20,647 - ERROR - OKX API HTTP Error (GET /api/v5/account/balance): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/balance?ccy=USDT (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F856F5F70>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:21,340 - ERROR - OKX API HTTP Error (GET /api/v5/account/balance): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/balance?ccy=USDT (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F8571BFE0>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:21,360 - ERROR - OKX API HTTP Error (GET /api/v5/trade/orders-pending): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F84CB17C0>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:21,538 - ERROR - OKX API HTTP Error (GET /api/v5/account/balance): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/balance?ccy=USDT (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F856F62A0>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:21,560 - ERROR - OKX API HTTP Error (GET /api/v5/trade/orders-pending): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F843EFDA0>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:22,386 - ERROR - OKX API HTTP Error (GET /api/v5/trade/orders-pending): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F8574FA10>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:22,591 - ERROR - OKX API HTTP Error (GET /api/v5/trade/orders-pending): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F841ACCE0>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:22,670 - ERROR - OKX API HTTP Error (GET /api/v5/account/balance): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/balance?ccy=USDT (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F84CB2180>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:22,695 - ERROR - OKX API HTTP Error (GET /api/v5/trade/orders-pending): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F85778440>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:23,723 - ERROR - OKX API HTTP Error (GET /api/v5/trade/orders-pending): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F856F2F00>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:24,426 - ERROR - OKX API HTTP Error (GET /api/v5/trade/orders-pending): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F84CB33B0>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:24,453 - ERROR - OKX API HTTP Error (GET /api/v5/account/positions): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/positions?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F84CB0BF0>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:24,609 - ERROR - OKX API HTTP Error (GET /api/v5/trade/orders-pending): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F856F6B40>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:24,639 - ERROR - OKX API HTTP Error (GET /api/v5/account/positions): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/positions?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F85779AC0>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:25,485 - ERROR - OKX API HTTP Error (GET /api/v5/account/positions): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/positions?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F85778650>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:25,675 - ERROR - OKX API HTTP Error (GET /api/v5/account/positions): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/positions?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F84CB2690>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:25,733 - ERROR - OKX API HTTP Error (GET /api/v5/trade/orders-pending): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F84CB2480>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:25,742 - ERROR - OKX API HTTP Error (GET /api/v5/account/positions): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/positions?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F85718E00>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:26,756 - ERROR - OKX API HTTP Error (GET /api/v5/account/positions): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/positions?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F85778E60>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:27,511 - ERROR - OKX API HTTP Error (GET /api/v5/account/positions): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/positions?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F85779FA0>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:27,520 - INFO - Initial account balance fetched.
+2026-02-01 11:08:27,525 - INFO - Main trading logic returned. Reconnecting WebSocket in 5s...
+2026-02-01 11:08:27,695 - ERROR - OKX API HTTP Error (GET /api/v5/account/positions): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/positions?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F8577A840>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:28,779 - ERROR - OKX API HTTP Error (GET /api/v5/account/positions): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/positions?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F8574EC60>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:29,800 - ERROR - OKX API HTTP Error (GET /api/v5/account/balance): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/balance?ccy=USDT (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F84CB2480>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:30,820 - ERROR - OKX API HTTP Error (GET /api/v5/account/balance): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/balance?ccy=USDT (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F856F4980>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:32,532 - ERROR - OKX WebSocket error: [Errno 11001] getaddrinfo failed
+2026-02-01 11:08:32,535 - ERROR - [Errno 11001] getaddrinfo failed - goodbye
+2026-02-01 11:08:32,535 - ERROR - OKX API HTTP Error (GET /api/v5/market/history-candles): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/market/history-candles?bar=15m&before=1769904000000&instId=ETH-USDT-SWAP&limit=100 (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F85779E80>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:32,894 - ERROR - OKX API HTTP Error (GET /api/v5/account/balance): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/balance?ccy=USDT (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F857787D0>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:32,945 - ERROR - OKX API HTTP Error (GET /api/v5/trade/orders-pending): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F8577AE70>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:33,590 - ERROR - OKX API HTTP Error (GET /api/v5/market/history-candles): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/market/history-candles?bar=15m&before=1769904000000&instId=ETH-USDT-SWAP&limit=100 (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F84CB2540>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:33,978 - ERROR - OKX API HTTP Error (GET /api/v5/trade/orders-pending): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F84CB3C50>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:34,424 - INFO - Client disconnected
+2026-02-01 11:08:34,433 - INFO - 127.0.0.1 - - [01/Feb/2026 11:08:34] "GET /socket.io/?EIO=4&transport=websocket&sid=iXNvo4AXrbcjQyqsAAAC HTTP/1.1" 200 -
+2026-02-01 11:08:35,630 - ERROR - OKX API HTTP Error (GET /api/v5/market/history-candles): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/market/history-candles?bar=15m&before=1769904000000&instId=ETH-USDT-SWAP&limit=100 (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F8571ABA0>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:35,633 - ERROR - Error fetching OKX klines: None
+2026-02-01 11:08:35,634 - ERROR - Failed to fetch data for 15m
+2026-02-01 11:08:35,635 - INFO - Bot startup sequence complete.
+2026-02-01 11:08:35,639 - ERROR - OKX API HTTP Error (GET /api/v5/account/balance): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/balance?ccy=USDT (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F85779430>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:35,992 - ERROR - OKX API HTTP Error (GET /api/v5/trade/orders-pending): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F8577A120>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:36,001 - ERROR - OKX API HTTP Error (GET /api/v5/account/positions): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/positions?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F8577AC90>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:36,651 - ERROR - OKX API HTTP Error (GET /api/v5/account/balance): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/balance?ccy=USDT (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F857184D0>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:37,006 - ERROR - OKX API HTTP Error (GET /api/v5/account/positions): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/positions?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F84CB08F0>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:37,719 - ERROR - OKX API HTTP Error (GET /api/v5/account/balance): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/balance?ccy=USDT (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F84CB0B90>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:38,659 - ERROR - OKX API HTTP Error (GET /api/v5/account/balance): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/balance?ccy=USDT (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F856F2030>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:38,663 - ERROR - OKX API HTTP Error (GET /api/v5/trade/orders-pending): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F856F7A10>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:38,724 - ERROR - OKX API HTTP Error (GET /api/v5/account/balance): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/balance?ccy=USDT (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F85779970>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:39,011 - ERROR - OKX API HTTP Error (GET /api/v5/account/positions): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/positions?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F84CB3B30>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:39,667 - ERROR - OKX API HTTP Error (GET /api/v5/trade/orders-pending): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F84CB20C0>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:08:40,013 - WARNING - WARNING: Market price is STALE (30.6s). Re-initializing WebSocket...
+2026-02-01 11:08:40,016 - ERROR - OKX API HTTP Error (GET /api/v5/account/balance): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/balance?ccy=USDT (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F856F01D0>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:34:18,553 - ERROR - OKX API HTTP Error (GET /api/v5/account/balance): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/balance?ccy=USDT (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F856F1CD0>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:34:18,565 - ERROR - OKX API HTTP Error (GET /api/v5/trade/orders-pending): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F856F5FD0>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:34:18,837 - ERROR - OKX API HTTP Error (GET /api/v5/account/balance): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/balance?ccy=USDT (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F856F7560>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:34:19,640 - ERROR - OKX API HTTP Error (GET /api/v5/trade/orders-pending): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F856F2450>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:34:19,726 - ERROR - OKX API HTTP Error (GET /api/v5/trade/orders-pending): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F856F1BB0>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:34:19,895 - ERROR - OKX API HTTP Error (GET /api/v5/account/positions): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/positions?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F84CB2870>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:34:20,896 - ERROR - OKX API HTTP Error (GET /api/v5/account/balance): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/balance?ccy=USDT (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F84CB2990>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:34:20,954 - ERROR - OKX API HTTP Error (GET /api/v5/trade/orders-pending): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F857181A0>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:34:21,383 - ERROR - OKX API HTTP Error (GET /api/v5/account/positions): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/positions?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F8571B0E0>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:34:22,200 - ERROR - OKX API HTTP Error (GET /api/v5/trade/orders-pending): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F85719610>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:34:22,283 - ERROR - OKX API HTTP Error (GET /api/v5/account/positions): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/positions?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F84426BA0>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:34:22,364 - ERROR - OKX API HTTP Error (GET /api/v5/trade/orders-pending): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F856F49E0>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:34:23,401 - ERROR - OKX API HTTP Error (GET /api/v5/account/positions): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/positions?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F856F00B0>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:34:23,547 - ERROR - OKX API HTTP Error (GET /api/v5/account/positions): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/positions?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F8571ADE0>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:34:23,612 - INFO - Initial account balance fetched.
+2026-02-01 11:34:23,660 - INFO - Main trading logic returned. Reconnecting WebSocket in 5s...
+2026-02-01 11:34:24,488 - ERROR - OKX API HTTP Error (GET /api/v5/trade/orders-pending): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F8571AD50>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:34:24,503 - ERROR - OKX API HTTP Error (GET /api/v5/account/positions): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/positions?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F8574D9D0>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:34:37,756 - ERROR - OKX API HTTP Error (GET /api/v5/account/positions): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/positions?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F8571A990>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:34:37,758 - ERROR - OKX API HTTP Error (GET /api/v5/account/positions): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/account/positions?instId=ETH-USDT-SWAP&instType=SWAP (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F856F0830>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:34:38,084 - INFO - 127.0.0.1 - - [01/Feb/2026 11:34:38] "GET /socket.io/?EIO=4&transport=polling&t=PmOnCzD HTTP/1.1" 200 -
+2026-02-01 11:34:38,361 - INFO - Client connected: None
+2026-02-01 11:34:38,382 - INFO - 127.0.0.1 - - [01/Feb/2026 11:34:38] "POST /socket.io/?EIO=4&transport=polling&t=PmOnDB1&sid=wKP4fVp93ZGgmQpcAAAE HTTP/1.1" 200 -
+2026-02-01 11:34:38,496 - INFO - 127.0.0.1 - - [01/Feb/2026 11:34:38] "GET /socket.io/?EIO=4&transport=polling&t=PmOnDBF&sid=wKP4fVp93ZGgmQpcAAAE HTTP/1.1" 200 -
+2026-02-01 11:34:39,295 - INFO - 127.0.0.1 - - [01/Feb/2026 11:34:39] "GET /socket.io/?EIO=4&transport=polling&t=PmOnDOL&sid=wKP4fVp93ZGgmQpcAAAE HTTP/1.1" 200 -
+2026-02-01 11:34:40,998 - ERROR - OKX API HTTP Error (GET /api/v5/market/history-candles): Status=N/A, Error=HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/market/history-candles?bar=15m&before=1769904000000&instId=ETH-USDT-SWAP&limit=100 (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000019F856F0260>: Failed to resolve 'www.okx.com' ([Errno 11001] getaddrinfo failed)")). Response: No response text
+2026-02-01 11:34:41,033 - ERROR - OKX WebSocket error: [Errno 11001] getaddrinfo failed
+2026-02-01 11:34:41,160 - ERROR - [Errno 11001] getaddrinfo failed - goodbye
+2026-02-01 11:34:44,959 - WARNING - WARNING: Market price is STALE (1564.9s). Re-initializing WebSocket...
+2026-02-01 11:34:45,974 - INFO - Bot startup sequence complete.
+2026-02-01 11:34:51,731 - INFO - 127.0.0.1 - - [01/Feb/2026 11:34:51] "GET /api/status HTTP/1.1" 200 -
+2026-02-01 11:34:55,085 - INFO - Initial account balance fetched.
+2026-02-01 11:34:55,087 - INFO - Main trading logic returned. Reconnecting WebSocket in 5s...
+2026-02-01 11:35:01,791 - INFO - Websocket connected
+2026-02-01 11:35:01,824 - INFO - OKX WebSocket connection opened.
+2026-02-01 11:35:02,567 - INFO - Bot startup sequence complete.
+2026-02-01 11:35:09,802 - INFO - Initial account balance fetched.
+2026-02-01 11:40:49,896 - INFO - 127.0.0.1 - - [01/Feb/2026 11:40:49] "GET / HTTP/1.1" 200 -
+2026-02-01 11:40:50,011 - INFO - 127.0.0.1 - - [01/Feb/2026 11:40:50] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-02-01 11:40:50,139 - INFO - 127.0.0.1 - - [01/Feb/2026 11:40:50] "GET /static/js/app.js HTTP/1.1" 200 -
+2026-02-01 11:40:50,654 - INFO - 127.0.0.1 - - [01/Feb/2026 11:40:50] "GET /socket.io/?EIO=4&transport=polling&t=PmOoe1l HTTP/1.1" 200 -
+2026-02-01 11:40:50,658 - INFO - 127.0.0.1 - - [01/Feb/2026 11:40:50] "GET /api/config HTTP/1.1" 200 -
+2026-02-01 11:40:50,917 - INFO - Client connected: None
+2026-02-01 11:40:50,942 - INFO - 127.0.0.1 - - [01/Feb/2026 11:40:50] "POST /socket.io/?EIO=4&transport=polling&t=PmOoe8E&sid=bYiU8VK7DJCeO7y4AAAG HTTP/1.1" 200 -
+2026-02-01 11:40:51,034 - INFO - 127.0.0.1 - - [01/Feb/2026 11:40:51] "GET /socket.io/?EIO=4&transport=polling&t=PmOoe8J&sid=bYiU8VK7DJCeO7y4AAAG HTTP/1.1" 200 -
+2026-02-01 11:41:34,209 - INFO - Logger initialized. Writing to debug.log
+2026-02-01 11:41:34,211 - INFO - Bot starting background monitoring...
+2026-02-01 11:41:34,375 - INFO - 127.0.0.1 - - [01/Feb/2026 11:41:34] "GET /socket.io/?EIO=4&transport=polling&t=PmOooiJ&sid=qTeCCsY6xRAj3xtXAAAA HTTP/1.1" 200 -
+2026-02-01 11:41:34,520 - INFO - 127.0.0.1 - - [01/Feb/2026 11:41:34] "GET /socket.io/?EIO=4&transport=polling&t=PmOooqk&sid=qTeCCsY6xRAj3xtXAAAA HTTP/1.1" 200 -
+2026-02-01 11:41:37,522 - INFO - 127.0.0.1 - - [01/Feb/2026 11:41:37] "GET /socket.io/?EIO=4&transport=polling&t=PmOopLZ HTTP/1.1" 200 -
+2026-02-01 11:41:38,788 - INFO - Client connected: None
+2026-02-01 11:41:38,968 - INFO - 127.0.0.1 - - [01/Feb/2026 11:41:38] "POST /socket.io/?EIO=4&transport=polling&t=PmOoplV&sid=kSgS5c_zlXbncFfwAAAC HTTP/1.1" 200 -
+2026-02-01 11:41:39,162 - INFO - 127.0.0.1 - - [01/Feb/2026 11:41:39] "GET /socket.io/?EIO=4&transport=polling&t=PmOoplW&sid=kSgS5c_zlXbncFfwAAAC HTTP/1.1" 200 -
+2026-02-01 11:41:41,903 - INFO - 127.0.0.1 - - [01/Feb/2026 11:41:41] "GET / HTTP/1.1" 200 -
+2026-02-01 11:41:43,914 - INFO - 127.0.0.1 - - [01/Feb/2026 11:41:43] "GET /static/css/style.css HTTP/1.1" 200 -
+2026-02-01 11:41:44,249 - INFO - 127.0.0.1 - - [01/Feb/2026 11:41:44] "GET /static/js/app.js HTTP/1.1" 200 -
+2026-02-01 11:41:45,780 - INFO - 127.0.0.1 - - [01/Feb/2026 11:41:45] "GET /socket.io/?EIO=4&transport=polling&t=PmOorLT HTTP/1.1" 200 -
+2026-02-01 11:41:45,957 - INFO - 127.0.0.1 - - [01/Feb/2026 11:41:45] "GET /api/config HTTP/1.1" 200 -
+2026-02-01 11:41:46,631 - INFO - OKX server time synchronized. Offset: 160ms
+2026-02-01 11:41:46,715 - INFO - Client connected: None
+2026-02-01 11:41:46,881 - INFO - 127.0.0.1 - - [01/Feb/2026 11:41:46] "POST /socket.io/?EIO=4&transport=polling&t=PmOori8&sid=OP1mD1YMGa1Mz4zCAAAE HTTP/1.1" 200 -
+2026-02-01 11:41:47,212 - INFO - 127.0.0.1 - - [01/Feb/2026 11:41:47] "GET /socket.io/?EIO=4&transport=polling&t=PmOoriA&sid=OP1mD1YMGa1Mz4zCAAAE HTTP/1.1" 200 -
+2026-02-01 11:41:51,739 - INFO - Bot initialized. Starting live connection threads...
+2026-02-01 11:41:51,790 - INFO - OKX BOT STARTING
+2026-02-01 11:41:51,802 - INFO - 127.0.0.1 - - [01/Feb/2026 11:41:51] "POST /socket.io/?EIO=4&transport=polling&t=PmOooiI&sid=qTeCCsY6xRAj3xtXAAAA HTTP/1.1" 200 -
+2026-02-01 11:41:54,204 - INFO - Websocket connected
+2026-02-01 11:41:54,224 - INFO - OKX WebSocket connection opened.
+2026-02-01 11:41:59,342 - INFO - Bot startup sequence complete.
+2026-02-01 11:42:00,567 - INFO - Account Update | Used: $0.00 | Size: $0.00 | Pending: 0
+2026-02-01 11:42:00,585 - INFO - 127.0.0.1 - - [01/Feb/2026 11:42:00] "GET /api/status HTTP/1.1" 200 -
+2026-02-01 11:42:05,102 - INFO - Account Update | Used: $0.00 | Size: $0.00 | Pending: 0
+2026-02-01 11:42:05,908 - INFO - 127.0.0.1 - - [01/Feb/2026 11:42:05] "GET /socket.io/?EIO=4&transport=websocket&sid=qTeCCsY6xRAj3xtXAAAA HTTP/1.1" 200 -
+2026-02-01 11:42:14,374 - INFO - Account Update | Used: $0.00 | Size: $0.00 | Pending: 0
+2026-02-01 11:42:14,471 - INFO - Initial account balance fetched.
+2026-02-01 11:42:16,950 - INFO - Account Update | Used: $0.00 | Size: $0.00 | Pending: 0
+2026-02-01 11:42:17,013 - INFO - 127.0.0.1 - - [01/Feb/2026 11:42:17] "GET /api/status HTTP/1.1" 200 -
+2026-02-01 11:42:22,354 - INFO - Client disconnected
+2026-02-01 11:42:22,403 - INFO - Account Update | Used: $0.00 | Size: $0.00 | Pending: 0
+2026-02-01 11:42:23,100 - INFO - Account Update | Used: $0.00 | Size: $0.00 | Pending: 0
+2026-02-01 11:42:23,112 - INFO - 127.0.0.1 - - [01/Feb/2026 11:42:23] "GET /api/status HTTP/1.1" 200 -
+2026-02-01 11:42:27,689 - INFO - Account Update | Used: $0.00 | Size: $0.00 | Pending: 0
+2026-02-01 11:42:34,752 - INFO - Account Update | Used: $0.00 | Size: $0.00 | Pending: 0
+2026-02-01 11:42:47,607 - INFO - Account Update | Used: $0.00 | Size: $0.00 | Pending: 0
+2026-02-01 11:42:48,273 - INFO - Account Update | Used: $0.00 | Size: $0.00 | Pending: 0
+2026-02-01 11:42:58,513 - INFO - Account Update | Used: $0.00 | Size: $0.00 | Pending: 0
+2026-02-01 11:43:06,515 - INFO - Account Update | Used: $0.00 | Size: $0.00 | Pending: 0
+2026-02-01 11:43:08,845 - INFO - Account Update | Used: $0.00 | Size: $0.00 | Pending: 0
+2026-02-01 11:43:18,149 - INFO - Account Update | Used: $0.00 | Size: $0.00 | Pending: 0
+2026-02-01 11:43:26,014 - INFO - Account Update | Used: $0.00 | Size: $0.00 | Pending: 0
+2026-02-01 11:43:31,583 - INFO - Account Update | Used: $0.00 | Size: $0.00 | Pending: 0
+2026-02-01 11:43:46,330 - INFO - Account Update | Used: $0.00 | Size: $0.00 | Pending: 0
+2026-02-01 11:43:50,095 - INFO - Account Update | Used: $0.00 | Size: $0.00 | Pending: 0
+2026-02-01 11:43:50,409 - INFO - Client disconnected
+2026-02-01 11:43:50,471 - INFO - 127.0.0.1 - - [01/Feb/2026 11:43:50] "GET /socket.io/?EIO=4&transport=websocket&sid=kSgS5c_zlXbncFfwAAAC HTTP/1.1" 200 -
+2026-02-01 11:43:58,821 - INFO - Account Update | Used: $0.00 | Size: $0.00 | Pending: 0
+2026-02-01 11:44:09,603 - INFO - Account Update | Used: $0.00 | Size: $0.00 | Pending: 0
+2026-02-01 11:44:09,878 - INFO - Account Update | Used: $0.00 | Size: $0.00 | Pending: 0
+2026-02-01 11:44:18,692 - INFO - Account Update | Used: $0.00 | Size: $0.00 | Pending: 0
+2026-02-01 11:44:27,388 - INFO - Account Update | Used: $0.00 | Size: $0.00 | Pending: 0
+2026-02-01 11:44:28,611 - INFO - Account Update | Used: $0.00 | Size: $0.00 | Pending: 0
+2026-02-01 11:44:38,411 - INFO - Account Update | Used: $0.00 | Size: $0.00 | Pending: 0
+2026-02-01 11:44:46,554 - INFO - Account Update | Used: $0.00 | Size: $0.00 | Pending: 0
+2026-02-01 11:44:54,422 - INFO - Account Update | Used: $0.00 | Size: $0.00 | Pending: 0
+2026-02-01 11:45:06,943 - INFO - Account Update | Used: $0.00 | Size: $0.00 | Pending: 0
+2026-02-01 11:45:09,991 - INFO - Account Update | Used: $0.00 | Size: $0.00 | Pending: 0
+2026-02-01 11:45:19,933 - INFO - Account Update | Used: $0.00 | Size: $0.00 | Pending: 0
+2026-02-01 11:45:30,466 - INFO - Account Update | Used: $0.00 | Size: $0.00 | Pending: 0
+2026-02-01 11:45:31,122 - INFO - Account Update | Used: $0.00 | Size: $0.00 | Pending: 0
+2026-02-01 11:45:40,420 - INFO - Account Update | Used: $0.00 | Size: $0.00 | Pending: 0
+2026-02-01 11:45:47,218 - INFO - Account Update | Used: $0.00 | Size: $0.00 | Pending: 0
+2026-02-01 11:45:50,241 - INFO - Account Update | Used: $0.00 | Size: $0.00 | Pending: 0
+2026-02-01 11:45:59,469 - INFO - Account Update | Used: $0.00 | Size: $0.00 | Pending: 0
+2026-02-01 11:46:03,557 - INFO - Account Update | Used: $0.00 | Size: $0.00 | Pending: 0
+2026-02-01 12:06:59,158 - INFO - Logger initialized. Writing to debug.log
+2026-02-01 12:06:59,175 - INFO - Bot starting background monitoring...
+2026-02-01 12:06:59,411 - INFO - 127.0.0.1 - - [01/Feb/2026 12:06:59] "GET /socket.io/?EIO=4&transport=polling&t=PmOud2K&sid=Ba3mw60OsJ7mXdv-AAAA HTTP/1.1" 200 -
+2026-02-01 12:06:59,993 - INFO - 127.0.0.1 - - [01/Feb/2026 12:06:59] "GET /socket.io/?EIO=4&transport=polling&t=PmOud7P&sid=Ba3mw60OsJ7mXdv-AAAA HTTP/1.1" 200 -
+2026-02-01 12:07:05,064 - INFO - OKX server time synchronized. Offset: -205ms
+2026-02-01 12:07:07,716 - INFO - Bot initialized. Starting live connection threads...
+2026-02-01 12:07:07,718 - INFO - OKX BOT STARTING
+2026-02-01 12:07:07,720 - INFO - 127.0.0.1 - - [01/Feb/2026 12:07:07] "POST /socket.io/?EIO=4&transport=polling&t=PmOud2H&sid=Ba3mw60OsJ7mXdv-AAAA HTTP/1.1" 200 -
+2026-02-01 12:07:09,492 - INFO - Websocket connected
+2026-02-01 12:07:09,493 - INFO - OKX WebSocket connection opened.
+2026-02-01 12:07:09,535 - INFO - 127.0.0.1 - - [01/Feb/2026 12:07:09] "GET /api/status HTTP/1.1" 200 -
+2026-02-01 12:07:12,029 - INFO - Bot startup sequence complete.
+2026-02-01 12:07:16,520 - INFO - 127.0.0.1 - - [01/Feb/2026 12:07:16] "GET /api/status HTTP/1.1" 200 -
+2026-02-01 12:07:18,160 - INFO - Initial account balance fetched.
+2026-02-01 12:07:31,436 - INFO - Bot starting trading logic...
+2026-02-01 12:07:31,438 - INFO - Session trade metrics reset.
+2026-02-01 12:07:36,487 - INFO - OKX server time synchronized. Offset: 90ms
+2026-02-01 12:07:44,708 - INFO - 127.0.0.1 - - [01/Feb/2026 12:07:44] "GET /api/status HTTP/1.1" 200 -
+2026-02-01 12:07:44,988 - INFO - [OK] Leverage set to 20x for ETH-USDT-SWAP (long)
+2026-02-01 12:07:47,766 - INFO - [OK] Leverage set to 20x for ETH-USDT-SWAP (short)
+2026-02-01 12:07:47,770 - INFO - Checking for and closing any existing open positions...
+2026-02-01 12:07:50,037 - INFO - No open OKX positions found to close.
+2026-02-01 12:07:50,207 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 12:07:50,208 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 12:07:50,209 - INFO - Check Entry Condition
+2026-02-01 12:07:50,211 - INFO - Entry-1:LONG Market 2424.66, Safety:2970.32, Passed
+2026-02-01 12:07:50,212 - INFO - Entry-3:Remaining: 5000.00 > Target 100: Passed
+2026-02-01 12:07:50,215 - INFO - Entry-4:Remaining: 5000.00 > Min 100: Passed
+2026-02-01 12:07:50,218 - INFO - Place Order Batch 1
+2026-02-01 12:07:50,221 - INFO - Batch1-1:M:2424.66|En:2423.66|Tp:2424.26|SL:2393.66|100|Long|Isolated
+2026-02-01 12:07:52,951 - INFO - Batch1-2:M:2425.00|En:2422.66|Tp:2423.26|SL:2392.66|100|Long|Isolated
+2026-02-01 12:07:56,086 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-01 12:08:06,094 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 12:08:06,158 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 12:08:06,251 - INFO - Check Entry Condition
+2026-02-01 12:08:06,315 - INFO - Entry-1:LONG Market 2421.03, Safety:2970.32, Passed
+2026-02-01 12:08:06,417 - INFO - Entry-3:Remaining: 4801.30 > Target 100: Passed
+2026-02-01 12:08:06,476 - INFO - Entry-4:Remaining: 4801.30 > Min 100: Passed
+2026-02-01 12:08:06,564 - INFO - Place Order Batch 2
+2026-02-01 12:08:06,642 - INFO - Batch2-1:M:2421.03|En:2420.03|Tp:2420.63|SL:2390.03|100|Long|Isolated
+2026-02-01 12:08:10,416 - INFO - Batch2-2:M:2419.79|En:2419.03|Tp:2419.63|SL:2389.03|100|Long|Isolated
+2026-02-01 12:08:10,876 - INFO - Syncing TP/SL for LONG position. Avg Price: 2422.04
+2026-02-01 12:08:12,909 - INFO - Syncing TP/SL for LONG position. Avg Price: 2422.04
+2026-02-01 12:08:19,223 - INFO - [TARGET] LONG TP Set: 2422.64
+2026-02-01 12:08:22,980 - INFO - [TARGET] LONG SL Set: 2392.04
+2026-02-01 12:08:22,985 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-01 12:08:23,051 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-01 12:08:29,594 - INFO - Syncing TP/SL for LONG position. Avg Price: 2422.04
+2026-02-01 12:08:29,861 - INFO - Syncing TP/SL for LONG position. Avg Price: 2422.04
+2026-02-01 12:08:33,057 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 12:08:33,061 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 12:08:33,063 - INFO - Check Entry Condition
+2026-02-01 12:08:35,820 - INFO - Bot trading logic paused. Background monitoring remains active.
+2026-02-01 12:08:40,140 - INFO - Client disconnected
+2026-02-01 12:08:40,144 - INFO - 127.0.0.1 - - [01/Feb/2026 12:08:40] "GET /socket.io/?EIO=4&transport=websocket&sid=Ba3mw60OsJ7mXdv-AAAA HTTP/1.1" 200 -
+2026-02-01 12:08:40,901 - INFO - [TARGET] LONG SL Set: 2392.04
+2026-02-01 12:08:40,903 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-01 12:10:30,738 - INFO - Logger initialized. Writing to debug.log
+2026-02-01 12:10:30,799 - INFO - Bot starting background monitoring...
+2026-02-01 12:10:30,813 - INFO - 127.0.0.1 - - [01/Feb/2026 12:10:30] "GET /socket.io/?EIO=4&transport=polling&t=PmOvQfI&sid=mjFLf4EKyo8dGArEAAAA HTTP/1.1" 200 -
+2026-02-01 12:10:30,862 - INFO - 127.0.0.1 - - [01/Feb/2026 12:10:30] "GET /socket.io/?EIO=4&transport=polling&t=PmOvQki&sid=mjFLf4EKyo8dGArEAAAA HTTP/1.1" 200 -
+2026-02-01 12:10:37,014 - INFO - OKX server time synchronized. Offset: -164ms
+2026-02-01 12:10:40,106 - INFO - Bot initialized. Starting live connection threads...
+2026-02-01 12:10:40,136 - INFO - OKX BOT STARTING
+2026-02-01 12:10:40,153 - INFO - 127.0.0.1 - - [01/Feb/2026 12:10:40] "POST /socket.io/?EIO=4&transport=polling&t=PmOvQfC&sid=mjFLf4EKyo8dGArEAAAA HTTP/1.1" 200 -
+2026-02-01 12:10:41,531 - INFO - Websocket connected
+2026-02-01 12:10:41,539 - INFO - OKX WebSocket connection opened.
+2026-02-01 12:10:43,265 - INFO - 127.0.0.1 - - [01/Feb/2026 12:10:43] "GET /api/status HTTP/1.1" 200 -
+2026-02-01 12:10:44,729 - INFO - Bot startup sequence complete.
+2026-02-01 12:10:51,974 - INFO - 127.0.0.1 - - [01/Feb/2026 12:10:51] "GET /api/status HTTP/1.1" 200 -
+2026-02-01 12:10:52,608 - INFO - Initial account balance fetched.
+2026-02-01 12:14:26,284 - INFO - Bot starting trading logic...
+2026-02-01 12:14:26,286 - INFO - Session trade metrics reset.
+2026-02-01 12:14:31,200 - INFO - OKX server time synchronized. Offset: 83ms
+2026-02-01 12:14:38,726 - INFO - 127.0.0.1 - - [01/Feb/2026 12:14:38] "GET /api/status HTTP/1.1" 200 -
+2026-02-01 12:14:38,853 - INFO - [OK] Leverage set to 20x for ETH-USDT-SWAP (long)
+2026-02-01 12:14:40,828 - INFO - [OK] Leverage set to 20x for ETH-USDT-SWAP (short)
+2026-02-01 12:14:40,830 - INFO - Checking for and closing any existing open positions...
+2026-02-01 12:14:43,556 - INFO - No open OKX positions found to close.
+2026-02-01 12:14:43,903 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 12:14:43,915 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 12:14:43,920 - INFO - Check Entry Condition
+2026-02-01 12:14:43,924 - INFO - Entry-1:LONG Market 2423.45, Safety:2970.32, Passed
+2026-02-01 12:14:43,926 - INFO - Entry-3:Remaining: 5000.00 > Target 100: Passed
+2026-02-01 12:14:43,931 - INFO - Entry-4:Remaining: 5000.00 > Min 100: Passed
+2026-02-01 12:14:43,932 - INFO - Place Order Batch 1
+2026-02-01 12:14:43,934 - INFO - Batch1-1:M:2423.45|En:2422.45|Tp:2423.05|SL:2392.45|100|Long|Isolated
+2026-02-01 12:14:46,863 - INFO - Batch1-2:M:2423.45|En:2421.45|Tp:2422.05|SL:2391.45|100|Long|Isolated
+2026-02-01 12:14:49,632 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-01 12:14:59,638 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 12:14:59,656 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 12:14:59,708 - INFO - Check Entry Condition
+2026-02-01 12:14:59,753 - INFO - Entry-1:LONG Market 2424.66, Safety:2970.32, Passed
+2026-02-01 12:14:59,791 - INFO - Entry-3:Remaining: 4801.40 > Target 100: Passed
+2026-02-01 12:14:59,804 - INFO - Entry-4:Remaining: 4801.40 > Min 100: Passed
+2026-02-01 12:14:59,832 - INFO - Place Order Batch 2
+2026-02-01 12:14:59,848 - INFO - Batch2-1:M:2424.66|En:2423.66|Tp:2424.26|SL:2393.66|100|Long|Isolated
+2026-02-01 12:15:02,905 - INFO - Batch2-2:M:2428.29|En:2422.66|Tp:2423.26|SL:2392.66|100|Long|Isolated
+2026-02-01 12:15:05,396 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-01 12:15:15,399 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 12:15:15,402 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 12:15:15,431 - INFO - Check Entry Condition
+2026-02-01 12:15:15,442 - INFO - Entry-1:LONG Market 2421.00, Safety:2970.32, Passed
+2026-02-01 12:15:15,474 - INFO - Entry-3:Remaining: 4702.03 > Target 100: Passed
+2026-02-01 12:15:15,482 - INFO - Entry-4:Remaining: 4702.03 > Min 100: Passed
+2026-02-01 12:15:15,514 - INFO - Place Order Batch 3
+2026-02-01 12:15:15,525 - INFO - Batch3-1:M:2421.00|En:2420.00|Tp:2420.60|SL:2390.00|100|Long|Isolated
+2026-02-01 12:15:18,412 - INFO - Syncing TP/SL for LONG position. Avg Price: 2422.55
+2026-02-01 12:15:19,515 - INFO - Syncing TP/SL for LONG position. Avg Price: 2422.55
+2026-02-01 12:15:20,414 - INFO - Syncing TP/SL for LONG position. Avg Price: 2422.55
+2026-02-01 12:15:23,944 - INFO - [TARGET] LONG TP Set: 2423.15
+2026-02-01 12:15:26,870 - INFO - [TARGET] LONG SL Set: 2392.55
+2026-02-01 12:15:26,872 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-01 12:15:30,418 - INFO - Syncing TP/SL for LONG position. Avg Price: 2421.92
+2026-02-01 12:15:39,092 - INFO - [TARGET] LONG TP Set: 2423.15
+2026-02-01 12:15:41,401 - INFO - [TARGET] LONG SL Set: 2392.55
+2026-02-01 12:15:41,402 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-01 12:15:50,944 - INFO - [TARGET] LONG TP Set: 2423.15
+2026-02-01 12:15:53,426 - INFO - [TARGET] LONG SL Set: 2392.55
+2026-02-01 12:15:53,429 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-01 12:15:53,439 - INFO - Batch3-2:M:2421.03|En:2419.00|Tp:2419.60|SL:2389.00|100|Long|Isolated
+2026-02-01 12:16:06,232 - INFO - [TARGET] LONG SL Set: 2391.92
+2026-02-01 12:16:06,252 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-01 12:16:06,284 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-01 12:16:16,307 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 12:16:16,310 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 12:16:16,313 - INFO - Check Entry Condition
+2026-02-01 12:16:16,316 - INFO - Entry-1:LONG Market 2428.29, Safety:2970.32, Passed
+2026-02-01 12:16:16,319 - INFO - Entry-3:Remaining: 4900.82 > Target 100: Passed
+2026-02-01 12:16:16,322 - INFO - Entry-4:Remaining: 4900.82 > Min 100: Passed
+2026-02-01 12:16:16,324 - INFO - Place Order Batch 4
+2026-02-01 12:16:16,326 - INFO - Batch4-1:M:2428.29|En:2427.29|Tp:2427.89|SL:2397.29|100|Long|Isolated
+2026-02-01 12:16:19,144 - INFO - Batch4-2:M:2428.29|En:2426.29|Tp:2426.89|SL:2396.29|100|Long|Isolated
+2026-02-01 12:16:22,428 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-01 12:24:10,702 - INFO - Logger initialized. Writing to debug.log
+2026-02-01 12:24:10,719 - INFO - Bot starting background monitoring...
+2026-02-01 12:24:10,903 - INFO - 127.0.0.1 - - [01/Feb/2026 12:24:10] "GET /socket.io/?EIO=4&transport=polling&t=PmOyYtH&sid=kWnD4nC1N8h4gHhKAAAA HTTP/1.1" 200 -
+2026-02-01 12:24:15,904 - INFO - OKX server time synchronized. Offset: -32ms
+2026-02-01 12:24:18,709 - INFO - Bot initialized. Starting live connection threads...
+2026-02-01 12:24:18,716 - INFO - OKX BOT STARTING
+2026-02-01 12:24:18,740 - INFO - 127.0.0.1 - - [01/Feb/2026 12:24:18] "POST /socket.io/?EIO=4&transport=polling&t=PmOyYtF&sid=kWnD4nC1N8h4gHhKAAAA HTTP/1.1" 200 -
+2026-02-01 12:24:20,309 - INFO - Websocket connected
+2026-02-01 12:24:20,310 - INFO - OKX WebSocket connection opened.
+2026-02-01 12:24:21,397 - INFO - 127.0.0.1 - - [01/Feb/2026 12:24:21] "GET /api/status HTTP/1.1" 200 -
+2026-02-01 12:24:23,528 - INFO - Bot startup sequence complete.
+2026-02-01 12:24:28,975 - INFO - 127.0.0.1 - - [01/Feb/2026 12:24:28] "GET /api/status HTTP/1.1" 200 -
+2026-02-01 12:24:31,545 - INFO - Initial account balance fetched.
+2026-02-01 12:25:55,147 - INFO - Bot starting trading logic...
+2026-02-01 12:25:55,167 - INFO - Session trade metrics reset.
+2026-02-01 12:25:59,990 - INFO - OKX server time synchronized. Offset: -87ms
+2026-02-01 12:26:08,426 - INFO - [OK] Leverage set to 20x for ETH-USDT-SWAP (long)
+2026-02-01 12:26:08,969 - INFO - 127.0.0.1 - - [01/Feb/2026 12:26:08] "GET /api/status HTTP/1.1" 200 -
+2026-02-01 12:26:10,562 - INFO - [OK] Leverage set to 20x for ETH-USDT-SWAP (short)
+2026-02-01 12:26:10,567 - INFO - Checking for and closing any existing open positions...
+2026-02-01 12:26:13,108 - WARNING - ⚠️ Found open long position: 0.82 ETH-USDT-SWAP (Mode: isolated)
+2026-02-01 12:26:13,111 - INFO - Closing 0.82 ETH-USDT-SWAP with market Sell order (posSide: long)
+2026-02-01 12:26:13,116 - INFO - Placing Market Sell order for 0.82 ETH-USDT-SWAP at None
+2026-02-01 12:26:15,658 - INFO - [OK] Order placed: OrderID=3269636988391276544
+2026-02-01 12:26:15,662 - INFO - [OK] Position close order placed: 3269636988391276544
+2026-02-01 12:26:15,668 - INFO - [DONE] Close Position (Manual): LONG ETH-USDT-SWAP | Qty: 0.82
+2026-02-01 12:26:15,740 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 12:26:15,749 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 12:26:15,750 - INFO - Check Entry Condition
+2026-02-01 12:26:15,754 - INFO - Entry-1:LONG Market 2418.75, Safety:2970.32, Passed
+2026-02-01 12:26:15,763 - INFO - Entry-3:Remaining: 5000.00 > Target 100: Passed
+2026-02-01 12:26:15,771 - INFO - Entry-4:Remaining: 5000.00 > Min 100: Passed
+2026-02-01 12:26:15,783 - INFO - Place Order Batch 1
+2026-02-01 12:26:15,785 - INFO - Batch1-1:M:2418.75|En:2417.75|Tp:2418.35|SL:2387.75|100|Long|Isolated
+2026-02-01 12:26:18,771 - INFO - Batch1-2:M:2422.24|En:2416.75|Tp:2417.35|SL:2386.75|100|Long|Isolated
+2026-02-01 12:26:22,660 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-01 12:26:32,691 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 12:26:32,783 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 12:26:32,880 - INFO - Check Entry Condition
+2026-02-01 12:26:32,986 - INFO - Entry-1:LONG Market 2423.45, Safety:2970.32, Passed
+2026-02-01 12:26:33,041 - INFO - Entry-3:Remaining: 4801.79 > Target 100: Passed
+2026-02-01 12:26:33,133 - INFO - Entry-4:Remaining: 4801.79 > Min 100: Passed
+2026-02-01 12:26:33,231 - INFO - Place Order Batch 2
+2026-02-01 12:26:33,330 - INFO - Batch2-1:M:2423.45|En:2422.45|Tp:2423.05|SL:2392.45|100|Long|Isolated
+2026-02-01 12:26:36,291 - INFO - Batch2-2:M:2415.53|En:2421.45|Tp:2422.05|SL:2391.45|100|Long|Isolated
+2026-02-01 12:26:40,933 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-01 12:26:44,690 - INFO - Cancel Order 3269637085497802752 (Long: Cancel if Entry price is above market price (Entry 2417.75 > Market 2417.41))
+2026-02-01 12:26:44,696 - INFO - Cancelling OKX order 326963708549...
+2026-02-01 12:26:46,970 - INFO - Syncing TP/SL for LONG position. Avg Price: 2417.30
+2026-02-01 12:26:51,024 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 12:26:51,055 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 12:26:51,121 - INFO - Check Entry Condition
+2026-02-01 12:26:54,362 - INFO - [TARGET] LONG TP Set: 2417.90
+2026-02-01 12:26:56,545 - INFO - [TARGET] LONG SL Set: 2387.30
+2026-02-01 12:26:56,547 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-01 12:26:56,560 - INFO - Entry-1:LONG Market 2414.99, Safety:2970.32, Passed
+2026-02-01 12:26:56,597 - INFO - Entry-3:Remaining: 4702.61 > Target 100: Passed
+2026-02-01 12:26:56,605 - INFO - Entry-4:Remaining: 4702.61 > Min 100: Passed
+2026-02-01 12:26:56,615 - INFO - Place Order Batch 3
+2026-02-01 12:26:56,627 - INFO - Batch3-1:M:2414.99|En:2413.99|Tp:2414.59|SL:2383.99|100|Long|Isolated
+2026-02-01 12:27:01,808 - INFO - Batch3-2:M:2417.41|En:2412.99|Tp:2413.59|SL:2382.99|100|Long|Isolated
+2026-02-01 12:27:06,590 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-01 12:27:16,593 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 12:27:16,602 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 12:27:16,609 - INFO - Check Entry Condition
+2026-02-01 12:27:16,633 - INFO - Entry-1:LONG Market 2421.03, Safety:2970.32, Passed
+2026-02-01 12:27:16,648 - INFO - Entry-3:Remaining: 4802.09 > Target 100: Passed
+2026-02-01 12:27:16,699 - INFO - Entry-4:Remaining: 4802.09 > Min 100: Passed
+2026-02-01 12:27:16,767 - INFO - Place Order Batch 4
+2026-02-01 12:27:16,839 - INFO - Batch4-1:M:2421.03|En:2420.03|Tp:2420.63|SL:2390.03|100|Long|Isolated
+2026-02-01 12:27:20,664 - INFO - Batch4-2:M:2419.82|En:2419.03|Tp:2419.63|SL:2389.03|100|Long|Isolated
+2026-02-01 12:27:25,530 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-01 12:27:35,548 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 12:27:35,607 - INFO - ------------------------------------------------------------------------------------------
+2026-02-01 12:27:35,659 - INFO - Check Entry Condition
+2026-02-01 12:27:35,700 - INFO - Entry-1:LONG Market 2419.82, Safety:2970.32, Passed
+2026-02-01 12:27:35,753 - INFO - Entry-3:Remaining: 4702.91 > Target 100: Passed
+2026-02-01 12:27:35,792 - INFO - Entry-4:Remaining: 4702.91 > Min 100: Passed
+2026-02-01 12:27:35,831 - INFO - Place Order Batch 5
+2026-02-01 12:27:35,918 - INFO - Batch5-1:M:2419.82|En:2418.82|Tp:2419.42|SL:2388.82|100|Long|Isolated
+2026-02-01 12:27:40,954 - INFO - Batch5-2:M:2421.03|En:2417.82|Tp:2418.42|SL:2387.82|100|Long|Isolated
+2026-02-01 12:27:45,145 - INFO - Wait 10 seconds (Post-Entry)
