@@ -191,6 +191,97 @@
                         </div>
                     </div>
                 </div>
+                <!-- Auto-Add Margin Container -->
+                <div class="card mb-3 border-warning">
+                    <div class="card-body py-2">
+                        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="form-check form-switch m-0">
+                                    <input class="form-check-input" type="checkbox" id="useAutoMargin">
+                                    <label class="form-check-label fw-bold" for="useAutoMargin"
+                                        style="color: #ffc107;">Auto-Add Margin</label>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="text-secondary small text-uppercase fw-bold"
+                                    style="font-size: 0.7rem;">Offset ($)</span>
+                                <input type="number" class="form-control form-control-sm" id="autoMarginOffset"
+                                    style="width: 70px; font-size: 0.75rem;" step="1" min="1">
+                                <span class="text-secondary small text-uppercase fw-bold ms-2"
+                                    style="font-size: 0.7rem; color: #ffc107;">(Gap)</span>
+                                <span class="badge bg-secondary" id="liqGapDisplay"
+                                    style="font-size: 0.8rem;">$0.00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Auto-Cal Add Position Container -->
+                <div class="card mb-3 border-info">
+                    <div class="card-header bg-dark-purple py-1 border-info">
+                        <small class="text-info fw-bold text-uppercase">Auto-Cal Add Position</small>
+                    </div>
+                    <div class="card-body py-2">
+                        <!-- Mode 1: Stay Above Zero -->
+                        <div
+                            class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2 border-bottom border-secondary pb-2">
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="form-check form-switch m-0">
+                                    <input class="form-check-input" type="checkbox" id="useAddPosAboveZero">
+                                    <label class="form-check-label small fw-bold text-light" for="useAddPosAboveZero">
+                                        To make PnL always above 0
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="text-secondary small text-uppercase fw-bold"
+                                    style="font-size: 0.65rem;">Need Add</span>
+                                <span class="badge bg-warning text-dark" id="needAddAboveZeroDisplay"
+                                    style="font-size: 0.75rem;">$0.00</span>
+                            </div>
+                        </div>
+
+                        <!-- Mode 2: Profit Target & Close -->
+                        <div
+                            class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2 border-bottom border-secondary pb-2">
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="form-check form-switch m-0">
+                                    <input class="form-check-input" type="checkbox" id="useAddPosProfitTarget">
+                                    <label class="form-check-label small fw-bold text-light"
+                                        for="useAddPosProfitTarget">
+                                        To reach Profit Target & Close
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="text-secondary small text-uppercase fw-bold"
+                                    style="font-size: 0.65rem;">Need Add</span>
+                                <span class="badge bg-info text-dark" id="needAddProfitTargetDisplay"
+                                    style="font-size: 0.75rem;">$0.00</span>
+                            </div>
+                        </div>
+
+                        <!-- Settings Row -->
+                        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="text-secondary small text-uppercase fw-bold"
+                                    style="font-size: 0.65rem;">Recovery %</span>
+                                <input type="number" class="form-control form-control-sm" id="addPosRecoveryPercent"
+                                    style="width: 55px; font-size: 0.7rem; background: #1a1a2e; color: #fff; border: 1px solid #444;"
+                                    step="0.1" min="0.1" value="0.6">
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="text-secondary small text-uppercase fw-bold"
+                                    style="font-size: 0.65rem;">Profit Multiplier</span>
+                                <input type="number" class="form-control form-control-sm" id="addPosProfitMultiplier"
+                                    style="width: 55px; font-size: 0.7rem; background: #1a1a2e; color: #fff; border: 1px solid #444;"
+                                    step="0.1" min="0" value="1.5">
+                                <span class="text-secondary small text-uppercase fw-bold" style="font-size: 0.65rem;">x
+                                    Fee</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 <div class="card mb-3 border-success">
                     <div class="card-body py-2">

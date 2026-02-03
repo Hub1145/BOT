@@ -180,6 +180,14 @@ function setupEventListeners() {
     });
     document.getElementById('sizeAutoCalLossTimes').addEventListener('change', saveLiveConfigs);
 
+    // Auto-Add Margin listeners
+    document.getElementById('useAutoMargin').addEventListener('change', (e) => {
+        const state = e.target.checked ? 'ACTIVATED' : 'DEACTIVATED';
+        addConsoleLog({ message: `Auto-Add Margin: ${state}`, level: 'info' });
+        saveLiveConfigs();
+    });
+    document.getElementById('autoMarginOffset').addEventListener('change', saveLiveConfigs);
+
     document.getElementById('tradeFeePercentage').addEventListener('change', saveLiveConfigs);
 
     // Refresh Fees Button
@@ -377,6 +385,8 @@ function updateAccountMetrics(data) {
     document.getElementById('maxAmountDisplay').textContent = `$${data.max_amount_display !== undefined ? Number(data.max_amount_display).toFixed(2) : '0.00'}`;
     document.getElementById('usedAmount').textContent = `$${data.used_amount !== undefined ? Number(data.used_amount).toFixed(2) : '0.00'}`;
     document.getElementById('remainingAmount').textContent = `$${data.remaining_amount !== undefined ? Number(data.remaining_amount).toFixed(2) : '0.00'}`;
+    document.getElementById('needAddProfitTargetDisplay').textContent = `$${data.need_add_usdt !== undefined ? Number(data.need_add_usdt).toFixed(2) : '0.00'}`;
+    document.getElementById('needAddAboveZeroDisplay').textContent = `$${data.need_add_above_zero !== undefined ? Number(data.need_add_above_zero).toFixed(2) : '0.00'}`;
     document.getElementById('balance').textContent = `$${data.total_balance !== undefined ? Number(data.total_balance).toFixed(2) : '0.00'}`;
     const netProfitElement = document.getElementById('netProfit');
     const netProfitValue = data.net_profit !== undefined ? Number(data.net_profit) : 0.00;
@@ -536,8 +546,37 @@ function updatePositionDisplay(positionData) {
             </div>
         `;
     });
-
     mlResultsContainer.innerHTML = positionHtml;
+
+    // Update Liq Gap Display
+    const liqGapDisplay = document.getElementById('liqGapDisplay');
+    if (liqGapDisplay) {
+        let minGap = Infinity;
+        positionsToRender.forEach(pos => {
+            const liqp = parseFloat(pos.liq || 0);
+            const sl = parseFloat(pos.sl || (positionData && positionData.current_stop_loss) || 0);
+            if (liqp > 0 && sl > 0) {
+                const gap = Math.abs(sl - liqp);
+                if (gap < minGap) minGap = gap;
+            }
+        });
+
+        if (minGap === Infinity) {
+            liqGapDisplay.textContent = '$0.00';
+            liqGapDisplay.className = 'badge bg-dark';
+        } else {
+            liqGapDisplay.textContent = `$${minGap.toFixed(2)}`;
+            // Color code based on danger (e.g. if gap < autoMarginOffset or just generic warning)
+            const offset = parseFloat(document.getElementById('autoMarginOffset').value) || 30;
+            if (minGap < offset) {
+                liqGapDisplay.className = 'badge bg-danger';
+            } else if (minGap < offset * 2) {
+                liqGapDisplay.className = 'badge bg-warning text-dark';
+            } else {
+                liqGapDisplay.className = 'badge bg-success';
+            }
+        }
+    }
 }
 
 function updateParametersDisplay() {
@@ -854,6 +893,55 @@ async function loadConfig() {
         const elSizeCalLossTimes = document.getElementById('sizeAutoCalLossTimes');
         if (elSizeCalLossTimes) elSizeCalLossTimes.value = sizeCalLossTimes;
 
+        // Auto-Add Margin
+        const useAutoMargin = currentConfig.use_auto_margin !== undefined ? currentConfig.use_auto_margin : false;
+        const autoMarginOffset = currentConfig.auto_margin_offset !== undefined ? currentConfig.auto_margin_offset : 30.0;
+
+        const elUseAutoMargin = document.getElementById('useAutoMargin');
+        if (elUseAutoMargin) elUseAutoMargin.checked = useAutoMargin;
+
+        const elAutoMarginOffset = document.getElementById('autoMarginOffset');
+        if (elAutoMarginOffset) elAutoMarginOffset.value = autoMarginOffset;
+
+        // Auto-Cal Add Position
+        const useAddPos = currentConfig.use_add_pos_auto_cal !== undefined ? currentConfig.use_add_pos_auto_cal : false;
+        const addPosRecovery = currentConfig.add_pos_recovery_percent !== undefined ? currentConfig.add_pos_recovery_percent : 0.7;
+
+        const elAboveZero = document.getElementById('useAddPosAboveZero');
+        if (elAboveZero) elAboveZero.checked = currentConfig.use_add_pos_above_zero || false;
+
+        const elProfitTarget = document.getElementById('useAddPosProfitTarget');
+        if (elProfitTarget) elProfitTarget.checked = currentConfig.use_add_pos_profit_target || currentConfig.use_add_pos_auto_cal || false;
+
+        const elAddPosRecovery = document.getElementById('addPosRecoveryPercent');
+        if (elAddPosRecovery) elAddPosRecovery.value = addPosRecovery;
+
+        const addPosProfitMult = currentConfig.add_pos_profit_multiplier !== undefined ? currentConfig.add_pos_profit_multiplier : 1.5;
+        const elAddPosProfitMult = document.getElementById('addPosProfitMultiplier');
+        if (elAddPosProfitMult) elAddPosProfitMult.value = addPosProfitMult;
+
+        // Add live listeners if not already added
+        const l1 = document.getElementById('useAddPosAboveZero');
+        if (l1 && !l1.dataset.listener) {
+            l1.addEventListener('change', saveLiveConfigs);
+            l1.dataset.listener = 'true';
+        }
+        const l1b = document.getElementById('useAddPosProfitTarget');
+        if (l1b && !l1b.dataset.listener) {
+            l1b.addEventListener('change', saveLiveConfigs);
+            l1b.dataset.listener = 'true';
+        }
+        const l2 = document.getElementById('addPosRecoveryPercent');
+        if (l2 && !l2.dataset.listener) {
+            l2.addEventListener('change', saveLiveConfigs);
+            l2.dataset.listener = 'true';
+        }
+        const l3 = document.getElementById('addPosProfitMultiplier');
+        if (l3 && !l3.dataset.listener) {
+            l3.addEventListener('change', saveLiveConfigs);
+            l3.dataset.listener = 'true';
+        }
+
         // Legacy fallback
         if (currentConfig.use_pnl_auto_cancel !== undefined && currentConfig.use_pnl_auto_manual === undefined) {
             if (elUseManual) elUseManual.checked = currentConfig.use_pnl_auto_cancel;
@@ -1021,7 +1109,19 @@ async function saveConfig() {
         use_pnl_auto_cal: document.getElementById('usePnlAutoCal') ? document.getElementById('usePnlAutoCal').checked : (currentConfig.use_pnl_auto_cal || false),
         pnl_auto_cal_times: document.getElementById('pnlAutoCalTimes') ? parseFloat(document.getElementById('pnlAutoCalTimes').value) : (currentConfig.pnl_auto_cal_times || 4.0),
         use_pnl_auto_cal_loss: document.getElementById('usePnlAutoCalLoss') ? document.getElementById('usePnlAutoCalLoss').checked : (currentConfig.use_pnl_auto_cal_loss || false),
-        pnl_auto_cal_loss_times: document.getElementById('pnlAutoCalLossTimes') ? parseFloat(document.getElementById('pnlAutoCalLossTimes').value) : (currentConfig.pnl_auto_cal_loss_times || 1.5)
+        pnl_auto_cal_loss_times: document.getElementById('pnlAutoCalLossTimes') ? parseFloat(document.getElementById('pnlAutoCalLossTimes').value) : (currentConfig.pnl_auto_cal_loss_times || 1.5),
+
+        // Auto-Cal Size (New)
+        use_size_auto_cal: document.getElementById('useSizeAutoCal') ? document.getElementById('useSizeAutoCal').checked : (currentConfig.use_size_auto_cal || false),
+        size_auto_cal_times: document.getElementById('sizeAutoCalTimes') ? parseFloat(document.getElementById('sizeAutoCalTimes').value) : (currentConfig.size_auto_cal_times || 2.0),
+        use_size_auto_cal_loss: document.getElementById('useSizeAutoCalLoss') ? document.getElementById('useSizeAutoCalLoss').checked : (currentConfig.use_size_auto_cal_loss || false),
+        size_auto_cal_loss_times: document.getElementById('sizeAutoCalLossTimes') ? parseFloat(document.getElementById('sizeAutoCalLossTimes').value) : (currentConfig.size_auto_cal_loss_times || 1.5),
+
+        // Auto-Cal Add Position (Split Mode)
+        use_add_pos_above_zero: document.getElementById('useAddPosAboveZero') ? document.getElementById('useAddPosAboveZero').checked : (currentConfig.use_add_pos_above_zero || false),
+        use_add_pos_profit_target: document.getElementById('useAddPosProfitTarget') ? document.getElementById('useAddPosProfitTarget').checked : (currentConfig.use_add_pos_profit_target || false),
+        add_pos_recovery_percent: document.getElementById('addPosRecoveryPercent') ? parseFloat(document.getElementById('addPosRecoveryPercent').value) : (currentConfig.add_pos_recovery_percent || 0.6),
+        add_pos_profit_multiplier: document.getElementById('addPosProfitMultiplier') ? parseFloat(document.getElementById('addPosProfitMultiplier').value) : (currentConfig.add_pos_profit_multiplier || 1.5)
     };
 
     try {
@@ -1067,7 +1167,17 @@ async function saveLiveConfigs() {
         use_size_auto_cal_loss: document.getElementById('useSizeAutoCalLoss').checked,
         size_auto_cal_loss_times: parseFloat(document.getElementById('sizeAutoCalLossTimes').value),
 
-        trade_fee_percentage: parseFloat(document.getElementById('tradeFeePercentage').value)
+        trade_fee_percentage: parseFloat(document.getElementById('tradeFeePercentage').value),
+
+        // Auto-Add Margin
+        use_auto_margin: document.getElementById('useAutoMargin').checked,
+        auto_margin_offset: parseFloat(document.getElementById('autoMarginOffset').value),
+
+        // Auto-Cal Add Position (Split Mode)
+        use_add_pos_above_zero: document.getElementById('useAddPosAboveZero').checked,
+        use_add_pos_profit_target: document.getElementById('useAddPosProfitTarget').checked,
+        add_pos_recovery_percent: parseFloat(document.getElementById('addPosRecoveryPercent').value),
+        add_pos_profit_multiplier: parseFloat(document.getElementById('addPosProfitMultiplier').value)
     };
 
     try {
@@ -1089,6 +1199,21 @@ async function saveLiveConfigs() {
             currentConfig.use_pnl_auto_cal_loss = liveConfig.use_pnl_auto_cal_loss;
             currentConfig.pnl_auto_cal_loss_times = liveConfig.pnl_auto_cal_loss_times;
             currentConfig.trade_fee_percentage = liveConfig.trade_fee_percentage;
+
+            // Update Size Cal in memory
+            currentConfig.use_size_auto_cal = liveConfig.use_size_auto_cal;
+            currentConfig.size_auto_cal_times = liveConfig.size_auto_cal_times;
+            currentConfig.use_size_auto_cal_loss = liveConfig.use_size_auto_cal_loss;
+            currentConfig.size_auto_cal_loss_times = liveConfig.size_auto_cal_loss_times;
+
+            // Update Margin Cal in memory
+            currentConfig.use_auto_margin = liveConfig.use_auto_margin;
+            currentConfig.auto_margin_offset = liveConfig.auto_margin_offset;
+
+            // Update Add Pos in memory
+            currentConfig.use_add_pos_auto_cal = liveConfig.use_add_pos_auto_cal;
+            currentConfig.add_pos_recovery_percent = liveConfig.add_pos_recovery_percent;
+            currentConfig.add_pos_profit_multiplier = liveConfig.add_pos_profit_multiplier;
         } else {
             // Revert UI on error (e.g. bot running error)
             document.getElementById('usePnlAutoManual').checked = currentConfig.use_pnl_auto_manual;

@@ -215,12 +215,14 @@ class TradingBotEngine:
         self.in_position = {'long': False, 'short': False}
         self.position_entry_price = {'long': 0.0, 'short': 0.0}
         self.position_qty = {'long': 0.0, 'short': 0.0}
+        self.position_liq = {'long': 0.0, 'short': 0.0}
         self.current_stop_loss = {'long': 0.0, 'short': 0.0}
         self.current_take_profit = {'long': 0.0, 'short': 0.0}
         self.position_exit_orders = {'long': {}, 'short': {}} # { 'long': {'tp': id, 'sl': id}, ... }
         self.entry_reduced_tp_flag = {'long': False, 'short': False}
         
         self.batch_counter = 0 # Track batches for logging
+        self.monitoring_tick = 0 # Track monitoring cycles
         self.used_amount_notional = 0.0
         self.position_lock = threading.Lock()
         self.pending_entry_ids = [] # List to track multiple pending entry orders
@@ -517,6 +519,13 @@ class TradingBotEngine:
                 config.setdefault('candlestick_timeframe', '1m')
                 config.setdefault('initial_total_capital', 0.0) # New: Default for initial total capital
                 config.setdefault('log_level', 'info') # New: Default for log level
+                config.setdefault('use_auto_margin', False)
+                config.setdefault('auto_margin_offset', 30.0)
+                config.setdefault('use_add_pos_auto_cal', False)
+                config.setdefault('add_pos_recovery_percent', 0.6)
+                config.setdefault('add_pos_profit_multiplier', 1.5)
+                config.setdefault('use_add_pos_above_zero', False)
+                config.setdefault('use_add_pos_profit_target', False)
                 return config
         except FileNotFoundError:
             self.log(f"Config file not found: {self.config_path}", 'error')
@@ -1109,7 +1118,7 @@ class TradingBotEngine:
             self.log(f"Exception in _okx_place_algo_order: {e}", level="debug")
             return None
 
-    def _okx_cancel_order(self, symbol, order_id):
+    def _okx_cancel_order(self, symbol, order_id, reason=None):
         try:
             path = "/api/v5/trade/cancel-order"
             body = {
@@ -1117,7 +1126,10 @@ class TradingBotEngine:
                 "ordId": order_id,
             }
 
-            self.log(f"Cancelling OKX order {order_id[:12]}...", level="info")
+            log_msg = f"Cancelling OKX order {order_id[:12]}..."
+            if reason:
+                log_msg = f"Cancelling OKX order {order_id[:12]} ({reason})..."
+            self.log(log_msg, level="info")
             response = self._okx_request("POST", path, body_dict=body)
 
             if response and response.get('code') == '0':
@@ -1493,19 +1505,32 @@ class TradingBotEngine:
                 return
 
 
-            tp_price_offset = self.config.get('tp_price_offset', 0.6)
-            sl_price_offset = self.config.get('sl_price_offset', 30)
-
-            # Use confirmed actual_side instead of signal_direction to be more robust
-            self.log(f"DEBUG: confirm_and_set_active_position: actual_side={actual_side}, qty={actual_qty}", level="debug")
+            tp_price = 0.0
+            sl_price = 0.0
+            tp_off = self.config.get('tp_price_offset', 0)
+            sl_off = self.config.get('sl_price_offset', 0)
 
             if actual_side == 'long':
-                tp_price = actual_entry_price + tp_price_offset
-                sl_price = actual_entry_price - sl_price_offset
+                if tp_off and safe_float(tp_off) > 0:
+                    tp_price = actual_entry_price + safe_float(tp_off)
+                else:
+                    self.log(f"Confirm Pos: TP offset is null or 0 for {actual_side.upper()}. Skipping TP calc.", level="info")
+
+                if sl_off and safe_float(sl_off) > 0:
+                    sl_price = actual_entry_price - safe_float(sl_off)
+                else:
+                    self.log(f"Confirm Pos: SL offset is null or 0 for {actual_side.upper()}. Skipping SL calc.", level="info")
                 exit_order_side = "sell"
             else: # short
-                tp_price = actual_entry_price - tp_price_offset
-                sl_price = actual_entry_price + sl_price_offset
+                if tp_off and safe_float(tp_off) > 0:
+                    tp_price = actual_entry_price - safe_float(tp_off)
+                else:
+                    self.log(f"Confirm Pos: TP offset is null or 0 for {actual_side.upper()}. Skipping TP calc.", level="info")
+
+                if sl_off and safe_float(sl_off) > 0:
+                    sl_price = actual_entry_price + safe_float(sl_off)
+                else:
+                    self.log(f"Confirm Pos: SL offset is null or 0 for {actual_side.upper()}. Skipping SL calc.", level="info")
                 exit_order_side = "buy"
             
             with self.position_lock:
@@ -1559,62 +1584,70 @@ class TradingBotEngine:
             qty_precision = PRODUCT_INFO.get('qtyPrecision', 8)
 
             # Place TP and SL as algo (conditional) orders via /api/v5/trade/order-algo
-            # ONLY IF MISSING (Smart Fallback)
+            # ONLY IF MISSING (Smart Fallback) and IF OFFSET IS CONFIGURED
             if not existing_tp:
-                tp_body = {
-                    "instId": self.config['symbol'],
-                    "tdMode": self.config.get('mode', 'cross'),
-                    "side": exit_order_side,
-                    "posSide": actual_side, # In Hedge Mode we use actual_side, in Net it's usually net or ignored
-                    "ordType": "conditional",
-                    "sz": f"{(abs(actual_qty) * (self.config.get('tp_amount', 100) / 100)):.{qty_precision}f}",
-                    "tpTriggerPx": f"{tp_price:.{price_precision}f}",
-                    "tpOrdPx": "-1" if self.config.get('tp_mode', 'market') == 'market' else f"{tp_price:.{price_precision}f}",
-                    "reduceOnly": "true"
-                }
+                if tp_price_offset and safe_float(tp_price_offset) > 0:
+                    tp_body = {
+                        "instId": self.config['symbol'],
+                        "tdMode": self.config.get('mode', 'cross'),
+                        "side": exit_order_side,
+                        "posSide": actual_side, 
+                        "ordType": "conditional",
+                        "sz": f"{(abs(actual_qty) * (self.config.get('tp_amount', 100) / 100)):.{qty_precision}f}",
+                        "tpTriggerPx": f"{tp_price:.{price_precision}f}",
+                        "tpOrdPx": "-1" if self.config.get('tp_mode', 'market') == 'market' else f"{tp_price:.{price_precision}f}",
+                        "reduceOnly": "true"
+                    }
 
-                tp_order = self._okx_place_algo_order(tp_body)
+                    tp_order = self._okx_place_algo_order(tp_body)
+                    if tp_order and (tp_order.get('algoId') or tp_order.get('ordId')):
+                        algo_id = tp_order.get('algoId') or tp_order.get('ordId')
+                        with self.position_lock:
+                            self.position_exit_orders[actual_side]['tp'] = algo_id
+                        self.log(f"[OK] TP algo order placed for {actual_side.upper()} at ${tp_price:.2f}", level="info")
+                    else:
+                        self.log(f"❌ Failed to place TP algo order: {tp_order}", level="error")
+                        self._execute_trade_exit(f"Failed to place TP for {actual_side}", side=actual_side)
+                        return
+                else:
+                    self.log(f"Skipping TP placement for {actual_side.upper()} (No offset configured)", level="info")
             else:
                 self.log("TP algo order already exists (Atomic). Skipping redundant placement.", level="info")
-                tp_order = {'ordId': 'atomic_existing'} # Fake response to satisfy checks logic if needed, or just proceed
-
-            if (not existing_tp and tp_order and (tp_order.get('algoId') or tp_order.get('ordId'))) or existing_tp:
-                algo_id = tp_order.get('algoId') or tp_order.get('ordId')
+                algo_id = tp_order.get('ordId') # Handle the fake/atomic id
                 with self.position_lock:
                     self.position_exit_orders[actual_side]['tp'] = algo_id
-                self.log(f"[OK] TP algo order placed for {actual_side.upper()} at ${tp_price:.2f}", level="info")
-            else:
-                self.log(f"❌ Failed to place TP algo order: {tp_order}", level="error")
-                self._execute_trade_exit(f"Failed to place TP for {actual_side}", side=actual_side)
-                return
 
             if not existing_sl:
-                sl_body = {
-                    "instId": self.config['symbol'],
-                    "tdMode": self.config.get('mode', 'cross'),
-                    "side": exit_order_side,
-                    "posSide": actual_side,
-                    "ordType": "conditional",
-                    "sz": f"{(abs(actual_qty) * (self.config.get('sl_amount', 100) / 100)):.{qty_precision}f}",
-                    "slTriggerPx": f"{sl_price:.{price_precision}f}",
-                    "slOrdPx": "-1", # market
-                    "reduceOnly": "true"
-                }
+                if sl_price_offset and safe_float(sl_price_offset) > 0:
+                    sl_body = {
+                        "instId": self.config['symbol'],
+                        "tdMode": self.config.get('mode', 'cross'),
+                        "side": exit_order_side,
+                        "posSide": actual_side,
+                        "ordType": "conditional",
+                        "sz": f"{(abs(actual_qty) * (self.config.get('sl_amount', 100) / 100)):.{qty_precision}f}",
+                        "slTriggerPx": f"{sl_price:.{price_precision}f}",
+                        "slOrdPx": "-1", # market
+                        "reduceOnly": "true"
+                    }
 
-                sl_order = self._okx_place_algo_order(sl_body)
+                    sl_order = self._okx_place_algo_order(sl_body)
+                    if sl_order and (sl_order.get('algoId') or sl_order.get('ordId')):
+                        algo_id = sl_order.get('algoId') or sl_order.get('ordId')
+                        with self.position_lock:
+                            self.position_exit_orders[actual_side]['sl'] = algo_id
+                        self.log(f"[OK] SL algo order placed for {actual_side.upper()} at ${sl_price:.2f}", level="info")
+                    else:
+                        self.log(f"❌ Failed to place SL algo order: {sl_order}", level="error")
+                        self._execute_trade_exit(f"Failed to place SL for {actual_side}", side=actual_side)
+                        return
+                else:
+                    self.log(f"Skipping SL placement for {actual_side.upper()} (No offset configured)", level="info")
             else:
                  self.log("SL algo order already exists (Atomic). Skipping redundant placement.", level="info")
-                 sl_order = {'ordId': 'atomic_existing'}
-
-            if (not existing_sl and sl_order and (sl_order.get('algoId') or sl_order.get('ordId'))) or existing_sl:
-                algo_id = sl_order.get('algoId') or sl_order.get('ordId')
-                with self.position_lock:
-                    self.position_exit_orders[actual_side]['sl'] = algo_id
-                self.log(f"[OK] SL algo order placed for {actual_side.upper()} at ${sl_price:.2f}", level="info")
-            else:
-                self.log(f"❌ Failed to place SL algo order: {sl_order}", level="error")
-                self._execute_trade_exit(f"Failed to place SL for {actual_side}", side=actual_side)
-                return
+                 algo_id = sl_order.get('ordId')
+                 with self.position_lock:
+                     self.position_exit_orders[actual_side]['sl'] = algo_id
 
         except Exception as e:
             self.log(f"Exception in _confirm_and_set_active_position (OKX): {e}", level="error")
@@ -1683,6 +1716,95 @@ class TradingBotEngine:
             with self.exit_lock:
                 self.authoritative_exit_in_progress = False
             self.log("=== EMERGENCY EXIT COMPLETE === Account cleared for symbol.", level="info")
+
+    def _check_auto_add_position(self, need_add_usdt, remaining_budget, mode="profit"):
+        enabled = False
+        if mode == "above_zero":
+            enabled = self.config.get('use_add_pos_above_zero', False)
+        else:
+            enabled = self.config.get('use_add_pos_profit_target', False) or self.config.get('use_add_pos_auto_cal', False)
+
+        if not enabled:
+            return
+
+        if not self.is_running or self.authoritative_exit_in_progress:
+            return
+
+        if need_add_usdt <= 0:
+            return
+
+        # Minimum threshold to avoid tiny nuisance orders (e.g. $10)
+        if need_add_usdt < self.config.get('min_order_amount', 1.0):
+            return
+
+        # Determine side (Add to existing position)
+        target_side = None
+        with self.position_lock:
+            if self.in_position['long']:
+                target_side = "Buy"
+            elif self.in_position['short']:
+                target_side = "Sell"
+
+        if not target_side:
+            return # No position to add to
+
+        # Get current leverage
+        current_leverage = 1.0
+        with self.position_lock:
+            if target_side == "Buy":
+                current_leverage = self.position_details.get('long', {}).get('lever', 1.0)
+            else:
+                current_leverage = self.position_details.get('short', {}).get('lever', 1.0)
+        
+        # Calculate Margin Cost
+        margin_cost = need_add_usdt / safe_float(current_leverage)
+
+        if margin_cost > remaining_budget:
+            self.log(f"Auto-Add Blocked [{mode.upper()}]: Need ${margin_cost:.2f} margin but budget limit hit (Remaining: ${remaining_budget:.2f})", level="warning")
+            return
+
+        if mode == "above_zero":
+            msg = f"[AUTO-ADD] PnL Negative (${self.net_profit:.2f}) -> Targeting Break-even (PnL > $0)..."
+        else:
+            msg = f"[AUTO-ADD] PnL Negative (${self.net_profit:.2f}) -> Targeting {self.config.get('add_pos_profit_multiplier', 1.5)}x Size Fee Profit..."
+
+        self.log(msg, level="warning")
+        self.log(f"[AUTO-ADD] Adding ${need_add_usdt:.2f} notional (Cost: ${margin_cost:.2f} USDT) to {target_side.upper()} position...", level="warning")
+        
+        # Calculate quantity based on market price
+        latest = self._get_latest_data_and_indicators()
+        price = latest.get('current_price')
+        if not price: return
+
+        # sz = notional / price / contract_size
+        contract_size = PRODUCT_INFO.get('contractSize', 1.0)
+        qty = need_add_usdt / (price * contract_size)
+        
+        # Format Qty
+        qty_precision = safe_int(PRODUCT_INFO.get('lotSzPrecision', '0'))
+        is_integer_qty = PRODUCT_INFO.get('lotSz', '1') == '1' and '.' not in PRODUCT_INFO.get('lotSz', '1')
+        
+        if is_integer_qty:
+            qty_str = str(int(qty))
+        else:
+            qty_str = f"{qty:.{qty_precision}f}"
+
+        # Place Market Order
+        order_response = self._okx_place_order(
+            self.config['symbol'],
+            target_side,
+            safe_float(qty_str),
+            order_type="Market",
+            verbose=True
+        )
+
+        if order_response and order_response.get('ordId'):
+            self.log(f"[OK] Auto-Add Success [{mode.upper()}]: Added ${need_add_usdt:.2f} notional. Order ID: {order_response.get('ordId')}", level="info")
+        else:
+            self.log(f"❌ Auto-Add Failed [{mode.upper()}]: {order_response}", level="error")
+
+        # cooldown to avoid rapid fire adding in the same loop if price hasn't updated
+        time.sleep(1)
 
     def _cancel_all_exit_orders_and_reset(self, reason, side=None):
         # Determine sides to reset
@@ -1855,6 +1977,25 @@ class TradingBotEngine:
         status_str = "; ".join(status_parts) if status_parts else "Skipped"
         
         return all_passed, status_str
+
+    def _okx_adjust_margin(self, symbol, posSide, amount, type='add'):
+        """
+        Adjust margin for isolated position.
+        """
+        path = "/api/v5/account/adj-margin"
+        params = {
+            "instId": symbol,
+            "posSide": posSide,
+            "type": type,
+            "amt": str(amount)
+        }
+        res = self._okx_request("POST", path, body=params)
+        if res and res.get('code') == '0':
+            self.log(f"Successfully {type}ed {amount} margin to {posSide} {symbol}", level="info")
+            return True
+        else:
+            self.log(f"Failed to move margin: {res}", level="error")
+            return False
 
     def _check_entry_conditions(self, market_data, log_prefix=""):
         # Max Amount = Max Allowed Used (USDT)
@@ -2031,14 +2172,19 @@ class TradingBotEngine:
             # Calculate TP/SL for Display
             tp_px = 0.0
             sl_px = 0.0
-            tp_offset = self.config.get('tp_price_offset', 0)
-            sl_offset = self.config.get('sl_price_offset', 0)
+            tp_offset_val = self.config.get('tp_price_offset', 0)
+            sl_offset_val = self.config.get('sl_price_offset', 0)
+            
             if signal == 1: # LONG
-                tp_px = current_limit_price + tp_offset
-                sl_px = current_limit_price - sl_offset
+                if tp_offset_val and safe_float(tp_offset_val) > 0:
+                    tp_px = current_limit_price + safe_float(tp_offset_val)
+                if sl_offset_val and safe_float(sl_offset_val) > 0:
+                    sl_px = current_limit_price - safe_float(sl_offset_val)
             else: # SHORT
-                tp_px = current_limit_price - tp_offset
-                sl_px = current_limit_price + sl_offset
+                if tp_offset_val and safe_float(tp_offset_val) > 0:
+                    tp_px = current_limit_price - safe_float(tp_offset_val)
+                if sl_offset_val and safe_float(sl_offset_val) > 0:
+                    sl_px = current_limit_price + safe_float(sl_offset_val)
 
             # Log Format: Batch1-1:M:2980|En:2982|TP:2976|SL:3010|1000|Short|Isolated|20x
             market_p = self.latest_trade_price if self.latest_trade_price else 0.0
@@ -2190,7 +2336,8 @@ class TradingBotEngine:
             # self.log(f"Cancel-1:More than {cancel_unfilled_seconds} seconds: {'Yes' if time_passed else 'None'}")
             
             if time_passed:
-                if self._okx_cancel_order(self.config['symbol'], order_id):
+                reason = f"Time Limit ({cancel_unfilled_seconds}s) reached"
+                if self._okx_cancel_order(self.config['symbol'], order_id, reason=reason):
                     with self.position_lock:
                         if order_id in self.pending_entry_ids:
                              self.pending_entry_ids.remove(order_id)
@@ -2203,14 +2350,15 @@ class TradingBotEngine:
             is_target_passed = False
             pending_tp = 0.0
             
-            if signal == 1: # Long
-                pending_tp = limit_price + tp_offset
-                if current_market_price > pending_tp:
-                    is_target_passed = True
-            else: # Short
-                pending_tp = limit_price - tp_offset
-                if current_market_price < pending_tp:
-                    is_target_passed = True
+            if tp_offset and safe_float(tp_offset) > 0:
+                if signal == 1: # Long
+                    pending_tp = limit_price + tp_offset
+                    if current_market_price > pending_tp:
+                        is_target_passed = True
+                else: # Short
+                    pending_tp = limit_price - tp_offset
+                    if current_market_price < pending_tp:
+                        is_target_passed = True
 
             # 3. Entry Check (Taker Avoidance / Directional Move)
             is_entry_unfavorable = False
@@ -2237,21 +2385,31 @@ class TradingBotEngine:
             
             # Short Specific (Literal Checks)
             elif signal == -1: 
-                # "Short: Cancel if Entry price is below market price"
+                # Cancel if Entry price is below market price (Literal config)
                 if self.config.get('cancel_on_entry_price_below_market') and limit_price < current_market_price:
                     should_cancel = True
-                    cancel_msg = f"Short: Cancel if Entry price is below market price (Entry {limit_price:.2f} < Market {current_market_price:.2f})"
+                    cancel_msg = f"Short: Entry price below market (Entry {limit_price:.2f} < Market {current_market_price:.2f})"
+                
+                # Cancel if TP price is below market price (Literal config for Missed Opportunity)
+                elif self.config.get('cancel_on_tp_price_below_market') and is_target_passed:
+                    should_cancel = True
+                    cancel_msg = f"Short: TP price reached/passed before fill (TP {pending_tp:.2f} > Market {current_market_price:.2f})"
             
             # Long Specific (Literal Checks)
             elif signal == 1:
-                # "Long: Cancel if Entry price is above market price"
+                # Cancel if Entry price is above market price
                 if self.config.get('cancel_on_entry_price_above_market') and limit_price > current_market_price:
                     should_cancel = True
-                    cancel_msg = f"Long: Cancel if Entry price is above market price (Entry {limit_price:.2f} > Market {current_market_price:.2f})"
+                    cancel_msg = f"Long: Entry price above market (Entry {limit_price:.2f} > Market {current_market_price:.2f})"
+                
+                # Cancel if TP price is above market price
+                elif self.config.get('cancel_on_tp_price_above_market') and is_target_passed:
+                    should_cancel = True
+                    cancel_msg = f"Long: TP price reached/passed before fill (TP {pending_tp:.2f} < Market {current_market_price:.2f})"
 
             if should_cancel:
-                self.log(f"Cancel Order {order_id} ({cancel_msg})")
-                if self._okx_cancel_order(self.config['symbol'], order_id):
+                # self.log(f"Cancel Order {order_id} ({cancel_msg})") # Already logged in _okx_cancel_order now
+                if self._okx_cancel_order(self.config['symbol'], order_id, reason=cancel_msg):
                     with self.position_lock:
                         if order_id in self.pending_entry_ids:
                              self.pending_entry_ids.remove(order_id)
@@ -2577,6 +2735,7 @@ class TradingBotEngine:
         self._fetch_and_emit_account_info()
 
     def _fetch_and_emit_account_info(self):
+        self.monitoring_tick += 1
         # Fetch account balance
         path_balance = "/api/v5/account/balance"
         params_balance = {"ccy": "USDT"} 
@@ -2709,6 +2868,32 @@ class TradingBotEngine:
                         self.in_position[side_key] = True
                         self.position_entry_price[side_key] = safe_float(pos.get('avgPx'))
                         self.position_qty[side_key] = new_qty
+                        self.position_liq[side_key] = safe_float(pos.get('liqp', '0'))
+
+                        # ---------------------------------------------------------
+                        # Auto-Add Margin Logic
+                        # ---------------------------------------------------------
+                        liqp = self.position_liq[side_key]
+                        mgn_mode = pos.get('mgnMode', 'cross')
+                        
+                        if self.config.get('use_auto_margin', False) and mgn_mode == 'isolated' and liqp > 0:
+                            sl_price = self.current_stop_loss[side_key]
+                            should_add = False
+                            
+                            if side_key == 'long':
+                                if sl_price > 0 and liqp >= sl_price: # Liq is above SL (danger for long)
+                                    should_add = True
+                            elif side_key == 'short':
+                                if sl_price > 0 and liqp <= sl_price: # Liq is below SL (danger for short)
+                                    should_add = True
+                            
+                            if should_add:
+                                offset = self.config.get('auto_margin_offset', 30.0)
+                                diff = abs(sl_price - liqp)
+                                add_amt = diff + offset
+                                self.log(f"AUTO-MARGIN TRIGGERED [{side_key.upper()}]: Liq:{liqp} | SL:{sl_price} | Diff:{diff:.2f} | Adding:{add_amt:.2f}", level="warning")
+                                self._okx_adjust_margin(self.config['symbol'], raw_side, add_amt)
+                        # ---------------------------------------------------------
             
             # Reset sides that were not found
             for s in ['long', 'short']:
@@ -2716,6 +2901,7 @@ class TradingBotEngine:
                     self.in_position[s] = False
                     self.position_entry_price[s] = 0.0
                     self.position_qty[s] = 0.0
+                    self.position_liq[s] = 0.0
                     self.current_take_profit[s] = 0.0
                     self.current_stop_loss[s] = 0.0
             
@@ -2729,17 +2915,20 @@ class TradingBotEngine:
                 'position_qty': self.position_qty[display_side],
                 'current_take_profit': self.current_take_profit[display_side],
                 'current_stop_loss': self.current_stop_loss[display_side],
-                # New fields for advanced UI if needed
                 'positions': {
                     'long': {
                         'in': self.in_position['long'],
                         'qty': self.position_qty['long'],
-                        'price': self.position_entry_price['long']
+                        'price': self.position_entry_price['long'],
+                        'liq': self.position_liq['long'],
+                        'sl': self.current_stop_loss['long']
                     },
                     'short': {
                         'in': self.in_position['short'],
                         'qty': self.position_qty['short'],
-                        'price': self.position_entry_price['short']
+                        'price': self.position_entry_price['short'],
+                        'liq': self.position_liq['short'],
+                        'sl': self.current_stop_loss['short']
                     }
                 }
             })
@@ -2857,6 +3046,11 @@ class TradingBotEngine:
             trade_fee_pct = self.config.get('trade_fee_percentage', 0.07)
             current_size_fee = okx_pos_notional * (trade_fee_pct / 100.0)
             size_target = current_size_fee * size_times
+            
+            # Log target periodically for debugging
+            if self.monitoring_tick % 6 == 0: # Log every minute if interval is 10s
+                self.log(f"Auto-Cal Size Monitor: Current UPL ${self.net_profit:.2f} | Target ${size_target:.2f} ({size_times}x Fee)", level="debug")
+            
             if self.net_profit >= size_target:
                 auto_exit_triggered = True
                 exit_reason = f"Auto-Cal Size Target: ${self.net_profit:.2f} >= ${size_target:.2f} ({size_times}x Size Fee)"
@@ -2868,9 +3062,13 @@ class TradingBotEngine:
             trade_fee_pct = self.config.get('trade_fee_percentage', 0.07)
             current_size_fee = okx_pos_notional * (trade_fee_pct / 100.0)
             size_loss_threshold = -(current_size_fee * size_loss_times)
+            
+            # Log threshold periodically for debugging
+            if self.monitoring_tick % 6 == 0:
+                self.log(f"Auto-Cal Size Loss Monitor: Current UPL ${self.net_profit:.2f} | Threshold ${size_loss_threshold:.2f} ({size_loss_times}x Fee)", level="debug")
+
             if self.net_profit <= size_loss_threshold:
                 auto_exit_triggered = True
-                # Use exit reason
                 exit_reason = f"Auto-Cal Size Loss Target: ${self.net_profit:.2f} <= ${size_loss_threshold:.2f} ({size_loss_times}x Size Fee)"
         if auto_exit_triggered:
              # Guard check before spawning thread to avoid redundant logs
@@ -2930,6 +3128,43 @@ class TradingBotEngine:
 
         total_active_trades_count = self.total_trades_count + len(formatted_open_trades)
 
+        # Auto-Cal Add Position Calculation (New Enhanced)
+        need_add_usdt_above_zero = 0.0
+        need_add_usdt_profit_target = 0.0
+
+        if self.net_profit < 0:
+            recovery_pct = self.config.get('add_pos_recovery_percent', 0.6)
+            profit_mult = self.config.get('add_pos_profit_multiplier', 1.5)
+            trade_fee_pct = self.config.get('trade_fee_percentage', 0.07)
+            current_size_fee = okx_pos_notional * (trade_fee_pct / 100.0)
+            
+            if recovery_pct > 0:
+                # Mode 1: Target PnL = 0
+                need_add_usdt_above_zero = (abs(self.net_profit)) / (recovery_pct / 100.0)
+                # Mode 2: Target PnL = Fee * Multiplier
+                target_pnl = current_size_fee * profit_mult
+                need_add_usdt_profit_target = (abs(self.net_profit) + target_pnl) / (recovery_pct / 100.0)
+
+        # Trigger logic
+        if self.config.get('use_add_pos_above_zero', False):
+            self._check_auto_add_position(need_add_usdt_above_zero, remaining_amount_notional, mode="above_zero")
+        
+        if self.config.get('use_add_pos_profit_target', False) or self.config.get('use_add_pos_auto_cal', False):
+            self._check_auto_add_position(need_add_usdt_profit_target, remaining_amount_notional, mode="profit")
+
+        # Explicit Auto-Exit for Mode 2 (Target PnL Reached)
+        if self.config.get('use_add_pos_profit_target', False) and okx_pos_notional > 0:
+             profit_mult = self.config.get('add_pos_profit_multiplier', 1.5)
+             trade_fee_pct = self.config.get('trade_fee_percentage', 0.07)
+             current_size_fee = okx_pos_notional * (trade_fee_pct / 100.0)
+             target_pnl = current_size_fee * profit_mult
+             if self.net_profit >= target_pnl:
+                 exit_reason = f"Mode 2 Profit Target: ${self.net_profit:.2f} >= ${target_pnl:.2f} ({profit_mult}x Fee)"
+                 with self.exit_lock:
+                     if not self.authoritative_exit_in_progress:
+                         self.log(f"[TARGET] {exit_reason}. Auto-Closing Position...", level="WARNING")
+                         threading.Thread(target=self._execute_trade_exit, args=(exit_reason,), daemon=True).start()
+
         # Emit data to frontend
         self.emit('account_update', {
             'total_trades': total_active_trades_count,
@@ -2946,7 +3181,9 @@ class TradingBotEngine:
             'total_trade_profit': self.total_trade_profit,
             'total_trade_loss': self.total_trade_loss,
             'net_trade_profit': self.net_trade_profit,
-            'daily_reports': self.daily_reports
+            'daily_reports': self.daily_reports,
+            'need_add_usdt': need_add_usdt_profit_target, # Default/Target
+            'need_add_above_zero': need_add_usdt_above_zero
         })
         
         self._check_and_save_daily_report()
@@ -3047,24 +3284,35 @@ class TradingBotEngine:
 
                     if abs(pos_qty) > 0 and avg_px > 0:
                         # Map to our internal side key using exchange data
+                        # Map to our internal side key using exchange data
                         if pos_side_raw == 'short':
                             side_key = 'short'
                         elif pos_side_raw == 'long':
                             side_key = 'long'
                         else: # 'net' mode
-                             # Authoritative check for manual trades: pos > 0 is Long, pos < 0 is Short
                              side_key = 'long' if pos_qty > 0 else 'short'
 
-                        if side_key == 'long':
-                            new_tp = avg_px + tp_price_offset
-                            new_sl = avg_px - sl_price_offset
-                            order_side = "sell"
-                        else: # short
-                            new_tp = avg_px - tp_price_offset
-                            new_sl = avg_px + sl_price_offset
-                            order_side = "buy"
+                        order_side = "sell" if side_key == 'long' else "buy"
+                        new_tp = 0.0
+                        new_sl = 0.0
 
-                        # LOGGING AUDIT: Clear avg_px tracking to debug user discrepancy
+                        # Safely calculate targets if offsets are provided
+                        if tp_price_offset and safe_float(tp_price_offset) > 0:
+                            if side_key == 'long':
+                                new_tp = avg_px + safe_float(tp_price_offset)
+                            else:
+                                new_tp = avg_px - safe_float(tp_price_offset)
+                        else:
+                            self.log(f"Batch Sync: TP offset is null or 0 for {side_key.upper()}. Skipping TP calc.", level="info")
+
+                        if sl_price_offset and safe_float(sl_price_offset) > 0:
+                            if side_key == 'long':
+                                new_sl = avg_px - safe_float(sl_price_offset)
+                            else:
+                                new_sl = avg_px + safe_float(sl_price_offset)
+                        else:
+                            self.log(f"Batch Sync: SL offset is null or 0 for {side_key.upper()}. Skipping SL calc.", level="info")
+
                         self.log(f"Syncing TP/SL for {side_key.upper()} position. Avg Price: {avg_px:.{price_precision}f}", level="info")
 
 
@@ -3087,41 +3335,47 @@ class TradingBotEngine:
                             # Place new TP and SL
                             trig_px_type = self.config.get('trigger_price', 'last')
                             
-                            tp_body = {
-                                "instId": self.config['symbol'],
-                                "tdMode": self.config.get('mode', 'cross'),
-                                "side": order_side,
-                                "posSide": pos_side_raw,
-                                "ordType": "conditional",
-                                "sz": f"{abs(pos_qty):.{qty_precision}f}",
-                                "tpTriggerPx": f"{new_tp:.{price_precision}f}",
-                                "tpTriggerPxType": trig_px_type,
-                                "tpOrdPx": "-1",
-                                "reduceOnly": "true"
-                            }
+                            if tp_price_offset and safe_float(tp_price_offset) > 0:
+                                tp_body = {
+                                    "instId": self.config['symbol'],
+                                    "tdMode": self.config.get('mode', 'cross'),
+                                    "side": order_side,
+                                    "posSide": pos_side_raw,
+                                    "ordType": "conditional",
+                                    "sz": f"{abs(pos_qty):.{qty_precision}f}",
+                                    "tpTriggerPx": f"{new_tp:.{price_precision}f}",
+                                    "tpTriggerPxType": trig_px_type,
+                                    "tpOrdPx": "-1",
+                                    "reduceOnly": "true"
+                                }
 
-                            tp_order = self._okx_place_algo_order(tp_body, verbose=False)
-                            if tp_order and (tp_order.get('algoId') or tp_order.get('ordId')):
-                                self.position_exit_orders[side_key]['tp'] = tp_order.get('algoId') or tp_order.get('ordId')
-                                self.log(f"[TARGET] {side_key.upper()} TP Set: {new_tp:.{price_precision}f}", level="info")
+                                tp_order = self._okx_place_algo_order(tp_body, verbose=False)
+                                if tp_order and (tp_order.get('algoId') or tp_order.get('ordId')):
+                                    self.position_exit_orders[side_key]['tp'] = tp_order.get('algoId') or tp_order.get('ordId')
+                                    self.log(f"[TARGET] {side_key.upper()} TP Set: {new_tp:.{price_precision}f}", level="info")
+                            else:
+                                self.log(f"Skipping TP batch modify for {side_key.upper()} (No offset)", level="debug")
                             
-                            sl_body = {
-                                "instId": self.config['symbol'],
-                                "tdMode": self.config.get('mode', 'cross'),
-                                "side": order_side,
-                                "posSide": pos_side_raw,
-                                "ordType": "conditional",
-                                "sz": f"{abs(pos_qty):.{qty_precision}f}",
-                                "slTriggerPx": f"{new_sl:.{price_precision}f}",
-                                "slTriggerPxType": trig_px_type,
-                                "slOrdPx": "-1",
-                                "reduceOnly": "true"
-                            }
+                            if sl_price_offset and safe_float(sl_price_offset) > 0:
+                                sl_body = {
+                                    "instId": self.config['symbol'],
+                                    "tdMode": self.config.get('mode', 'cross'),
+                                    "side": order_side,
+                                    "posSide": pos_side_raw,
+                                    "ordType": "conditional",
+                                    "sz": f"{abs(pos_qty):.{qty_precision}f}",
+                                    "slTriggerPx": f"{new_sl:.{price_precision}f}",
+                                    "slTriggerPxType": trig_px_type,
+                                    "slOrdPx": "-1",
+                                    "reduceOnly": "true"
+                                }
 
-                            sl_order = self._okx_place_algo_order(sl_body, verbose=False)
-                            if sl_order and (sl_order.get('algoId') or sl_order.get('ordId')):
-                                self.position_exit_orders[side_key]['sl'] = sl_order.get('algoId') or sl_order.get('ordId')
-                                self.log(f"[TARGET] {side_key.upper()} SL Set: {new_sl:.{price_precision}f}", level="info")
+                                sl_order = self._okx_place_algo_order(sl_body, verbose=False)
+                                if sl_order and (sl_order.get('algoId') or sl_order.get('ordId')):
+                                    self.position_exit_orders[side_key]['sl'] = sl_order.get('algoId') or sl_order.get('ordId')
+                                    self.log(f"[TARGET] {side_key.upper()} SL Set: {new_sl:.{price_precision}f}", level="info")
+                            else:
+                                self.log(f"Skipping SL batch modify for {side_key.upper()} (No offset)", level="debug")
                             
                             self.current_take_profit[side_key] = new_tp
                             self.current_stop_loss[side_key] = new_sl

@@ -66,7 +66,11 @@ def update_config():
             'use_chg_high_close', 'min_chg_high_close', 'max_chg_high_close', 'candlestick_timeframe',
             'use_candlestick_conditions', 'log_level', 'use_pnl_auto_cancel', 'pnl_auto_cancel_threshold', 'okx_pos_mode', 'trade_fee_percentage',
             'use_pnl_auto_manual', 'pnl_auto_manual_threshold', 'use_pnl_auto_cal', 'pnl_auto_cal_times',
-            'use_pnl_auto_cal_loss', 'pnl_auto_cal_loss_times'
+            'use_pnl_auto_cal_loss', 'pnl_auto_cal_loss_times',
+            'use_auto_margin', 'auto_margin_offset',
+            'use_size_auto_cal', 'size_auto_cal_times', 'use_size_auto_cal_loss', 'size_auto_cal_loss_times',
+            'use_add_pos_auto_cal', 'add_pos_recovery_percent', 'add_pos_profit_multiplier',
+            'use_add_pos_above_zero', 'use_add_pos_profit_target'
         ]
 
         # Update current_config with only allowed and present keys from new_config
@@ -430,4 +434,4 @@ def handle_emergency_sl(data=None):
 
 
 if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0', port=5000, debug=False, use_reloader=False, log_output=True, allow_unsafe_werkzeug=True)
+    socketio.run(app, host='0.0.0.0', port=5000, debug=False, use_reloader=False, log_output=True)
