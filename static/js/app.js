@@ -438,6 +438,30 @@ function updateAccountMetrics(data) {
 
     lastUsedFee = usedFee;
     lastSizeFee = sizeFee; // Track for Auto-Cal Size updates
+
+    // UI Color Feedback for Need Add
+    const needAddTgt = data.need_add_usdt || 0;
+    const needAddAboveZero = data.need_add_above_zero || 0;
+
+    const tgtEl = document.getElementById('needAddProfitTargetDisplay');
+    const zeroEl = document.getElementById('needAddAboveZeroDisplay');
+
+    if (needAddTgt > 0) {
+        tgtEl.parentElement.classList.add('bg-warning-subtle');
+        tgtEl.classList.add('text-warning');
+    } else {
+        tgtEl.parentElement.classList.remove('bg-warning-subtle');
+        tgtEl.classList.remove('text-warning');
+    }
+
+    if (needAddAboveZero > 0) {
+        zeroEl.parentElement.classList.add('bg-warning-subtle');
+        zeroEl.classList.add('text-warning');
+    } else {
+        zeroEl.parentElement.classList.remove('bg-warning-subtle');
+        zeroEl.classList.remove('text-warning');
+    }
+
     updateAutoCalDisplay();
 }
 

@@ -216,6 +216,7 @@ class TradingBotEngine:
         self.position_entry_price = {'long': 0.0, 'short': 0.0}
         self.position_qty = {'long': 0.0, 'short': 0.0}
         self.position_liq = {'long': 0.0, 'short': 0.0}
+        self.position_details = {'long': {}, 'short': {}} # Store raw OKX position data (lever, etc.)
         self.current_stop_loss = {'long': 0.0, 'short': 0.0}
         self.current_take_profit = {'long': 0.0, 'short': 0.0}
         self.position_exit_orders = {'long': {}, 'short': {}} # { 'long': {'tp': id, 'sl': id}, ... }
@@ -1727,6 +1728,10 @@ class TradingBotEngine:
         if not enabled:
             return
 
+        # [AUTO-ADD] Diagnostic Log (Initial Trigger)
+        if self.monitoring_tick % 6 == 0: # Log every 60s
+             self.log(f"[AUTO-ADD] Diagnostic [{mode.upper()}]: Current PnL ${self.net_profit:.2f} | Calculated Need: ${need_add_usdt:.2f}", level="debug")
+
         if not self.is_running or self.authoritative_exit_in_progress:
             return
 
@@ -1734,7 +1739,10 @@ class TradingBotEngine:
             return
 
         # Minimum threshold to avoid tiny nuisance orders (e.g. $10)
-        if need_add_usdt < self.config.get('min_order_amount', 1.0):
+        min_ord = self.config.get('min_order_amount', 1.0)
+        if need_add_usdt < min_ord:
+            if self.monitoring_tick % 6 == 0:
+                self.log(f"[AUTO-ADD] Blocked [{mode.upper()}]: Need ${need_add_usdt:.2f} < Min Order ${min_ord:.2f}", level="debug")
             return
 
         # Determine side (Add to existing position)
@@ -1746,6 +1754,8 @@ class TradingBotEngine:
                 target_side = "Sell"
 
         if not target_side:
+            if self.monitoring_tick % 6 == 0:
+                self.log(f"[AUTO-ADD] Blocked [{mode.upper()}]: No active position to add to.", level="debug")
             return # No position to add to
 
         # Get current leverage
@@ -1757,7 +1767,9 @@ class TradingBotEngine:
                 current_leverage = self.position_details.get('short', {}).get('lever', 1.0)
         
         # Calculate Margin Cost
-        margin_cost = need_add_usdt / safe_float(current_leverage)
+        current_lever_float = safe_float(current_leverage, 1.0)
+        if current_lever_float <= 0: current_lever_float = 1.0
+        margin_cost = need_add_usdt / current_lever_float
 
         if margin_cost > remaining_budget:
             self.log(f"Auto-Add Blocked [{mode.upper()}]: Need ${margin_cost:.2f} margin but budget limit hit (Remaining: ${remaining_budget:.2f})", level="warning")
@@ -2869,6 +2881,7 @@ class TradingBotEngine:
                         self.position_entry_price[side_key] = safe_float(pos.get('avgPx'))
                         self.position_qty[side_key] = new_qty
                         self.position_liq[side_key] = safe_float(pos.get('liqp', '0'))
+                        self.position_details[side_key] = pos # Store whole position object for reference (lever, etc.)
 
                         # ---------------------------------------------------------
                         # Auto-Add Margin Logic
@@ -2902,6 +2915,7 @@ class TradingBotEngine:
                     self.position_entry_price[s] = 0.0
                     self.position_qty[s] = 0.0
                     self.position_liq[s] = 0.0
+                    self.position_details[s] = {}
                     self.current_take_profit[s] = 0.0
                     self.current_stop_loss[s] = 0.0
             
@@ -2975,11 +2989,19 @@ class TradingBotEngine:
                     # 1. CAPITAL ISOLATION: Only count positions towards 'Used' if bot is running
                     if self.is_running:
                         used_amount_notional += pos_notional
-                        okx_pos_notional += pos_notional
                     
-                    # 2. GLOBAL PnL: Always count 'upl' for the dashboard display
+                    # Always count for 'Size' and 'PnL' display
+                    okx_pos_notional += pos_notional
                     total_unrealized_pnl += safe_float(pos.get('upl', '0'))
                     active_positions_count += 1
+                else:
+                    # Log if it matched symbol but size was 0
+                    if pos.get('instId') == self.config['symbol']:
+                         self.log(f"DEBUG: Found position for {self.config['symbol']} but size is 0 (Side: {pos.get('posSide')})", level="debug")
+
+            if active_positions_count == 0:
+                 if self.monitoring_tick % 6 == 0:
+                     self.log(f"DEBUG: No active positions found for {self.config['symbol']} in OKX response.", level="debug")
 
         # Combined Real-time Net Profit
         # Per User Request: "Net Profit as the pnl for open positions only"
@@ -2992,7 +3014,6 @@ class TradingBotEngine:
         # If stopped, we explicitly keep 'Used' at 0 for a clean session start
         if not self.is_running:
             used_amount_notional = 0.0
-            okx_pos_notional = 0.0
         
         with self.trade_data_lock:
             for trade in self.open_trades:
@@ -3140,10 +3161,16 @@ class TradingBotEngine:
             
             if recovery_pct > 0:
                 # Mode 1: Target PnL = 0
-                need_add_usdt_above_zero = (abs(self.net_profit)) / (recovery_pct / 100.0)
+                # Calculation: How much total notional do we need to offset the current loss?
+                # Target Position Size = (abs(Profit)) / (Recovery_Percentage / 100)
+                # Need Add = Target Position Size - Current Position Size
+                target_notional_above_zero = (abs(self.net_profit)) / (recovery_pct / 100.0)
+                need_add_usdt_above_zero = max(0.0, target_notional_above_zero - okx_pos_notional)
+
                 # Mode 2: Target PnL = Fee * Multiplier
                 target_pnl = current_size_fee * profit_mult
-                need_add_usdt_profit_target = (abs(self.net_profit) + target_pnl) / (recovery_pct / 100.0)
+                target_notional_profit_target = (abs(self.net_profit) + target_pnl) / (recovery_pct / 100.0)
+                need_add_usdt_profit_target = max(0.0, target_notional_profit_target - okx_pos_notional)
 
         # Trigger logic
         if self.config.get('use_add_pos_above_zero', False):

@@ -67,7 +67,7 @@
   "use_add_pos_auto_cal": false,
   "add_pos_recovery_percent": 0.6,
   "add_pos_profit_multiplier": 1.5,
-  "use_add_pos_above_zero": false,
-  "use_add_pos_profit_target": false,
+  "use_add_pos_above_zero": true,
+  "use_add_pos_profit_target": true,
   "account_update_interval_seconds": 10
 }
