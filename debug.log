@@ -2094,3 +2094,644 @@
 2026-02-04 12:54:19,594 - INFO - 127.0.0.1 - - [04/Feb/2026 12:54:19] "GET /api/status HTTP/1.1" 200 -
 2026-02-04 12:54:24,990 - INFO - 127.0.0.1 - - [04/Feb/2026 12:54:24] "GET /api/status HTTP/1.1" 200 -
 2026-02-04 12:54:24,990 - INFO - 127.0.0.1 - - [04/Feb/2026 12:54:24] "GET /api/status HTTP/1.1" 200 -
+2026-02-04 17:53:45,610 - INFO - Logger initialized. Writing to debug.log
+2026-02-04 17:53:45,613 - INFO - Bot starting background monitoring...
+2026-02-04 17:53:45,777 - INFO - Client connected: None
+2026-02-04 17:53:45,780 - INFO - 127.0.0.1 - - [04/Feb/2026 17:53:45] "POST /socket.io/?EIO=4&transport=polling&t=Pmfal_C&sid=fwXxLcAcNo1AMj8bAAAA HTTP/1.1" 200 -
+2026-02-04 17:53:45,868 - INFO - 127.0.0.1 - - [04/Feb/2026 17:53:45] "GET /socket.io/?EIO=4&transport=polling&t=Pmfal_G&sid=fwXxLcAcNo1AMj8bAAAA HTTP/1.1" 200 -
+2026-02-04 17:53:45,882 - INFO - 127.0.0.1 - - [04/Feb/2026 17:53:45] "GET /socket.io/?EIO=4&transport=polling&t=Pmfam4N&sid=fwXxLcAcNo1AMj8bAAAA HTTP/1.1" 200 -
+2026-02-04 17:53:51,441 - INFO - OKX server time synchronized. Offset: 779ms
+2026-02-04 17:53:53,907 - INFO - Bot initialized. Starting live connection threads...
+2026-02-04 17:53:53,946 - INFO - OKX BOT STARTING
+2026-02-04 17:53:55,740 - INFO - Websocket connected
+2026-02-04 17:53:55,741 - INFO - OKX WebSocket connection opened.
+2026-02-04 17:53:58,952 - INFO - Bot startup sequence complete.
+2026-02-04 17:54:01,850 - INFO - Gap Triggered: Diff 71.71 >= 5.0. Initiating Auto-Add...
+2026-02-04 17:54:01,853 - WARNING - === AUTO-ADD TRIGGERED (Step 1) ===
+2026-02-04 17:54:01,884 - INFO - 1. Gap Check: Market 2162.00 vs AvgEntry 2090.29 | Gap 71.71 > Threshold 5.0
+2026-02-04 17:54:01,898 - INFO - 2. Sizing: Base 2162.00 x Step Multiplier 1.0 = $2162.00
+2026-02-04 17:54:01,931 - ERROR - Error fetching sync account data: name 'safe_int' is not defined
+2026-02-04 17:54:01,953 - INFO - Gap Triggered: Diff 71.71 >= 5.0. Initiating Auto-Add...
+2026-02-04 17:54:01,985 - INFO - 127.0.0.1 - - [04/Feb/2026 17:54:01] "GET /api/status HTTP/1.1" 200 -
+2026-02-04 17:54:02,006 - WARNING - === AUTO-ADD TRIGGERED (Step 1) ===
+2026-02-04 17:54:02,037 - INFO - 1. Gap Check: Market 2162.00 vs AvgEntry 2090.29 | Gap 71.71 > Threshold 5.0
+2026-02-04 17:54:02,071 - INFO - 2. Sizing: Base 2162.00 x Step Multiplier 1.0 = $2162.00
+2026-02-04 17:54:06,916 - INFO - Gap Triggered: Diff 71.71 >= 5.0. Initiating Auto-Add...
+2026-02-04 17:54:06,918 - WARNING - === AUTO-ADD TRIGGERED (Step 1) ===
+2026-02-04 17:54:06,922 - INFO - 1. Gap Check: Market 2162.00 vs AvgEntry 2090.29 | Gap 71.71 > Threshold 5.0
+2026-02-04 17:54:06,929 - INFO - 2. Sizing: Base 2162.00 x Step Multiplier 1.0 = $2162.00
+2026-02-04 17:54:06,940 - ERROR - Error in WebSocket Reconnect Loop: name 'safe_int' is not defined
+2026-02-04 17:54:10,793 - INFO - Gap Triggered: Diff 71.71 >= 5.0. Initiating Auto-Add...
+2026-02-04 17:54:10,798 - WARNING - === AUTO-ADD TRIGGERED (Step 1) ===
+2026-02-04 17:54:10,802 - INFO - 1. Gap Check: Market 2162.00 vs AvgEntry 2090.29 | Gap 71.71 > Threshold 5.0
+2026-02-04 17:54:10,809 - INFO - 2. Sizing: Base 2162.00 x Step Multiplier 1.0 = $2162.00
+2026-02-04 17:54:10,812 - ERROR - Error fetching sync account data: name 'safe_int' is not defined
+2026-02-04 17:54:10,816 - INFO - 127.0.0.1 - - [04/Feb/2026 17:54:10] "GET /api/status HTTP/1.1" 200 -
+2026-02-04 17:54:11,021 - INFO - Gap Triggered: Diff 71.71 >= 5.0. Initiating Auto-Add...
+2026-02-04 17:54:11,025 - WARNING - === AUTO-ADD TRIGGERED (Step 1) ===
+2026-02-04 17:54:11,038 - INFO - 1. Gap Check: Market 2162.00 vs AvgEntry 2090.29 | Gap 71.71 > Threshold 5.0
+2026-02-04 17:54:11,046 - INFO - 2. Sizing: Base 2162.00 x Step Multiplier 1.0 = $2162.00
+2026-02-04 17:54:13,580 - INFO - Websocket connected
+2026-02-04 17:54:13,584 - INFO - OKX WebSocket connection opened.
+2026-02-04 17:54:14,809 - INFO - Bot startup sequence complete.
+2026-02-04 17:54:19,923 - INFO - Gap Triggered: Diff 60.91 >= 5.0. Initiating Auto-Add...
+2026-02-04 17:54:19,932 - WARNING - === AUTO-ADD TRIGGERED (Step 1) ===
+2026-02-04 17:54:19,935 - INFO - 1. Gap Check: Market 2151.20 vs AvgEntry 2090.29 | Gap 60.91 > Threshold 5.0
+2026-02-04 17:54:19,944 - INFO - 2. Sizing: Base 2151.20 x Step Multiplier 1.0 = $2151.20
+2026-02-04 17:54:21,323 - INFO - 127.0.0.1 - - [04/Feb/2026 17:54:21] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2026-02-04 17:54:21,631 - INFO - 127.0.0.1 - - [04/Feb/2026 17:54:21] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-02-04 17:54:24,746 - INFO - Gap Triggered: Diff 62.71 >= 5.0. Initiating Auto-Add...
+2026-02-04 17:54:24,749 - WARNING - === AUTO-ADD TRIGGERED (Step 1) ===
+2026-02-04 17:54:24,753 - INFO - 1. Gap Check: Market 2153.00 vs AvgEntry 2090.29 | Gap 62.71 > Threshold 5.0
+2026-02-04 17:54:24,762 - INFO - 2. Sizing: Base 2153.00 x Step Multiplier 1.0 = $2153.00
+2026-02-04 17:54:24,781 - ERROR - Error in WebSocket Reconnect Loop: name 'safe_int' is not defined
+2026-02-04 17:54:30,201 - INFO - Gap Triggered: Diff 60.71 >= 5.0. Initiating Auto-Add...
+2026-02-04 17:54:30,205 - WARNING - === AUTO-ADD TRIGGERED (Step 1) ===
+2026-02-04 17:54:30,207 - INFO - Client disconnected
+2026-02-04 17:54:30,209 - INFO - 1. Gap Check: Market 2151.00 vs AvgEntry 2090.29 | Gap 60.71 > Threshold 5.0
+2026-02-04 17:54:30,211 - INFO - 127.0.0.1 - - [04/Feb/2026 17:54:30] "GET /socket.io/?EIO=4&transport=websocket&sid=fwXxLcAcNo1AMj8bAAAA HTTP/1.1" 200 -
+2026-02-04 17:54:30,212 - INFO - 2. Sizing: Base 2151.00 x Step Multiplier 1.0 = $2151.00
+2026-02-04 17:54:30,533 - INFO - 127.0.0.1 - - [04/Feb/2026 17:54:30] "GET / HTTP/1.1" 200 -
+2026-02-04 17:54:30,692 - INFO - 127.0.0.1 - - [04/Feb/2026 17:54:30] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-02-04 17:54:30,808 - INFO - 127.0.0.1 - - [04/Feb/2026 17:54:30] "[36mGET /static/js/app.js HTTP/1.1[0m" 304 -
+2026-02-04 17:54:31,152 - INFO - 127.0.0.1 - - [04/Feb/2026 17:54:31] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2026-02-04 17:54:31,253 - INFO - Websocket connected
+2026-02-04 17:54:31,256 - INFO - OKX WebSocket connection opened.
+2026-02-04 17:54:31,757 - INFO - 127.0.0.1 - - [04/Feb/2026 17:54:31] "GET /api/config HTTP/1.1" 200 -
+2026-02-04 17:54:31,761 - INFO - 127.0.0.1 - - [04/Feb/2026 17:54:31] "GET /socket.io/?EIO=4&transport=polling&t=Pmfax6J HTTP/1.1" 200 -
+2026-02-04 17:54:32,138 - INFO - Client connected: None
+2026-02-04 17:54:32,142 - INFO - 127.0.0.1 - - [04/Feb/2026 17:54:32] "POST /socket.io/?EIO=4&transport=polling&t=PmfaxIG&sid=ZoYJ_93uOsty4ZdDAAAC HTTP/1.1" 200 -
+2026-02-04 17:54:32,172 - INFO - 127.0.0.1 - - [04/Feb/2026 17:54:32] "GET /socket.io/?EIO=4&transport=polling&t=PmfaxIH&sid=ZoYJ_93uOsty4ZdDAAAC HTTP/1.1" 200 -
+2026-02-04 17:54:32,999 - INFO - Bot startup sequence complete.
+2026-02-04 17:54:40,551 - INFO - Gap Triggered: Diff 63.61 >= 5.0. Initiating Auto-Add...
+2026-02-04 17:54:40,558 - WARNING - === AUTO-ADD TRIGGERED (Step 1) ===
+2026-02-04 17:54:40,572 - INFO - Gap Triggered: Diff 63.61 >= 5.0. Initiating Auto-Add...
+2026-02-04 17:54:40,574 - INFO - 1. Gap Check: Market 2153.90 vs AvgEntry 2090.29 | Gap 63.61 > Threshold 5.0
+2026-02-04 17:54:40,590 - WARNING - === AUTO-ADD TRIGGERED (Step 1) ===
+2026-02-04 17:54:40,632 - INFO - 1. Gap Check: Market 2153.90 vs AvgEntry 2090.29 | Gap 63.61 > Threshold 5.0
+2026-02-04 17:54:40,595 - INFO - 2. Sizing: Base 2153.90 x Step Multiplier 1.0 = $2153.90
+2026-02-04 17:54:40,674 - ERROR - Error fetching sync account data: name 'safe_int' is not defined
+2026-02-04 17:54:40,649 - INFO - 2. Sizing: Base 2153.90 x Step Multiplier 1.0 = $2153.90
+2026-02-04 17:54:40,688 - INFO - 127.0.0.1 - - [04/Feb/2026 17:54:40] "GET /api/status HTTP/1.1" 200 -
+2026-02-04 17:54:40,796 - INFO - Gap Triggered: Diff 63.61 >= 5.0. Initiating Auto-Add...
+2026-02-04 17:54:40,806 - WARNING - === AUTO-ADD TRIGGERED (Step 1) ===
+2026-02-04 17:54:40,812 - INFO - 1. Gap Check: Market 2153.90 vs AvgEntry 2090.29 | Gap 63.61 > Threshold 5.0
+2026-02-04 17:54:40,823 - INFO - 2. Sizing: Base 2153.90 x Step Multiplier 1.0 = $2153.90
+2026-02-04 17:54:40,831 - ERROR - Error in WebSocket Reconnect Loop: name 'safe_int' is not defined
+2026-02-04 17:54:47,246 - INFO - Websocket connected
+2026-02-04 17:54:47,247 - INFO - OKX WebSocket connection opened.
+2026-02-04 17:54:48,543 - INFO - Bot startup sequence complete.
+2026-02-04 17:54:48,920 - INFO - Gap Triggered: Diff 67.31 >= 5.0. Initiating Auto-Add...
+2026-02-04 17:54:48,923 - WARNING - === AUTO-ADD TRIGGERED (Step 1) ===
+2026-02-04 17:54:48,925 - INFO - 1. Gap Check: Market 2157.60 vs AvgEntry 2090.29 | Gap 67.31 > Threshold 5.0
+2026-02-04 17:54:48,931 - INFO - 2. Sizing: Base 2157.60 x Step Multiplier 1.0 = $2157.60
+2026-02-04 17:54:48,937 - ERROR - Error fetching sync account data: name 'safe_int' is not defined
+2026-02-04 17:54:48,945 - INFO - 127.0.0.1 - - [04/Feb/2026 17:54:48] "GET /api/status HTTP/1.1" 200 -
+2026-02-04 17:54:49,345 - INFO - Gap Triggered: Diff 65.96 >= 5.0. Initiating Auto-Add...
+2026-02-04 17:54:49,347 - WARNING - === AUTO-ADD TRIGGERED (Step 1) ===
+2026-02-04 17:54:49,354 - INFO - 1. Gap Check: Market 2156.25 vs AvgEntry 2090.29 | Gap 65.96 > Threshold 5.0
+2026-02-04 17:54:49,357 - INFO - 2. Sizing: Base 2156.25 x Step Multiplier 1.0 = $2156.25
+2026-02-04 17:54:56,674 - INFO - Gap Triggered: Diff 65.96 >= 5.0. Initiating Auto-Add...
+2026-02-04 17:54:56,676 - WARNING - === AUTO-ADD TRIGGERED (Step 1) ===
+2026-02-04 17:54:56,680 - INFO - 1. Gap Check: Market 2156.25 vs AvgEntry 2090.29 | Gap 65.96 > Threshold 5.0
+2026-02-04 17:54:56,681 - INFO - 2. Sizing: Base 2156.25 x Step Multiplier 1.0 = $2156.25
+2026-02-04 17:54:56,683 - ERROR - Error in WebSocket Reconnect Loop: name 'safe_int' is not defined
+2026-02-04 17:54:58,803 - INFO - Gap Triggered: Diff 67.71 >= 5.0. Initiating Auto-Add...
+2026-02-04 17:54:58,812 - WARNING - === AUTO-ADD TRIGGERED (Step 1) ===
+2026-02-04 17:54:58,818 - INFO - 1. Gap Check: Market 2158.00 vs AvgEntry 2090.29 | Gap 67.71 > Threshold 5.0
+2026-02-04 17:54:58,827 - INFO - 2. Sizing: Base 2158.00 x Step Multiplier 1.0 = $2158.00
+2026-02-04 17:55:00,686 - INFO - 127.0.0.1 - - [04/Feb/2026 17:55:00] "GET / HTTP/1.1" 200 -
+2026-02-04 17:55:00,783 - INFO - 127.0.0.1 - - [04/Feb/2026 17:55:00] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-02-04 17:55:00,945 - INFO - 127.0.0.1 - - [04/Feb/2026 17:55:00] "[36mGET /static/js/app.js HTTP/1.1[0m" 304 -
+2026-02-04 17:55:01,331 - INFO - 127.0.0.1 - - [04/Feb/2026 17:55:01] "GET /socket.io/?EIO=4&transport=polling&t=Pmfb2QL HTTP/1.1" 200 -
+2026-02-04 17:55:01,363 - INFO - 127.0.0.1 - - [04/Feb/2026 17:55:01] "GET /api/config HTTP/1.1" 200 -
+2026-02-04 17:55:01,600 - INFO - Client connected: None
+2026-02-04 17:55:01,621 - INFO - 127.0.0.1 - - [04/Feb/2026 17:55:01] "POST /socket.io/?EIO=4&transport=polling&t=Pmfb2VS&sid=vULyan7upIrP1A7IAAAE HTTP/1.1" 200 -
+2026-02-04 17:55:01,679 - INFO - 127.0.0.1 - - [04/Feb/2026 17:55:01] "GET /socket.io/?EIO=4&transport=polling&t=Pmfb2VW&sid=vULyan7upIrP1A7IAAAE HTTP/1.1" 200 -
+2026-02-04 17:55:03,525 - INFO - Websocket connected
+2026-02-04 17:55:03,527 - INFO - OKX WebSocket connection opened.
+2026-02-04 17:55:04,594 - INFO - Bot startup sequence complete.
+2026-02-04 17:55:08,063 - INFO - Gap Triggered: Diff 67.51 >= 5.0. Initiating Auto-Add...
+2026-02-04 17:55:08,072 - WARNING - === AUTO-ADD TRIGGERED (Step 1) ===
+2026-02-04 17:55:08,076 - INFO - 1. Gap Check: Market 2157.80 vs AvgEntry 2090.29 | Gap 67.51 > Threshold 5.0
+2026-02-04 17:55:08,081 - INFO - 2. Sizing: Base 2157.80 x Step Multiplier 1.0 = $2157.80
+2026-02-04 17:55:10,085 - INFO - Gap Triggered: Diff 67.51 >= 5.0. Initiating Auto-Add...
+2026-02-04 17:55:10,087 - WARNING - === AUTO-ADD TRIGGERED (Step 1) ===
+2026-02-04 17:55:10,091 - INFO - 1. Gap Check: Market 2157.80 vs AvgEntry 2090.29 | Gap 67.51 > Threshold 5.0
+2026-02-04 17:55:10,093 - INFO - 2. Sizing: Base 2157.80 x Step Multiplier 1.0 = $2157.80
+2026-02-04 17:55:10,097 - ERROR - Error fetching sync account data: name 'safe_int' is not defined
+2026-02-04 17:55:10,100 - INFO - 127.0.0.1 - - [04/Feb/2026 17:55:10] "GET /api/status HTTP/1.1" 200 -
+2026-02-04 17:55:12,851 - INFO - Gap Triggered: Diff 67.51 >= 5.0. Initiating Auto-Add...
+2026-02-04 17:55:12,857 - WARNING - === AUTO-ADD TRIGGERED (Step 1) ===
+2026-02-04 17:55:12,866 - INFO - 1. Gap Check: Market 2157.80 vs AvgEntry 2090.29 | Gap 67.51 > Threshold 5.0
+2026-02-04 17:55:12,869 - INFO - 2. Sizing: Base 2157.80 x Step Multiplier 1.0 = $2157.80
+2026-02-04 17:55:12,873 - ERROR - Error in WebSocket Reconnect Loop: name 'safe_int' is not defined
+2026-02-04 17:55:17,211 - INFO - Gap Triggered: Diff 67.71 >= 5.0. Initiating Auto-Add...
+2026-02-04 17:55:17,217 - WARNING - === AUTO-ADD TRIGGERED (Step 1) ===
+2026-02-04 17:55:17,221 - INFO - 1. Gap Check: Market 2158.00 vs AvgEntry 2090.29 | Gap 67.71 > Threshold 5.0
+2026-02-04 17:55:17,232 - INFO - 2. Sizing: Base 2158.00 x Step Multiplier 1.0 = $2158.00
+2026-02-04 17:55:17,387 - INFO - Bot starting background monitoring...
+2026-02-04 17:55:17,390 - INFO - 127.0.0.1 - - [04/Feb/2026 17:55:17] "POST /api/config HTTP/1.1" 200 -
+2026-02-04 17:55:18,168 - INFO - Gap Triggered: Diff 67.71 >= 5.0. Initiating Auto-Add...
+2026-02-04 17:55:18,171 - WARNING - === AUTO-ADD TRIGGERED (Step 1) ===
+2026-02-04 17:55:18,179 - INFO - 1. Gap Check: Market 2158.00 vs AvgEntry 2090.29 | Gap 67.71 > Threshold 5.0
+2026-02-04 17:55:18,181 - INFO - 2. Sizing: Base 2158.00 x Step Multiplier 1.0 = $2158.00
+2026-02-04 17:55:18,194 - ERROR - Error fetching sync account data: name 'safe_int' is not defined
+2026-02-04 17:55:18,206 - INFO - 127.0.0.1 - - [04/Feb/2026 17:55:18] "GET /api/status HTTP/1.1" 200 -
+2026-02-04 17:55:19,279 - INFO - Bot starting background monitoring...
+2026-02-04 17:55:19,281 - INFO - 127.0.0.1 - - [04/Feb/2026 17:55:19] "POST /api/config HTTP/1.1" 200 -
+2026-02-04 17:55:20,228 - INFO - Websocket connected
+2026-02-04 17:55:20,258 - INFO - OKX WebSocket connection opened.
+2026-02-04 17:55:20,941 - INFO - Bot startup sequence complete.
+2026-02-04 17:55:22,945 - INFO - OKX server time synchronized. Offset: 799ms
+2026-02-04 17:55:25,888 - INFO - OKX server time synchronized. Offset: 655ms
+2026-02-04 17:55:30,588 - INFO - Gap Triggered: Diff 66.57 >= 5.0. Initiating Auto-Add...
+2026-02-04 17:55:30,589 - WARNING - === AUTO-ADD TRIGGERED (Step 1) ===
+2026-02-04 17:55:30,593 - INFO - 1. Gap Check: Market 2156.86 vs AvgEntry 2090.29 | Gap 66.57 > Threshold 5.0
+2026-02-04 17:55:30,606 - INFO - 2. Sizing: Base 2156.86 x Step Multiplier 1.0 = $2156.86
+2026-02-04 17:55:31,387 - INFO - Gap Triggered: Diff 66.57 >= 5.0. Initiating Auto-Add...
+2026-02-04 17:55:31,396 - WARNING - === AUTO-ADD TRIGGERED (Step 1) ===
+2026-02-04 17:55:31,398 - INFO - 1. Gap Check: Market 2156.86 vs AvgEntry 2090.29 | Gap 66.57 > Threshold 5.0
+2026-02-04 17:55:31,443 - INFO - 2. Sizing: Base 2156.86 x Step Multiplier 1.0 = $2156.86
+2026-02-04 17:55:31,446 - ERROR - Error in WebSocket Reconnect Loop: name 'safe_int' is not defined
+2026-02-04 17:55:38,188 - INFO - Websocket connected
+2026-02-04 17:55:38,193 - INFO - OKX WebSocket connection opened.
+2026-02-04 17:55:40,051 - INFO - Bot startup sequence complete.
+2026-02-04 17:55:40,595 - INFO - Gap Triggered: Diff 66.41 >= 5.0. Initiating Auto-Add...
+2026-02-04 17:55:40,597 - WARNING - === AUTO-ADD TRIGGERED (Step 1) ===
+2026-02-04 17:55:40,601 - INFO - 1. Gap Check: Market 2156.70 vs AvgEntry 2090.29 | Gap 66.41 > Threshold 5.0
+2026-02-04 17:55:40,604 - INFO - 2. Sizing: Base 2156.70 x Step Multiplier 1.0 = $2156.70
+2026-02-04 17:55:48,584 - INFO - Gap Triggered: Diff 69.71 >= 5.0. Initiating Auto-Add...
+2026-02-04 17:55:48,586 - WARNING - === AUTO-ADD TRIGGERED (Step 1) ===
+2026-02-04 17:55:48,589 - INFO - 1. Gap Check: Market 2160.00 vs AvgEntry 2090.29 | Gap 69.71 > Threshold 5.0
+2026-02-04 17:55:48,593 - INFO - 2. Sizing: Base 2160.00 x Step Multiplier 1.0 = $2160.00
+2026-02-04 17:55:48,596 - ERROR - Error in WebSocket Reconnect Loop: name 'safe_int' is not defined
+2026-02-04 17:55:50,310 - INFO - Gap Triggered: Diff 69.71 >= 5.0. Initiating Auto-Add...
+2026-02-04 17:55:50,315 - WARNING - === AUTO-ADD TRIGGERED (Step 1) ===
+2026-02-04 17:55:50,320 - INFO - 1. Gap Check: Market 2160.00 vs AvgEntry 2090.29 | Gap 69.71 > Threshold 5.0
+2026-02-04 17:55:50,325 - INFO - 2. Sizing: Base 2160.00 x Step Multiplier 1.0 = $2160.00
+2026-02-04 17:55:55,337 - INFO - Websocket connected
+2026-02-04 17:55:55,339 - INFO - OKX WebSocket connection opened.
+2026-02-04 17:55:56,591 - INFO - Bot startup sequence complete.
+2026-02-04 17:55:59,848 - INFO - Gap Triggered: Diff 69.71 >= 5.0. Initiating Auto-Add...
+2026-02-04 17:55:59,850 - WARNING - === AUTO-ADD TRIGGERED (Step 1) ===
+2026-02-04 17:55:59,853 - INFO - 1. Gap Check: Market 2160.00 vs AvgEntry 2090.29 | Gap 69.71 > Threshold 5.0
+2026-02-04 17:55:59,855 - INFO - 2. Sizing: Base 2160.00 x Step Multiplier 1.0 = $2160.00
+2026-02-04 17:56:04,358 - INFO - Gap Triggered: Diff 69.71 >= 5.0. Initiating Auto-Add...
+2026-02-04 17:56:04,362 - WARNING - === AUTO-ADD TRIGGERED (Step 1) ===
+2026-02-04 17:56:04,365 - INFO - 1. Gap Check: Market 2160.00 vs AvgEntry 2090.29 | Gap 69.71 > Threshold 5.0
+2026-02-04 17:56:04,370 - INFO - 2. Sizing: Base 2160.00 x Step Multiplier 1.0 = $2160.00
+2026-02-04 17:56:04,403 - ERROR - Error in WebSocket Reconnect Loop: name 'safe_int' is not defined
+2026-02-04 17:56:09,144 - INFO - Gap Triggered: Diff 68.21 >= 5.0. Initiating Auto-Add...
+2026-02-04 17:56:09,167 - WARNING - === AUTO-ADD TRIGGERED (Step 1) ===
+2026-02-04 17:56:09,177 - INFO - 1. Gap Check: Market 2158.50 vs AvgEntry 2090.29 | Gap 68.21 > Threshold 5.0
+2026-02-04 17:56:09,217 - INFO - 2. Sizing: Base 2158.50 x Step Multiplier 1.0 = $2158.50
+2026-02-04 17:56:11,110 - INFO - Websocket connected
+2026-02-04 17:56:11,111 - INFO - OKX WebSocket connection opened.
+2026-02-04 17:56:12,676 - INFO - Bot startup sequence complete.
+2026-02-04 17:56:18,177 - INFO - Gap Triggered: Diff 70.84 >= 5.0. Initiating Auto-Add...
+2026-02-04 17:56:18,180 - WARNING - === AUTO-ADD TRIGGERED (Step 1) ===
+2026-02-04 17:56:18,182 - INFO - 1. Gap Check: Market 2161.13 vs AvgEntry 2090.29 | Gap 70.84 > Threshold 5.0
+2026-02-04 17:56:18,184 - INFO - 2. Sizing: Base 2161.13 x Step Multiplier 1.0 = $2161.13
+2026-02-04 17:56:19,249 - INFO - Gap Triggered: Diff 70.84 >= 5.0. Initiating Auto-Add...
+2026-02-04 17:56:19,253 - WARNING - === AUTO-ADD TRIGGERED (Step 1) ===
+2026-02-04 17:56:19,261 - INFO - 1. Gap Check: Market 2161.13 vs AvgEntry 2090.29 | Gap 70.84 > Threshold 5.0
+2026-02-04 17:56:19,284 - INFO - 2. Sizing: Base 2161.13 x Step Multiplier 1.0 = $2161.13
+2026-02-04 17:56:19,288 - ERROR - Error in WebSocket Reconnect Loop: name 'safe_int' is not defined
+2026-02-04 17:58:44,070 - INFO - Logger initialized. Writing to debug.log
+2026-02-04 17:58:44,074 - INFO - Bot starting background monitoring...
+2026-02-04 17:58:44,203 - INFO - 127.0.0.1 - - [04/Feb/2026 17:58:44] "GET /socket.io/?EIO=4&transport=polling&t=Pmfbuqc&sid=yudre8zYxewCgN0LAAAA HTTP/1.1" 200 -
+2026-02-04 17:58:44,225 - INFO - 127.0.0.1 - - [04/Feb/2026 17:58:44] "GET /socket.io/?EIO=4&transport=polling&t=Pmfbuvv&sid=yudre8zYxewCgN0LAAAA HTTP/1.1" 200 -
+2026-02-04 17:58:48,971 - INFO - OKX server time synchronized. Offset: 601ms
+2026-02-04 17:58:51,082 - INFO - Bot initialized. Starting live connection threads...
+2026-02-04 17:58:51,095 - INFO - OKX BOT STARTING
+2026-02-04 17:58:51,105 - INFO - 127.0.0.1 - - [04/Feb/2026 17:58:51] "POST /socket.io/?EIO=4&transport=polling&t=PmfbuqW&sid=yudre8zYxewCgN0LAAAA HTTP/1.1" 200 -
+2026-02-04 17:58:52,856 - INFO - Websocket connected
+2026-02-04 17:58:52,858 - INFO - OKX WebSocket connection opened.
+2026-02-04 17:58:53,052 - ERROR - Error fetching sync account data: 'NoneType' object has no attribute 'get'
+2026-02-04 17:58:53,061 - INFO - 127.0.0.1 - - [04/Feb/2026 17:58:53] "GET /api/status HTTP/1.1" 200 -
+2026-02-04 17:58:55,418 - INFO - Bot startup sequence complete.
+2026-02-04 17:58:57,848 - INFO - Gap Triggered: Diff 73.71 >= 5.0. Initiating Auto-Add...
+2026-02-04 17:58:57,856 - WARNING - === AUTO-ADD TRIGGERED (Step 1) ===
+2026-02-04 17:58:57,875 - INFO - 1. Gap Check: Market 2164.00 vs AvgEntry 2090.29 | Gap 73.71 > Threshold 5.0
+2026-02-04 17:58:57,883 - INFO - 2. Sizing: Base 2164.00 x Step Multiplier 1.0 = $2164.00
+2026-02-04 17:58:57,916 - WARNING - [AUTO-ADD] Triggering Gap Add (Step 1). Gap: 73.71 > 5.0. Cost: $21.64 (Notional: $2164.00, Qty: 10)
+2026-02-04 17:58:58,014 - INFO - Placing Market Sell order for 10.00 ETH-USDT-SWAP at None
+2026-02-04 17:59:00,077 - INFO - Gap Triggered: Diff 72.53 >= 5.0. Initiating Auto-Add...
+2026-02-04 17:59:00,095 - WARNING - === AUTO-ADD TRIGGERED (Step 1) ===
+2026-02-04 17:59:00,104 - INFO - 1. Gap Check: Market 2162.82 vs AvgEntry 2090.29 | Gap 72.53 > Threshold 5.0
+2026-02-04 17:59:00,107 - INFO - 2. Sizing: Base 2162.82 x Step Multiplier 1.0 = $2162.82
+2026-02-04 17:59:00,113 - WARNING - [AUTO-ADD] Triggering Gap Add (Step 1). Gap: 72.53 > 5.0. Cost: $21.63 (Notional: $2162.82, Qty: 9)
+2026-02-04 17:59:00,135 - INFO - Placing Market Sell order for 9.00 ETH-USDT-SWAP at None
+2026-02-04 17:59:00,240 - INFO - [OK] Order placed: OrderID=3279004217171906560
+2026-02-04 17:59:00,243 - INFO - [OK] Auto-Add Step 1 Executed. Order: 3279004217171906560
+2026-02-04 17:59:02,136 - ERROR - Error in WebSocket Reconnect Loop: name 'need_add_usdt_profit_target' is not defined
+2026-02-04 17:59:02,282 - INFO - [OK] Order placed: OrderID=3279004286696689664
+2026-02-04 17:59:02,296 - INFO - [OK] Auto-Add Step 1 Executed. Order: 3279004286696689664
+2026-02-04 17:59:03,315 - ERROR - Error fetching sync account data: name 'need_add_usdt_profit_target' is not defined
+2026-02-04 17:59:03,316 - INFO - 127.0.0.1 - - [04/Feb/2026 17:59:03] "GET /api/status HTTP/1.1" 200 -
+2026-02-04 17:59:04,988 - INFO - === AUTO-ADD STEP 2 (CLOSE) ===
+2026-02-04 17:59:05,001 - INFO - Logic used: Profit Multiplier (1.5x Fees)
+2026-02-04 17:59:05,004 - INFO - New Avg Entry: 2128.8322495803022 -> Setting Limit Exit at 2128.6055
+2026-02-04 17:59:05,032 - INFO - Placing Limit Buy order for 35.74 ETH-USDT-SWAP at 2128.6055419892064
+2026-02-04 17:59:07,183 - INFO - [OK] Order placed: OrderID=3279004452455583744
+2026-02-04 17:59:07,405 - INFO - === AUTO-ADD STEP 2 (CLOSE) ===
+2026-02-04 17:59:07,417 - INFO - Logic used: Profit Multiplier (1.5x Fees)
+2026-02-04 17:59:07,424 - INFO - New Avg Entry: 2128.8322495803022 -> Setting Limit Exit at 2128.6055
+2026-02-04 17:59:07,439 - INFO - Placing Limit Buy order for 35.74 ETH-USDT-SWAP at 2128.605469488523
+2026-02-04 17:59:08,627 - INFO - Websocket connected
+2026-02-04 17:59:08,628 - INFO - OKX WebSocket connection opened.
+2026-02-04 17:59:09,381 - INFO - Bot startup sequence complete.
+2026-02-04 17:59:09,536 - INFO - [OK] Order placed: OrderID=3279004532550012928
+2026-02-04 17:59:16,196 - ERROR - Error in WebSocket Reconnect Loop: name 'need_add_usdt_profit_target' is not defined
+2026-02-04 17:59:17,352 - INFO - Cancelling OKX order 327900445245 (Long: TP price reached/passed before fill (TP 2133.61 < Market 2162.25))...
+2026-02-04 17:59:19,279 - INFO - [OK] Order cancelled
+2026-02-04 17:59:22,708 - INFO - Websocket connected
+2026-02-04 17:59:22,709 - INFO - OKX WebSocket connection opened.
+2026-02-04 17:59:23,215 - INFO - Bot startup sequence complete.
+2026-02-04 17:59:31,550 - ERROR - Error in WebSocket Reconnect Loop: name 'need_add_usdt_profit_target' is not defined
+2026-02-04 18:01:37,788 - INFO - Logger initialized. Writing to debug.log
+2026-02-04 18:01:37,798 - INFO - Bot starting background monitoring...
+2026-02-04 18:01:37,883 - INFO - 127.0.0.1 - - [04/Feb/2026 18:01:37] "GET /socket.io/?EIO=4&transport=polling&t=PmfcZDw&sid=n7MFmeNDtNpBATMCAAAA HTTP/1.1" 200 -
+2026-02-04 18:01:42,888 - INFO - OKX server time synchronized. Offset: 587ms
+2026-02-04 18:01:45,622 - INFO - Bot initialized. Starting live connection threads...
+2026-02-04 18:01:45,626 - INFO - OKX BOT STARTING
+2026-02-04 18:01:45,635 - INFO - 127.0.0.1 - - [04/Feb/2026 18:01:45] "POST /socket.io/?EIO=4&transport=polling&t=PmfcZDt&sid=n7MFmeNDtNpBATMCAAAA HTTP/1.1" 200 -
+2026-02-04 18:01:47,379 - INFO - Websocket connected
+2026-02-04 18:01:47,381 - INFO - OKX WebSocket connection opened.
+2026-02-04 18:01:48,357 - INFO - Gap Triggered: Diff 40.17 >= 5.0. Initiating Auto-Add...
+2026-02-04 18:01:48,360 - WARNING - === AUTO-ADD TRIGGERED (Step 1) ===
+2026-02-04 18:01:48,361 - INFO - 1. Gap Check: Market 2169.00 vs AvgEntry 2128.83 | Gap 40.17 > Threshold 5.0
+2026-02-04 18:01:48,366 - INFO - 2. Sizing: Base 2169.00 x Step Multiplier 1.0 = $2169.00
+2026-02-04 18:01:48,371 - WARNING - [AUTO-ADD] Triggering Gap Add (Step 1). Gap: 40.17 > 5.0. Cost: $21.69 (Notional: $2169.00, Qty: 10)
+2026-02-04 18:01:48,377 - INFO - Placing Market Sell order for 10.00 ETH-USDT-SWAP at None
+2026-02-04 18:01:50,723 - INFO - Bot startup sequence complete.
+2026-02-04 18:01:50,873 - INFO - [OK] Order placed: OrderID=3279009951389454336
+2026-02-04 18:01:50,883 - INFO - [OK] Auto-Add Step 1 Executed. Order: 3279009951389454336
+2026-02-04 18:01:51,890 - ERROR - Error fetching sync account data: name 'need_add_usdt_profit_target' is not defined
+2026-02-04 18:01:51,893 - INFO - 127.0.0.1 - - [04/Feb/2026 18:01:51] "GET /api/status HTTP/1.1" 200 -
+2026-02-04 18:01:56,808 - INFO - === AUTO-ADD STEP 2 (CLOSE) ===
+2026-02-04 18:01:56,809 - INFO - Logic used: Profit Multiplier (1.5x Fees)
+2026-02-04 18:01:56,820 - INFO - New Avg Entry: 2137.9702492348056 -> Setting Limit Exit at 2137.7430
+2026-02-04 18:01:56,827 - INFO - Placing Limit Buy order for 45.74 ETH-USDT-SWAP at 2137.743044470222
+2026-02-04 18:01:59,390 - ERROR - Error in WebSocket Reconnect Loop: name 'need_add_usdt_profit_target' is not defined
+2026-02-04 18:01:59,492 - INFO - [OK] Order placed: OrderID=3279010235528384512
+2026-02-04 18:02:00,899 - ERROR - Error fetching sync account data: name 'need_add_usdt_profit_target' is not defined
+2026-02-04 18:02:00,907 - INFO - 127.0.0.1 - - [04/Feb/2026 18:02:00] "GET /api/status HTTP/1.1" 200 -
+2026-02-04 18:02:05,853 - INFO - Websocket connected
+2026-02-04 18:02:05,855 - INFO - OKX WebSocket connection opened.
+2026-02-04 18:02:06,649 - INFO - Bot startup sequence complete.
+2026-02-04 18:02:11,732 - INFO - Cancelling OKX order 327901023552 (Long: TP price reached/passed before fill (TP 2142.74 < Market 2165.63))...
+2026-02-04 18:02:13,244 - ERROR - Error in WebSocket Reconnect Loop: name 'need_add_usdt_profit_target' is not defined
+2026-02-04 18:02:13,737 - INFO - [OK] Order cancelled
+2026-02-04 18:03:46,464 - INFO - Logger initialized. Writing to debug.log
+2026-02-04 18:03:46,465 - INFO - Bot starting background monitoring...
+2026-02-04 18:03:46,670 - INFO - Client connected: None
+2026-02-04 18:03:46,674 - INFO - 127.0.0.1 - - [04/Feb/2026 18:03:46] "POST /socket.io/?EIO=4&transport=polling&t=Pmfd2gs&sid=U4YtROu18mtgy-OVAAAA HTTP/1.1" 200 -
+2026-02-04 18:03:46,724 - INFO - 127.0.0.1 - - [04/Feb/2026 18:03:46] "GET /socket.io/?EIO=4&transport=polling&t=Pmfd2gw&sid=U4YtROu18mtgy-OVAAAA HTTP/1.1" 200 -
+2026-02-04 18:03:51,759 - INFO - OKX server time synchronized. Offset: 665ms
+2026-02-04 18:03:54,674 - INFO - Bot initialized. Starting live connection threads...
+2026-02-04 18:03:54,681 - INFO - OKX BOT STARTING
+2026-02-04 18:03:56,404 - INFO - Websocket connected
+2026-02-04 18:03:56,405 - INFO - OKX WebSocket connection opened.
+2026-02-04 18:03:59,272 - INFO - Bot startup sequence complete.
+2026-02-04 18:04:02,697 - INFO - Gap Triggered: Diff 26.03 >= 5.0. Initiating Auto-Add...
+2026-02-04 18:04:02,699 - WARNING - === AUTO-ADD TRIGGERED (Step 1) ===
+2026-02-04 18:04:02,700 - INFO - 1. Gap Check: Market 2164.00 vs AvgEntry 2137.97 | Gap 26.03 > Threshold 5.0
+2026-02-04 18:04:02,702 - INFO - 2. Sizing: Base 2164.00 x Step Multiplier 1.0 = $2164.00
+2026-02-04 18:04:02,707 - WARNING - [AUTO-ADD] Triggering Gap Add (Step 1). Gap: 26.03 > 5.0. Cost: $21.64 (Notional: $2164.00, Qty: 10)
+2026-02-04 18:04:02,714 - INFO - Placing Market Sell order for 10.00 ETH-USDT-SWAP at None
+2026-02-04 18:04:02,837 - INFO - Gap Triggered: Diff 26.03 >= 5.0. Initiating Auto-Add...
+2026-02-04 18:04:02,840 - WARNING - === AUTO-ADD TRIGGERED (Step 1) ===
+2026-02-04 18:04:02,844 - INFO - 1. Gap Check: Market 2164.00 vs AvgEntry 2137.97 | Gap 26.03 > Threshold 5.0
+2026-02-04 18:04:02,846 - INFO - 2. Sizing: Base 2164.00 x Step Multiplier 1.0 = $2164.00
+2026-02-04 18:04:02,849 - WARNING - [AUTO-ADD] Triggering Gap Add (Step 1). Gap: 26.03 > 5.0. Cost: $21.64 (Notional: $2164.00, Qty: 10)
+2026-02-04 18:04:02,853 - INFO - Placing Market Sell order for 10.00 ETH-USDT-SWAP at None
+2026-02-04 18:04:05,038 - INFO - [OK] Order placed: OrderID=3279014452984942592
+2026-02-04 18:04:05,050 - INFO - [OK] Auto-Add Step 1 Executed. Order: 3279014452984942592
+2026-02-04 18:04:05,536 - INFO - [OK] Order placed: OrderID=3279014467144912896
+2026-02-04 18:04:05,542 - INFO - [OK] Auto-Add Step 1 Executed. Order: 3279014467144912896
+2026-02-04 18:04:06,064 - ERROR - Error fetching sync account data: name 'need_add_usdt_profit_target' is not defined
+2026-02-04 18:04:06,066 - INFO - 127.0.0.1 - - [04/Feb/2026 18:04:06] "GET /api/status HTTP/1.1" 200 -
+2026-02-04 18:04:07,559 - ERROR - Error in WebSocket Reconnect Loop: name 'need_add_usdt_profit_target' is not defined
+2026-02-04 18:04:11,408 - INFO - === AUTO-ADD STEP 2 (CLOSE) ===
+2026-02-04 18:04:11,411 - INFO - Logic used: Profit Multiplier (1.5x Fees)
+2026-02-04 18:04:11,417 - INFO - New Avg Entry: 2145.4600790994828 -> Setting Limit Exit at 2145.2334
+2026-02-04 18:04:11,421 - INFO - Placing Limit Buy order for 65.74 ETH-USDT-SWAP at 2145.233414832752
+2026-02-04 18:04:11,745 - INFO - === AUTO-ADD STEP 2 (CLOSE) ===
+2026-02-04 18:04:11,766 - INFO - Logic used: Profit Multiplier (1.5x Fees)
+2026-02-04 18:04:11,768 - INFO - New Avg Entry: 2145.4600790994828 -> Setting Limit Exit at 2145.2334
+2026-02-04 18:04:11,785 - INFO - Placing Limit Buy order for 65.74 ETH-USDT-SWAP at 2145.2334137845787
+2026-02-04 18:04:14,360 - INFO - Websocket connected
+2026-02-04 18:04:14,365 - INFO - OKX WebSocket connection opened.
+2026-02-04 18:04:15,048 - INFO - [OK] Order placed: OrderID=3279014782757900288
+2026-02-04 18:04:15,762 - INFO - [OK] Order placed: OrderID=3279014804434063360
+2026-02-04 18:04:15,927 - ERROR - Error fetching sync account data: name 'need_add_usdt_profit_target' is not defined
+2026-02-04 18:04:15,941 - INFO - 127.0.0.1 - - [04/Feb/2026 18:04:15] "GET /api/status HTTP/1.1" 200 -
+2026-02-04 18:04:16,146 - INFO - Bot startup sequence complete.
+2026-02-04 18:04:24,021 - ERROR - Error in WebSocket Reconnect Loop: name 'need_add_usdt_profit_target' is not defined
+2026-02-04 18:04:27,123 - INFO - Cancelling OKX order 327901478275 (Long: TP price reached/passed before fill (TP 2150.23 < Market 2167.00))...
+2026-02-04 18:04:29,733 - INFO - [OK] Order cancelled
+2026-02-04 18:04:30,577 - INFO - Websocket connected
+2026-02-04 18:04:30,578 - INFO - OKX WebSocket connection opened.
+2026-02-04 18:04:30,849 - INFO - Bot startup sequence complete.
+2026-02-04 18:04:36,619 - ERROR - Error in WebSocket Reconnect Loop: name 'need_add_usdt_profit_target' is not defined
+2026-02-04 18:04:43,076 - INFO - Websocket connected
+2026-02-04 18:04:43,078 - INFO - OKX WebSocket connection opened.
+2026-02-04 18:04:43,437 - INFO - Bot startup sequence complete.
+2026-02-04 18:05:37,351 - INFO - Logger initialized. Writing to debug.log
+2026-02-04 18:05:37,350 - INFO - 127.0.0.1 - - [04/Feb/2026 18:05:37] "GET /socket.io/?EIO=4&transport=polling&t=PmfdThu&sid=_dqCC_tZ8nUtRRpDAAAA HTTP/1.1" 200 -
+2026-02-04 18:05:37,367 - INFO - Bot starting background monitoring...
+2026-02-04 18:05:42,047 - INFO - OKX server time synchronized. Offset: 544ms
+2026-02-04 18:05:45,157 - INFO - Bot initialized. Starting live connection threads...
+2026-02-04 18:05:45,160 - INFO - OKX BOT STARTING
+2026-02-04 18:05:45,165 - INFO - 127.0.0.1 - - [04/Feb/2026 18:05:45] "POST /socket.io/?EIO=4&transport=polling&t=PmfdThs&sid=_dqCC_tZ8nUtRRpDAAAA HTTP/1.1" 200 -
+2026-02-04 18:05:46,476 - INFO - Websocket connected
+2026-02-04 18:05:46,478 - INFO - OKX WebSocket connection opened.
+2026-02-04 18:05:47,508 - INFO - Gap Triggered: Diff 24.54 >= 5.0. Initiating Auto-Add...
+2026-02-04 18:05:47,509 - WARNING - === AUTO-ADD TRIGGERED (Step 1) ===
+2026-02-04 18:05:47,510 - INFO - 1. Gap Check: Market 2170.00 vs AvgEntry 2145.46 | Gap 24.54 > Threshold 5.0
+2026-02-04 18:05:47,512 - INFO - 2. Sizing: Base 2170.00 x Step Multiplier 1.0 = $2170.00
+2026-02-04 18:05:47,513 - WARNING - [AUTO-ADD] Triggering Gap Add (Step 1). Gap: 24.54 > 5.0. Cost: $21.70 (Notional: $2170.00, Qty: 10)
+2026-02-04 18:05:47,516 - INFO - Placing Market Sell order for 10.00 ETH-USDT-SWAP at None
+2026-02-04 18:05:48,858 - INFO - Bot startup sequence complete.
+2026-02-04 18:05:49,621 - INFO - [OK] Order placed: OrderID=3279017957812473856
+2026-02-04 18:05:49,629 - INFO - [OK] Auto-Add Step 1 Executed. Order: 3279017957812473856
+2026-02-04 18:05:50,639 - INFO - 127.0.0.1 - - [04/Feb/2026 18:05:50] "GET /api/status HTTP/1.1" 200 -
+2026-02-04 18:05:55,181 - INFO - === AUTO-ADD STEP 2 (CLOSE) ===
+2026-02-04 18:05:55,183 - INFO - Logic used: Profit Multiplier (1.5x Fees)
+2026-02-04 18:05:55,188 - INFO - New Avg Entry: 2148.541663585952 -> Setting Limit Exit at 2148.3143
+2026-02-04 18:05:55,193 - INFO - Placing Limit Buy order for 75.74 ETH-USDT-SWAP at 2148.314304199334
+2026-02-04 18:05:55,916 - INFO - Initial account balance fetched.
+2026-02-04 18:05:58,122 - INFO - [OK] Order placed: OrderID=3279018242756710400
+2026-02-04 18:05:58,785 - INFO - 127.0.0.1 - - [04/Feb/2026 18:05:58] "GET /api/status HTTP/1.1" 200 -
+2026-02-04 18:06:04,807 - INFO - Cancelling OKX order 327901824275 (Long: TP price reached/passed before fill (TP 2153.31 < Market 2168.80))...
+2026-02-04 18:06:07,474 - INFO - [OK] Order cancelled
+2026-02-04 18:11:18,490 - INFO - Logger initialized. Writing to debug.log
+2026-02-04 18:11:18,491 - INFO - Bot starting background monitoring...
+2026-02-04 18:11:18,711 - INFO - Client connected: None
+2026-02-04 18:11:18,713 - INFO - 127.0.0.1 - - [04/Feb/2026 18:11:18] "POST /socket.io/?EIO=4&transport=polling&t=Pmfen1t&sid=5eROFrfSRiv3iibWAAAA HTTP/1.1" 200 -
+2026-02-04 18:11:18,715 - INFO - 127.0.0.1 - - [04/Feb/2026 18:11:18] "GET /socket.io/?EIO=4&transport=polling&t=Pmfen1w&sid=5eROFrfSRiv3iibWAAAA HTTP/1.1" 200 -
+2026-02-04 18:11:23,144 - INFO - OKX server time synchronized. Offset: 829ms
+2026-02-04 18:11:26,425 - INFO - Bot initialized. Starting live connection threads...
+2026-02-04 18:11:26,429 - INFO - OKX BOT STARTING
+2026-02-04 18:11:28,202 - INFO - Websocket connected
+2026-02-04 18:11:28,203 - INFO - OKX WebSocket connection opened.
+2026-02-04 18:11:31,531 - INFO - Bot startup sequence complete.
+2026-02-04 18:11:34,318 - INFO - Gap Triggered: Diff 7.75 >= 5.0. Initiating Auto-Add...
+2026-02-04 18:11:34,329 - WARNING - === AUTO-ADD TRIGGERED (Step 1) ===
+2026-02-04 18:11:34,341 - INFO - Gap Triggered: Diff 7.75 >= 5.0. Initiating Auto-Add...
+2026-02-04 18:11:34,367 - INFO - 1. Gap Check: Market 2149.00 vs AvgEntry 2141.25 | Gap 7.75 > Threshold 5.0
+2026-02-04 18:11:34,375 - WARNING - === AUTO-ADD TRIGGERED (Step 1) ===
+2026-02-04 18:11:34,402 - INFO - 2. Sizing: Base 2149.00 x Step Multiplier 1.0 = $2149.00
+2026-02-04 18:11:34,409 - INFO - 1. Gap Check: Market 2149.00 vs AvgEntry 2141.25 | Gap 7.75 > Threshold 5.0
+2026-02-04 18:11:34,452 - WARNING - [AUTO-ADD] Triggering Gap Add (Step 1). Gap: 7.75 > 5.0. Cost: $21.49 (Notional: $2149.00, Qty: 10)
+2026-02-04 18:11:34,495 - INFO - 2. Sizing: Base 2149.00 x Step Multiplier 1.0 = $2149.00
+2026-02-04 18:11:34,508 - INFO - Placing Market Sell order for 10.00 ETH-USDT-SWAP at None
+2026-02-04 18:11:34,512 - WARNING - [AUTO-ADD] Triggering Gap Add (Step 1). Gap: 7.75 > 5.0. Cost: $21.49 (Notional: $2149.00, Qty: 10)
+2026-02-04 18:11:34,531 - INFO - Placing Market Sell order for 10.00 ETH-USDT-SWAP at None
+2026-02-04 18:11:37,275 - INFO - [OK] Order placed: OrderID=3279029623044313089
+2026-02-04 18:11:37,287 - INFO - [OK] Order placed: OrderID=3279029623044313088
+2026-02-04 18:11:37,310 - INFO - [OK] Auto-Add Step 1 Executed. Order: 3279029623044313089
+2026-02-04 18:11:37,410 - INFO - [OK] Auto-Add Step 1 Executed. Order: 3279029623044313088
+2026-02-04 18:11:38,424 - INFO - 127.0.0.1 - - [04/Feb/2026 18:11:38] "GET /api/status HTTP/1.1" 200 -
+2026-02-04 18:11:39,802 - INFO - Initial account balance fetched.
+2026-02-04 18:11:44,466 - INFO - === AUTO-ADD STEP 2 (CLOSE) ===
+2026-02-04 18:11:44,473 - INFO - Logic used: Profit Multiplier (1.5x Fees)
+2026-02-04 18:11:44,476 - INFO - New Avg Entry: 2142.763483764447 -> Setting Limit Exit at 2142.5388
+2026-02-04 18:11:44,499 - INFO - Placing Limit Buy order for 36.34 ETH-USDT-SWAP at 2142.5387834991748
+2026-02-04 18:11:44,539 - INFO - === AUTO-ADD STEP 2 (CLOSE) ===
+2026-02-04 18:11:44,611 - INFO - Logic used: Profit Multiplier (1.5x Fees)
+2026-02-04 18:11:44,622 - INFO - New Avg Entry: 2142.763483764447 -> Setting Limit Exit at 2142.5388
+2026-02-04 18:11:44,643 - INFO - Placing Limit Buy order for 36.34 ETH-USDT-SWAP at 2142.5387834991748
+2026-02-04 18:11:48,894 - INFO - [OK] Order placed: OrderID=3279030011134873600
+2026-02-04 18:11:48,894 - INFO - [OK] Order placed: OrderID=3279030010967101440
+2026-02-04 18:11:49,393 - INFO - 127.0.0.1 - - [04/Feb/2026 18:11:49] "GET /api/status HTTP/1.1" 200 -
+2026-02-04 18:12:09,966 - INFO - Gap Triggered: Diff 5.72 >= 5.0. Initiating Auto-Add...
+2026-02-04 18:12:09,970 - WARNING - === AUTO-ADD TRIGGERED (Step 3) ===
+2026-02-04 18:12:09,973 - INFO - 1. Gap Check: Market 2154.72 vs AvgEntry 2142.76 | Gap 11.96 > Threshold 5.0
+2026-02-04 18:12:09,989 - INFO - 2. Sizing: Base 2154.72 x Step Multiplier 3.0 = $6464.16
+2026-02-04 18:12:09,994 - WARNING - [AUTO-ADD] Triggering Gap Add (Step 3). Gap: 11.96 > 5.0. Cost: $64.64 (Notional: $6464.16, Qty: 30)
+2026-02-04 18:12:10,002 - INFO - Placing Market Sell order for 30.00 ETH-USDT-SWAP at None
+2026-02-04 18:12:12,623 - INFO - [OK] Order placed: OrderID=3279030807046000640
+2026-02-04 18:12:12,626 - INFO - [OK] Auto-Add Step 3 Executed. Order: 3279030807046000640
+2026-02-04 18:12:18,155 - INFO - === AUTO-ADD STEP 2 (CLOSE) ===
+2026-02-04 18:12:18,156 - INFO - Logic used: Profit Multiplier (1.5x Fees)
+2026-02-04 18:12:18,161 - INFO - New Avg Entry: 2147.574859813084 -> Setting Limit Exit at 2147.3492
+2026-02-04 18:12:18,171 - INFO - Placing Limit Buy order for 66.34 ETH-USDT-SWAP at 2147.349171559909
+2026-02-04 18:12:21,194 - INFO - [OK] Order placed: OrderID=3279031093600849920
+2026-02-04 18:13:27,017 - INFO - 127.0.0.1 - - [04/Feb/2026 18:13:27] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-02-04 18:13:27,074 - INFO - 127.0.0.1 - - [04/Feb/2026 18:13:27] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2026-02-04 18:13:36,487 - INFO - Gap Triggered: Diff 5.28 >= 5.0. Initiating Auto-Add...
+2026-02-04 18:13:36,489 - INFO - Gap Triggered: Diff 5.28 >= 5.0. Initiating Auto-Add...
+2026-02-04 18:13:36,490 - WARNING - === AUTO-ADD TRIGGERED (Step 4) ===
+2026-02-04 18:13:36,492 - WARNING - === AUTO-ADD TRIGGERED (Step 4) ===
+2026-02-04 18:13:36,499 - INFO - 1. Gap Check: Market 2160.00 vs AvgEntry 2147.57 | Gap 12.43 > Threshold 5.0
+2026-02-04 18:13:36,501 - INFO - 1. Gap Check: Market 2160.00 vs AvgEntry 2147.57 | Gap 12.43 > Threshold 5.0
+2026-02-04 18:13:36,502 - INFO - 2. Sizing: Base 2160.00 x Step Multiplier 4.0 = $8640.00
+2026-02-04 18:13:36,503 - INFO - 2. Sizing: Base 2160.00 x Step Multiplier 4.0 = $8640.00
+2026-02-04 18:13:36,505 - WARNING - [AUTO-ADD] Triggering Gap Add (Step 4). Gap: 12.43 > 5.0. Cost: $86.40 (Notional: $8640.00, Qty: 40)
+2026-02-04 18:13:36,507 - WARNING - [AUTO-ADD] Triggering Gap Add (Step 4). Gap: 12.43 > 5.0. Cost: $86.40 (Notional: $8640.00, Qty: 40)
+2026-02-04 18:13:36,516 - INFO - Placing Market Sell order for 40.00 ETH-USDT-SWAP at None
+2026-02-04 18:13:36,519 - INFO - Placing Market Sell order for 40.00 ETH-USDT-SWAP at None
+2026-02-04 18:13:38,849 - INFO - [OK] Order placed: OrderID=3279033701988175872
+2026-02-04 18:13:38,863 - INFO - [OK] Order placed: OrderID=3279033702055284736
+2026-02-04 18:13:38,865 - INFO - [OK] Auto-Add Step 4 Executed. Order: 3279033701988175872
+2026-02-04 18:13:38,874 - INFO - [OK] Auto-Add Step 4 Executed. Order: 3279033702055284736
+2026-02-04 18:13:44,006 - INFO - === AUTO-ADD STEP 2 (CLOSE) ===
+2026-02-04 18:13:44,009 - INFO - Logic used: Profit Multiplier (1.5x Fees)
+2026-02-04 18:13:44,010 - INFO - New Avg Entry: 2154.3687078037447 -> Setting Limit Exit at 2154.1423
+2026-02-04 18:13:44,012 - INFO - Placing Limit Buy order for 146.34 ETH-USDT-SWAP at 2154.1422987583296
+2026-02-04 18:13:44,823 - INFO - === AUTO-ADD STEP 2 (CLOSE) ===
+2026-02-04 18:13:44,825 - INFO - Logic used: Profit Multiplier (1.5x Fees)
+2026-02-04 18:13:44,828 - INFO - New Avg Entry: 2154.3687078037447 -> Setting Limit Exit at 2154.1422
+2026-02-04 18:13:44,832 - INFO - Placing Limit Buy order for 146.34 ETH-USDT-SWAP at 2154.142186261382
+2026-02-04 18:13:47,067 - INFO - [OK] Order placed: OrderID=3279033978376032256
+2026-02-04 18:13:47,809 - INFO - [OK] Order placed: OrderID=3279034002669441024
+2026-02-04 18:15:32,191 - INFO - Gap Triggered: Diff 6.75 >= 5.0. Initiating Auto-Add...
+2026-02-04 18:15:32,201 - WARNING - === AUTO-ADD TRIGGERED (Step 6) ===
+2026-02-04 18:15:32,204 - INFO - 1. Gap Check: Market 2166.75 vs AvgEntry 2154.37 | Gap 12.38 > Threshold 5.0
+2026-02-04 18:15:32,210 - INFO - 2. Sizing: Base 2166.75 x Step Multiplier 6.0 = $13000.50
+2026-02-04 18:15:32,213 - WARNING - [AUTO-ADD] Triggering Gap Add (Step 6). Gap: 12.38 > 5.0. Cost: $130.00 (Notional: $13000.50, Qty: 60)
+2026-02-04 18:15:32,218 - INFO - Placing Market Sell order for 60.00 ETH-USDT-SWAP at None
+2026-02-04 18:15:34,167 - INFO - Gap Triggered: Diff 8.00 >= 5.0. Initiating Auto-Add...
+2026-02-04 18:15:34,179 - WARNING - === AUTO-ADD TRIGGERED (Step 6) ===
+2026-02-04 18:15:34,187 - INFO - 1. Gap Check: Market 2168.00 vs AvgEntry 2154.37 | Gap 13.63 > Threshold 5.0
+2026-02-04 18:15:34,203 - INFO - 2. Sizing: Base 2168.00 x Step Multiplier 6.0 = $13008.00
+2026-02-04 18:15:34,211 - WARNING - [AUTO-ADD] Triggering Gap Add (Step 6). Gap: 13.63 > 5.0. Cost: $130.08 (Notional: $13008.00, Qty: 60)
+2026-02-04 18:15:34,220 - INFO - Placing Market Sell order for 60.00 ETH-USDT-SWAP at None
+2026-02-04 18:15:34,298 - INFO - [OK] Order placed: OrderID=3279037575578914816
+2026-02-04 18:15:34,303 - INFO - [OK] Auto-Add Step 6 Executed. Order: 3279037575578914816
+2026-02-04 18:15:57,105 - INFO - Logger initialized. Writing to debug.log
+2026-02-04 18:15:57,111 - INFO - Bot starting background monitoring...
+2026-02-04 18:15:57,180 - INFO - 127.0.0.1 - - [04/Feb/2026 18:15:57] "GET /socket.io/?EIO=4&transport=polling&t=Pmffr0x&sid=nXtjq1Bb8fhtXwHYAAAA HTTP/1.1" 200 -
+2026-02-04 18:15:57,200 - INFO - 127.0.0.1 - - [04/Feb/2026 18:15:57] "GET /socket.io/?EIO=4&transport=polling&t=Pmffr6C&sid=nXtjq1Bb8fhtXwHYAAAA HTTP/1.1" 200 -
+2026-02-04 18:16:03,322 - INFO - OKX server time synchronized. Offset: 657ms
+2026-02-04 18:16:06,139 - INFO - Bot initialized. Starting live connection threads...
+2026-02-04 18:16:06,142 - INFO - OKX BOT STARTING
+2026-02-04 18:16:06,146 - INFO - 127.0.0.1 - - [04/Feb/2026 18:16:06] "POST /socket.io/?EIO=4&transport=polling&t=Pmffr0t&sid=nXtjq1Bb8fhtXwHYAAAA HTTP/1.1" 200 -
+2026-02-04 18:16:07,462 - INFO - Websocket connected
+2026-02-04 18:16:07,464 - INFO - OKX WebSocket connection opened.
+2026-02-04 18:16:09,177 - INFO - Gap Triggered: Diff 8.42 >= 5.0. Initiating Auto-Add...
+2026-02-04 18:16:09,181 - WARNING - === AUTO-ADD TRIGGERED (Step 1) ===
+2026-02-04 18:16:09,188 - INFO - 1. Gap Check: Market 2169.05 vs AvgEntry 2160.63 | Gap 8.42 > Threshold 5.0
+2026-02-04 18:16:09,191 - INFO - 2. Sizing: Base 2169.05 x Step Multiplier 1.0 = $2169.05
+2026-02-04 18:16:09,194 - WARNING - [AUTO-ADD] Triggering Gap Add (Step 1). Gap: 8.42 > 5.0. Cost: $21.69 (Notional: $2169.05, Qty: 10)
+2026-02-04 18:16:09,196 - INFO - Placing Market Sell order for 10.00 ETH-USDT-SWAP at None
+2026-02-04 18:16:10,840 - INFO - Bot startup sequence complete.
+2026-02-04 18:16:12,140 - INFO - [OK] Order placed: OrderID=3279038845614166016
+2026-02-04 18:16:12,154 - INFO - [OK] Auto-Add Step 1 Executed. Order: 3279038845614166016
+2026-02-04 18:16:13,161 - INFO - 127.0.0.1 - - [04/Feb/2026 18:16:13] "GET /api/status HTTP/1.1" 200 -
+2026-02-04 18:16:18,042 - INFO - === AUTO-ADD STEP 2 (CLOSE) ===
+2026-02-04 18:16:18,043 - INFO - Logic used: Profit Multiplier (1.5x Fees)
+2026-02-04 18:16:18,044 - INFO - New Avg Entry: 2160.9387591372947 -> Setting Limit Exit at 2160.7114
+2026-02-04 18:16:18,046 - INFO - Placing Limit Buy order for 276.34 ETH-USDT-SWAP at 2160.7113908216447
+2026-02-04 18:16:19,513 - INFO - Initial account balance fetched.
+2026-02-04 18:16:20,679 - INFO - [OK] Order placed: OrderID=3279039133108539392
+2026-02-04 18:16:21,610 - INFO - 127.0.0.1 - - [04/Feb/2026 18:16:21] "GET /api/status HTTP/1.1" 200 -
+2026-02-04 18:16:44,258 - INFO - 127.0.0.1 - - [04/Feb/2026 18:16:44] "GET / HTTP/1.1" 200 -
+2026-02-04 18:16:44,556 - INFO - 127.0.0.1 - - [04/Feb/2026 18:16:44] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-02-04 18:16:44,643 - INFO - 127.0.0.1 - - [04/Feb/2026 18:16:44] "[36mGET /static/js/app.js HTTP/1.1[0m" 304 -
+2026-02-04 18:16:45,043 - INFO - 127.0.0.1 - - [04/Feb/2026 18:16:45] "GET /socket.io/?EIO=4&transport=polling&t=Pmfg0i_ HTTP/1.1" 200 -
+2026-02-04 18:16:45,092 - INFO - 127.0.0.1 - - [04/Feb/2026 18:16:45] "GET /api/config HTTP/1.1" 200 -
+2026-02-04 18:16:45,313 - INFO - Client connected: None
+2026-02-04 18:16:45,323 - INFO - 127.0.0.1 - - [04/Feb/2026 18:16:45] "POST /socket.io/?EIO=4&transport=polling&t=Pmfg0n-&sid=SHzUCzwFhoH_de2UAAAC HTTP/1.1" 200 -
+2026-02-04 18:16:45,390 - INFO - 127.0.0.1 - - [04/Feb/2026 18:16:45] "GET /socket.io/?EIO=4&transport=polling&t=Pmfg0o0&sid=SHzUCzwFhoH_de2UAAAC HTTP/1.1" 200 -
+2026-02-04 18:16:53,569 - INFO - 127.0.0.1 - - [04/Feb/2026 18:16:53] "GET /api/status HTTP/1.1" 200 -
+2026-02-04 18:17:01,801 - INFO - 127.0.0.1 - - [04/Feb/2026 18:17:01] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 03:47:10,624 - INFO - Logger initialized. Writing to debug.log
+2026-02-05 03:47:10,637 - INFO - Bot starting background monitoring...
+2026-02-05 03:47:10,709 - INFO - 127.0.0.1 - - [05/Feb/2026 03:47:10] "GET /socket.io/?EIO=4&transport=polling&t=Pmhiab0&sid=T6G_L8tm4X564Kc6AAAA HTTP/1.1" 200 -
+2026-02-05 03:47:10,718 - INFO - 127.0.0.1 - - [05/Feb/2026 03:47:10] "GET /socket.io/?EIO=4&transport=polling&t=Pmhiafy&sid=T6G_L8tm4X564Kc6AAAA HTTP/1.1" 200 -
+2026-02-05 03:47:11,618 - INFO - 127.0.0.1 - - [05/Feb/2026 03:47:11] "GET /socket.io/?EIO=4&transport=websocket&sid=T6G_L8tm4X564Kc6AAAA HTTP/1.1" 200 -
+2026-02-05 03:47:14,199 - INFO - 127.0.0.1 - - [05/Feb/2026 03:47:14] "GET / HTTP/1.1" 200 -
+2026-02-05 03:47:14,414 - INFO - 127.0.0.1 - - [05/Feb/2026 03:47:14] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-02-05 03:47:14,614 - INFO - 127.0.0.1 - - [05/Feb/2026 03:47:14] "[36mGET /static/js/app.js HTTP/1.1[0m" 304 -
+2026-02-05 03:47:14,938 - INFO - 127.0.0.1 - - [05/Feb/2026 03:47:14] "GET /socket.io/?EIO=4&transport=polling&t=Pmhibd1 HTTP/1.1" 200 -
+2026-02-05 03:47:14,941 - INFO - 127.0.0.1 - - [05/Feb/2026 03:47:14] "GET /api/config HTTP/1.1" 200 -
+2026-02-05 03:47:15,015 - INFO - OKX server time synchronized. Offset: -368ms
+2026-02-05 03:47:15,187 - INFO - Client connected: None
+2026-02-05 03:47:15,191 - INFO - 127.0.0.1 - - [05/Feb/2026 03:47:15] "POST /socket.io/?EIO=4&transport=polling&t=Pmhibh_&sid=wqPU1_03jCby1sU-AAAC HTTP/1.1" 200 -
+2026-02-05 03:47:15,262 - INFO - 127.0.0.1 - - [05/Feb/2026 03:47:15] "GET /socket.io/?EIO=4&transport=polling&t=Pmhibi1&sid=wqPU1_03jCby1sU-AAAC HTTP/1.1" 200 -
+2026-02-05 03:47:16,654 - INFO - Bot initialized. Starting live connection threads...
+2026-02-05 03:47:16,657 - INFO - OKX BOT STARTING
+2026-02-05 03:47:16,660 - INFO - 127.0.0.1 - - [05/Feb/2026 03:47:16] "POST /socket.io/?EIO=4&transport=polling&t=Pmhiaax&sid=T6G_L8tm4X564Kc6AAAA HTTP/1.1" 200 -
+2026-02-05 03:47:18,416 - INFO - Websocket connected
+2026-02-05 03:47:18,418 - INFO - OKX WebSocket connection opened.
+2026-02-05 03:47:20,907 - INFO - Bot startup sequence complete.
+2026-02-05 03:47:21,855 - INFO - Gap Triggered: Diff 99.17 >= 5.0. Initiating Auto-Add...
+2026-02-05 03:47:21,857 - WARNING - === AUTO-ADD TRIGGERED (Step 1) ===
+2026-02-05 03:47:21,860 - INFO - 1. Gap Check: Market 2184.00 vs AvgEntry 2084.83 | Gap 99.17 > Threshold 5.0
+2026-02-05 03:47:21,862 - INFO - 2. Sizing: Base 2184.00 x Step Multiplier 1.0 = $2184.00
+2026-02-05 03:47:21,865 - WARNING - [AUTO-ADD] Triggering Gap Add (Step 1). Gap: 99.17 > 5.0. Cost: $21.84 (Notional: $2184.00, Qty: 10)
+2026-02-05 03:47:21,871 - INFO - Placing Market Sell order for 10.00 ETH-USDT-SWAP at None
+2026-02-05 03:47:22,603 - INFO - Gap Triggered: Diff 99.17 >= 5.0. Initiating Auto-Add...
+2026-02-05 03:47:22,604 - WARNING - === AUTO-ADD TRIGGERED (Step 1) ===
+2026-02-05 03:47:22,606 - INFO - 1. Gap Check: Market 2184.00 vs AvgEntry 2084.83 | Gap 99.17 > Threshold 5.0
+2026-02-05 03:47:22,608 - INFO - 2. Sizing: Base 2184.00 x Step Multiplier 1.0 = $2184.00
+2026-02-05 03:47:22,614 - WARNING - [AUTO-ADD] Triggering Gap Add (Step 1). Gap: 99.17 > 5.0. Cost: $21.84 (Notional: $2184.00, Qty: 10)
+2026-02-05 03:47:22,617 - INFO - Placing Market Sell order for 10.00 ETH-USDT-SWAP at None
+2026-02-05 03:47:23,916 - INFO - [OK] Order placed: OrderID=3280188780627759104
+2026-02-05 03:47:23,918 - INFO - [OK] Auto-Add Step 1 Executed. Order: 3280188780627759104
+2026-02-05 03:47:24,494 - INFO - [OK] Order placed: OrderID=3280188800324210688
+2026-02-05 03:47:24,496 - INFO - [OK] Auto-Add Step 1 Executed. Order: 3280188800324210688
+2026-02-05 03:47:24,920 - INFO - 📅 Daily Report Saved for 2026-02-05: Capital $87431.89, Net Profit $0.00
+2026-02-05 03:47:25,498 - INFO - 127.0.0.1 - - [05/Feb/2026 03:47:25] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 03:47:26,747 - INFO - Initial account balance fetched.
+2026-02-05 03:47:30,400 - INFO - === AUTO-ADD STEP 2 (CLOSE) ===
+2026-02-05 03:47:30,401 - INFO - Logic used: Profit Multiplier (1.5x Fees)
+2026-02-05 03:47:30,402 - INFO - New Avg Entry: 2141.151712887439 -> Setting Limit Exit at 2140.9224
+2026-02-05 03:47:30,403 - INFO - Placing Limit Buy order for 36.78 ETH-USDT-SWAP at 2140.922434955332
+2026-02-05 03:47:30,765 - INFO - === AUTO-ADD STEP 2 (CLOSE) ===
+2026-02-05 03:47:30,814 - INFO - Logic used: Profit Multiplier (1.5x Fees)
+2026-02-05 03:47:30,941 - INFO - New Avg Entry: 2141.151712887439 -> Setting Limit Exit at 2140.9224
+2026-02-05 03:47:31,062 - INFO - Placing Limit Buy order for 36.78 ETH-USDT-SWAP at 2140.9224420511478
+2026-02-05 03:47:31,533 - INFO - Gap Triggered: Diff 6.82 >= 5.0. Initiating Auto-Add...
+2026-02-05 03:47:31,564 - WARNING - === AUTO-ADD TRIGGERED (Step 3) ===
+2026-02-05 03:47:31,568 - INFO - 1. Gap Check: Market 2190.82 vs AvgEntry 2141.15 | Gap 49.67 > Threshold 5.0
+2026-02-05 03:47:31,662 - INFO - 2. Sizing: Base 2190.82 x Step Multiplier 3.0 = $6572.46
+2026-02-05 03:47:31,728 - WARNING - [AUTO-ADD] Triggering Gap Add (Step 3). Gap: 49.67 > 5.0. Cost: $65.72 (Notional: $6572.46, Qty: 30)
+2026-02-05 03:47:31,780 - INFO - Placing Market Sell order for 30.00 ETH-USDT-SWAP at None
+2026-02-05 03:47:34,165 - INFO - [OK] Order placed: OrderID=3280189124829122560
+2026-02-05 03:47:34,280 - INFO - 127.0.0.1 - - [05/Feb/2026 03:47:34] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 03:47:34,525 - INFO - [OK] Order placed: OrderID=3280189136908718080
+2026-02-05 03:47:34,606 - INFO - [OK] Order placed: OrderID=3280189139391746048
+2026-02-05 03:47:34,609 - INFO - [OK] Auto-Add Step 3 Executed. Order: 3280189139391746048
+2026-02-05 03:47:39,835 - INFO - === AUTO-ADD STEP 2 (CLOSE) ===
+2026-02-05 03:47:39,840 - INFO - Logic used: Profit Multiplier (1.5x Fees)
+2026-02-05 03:47:39,848 - INFO - New Avg Entry: 2162.1217565139264 -> Setting Limit Exit at 2161.8925
+2026-02-05 03:47:39,851 - INFO - Placing Limit Buy order for 66.78 ETH-USDT-SWAP at 2161.8925435399015
+2026-02-05 03:47:41,961 - INFO - [OK] Order placed: OrderID=3280189385849049088
+2026-02-05 03:48:01,804 - INFO - Client disconnected
+2026-02-05 03:48:22,376 - INFO - [NEED ADD DEBUG] Side: short | AvgEntry: 2162.1217565139264 | Mkt: 2193.06
+2026-02-05 03:48:22,381 - INFO - [NEED ADD DEBUG] Above0: 19509.84 | ProfitTg: 26667.83
+2026-02-05 03:48:24,333 - INFO - [NEED ADD DEBUG] Side: short | AvgEntry: 2162.1217565139264 | Mkt: 2193.0
+2026-02-05 03:48:24,334 - INFO - [NEED ADD DEBUG] Above0: 19444.93 | ProfitTg: 26589.23
+2026-02-05 03:48:34,527 - INFO - Gap Triggered: Diff 5.26 >= 5.0. Initiating Auto-Add...
+2026-02-05 03:48:34,527 - WARNING - === AUTO-ADD TRIGGERED (Step 4) ===
+2026-02-05 03:48:34,529 - INFO - 1. Gap Check: Market 2196.08 vs AvgEntry 2162.12 | Gap 33.96 > Threshold 5.0
+2026-02-05 03:48:34,530 - INFO - 2. Sizing: Base 2196.08 x Step Multiplier 4.0 = $8784.32
+2026-02-05 03:48:34,532 - WARNING - [AUTO-ADD] Triggering Gap Add (Step 4). Gap: 33.96 > 5.0. Cost: $87.84 (Notional: $8784.32, Qty: 40)
+2026-02-05 03:48:34,535 - INFO - Placing Market Sell order for 40.00 ETH-USDT-SWAP at None
+2026-02-05 03:48:36,195 - INFO - [OK] Order placed: OrderID=3280191206009212928
+2026-02-05 03:48:36,197 - INFO - [OK] Auto-Add Step 4 Executed. Order: 3280191206009212928
+2026-02-05 03:48:41,022 - INFO - === AUTO-ADD STEP 2 (CLOSE) ===
+2026-02-05 03:48:41,022 - INFO - Logic used: Profit Multiplier (1.5x Fees)
+2026-02-05 03:48:41,023 - INFO - New Avg Entry: 2174.525337141787 -> Setting Limit Exit at 2174.2954
+2026-02-05 03:48:41,024 - INFO - Placing Limit Buy order for 106.78 ETH-USDT-SWAP at 2174.295391817773
+2026-02-05 03:48:42,737 - INFO - [OK] Order placed: OrderID=3280191426059177984
+2026-02-05 03:49:16,369 - INFO - [NEED ADD DEBUG] Side: short | AvgEntry: 2174.525337141787 | Mkt: 2188.5
+2026-02-05 03:49:16,370 - INFO - [NEED ADD DEBUG] Above0: 1491.85 | ProfitTg: 6702.22
+2026-02-05 05:01:59,691 - INFO - Logger initialized. Writing to debug.log
+2026-02-05 05:01:59,686 - INFO - 127.0.0.1 - - [05/Feb/2026 05:01:59] "GET /socket.io/?EIO=4&transport=polling&t=PmhziWz&sid=Om4MfPHwJh8T8PpMAAAA HTTP/1.1" 200 -
+2026-02-05 05:01:59,704 - INFO - Bot starting background monitoring...
+2026-02-05 05:02:04,392 - INFO - OKX server time synchronized. Offset: -332ms
+2026-02-05 05:02:06,417 - INFO - Bot initialized. Starting live connection threads...
+2026-02-05 05:02:06,419 - INFO - OKX BOT STARTING
+2026-02-05 05:02:06,421 - INFO - 127.0.0.1 - - [05/Feb/2026 05:02:06] "POST /socket.io/?EIO=4&transport=polling&t=PmhziWu&sid=Om4MfPHwJh8T8PpMAAAA HTTP/1.1" 200 -
+2026-02-05 05:02:08,252 - INFO - Websocket connected
+2026-02-05 05:02:08,254 - INFO - OKX WebSocket connection opened.
+2026-02-05 05:02:08,670 - ERROR - Error fetching sync account data: 'NoneType' object has no attribute 'get'
+2026-02-05 05:02:08,674 - INFO - 127.0.0.1 - - [05/Feb/2026 05:02:08] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 05:02:11,183 - INFO - Bot startup sequence complete.
+2026-02-05 05:02:13,051 - INFO - Gap Triggered: Diff 18.71 >= 5.0. Initiating Auto-Add...
+2026-02-05 05:02:13,053 - WARNING - === AUTO-ADD TRIGGERED (Step 1) ===
+2026-02-05 05:02:13,054 - INFO - 1. Gap Check: Market 2146.21 vs AvgEntry 2127.50 | Gap 18.71 > Threshold 5.0
+2026-02-05 05:02:13,057 - INFO - 2. Sizing: Current Size $3523.66 x 30.0% = $1057.10
+2026-02-05 05:02:13,058 - WARNING - [AUTO-ADD] Triggering Gap Add (Step 1). Gap: 18.71 > 5.0. Cost: $10.57 (Notional: $1057.10, Qty: 4)
+2026-02-05 05:02:13,061 - INFO - Placing Market Sell order for 4.00 ETH-USDT-SWAP at None
+2026-02-05 05:02:15,223 - INFO - Gap Triggered: Diff 18.54 >= 5.0. Initiating Auto-Add...
+2026-02-05 05:02:15,225 - WARNING - === AUTO-ADD TRIGGERED (Step 1) ===
+2026-02-05 05:02:15,226 - INFO - 1. Gap Check: Market 2146.04 vs AvgEntry 2127.50 | Gap 18.54 > Threshold 5.0
+2026-02-05 05:02:15,228 - INFO - 2. Sizing: Current Size $3523.14 x 30.0% = $1056.94
+2026-02-05 05:02:15,230 - WARNING - [AUTO-ADD] Triggering Gap Add (Step 1). Gap: 18.54 > 5.0. Cost: $10.57 (Notional: $1056.94, Qty: 4)
+2026-02-05 05:02:15,232 - INFO - Placing Market Sell order for 4.00 ETH-USDT-SWAP at None
+2026-02-05 05:02:15,271 - INFO - [OK] Order placed: OrderID=3280339487372742656
+2026-02-05 05:02:15,272 - INFO - [OK] Auto-Add Step 1 Executed. Order: 3280339487372742656
+2026-02-05 05:02:17,472 - INFO - Initial account balance fetched.
+2026-02-05 05:02:17,482 - INFO - [OK] Order placed: OrderID=3280339560890503168
+2026-02-05 05:02:17,499 - INFO - [OK] Auto-Add Step 1 Executed. Order: 3280339560890503168
+2026-02-05 05:02:18,507 - INFO - 127.0.0.1 - - [05/Feb/2026 05:02:18] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 05:02:20,379 - INFO - === AUTO-ADD STEP 2 (CLOSE) ===
+2026-02-05 05:02:20,386 - INFO - Logic used: Profit Multiplier (1.5x Fees)
+2026-02-05 05:02:20,420 - INFO - New Avg Entry: 2133.4837668711657 -> Setting Limit Exit at 2133.2589
+2026-02-05 05:02:20,474 - INFO - Placing Limit Buy order for 24.45 ETH-USDT-SWAP at 2133.2588927744455
+2026-02-05 05:02:22,909 - INFO - [OK] Order placed: OrderID=3280339743929929728
+2026-02-05 05:02:22,911 - INFO - === AUTO-ADD STEP 2 (CLOSE) ===
+2026-02-05 05:02:22,912 - INFO - Logic used: Profit Multiplier (1.5x Fees)
+2026-02-05 05:02:22,914 - INFO - New Avg Entry: 2133.4837668711657 -> Setting Limit Exit at 2133.2588
+2026-02-05 05:02:22,917 - INFO - Placing Limit Buy order for 24.45 ETH-USDT-SWAP at 2133.2588444043477
+2026-02-05 05:02:24,987 - INFO - [OK] Order placed: OrderID=3280339813689593856
+2026-02-05 05:03:11,867 - INFO - Gap Triggered: Diff 10.16 >= 5.0. Initiating Auto-Add...
+2026-02-05 05:03:11,869 - WARNING - === AUTO-ADD TRIGGERED (Step 3) ===
+2026-02-05 05:03:11,870 - INFO - 1. Gap Check: Market 2156.20 vs AvgEntry 2133.48 | Gap 22.72 > Threshold 5.0
+2026-02-05 05:03:11,872 - INFO - 2. Sizing: Current Size $5262.52 x 30.0% = $1578.76
+2026-02-05 05:03:11,874 - WARNING - [AUTO-ADD] Triggering Gap Add (Step 3). Gap: 22.72 > 5.0. Cost: $15.79 (Notional: $1578.76, Qty: 7)
+2026-02-05 05:03:11,877 - INFO - Placing Market Sell order for 7.00 ETH-USDT-SWAP at None
+2026-02-05 05:03:13,425 - INFO - [OK] Order placed: OrderID=3280341446683136000
+2026-02-05 05:03:13,427 - INFO - [OK] Auto-Add Step 3 Executed. Order: 3280341446683136000
+2026-02-05 05:03:18,302 - INFO - === AUTO-ADD STEP 2 (CLOSE) ===
+2026-02-05 05:03:18,304 - INFO - Logic used: Profit Multiplier (1.5x Fees)
+2026-02-05 05:03:18,305 - INFO - New Avg Entry: 2138.5217837837836 -> Setting Limit Exit at 2138.2957
+2026-02-05 05:03:18,307 - INFO - Placing Limit Buy order for 31.45 ETH-USDT-SWAP at 2138.2956861702796
+2026-02-05 05:03:20,086 - INFO - [OK] Order placed: OrderID=3280341662807232512

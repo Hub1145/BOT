@@ -381,6 +381,7 @@ function updateBotStatus(running) {
 
 function updateAccountMetrics(data) {
     document.getElementById('totalCapital').textContent = `$${data.total_capital !== undefined ? Number(data.total_capital).toFixed(2) : '0.00'}`;
+    document.getElementById('totalCapital2nd').textContent = `$${data.total_capital_2nd !== undefined ? Number(data.total_capital_2nd).toFixed(2) : '0.00'}`;
     document.getElementById('maxAllowedUsedDisplay').textContent = `$${data.max_allowed_used_display !== undefined ? Number(data.max_allowed_used_display).toFixed(2) : '0.00'}`;
     document.getElementById('maxAmountDisplay').textContent = `$${data.max_amount_display !== undefined ? Number(data.max_amount_display).toFixed(2) : '0.00'}`;
     document.getElementById('usedAmount').textContent = `$${data.used_amount !== undefined ? Number(data.used_amount).toFixed(2) : '0.00'}`;
@@ -944,6 +945,18 @@ async function loadConfig() {
         const elAddPosProfitMult = document.getElementById('addPosProfitMultiplier');
         if (elAddPosProfitMult) elAddPosProfitMult.value = addPosProfitMult;
 
+        const addPosGap = currentConfig.add_pos_gap_threshold !== undefined ? currentConfig.add_pos_gap_threshold : 5.0;
+        const elAddPosGap = document.getElementById('addPosGapThreshold');
+        if (elAddPosGap) elAddPosGap.value = addPosGap;
+
+        const step2Offset = currentConfig.add_pos_step2_offset !== undefined ? currentConfig.add_pos_step2_offset : 0.0;
+        const elStep2Offset = document.getElementById('addPosStep2Offset');
+        if (elStep2Offset) elStep2Offset.value = step2Offset;
+
+        const useScaling = currentConfig.add_pos_count_scaling !== undefined ? currentConfig.add_pos_count_scaling : true;
+        const elUseScaling = document.getElementById('addPosCountScaling');
+        if (elUseScaling) elUseScaling.checked = useScaling;
+
         // Add live listeners if not already added
         const l1 = document.getElementById('useAddPosAboveZero');
         if (l1 && !l1.dataset.listener) {
@@ -1123,6 +1136,14 @@ async function saveConfig() {
         use_chg_high_close: document.getElementById('useChgHighClose').checked,
         min_chg_high_close: parseFloat(document.getElementById('minChgHighClose').value),
         max_chg_high_close: parseFloat(document.getElementById('maxChgHighClose').value),
+        add_pos_gap_threshold: parseFloat(document.getElementById('addPosGapThreshold').value),
+        add_pos_profit_multiplier: parseFloat(document.getElementById('addPosProfitMultiplier').value),
+        add_pos_step2_offset: parseFloat(document.getElementById('addPosStep2Offset').value),
+        add_pos_size_pct: parseFloat(document.getElementById('addPosSizePct').value),
+        add_pos_max_count: parseInt(document.getElementById('addPosMaxCount').value),
+        add_pos_recovery_percent: parseFloat(document.getElementById('addPosRecoveryPercent').value),
+        use_add_pos_profit_target: document.getElementById('useAddPosProfitTarget').checked,
+
         candlestick_timeframe: document.getElementById('candlestickTimeframe').value,
         okx_pos_mode: document.getElementById('okxPosMode').value,
 

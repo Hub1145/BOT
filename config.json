@@ -67,6 +67,9 @@
   "use_add_pos_auto_cal": false,
   "add_pos_recovery_percent": 0.6,
   "add_pos_profit_multiplier": 1.5,
+  "add_pos_gap_threshold": 5.0,
+  "add_pos_size_pct": 30.0,
+  "add_pos_max_count": 10,
   "use_add_pos_above_zero": true,
   "use_add_pos_profit_target": true,
   "account_update_interval_seconds": 10

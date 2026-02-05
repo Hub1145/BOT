@@ -112,6 +112,12 @@ def safe_float(value, default=0.0):
     except (ValueError, TypeError):
         return default
 
+def safe_int(value, default=0):
+    try:
+        return int(float(value))
+    except (ValueError, TypeError):
+        return default
+
 def get_okx_server_time_and_offset(log_callback):
     global server_time_offset
     try:
@@ -210,6 +216,13 @@ class TradingBotEngine:
         self.max_amount_display = 0.0
         self.remaining_amount_notional = 0.0
         self.trade_fees = 0.0
+        
+        # New State Variables for Client Logic
+        self.total_capital_2nd = 0.0
+        self.cumulative_margin_used = 0.0
+        self.last_add_price = 0.0 # Tracks price of last entry/add for Gap Trigger
+        self.auto_add_step_count = 0 # Tracks if we are on Step 1 (Market) or Step 2 (Limit)
+
         
         # Refactored for Dual-Direction Support
         self.in_position = {'long': False, 'short': False}
@@ -1718,90 +1731,120 @@ class TradingBotEngine:
                 self.authoritative_exit_in_progress = False
             self.log("=== EMERGENCY EXIT COMPLETE === Account cleared for symbol.", level="info")
 
-    def _check_auto_add_position(self, need_add_usdt, remaining_budget, mode="profit"):
-        enabled = False
-        if mode == "above_zero":
-            enabled = self.config.get('use_add_pos_above_zero', False)
-        else:
-            enabled = self.config.get('use_add_pos_profit_target', False) or self.config.get('use_add_pos_auto_cal', False)
-
-        if not enabled:
-            return
-
-        # [AUTO-ADD] Diagnostic Log (Initial Trigger)
-        if self.monitoring_tick % 6 == 0: # Log every 60s
-             self.log(f"[AUTO-ADD] Diagnostic [{mode.upper()}]: Current PnL ${self.net_profit:.2f} | Calculated Need: ${need_add_usdt:.2f}", level="debug")
-
-        if not self.is_running or self.authoritative_exit_in_progress:
-            return
-
-        if need_add_usdt <= 0:
-            return
-
-        # Minimum threshold to avoid tiny nuisance orders (e.g. $10)
-        min_ord = self.config.get('min_order_amount', 1.0)
-        if need_add_usdt < min_ord:
-            if self.monitoring_tick % 6 == 0:
-                self.log(f"[AUTO-ADD] Blocked [{mode.upper()}]: Need ${need_add_usdt:.2f} < Min Order ${min_ord:.2f}", level="debug")
-            return
-
-        # Determine side (Add to existing position)
-        target_side = None
+    def _check_auto_add_position_step(self, current_price, current_side, remaining_budget):
+        # GAP-BASED AUTO-ADD LOGIC
+        # Trigger: Market Price is [GAP] more than Average Entry Price.
+        # Sizing: Step 1 = 1x Price, Step 2 = 2x Price (if scaling enabled).
+        
+        gap_threshold = self.config.get('add_pos_gap_threshold', 5.0)
+        
+        # 1. Get Average Entry Price
+        avg_entry = 0.0
         with self.position_lock:
-            if self.in_position['long']:
-                target_side = "Buy"
-            elif self.in_position['short']:
-                target_side = "Sell"
+            if current_side == 'long':
+                avg_entry = self.position_entry_price.get('long', 0.0)
+            else:
+                avg_entry = self.position_entry_price.get('short', 0.0)
+        
+        if avg_entry <= 0: return # No position to add to
 
-        if not target_side:
-            if self.monitoring_tick % 6 == 0:
-                self.log(f"[AUTO-ADD] Blocked [{mode.upper()}]: No active position to add to.", level="debug")
-            return # No position to add to
+        # 2. Check Gap (Gap is relative to AVG ENTRY or LAST ADD?
+        # Image says: "Entry price 2920... then newest entry price = 2923".
+        # It seems to compare Market vs CURRENT AVERAGE.
+        # "12926 - 2920 = 6 > 5". "2931 - 2923 = 8 > 5".
+        # So we compare current_price vs avg_entry.
+        
+        current_gap = abs(current_price - avg_entry)
+        
+        # Wait, if we just added, the Avg Entry moves closer.
+        # If we use Avg Entry, the gap might persist if price stays high?
+        # NO, "2931 - 2923 = 8". The gap is re-evaluated.
+        # We need to ensure we don't spam add for the *same* gap event.
+        # We should check if price has moved significantly since *last add*?
+        # But the Requirement specifically says "when Market price is 5 more than newest Entry price".
+        # "Newest Entry Price" in his note = Average Price.
+        # So trigger condition: abs(Market - AvgEntry) > Gap.
+        
+        if current_gap < gap_threshold:
+             # self.log(f"[DEBUG] Gap {current_gap:.2f} < {gap_threshold}. No Add.", level="debug")
+             return # No gap trigger
 
-        # Get current leverage
+        # 3. Check Max Loops
+        max_loops = self.config.get('add_pos_max_count', 10)
+        if self.auto_add_step_count >= max_loops:
+             self.log(f"[AUTO-ADD] SKIPPED: Max Loops Reached ({self.auto_add_step_count} >= {max_loops})", level="warning")
+             return
+
+        # 4. Calculate Add Amount (Percentage of Current Size)
+        # Requirement: "Order amount is the Newest Size Amount 30%"
+        size_pct = self.config.get('add_pos_size_pct', 30.0) / 100.0
+        
+        # We need CURRENT TOTAL SIZE (Notional)
+        current_total_notional = 0.0
+        with self.position_lock:
+             if current_side == 'long':
+                 # Calculate from currently tracked position
+                 current_total_notional = abs(safe_float(self.position_details.get('long', {}).get('notionalUsd', 0))) 
+                 # Or use okx_pos_notional passed in?
+             else:
+                 current_total_notional = abs(safe_float(self.position_details.get('short', {}).get('notionalUsd', 0)))
+        
+        # Fallback if position detail is missing but we are here (shouldn't happen much)
+        if current_total_notional == 0:
+             # Try getting from open trades? No, this is triggered when we HAVE a position.
+             return
+
+        add_notional = current_total_notional * size_pct
+        
+        step_count = self.auto_add_step_count + 1 # 1-based current step
+        
+        # LOGGING CRITICAL STEPS FOR USER VISIBILITY
+        self.log(f"=== AUTO-ADD TRIGGERED (Step {step_count}) ===", level="warning")
+        self.log(f"1. Gap Check: Market {current_price:.2f} vs AvgEntry {avg_entry:.2f} | Gap {current_gap:.2f} > Threshold {gap_threshold}", level="info")
+        self.log(f"2. Sizing: Current Size ${current_total_notional:.2f} x {size_pct*100:.1f}% = ${add_notional:.2f}", level="info")
+        
+        # 5. Calculate Margin to Deduct from Capital 2nd
+        # "Order amount is the AFTER leverage... minus amount from total capital 2nd"
+        # Be careful: "Order amount" usually means Notional. 
+        # But user says: "divide leverage 100=4.5, minus 4.5 from total capital 2nd".
+        # So Capital 2nd tracks MARGIN ("Real Money Used"), not Notional.
+        
+        # Get leverage
         current_leverage = 1.0
         with self.position_lock:
-            if target_side == "Buy":
+            if current_side == 'long':
                 current_leverage = self.position_details.get('long', {}).get('lever', 1.0)
             else:
                 current_leverage = self.position_details.get('short', {}).get('lever', 1.0)
-        
-        # Calculate Margin Cost
         current_lever_float = safe_float(current_leverage, 1.0)
         if current_lever_float <= 0: current_lever_float = 1.0
-        margin_cost = need_add_usdt / current_lever_float
 
-        if margin_cost > remaining_budget:
-            self.log(f"Auto-Add Blocked [{mode.upper()}]: Need ${margin_cost:.2f} margin but budget limit hit (Remaining: ${remaining_budget:.2f})", level="warning")
-            return
-
-        if mode == "above_zero":
-            msg = f"[AUTO-ADD] PnL Negative (${self.net_profit:.2f}) -> Targeting Break-even (PnL > $0)..."
-        else:
-            msg = f"[AUTO-ADD] PnL Negative (${self.net_profit:.2f}) -> Targeting {self.config.get('add_pos_profit_multiplier', 1.5)}x Size Fee Profit..."
-
-        self.log(msg, level="warning")
-        self.log(f"[AUTO-ADD] Adding ${need_add_usdt:.2f} notional (Cost: ${margin_cost:.2f} USDT) to {target_side.upper()} position...", level="warning")
+        margin_cost = add_notional / current_lever_float
         
-        # Calculate quantity based on market price
-        latest = self._get_latest_data_and_indicators()
-        price = latest.get('current_price')
-        if not price: return
+        if margin_cost > remaining_budget:
+             self.log(f"[AUTO-ADD] SKIPPED: Required Margin ${margin_cost:.2f} > Budget ${remaining_budget:.2f}", level="warning")
+             return
 
-        # sz = notional / price / contract_size
-        contract_size = PRODUCT_INFO.get('contractSize', 1.0)
-        qty = need_add_usdt / (price * contract_size)
+        # Execute Market Order
+        target_side = "Buy" if current_side == 'long' else "Sell"
+        
+        # Qty = Notional / Price / ContractSize
+        contract_size = safe_float(PRODUCT_INFO.get('contractSize', 1.0))
+        if contract_size <= 0: contract_size = 1.0
+        
+        qty_contracts = add_notional / (current_price * contract_size)
         
         # Format Qty
         qty_precision = safe_int(PRODUCT_INFO.get('lotSzPrecision', '0'))
         is_integer_qty = PRODUCT_INFO.get('lotSz', '1') == '1' and '.' not in PRODUCT_INFO.get('lotSz', '1')
         
         if is_integer_qty:
-            qty_str = str(int(qty))
+            qty_str = str(int(qty_contracts))
         else:
-            qty_str = f"{qty:.{qty_precision}f}"
-
-        # Place Market Order
+            qty_str = f"{qty_contracts:.{qty_precision}f}"
+            
+        self.log(f"[AUTO-ADD] Triggering Gap Add (Step {step_count}). Gap: {current_gap:.2f} > {gap_threshold}. Cost: ${margin_cost:.2f} (Notional: ${add_notional:.2f}, Qty: {qty_str})", level="warning")
+        
         order_response = self._okx_place_order(
             self.config['symbol'],
             target_side,
@@ -1811,12 +1854,113 @@ class TradingBotEngine:
         )
 
         if order_response and order_response.get('ordId'):
-            self.log(f"[OK] Auto-Add Success [{mode.upper()}]: Added ${need_add_usdt:.2f} notional. Order ID: {order_response.get('ordId')}", level="info")
+            self.log(f"[OK] Auto-Add Step {step_count} Executed. Order: {order_response.get('ordId')}", level="info")
+            # Update State
+            self.last_add_price = current_price
+            self.cumulative_margin_used += margin_cost # Track Margin
+            self.auto_add_step_count += 1
+            
+            # Cooldown
+            time.sleep(1)
+            
+            # Step 2: Ensure Exit Orders are updated immediately
+            threading.Thread(target=self._update_exit_orders, args=(current_side,), daemon=True).start()
         else:
-            self.log(f"❌ Auto-Add Failed [{mode.upper()}]: {order_response}", level="error")
+            self.log(f"[FAIL] Auto-Add Step {step_count} Failed: {order_response}", level="error")
 
-        # cooldown to avoid rapid fire adding in the same loop if price hasn't updated
-        time.sleep(1)
+    def _update_exit_orders(self, side):
+        """
+        Step 2 of Auto-Add: Calculate new avg price and place Limit Exit (TP).
+        """
+        try:
+            time.sleep(2) # Wait for fill
+            
+            # 1. Fetch latest position data
+            path = "/api/v5/account/positions"
+            params = {"instType": "SWAP", "instId": self.config['symbol']}
+            response = self._okx_request("GET", path, params=params)
+             
+            if response and response.get('code') == '0':
+                positions_data = response.get('data', [])
+                target_pos = None
+                for pos in positions_data:
+                    pos_side = pos.get('posSide', 'net')
+                    if side == 'long' and (pos_side == 'long' or (pos_side == 'net' and float(pos['pos']) > 0)):
+                        target_pos = pos
+                        break
+                    elif side == 'short' and (pos_side == 'short' or (pos_side == 'net' and float(pos['pos']) < 0)):
+                        target_pos = pos
+                        break
+                
+                if target_pos:
+                    avg_px = safe_float(target_pos.get('avgPx'))
+                    # Calculate TP Price
+                    # Mode 1: Break Even (AvP + Fee/Size?) -> Just AvP for now or small profit
+                    # Mode 2: Profit Target
+                    
+                    tp_price = 0.0
+                    if side == 'long':
+                        # Mode 1: Fixed Offset (Priority)
+                        # Target = Avg + Offset
+                        step2_offset = safe_float(self.config.get('add_pos_step2_offset', 0.0))
+                        
+                        if step2_offset > 0:
+                            tp_price = avg_px + step2_offset
+                        else:
+                            # Mode 2: Profit Multiplier
+                            profit_mult = self.config.get('add_pos_profit_multiplier', 1.5)
+                            trade_fee_pct = self.config.get('trade_fee_percentage', 0.07)
+                            size_notional = safe_float(target_pos.get('notionalUsd'))
+                            target_profit = (size_notional * (trade_fee_pct/100.0)) * profit_mult
+                            
+                            pos_contracts = safe_float(target_pos.get('pos'))
+                            delta = target_profit / (pos_contracts * 1.0) # Approx
+                            tp_price = avg_px + delta
+                        
+                    else: # Short
+                        step2_offset = safe_float(self.config.get('add_pos_step2_offset', 0.0))
+                        
+                        if step2_offset > 0:
+                            tp_price = avg_px - step2_offset
+                        else:
+                            profit_mult = self.config.get('add_pos_profit_multiplier', 1.5)
+                            trade_fee_pct = self.config.get('trade_fee_percentage', 0.07)
+                            size_notional = safe_float(target_pos.get('notionalUsd'))
+                            target_profit = (size_notional * (trade_fee_pct/100.0)) * profit_mult
+                            
+                            pos_contracts = abs(safe_float(target_pos.get('pos')))
+                            delta = target_profit / (pos_contracts * 1.0)
+                            tp_price = avg_px - delta # Lower for short
+
+                    # Sanity check
+                    if tp_price > 0:
+                        self.log(f"=== AUTO-ADD STEP 2 (CLOSE) ===", level="info")
+                        if safe_float(self.config.get('add_pos_step2_offset', 0.0)) > 0:
+                             self.log(f"Logic used: Fixed Offset (${safe_float(self.config.get('add_pos_step2_offset', 0.0))})", level="info")
+                        else:
+                             self.log(f"Logic used: Profit Multiplier ({self.config.get('add_pos_profit_multiplier', 1.5)}x Fees)", level="info")
+                        
+                        self.log(f"New Avg Entry: {avg_px} -> Setting Limit Exit at {tp_price:.4f}", level="info")
+                        
+                        # Place Limit Close
+                        close_side = "Sell" if side == 'long' else "Buy"
+                        qty = abs(safe_float(target_pos.get('pos')))
+                        
+                        # Reduce Only to strictly close
+                        self._okx_place_order(
+                            self.config['symbol'],
+                            close_side,
+                            qty,
+                            price=tp_price,
+                            order_type="Limit",
+                            reduce_only=True,
+                            verbose=True
+                        )
+                    else:
+                         self.log(f"[AUTO-ADD] Calculated TP Price Invalid: {tp_price}", level="error")
+
+        except Exception as e:
+            self.log(f"Error in _update_exit_orders: {e}", level="error")
 
     def _cancel_all_exit_orders_and_reset(self, reason, side=None):
         # Determine sides to reset
@@ -2748,6 +2892,11 @@ class TradingBotEngine:
 
     def _fetch_and_emit_account_info(self):
         self.monitoring_tick += 1
+        
+        # Initialize variables for Need Add display
+        need_add_usdt_profit_target = 0.0
+        need_add_usdt_above_zero = 0.0
+
         # Fetch account balance
         path_balance = "/api/v5/account/balance"
         params_balance = {"ccy": "USDT"} 
@@ -2787,6 +2936,11 @@ class TradingBotEngine:
 
             for order in pending_orders:
                 ord_id = order.get('ordId') or order.get('algoId')
+                
+                # Exclude Reduce-Only orders (Exits) from being adopted as Pending Entries
+                # This prevents safety logic from cancelling Auto-Add exits.
+                if order.get('reduceOnly') == 'true':
+                    continue
                 
                 # Adoption Logic: If we see an order on OKX that we aren't tracking, add it.
                 # This preserves cancellation timers after a restart.
@@ -3004,16 +3158,34 @@ class TradingBotEngine:
                      self.log(f"DEBUG: No active positions found for {self.config['symbol']} in OKX response.", level="debug")
 
         # Combined Real-time Net Profit
-        # Per User Request: "Net Profit as the pnl for open positions only"
-        # We explicitly SET it to Unrealized PnL (Floating Profit/Loss)
-        self.net_profit = total_unrealized_pnl
+        # Client Requirement: PnL = Floating Profit - (Size * Fee Rate)
+        trade_fee_pct = self.config.get('trade_fee_percentage', 0.07)
+        total_fees_active = okx_pos_notional * (trade_fee_pct / 100.0)
+        self.net_profit = total_unrealized_pnl - total_fees_active
         
+        # Total Capital 2nd Logic
+        # Reset if no active positions
+        if active_positions_count == 0:
+            self.cumulative_margin_used = 0.0
+            self.total_capital_2nd = self.total_equity
+            self.auto_add_step_count = 0 # Reset step count
+        else:
+            # Capital 2nd = Total Equity - Cumulative Add Margin
+            # Note: We rely on total_equity being accurate from OKX. 
+            # If OKX already deducts margin from equity, we might double count if not careful.
+            # Client said: "Total Capital 2nd will be total Capital amount minus the total order amounts of adding position"
+            # We assume 'total_equity' is the LIVE equity. 
+            # So Capital 2nd is a "Working Capital" view.
+            self.total_capital_2nd = max(0.0, self.total_equity - self.cumulative_margin_used)
+
         # 3. GLOBAL AUTO-EXIT: Check if the enabled profit target is met across all positions
         # Auto-Exit Check moved to after Used Amount calculation
         
         # If stopped, we explicitly keep 'Used' at 0 for a clean session start
         if not self.is_running:
             used_amount_notional = 0.0
+            self.total_capital_2nd = self.total_equity # Sync when stopped
+
         
         with self.trade_data_lock:
             for trade in self.open_trades:
@@ -3149,35 +3321,39 @@ class TradingBotEngine:
 
         total_active_trades_count = self.total_trades_count + len(formatted_open_trades)
 
-        # Auto-Cal Add Position Calculation (New Enhanced)
-        need_add_usdt_above_zero = 0.0
-        need_add_usdt_profit_target = 0.0
-
-        if self.net_profit < 0:
-            recovery_pct = self.config.get('add_pos_recovery_percent', 0.6)
-            profit_mult = self.config.get('add_pos_profit_multiplier', 1.5)
-            trade_fee_pct = self.config.get('trade_fee_percentage', 0.07)
-            current_size_fee = okx_pos_notional * (trade_fee_pct / 100.0)
-            
-            if recovery_pct > 0:
-                # Mode 1: Target PnL = 0
-                # Calculation: How much total notional do we need to offset the current loss?
-                # Target Position Size = (abs(Profit)) / (Recovery_Percentage / 100)
-                # Need Add = Target Position Size - Current Position Size
-                target_notional_above_zero = (abs(self.net_profit)) / (recovery_pct / 100.0)
-                need_add_usdt_above_zero = max(0.0, target_notional_above_zero - okx_pos_notional)
-
-                # Mode 2: Target PnL = Fee * Multiplier
-                target_pnl = current_size_fee * profit_mult
-                target_notional_profit_target = (abs(self.net_profit) + target_pnl) / (recovery_pct / 100.0)
-                need_add_usdt_profit_target = max(0.0, target_notional_profit_target - okx_pos_notional)
-
         # Trigger logic
-        if self.config.get('use_add_pos_above_zero', False):
-            self._check_auto_add_position(need_add_usdt_above_zero, remaining_amount_notional, mode="above_zero")
-        
-        if self.config.get('use_add_pos_profit_target', False) or self.config.get('use_add_pos_auto_cal', False):
-            self._check_auto_add_position(need_add_usdt_profit_target, remaining_amount_notional, mode="profit")
+        # Client Requirement: Trigger based on Price Gap (e.g. $5)
+        # Only trigger if NOT in authoritative exit
+        if not self.authoritative_exit_in_progress and okx_pos_notional > 0:
+             # determine direction
+             current_side = None
+             with self.position_lock:
+                 if self.in_position['long']: current_side = 'long'
+                 elif self.in_position['short']: current_side = 'short'
+            
+             if current_side:
+                 latest_data = self._get_latest_data_and_indicators()
+                 current_price = latest_data.get('current_price')
+                 
+                 # Initialize last_add_price if 0 (first run with pos)
+                 if self.last_add_price == 0:
+                     self.last_add_price = self.position_entry_price[current_side]
+
+                 if current_price:
+                      # Check GAP
+                      gap_threshold = self.config.get('add_pos_gap_threshold', 5.0) # Default $5
+                      price_diff = 0.0
+                      
+                      if current_side == 'long':
+                          # For Long, we add if price DROPS (Entry > Current)
+                          price_diff = self.last_add_price - current_price
+                      else:
+                          # For Short, we add if price RISES (Current > Entry)
+                          price_diff = current_price - self.last_add_price
+                          
+                      if price_diff >= gap_threshold:
+                          self.log(f"Gap Triggered: Diff {price_diff:.2f} >= {gap_threshold}. Initiating Auto-Add...", level="info")
+                          self._check_auto_add_position_step(current_price, current_side, remaining_amount_notional)
 
         # Explicit Auto-Exit for Mode 2 (Target PnL Reached)
         if self.config.get('use_add_pos_profit_target', False) and okx_pos_notional > 0:
@@ -3192,10 +3368,79 @@ class TradingBotEngine:
                          self.log(f"[TARGET] {exit_reason}. Auto-Closing Position...", level="WARNING")
                          threading.Thread(target=self._execute_trade_exit, args=(exit_reason,), daemon=True).start()
 
+        # ---------------------------------------------------------
+        # NEED ADD CALCULATION (Visual Aid for Dashboard)
+        # ---------------------------------------------------------
+        if okx_pos_notional > 0 and self.config.get('use_add_pos_above_zero', True):
+            try:
+                avg_entry = 0.0
+                pos_side = 'long'
+                has_long = self.position_entry_price.get('long', 0) > 0
+                has_short = self.position_entry_price.get('short', 0) > 0
+                
+                if has_long:
+                    avg_entry = self.position_entry_price.get('long', 0)
+                    pos_side = 'long'
+                elif has_short:
+                    avg_entry = self.position_entry_price.get('short', 0)
+                    pos_side = 'short'
+                
+                if avg_entry > 0:
+                    current_price = self.latest_trade_price
+                    if current_price and current_price > 0:
+                        recovery_pct = self.config.get('add_pos_recovery_percent', 0.6) / 100.0
+                        
+                        # 1. Need Add for Break Even
+                        target_price_be = 0.0
+                        if pos_side == 'long':
+                            target_price_be = current_price * (1 + recovery_pct)
+                            if target_price_be < avg_entry:
+                                denom = target_price_be - current_price
+                                if denom > 0:
+                                    need_add_usdt_above_zero = okx_pos_notional * (avg_entry - target_price_be) / denom
+                        else: # Short
+                            target_price_be = current_price * (1 - recovery_pct)
+                            if target_price_be > avg_entry:
+                                denom = current_price - target_price_be
+                                if denom > 0:
+                                     need_add_usdt_above_zero = okx_pos_notional * (target_price_be - avg_entry) / denom
+                        
+                        # 2. Need Add for Profit Target
+                        profit_mult = self.config.get('add_pos_profit_multiplier', 1.5)
+                        fee_rate = self.config.get('trade_fee_percentage', 0.07) / 100.0
+                        needed_gain_pct = fee_rate * profit_mult
+                        
+                        target_avg_for_profit = 0.0
+                        if pos_side == 'long':
+                            target_avg_for_profit = target_price_be / (1 + needed_gain_pct)
+                            if target_avg_for_profit < avg_entry:
+                                denom_profit = target_avg_for_profit - current_price
+                                if denom_profit > 0:
+                                    need_add_usdt_profit_target = okx_pos_notional * (avg_entry - target_avg_for_profit) / denom_profit
+                        else: # Short
+                            target_avg_for_profit = target_price_be / (1 - needed_gain_pct)
+                            if target_avg_for_profit > avg_entry:
+                                denom_profit = current_price - target_avg_for_profit
+                                if denom_profit > 0:
+                                    need_add_usdt_profit_target = okx_pos_notional * (target_avg_for_profit - avg_entry) / denom_profit
+
+            except Exception as e:
+                self.log(f"Error calculating Need Add: {e}", level="debug")
+            
+            # Debug Log for Need Add (Temporary)
+            if self.monitoring_tick % 10 == 0: # Log every ~100s or so depending on call rate
+                 self.log(f"[NEED ADD DEBUG] Side: {pos_side} | AvgEntry: {avg_entry} | Mkt: {self.latest_trade_price}", level="debug")
+                 self.log(f"[NEED ADD DEBUG] Above0: {need_add_usdt_above_zero:.2f} | ProfitTg: {need_add_usdt_profit_target:.2f}", level="debug")
+
+        # Clamp results
+        need_add_usdt_above_zero = max(0.0, need_add_usdt_above_zero)
+        need_add_usdt_profit_target = max(0.0, need_add_usdt_profit_target)
+
         # Emit data to frontend
         self.emit('account_update', {
             'total_trades': total_active_trades_count,
             'total_capital': self.total_equity, # User: Total Capital should be estimated available balance (Equity)
+            'total_capital_2nd': self.total_capital_2nd, # New Metric
             'max_allowed_used_display': max_allowed_display, 
             'max_amount_display': max_amount_display,
             'used_amount': used_amount_notional, 
