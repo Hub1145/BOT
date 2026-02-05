@@ -393,7 +393,7 @@ function updateBotStatus(running) {
 
 function updateAccountMetrics(data) {
     document.getElementById('totalCapital').textContent = `$${data.total_capital !== undefined ? Number(data.total_capital).toFixed(2) : '0.00'}`;
-    document.getElementById('totalCapital2nd').textContent = `$${data.total_capital_2nd !== undefined ? Number(data.total_capital_2nd).toFixed(2) : '0.00'}`;
+    document.getElementById('totalCapital2nd').textContent = `$${data.total_capital_2_nd !== undefined ? Number(data.total_capital_2_nd).toFixed(2) : (data.total_capital_2nd !== undefined ? Number(data.total_capital_2nd).toFixed(2) : '0.00')}`;
     document.getElementById('maxAllowedUsedDisplay').textContent = `$${data.max_allowed_used_display !== undefined ? Number(data.max_allowed_used_display).toFixed(2) : '0.00'}`;
     document.getElementById('maxAmountDisplay').textContent = `$${data.max_amount_display !== undefined ? Number(data.max_amount_display).toFixed(2) : '0.00'}`;
     document.getElementById('usedAmount').textContent = `$${data.used_amount !== undefined ? Number(data.used_amount).toFixed(2) : '0.00'}`;
@@ -401,6 +401,37 @@ function updateAccountMetrics(data) {
     document.getElementById('needAddProfitTargetDisplay').textContent = `$${data.need_add_usdt !== undefined ? Number(data.need_add_usdt).toFixed(2) : '0.00'}`;
     document.getElementById('needAddAboveZeroDisplay').textContent = `$${data.need_add_above_zero !== undefined ? Number(data.need_add_above_zero).toFixed(2) : '0.00'}`;
     document.getElementById('balance').textContent = `$${data.total_balance !== undefined ? Number(data.total_balance).toFixed(2) : '0.00'}`;
+
+    // Update Auto-Cal Add Header based on position side
+    const headerEl = document.getElementById('autoAddPosHeader');
+    if (headerEl) {
+        let side = '';
+        if (data.positions && data.positions.short && data.positions.short.in) {
+            side = 'Short';
+        } else if (data.positions && data.positions.long && data.positions.long.in) {
+            side = 'Long';
+        } else if (data.in_position && typeof data.in_position === 'object') {
+            // Fallback to in_position dict if positions not formatted
+            if (data.in_position.short) side = 'Short';
+            else if (data.in_position.long) side = 'Long';
+        }
+
+        if (side) {
+            headerEl.textContent = `Auto-Cal Add ${side} Position`;
+        } else {
+            // Fallback to configured direction if no active position
+            // Use currentConfig (global) or check if it's in data? Usually data doesn't include config.
+            const configDirection = currentConfig?.direction;
+            if (configDirection === 'short') {
+                headerEl.textContent = 'Auto-Cal Add Short Position';
+            } else if (configDirection === 'long') {
+                headerEl.textContent = 'Auto-Cal Add Long Position';
+            } else {
+                headerEl.textContent = 'Auto-Cal Add Position';
+            }
+        }
+    }
+
     const netProfitElement = document.getElementById('netProfit');
     const netProfitValue = data.net_profit !== undefined ? Number(data.net_profit) : 0.00;
     netProfitElement.textContent = `$${netProfitValue.toFixed(2)}`;

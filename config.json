@@ -26,7 +26,7 @@
   "cancel_on_entry_price_above_market": false,
   "use_auto_margin": false,
   "auto_margin_offset": 30,
-  "direction": "long",
+  "direction": "short",
   "mode": "cross",
   "tp_amount": 100,
   "sl_amount": 100,

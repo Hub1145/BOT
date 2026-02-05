@@ -4864,3 +4864,59 @@ NameError: name 'okx_pos_notional' is not defined
 2026-02-05 20:23:51,191 - INFO - Stop Orders (No passing signals in this cycle)
 2026-02-05 20:23:51,195 - INFO - Wait 10 seconds before meta-loop restart
 2026-02-05 20:23:57,407 - INFO - Bot trading logic paused. Background monitoring remains active.
+2026-02-05 20:54:33,893 - INFO - Logger initialized. Writing to debug.log
+2026-02-05 20:54:33,949 - INFO - Bot starting background monitoring...
+2026-02-05 20:54:34,123 - INFO - 127.0.0.1 - - [05/Feb/2026 20:54:34] "GET /socket.io/?EIO=4&transport=polling&t=PmlNkEe&sid=S4TTjMtNwo8moFdIAAAA HTTP/1.1" 200 -
+2026-02-05 20:54:34,300 - INFO - 127.0.0.1 - - [05/Feb/2026 20:54:34] "GET /socket.io/?EIO=4&transport=polling&t=PmlNkLc&sid=S4TTjMtNwo8moFdIAAAA HTTP/1.1" 200 -
+2026-02-05 20:54:45,508 - INFO - OKX server time synchronized. Offset: -430ms
+2026-02-05 20:54:50,318 - INFO - Bot initialized. Starting live connection threads...
+2026-02-05 20:54:50,325 - INFO - OKX BOT STARTING
+2026-02-05 20:54:50,333 - INFO - 127.0.0.1 - - [05/Feb/2026 20:54:50] "POST /socket.io/?EIO=4&transport=polling&t=PmlNkEc&sid=S4TTjMtNwo8moFdIAAAA HTTP/1.1" 200 -
+2026-02-05 20:54:55,951 - INFO - 127.0.0.1 - - [05/Feb/2026 20:54:55] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 20:54:57,177 - INFO - Websocket connected
+2026-02-05 20:54:57,187 - INFO - OKX WebSocket connection opened.
+2026-02-05 20:55:01,342 - INFO - Bot startup sequence complete.
+2026-02-05 20:55:12,682 - INFO - 127.0.0.1 - - [05/Feb/2026 20:55:12] "GET / HTTP/1.1" 200 -
+2026-02-05 20:55:13,336 - INFO - 127.0.0.1 - - [05/Feb/2026 20:55:13] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 20:55:13,384 - INFO - 127.0.0.1 - - [05/Feb/2026 20:55:13] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-02-05 20:55:13,460 - INFO - 127.0.0.1 - - [05/Feb/2026 20:55:13] "[36mGET /static/js/app.js HTTP/1.1[0m" 304 -
+2026-02-05 20:55:14,017 - INFO - 127.0.0.1 - - [05/Feb/2026 20:55:14] "GET /socket.io/?EIO=4&transport=polling&t=PmlNtyO HTTP/1.1" 200 -
+2026-02-05 20:55:14,018 - INFO - 127.0.0.1 - - [05/Feb/2026 20:55:14] "GET /api/config HTTP/1.1" 200 -
+2026-02-05 20:55:14,278 - INFO - Client connected: None
+2026-02-05 20:55:14,279 - INFO - 127.0.0.1 - - [05/Feb/2026 20:55:14] "POST /socket.io/?EIO=4&transport=polling&t=PmlNu3c&sid=vHw0OiHf_86Z-6msAAAC HTTP/1.1" 200 -
+2026-02-05 20:55:14,350 - INFO - 127.0.0.1 - - [05/Feb/2026 20:55:14] "GET /socket.io/?EIO=4&transport=polling&t=PmlNu3f&sid=vHw0OiHf_86Z-6msAAAC HTTP/1.1" 200 -
+2026-02-05 20:55:15,438 - INFO - Initial account balance fetched.
+2026-02-05 20:55:42,305 - INFO - 127.0.0.1 - - [05/Feb/2026 20:55:42] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 21:03:59,194 - INFO - Logger initialized. Writing to debug.log
+2026-02-05 21:03:59,202 - INFO - Bot starting background monitoring...
+2026-02-05 21:03:59,260 - INFO - 127.0.0.1 - - [05/Feb/2026 21:03:59] "GET /socket.io/?EIO=4&transport=polling&t=PmlPuDu&sid=KeYZNgxXHAvdCPZfAAAA HTTP/1.1" 200 -
+2026-02-05 21:03:59,304 - INFO - 127.0.0.1 - - [05/Feb/2026 21:03:59] "GET /socket.io/?EIO=4&transport=polling&t=PmlPuGS HTTP/1.1" 200 -
+2026-02-05 21:03:59,459 - INFO - 127.0.0.1 - - [05/Feb/2026 21:03:59] "GET /socket.io/?EIO=4&transport=polling&t=PmlPuIq&sid=KeYZNgxXHAvdCPZfAAAA HTTP/1.1" 200 -
+2026-02-05 21:03:59,604 - INFO - Client connected: None
+2026-02-05 21:03:59,609 - INFO - 127.0.0.1 - - [05/Feb/2026 21:03:59] "POST /socket.io/?EIO=4&transport=polling&t=PmlPuJO&sid=221-ZY1faez4bRFZAAAC HTTP/1.1" 200 -
+2026-02-05 21:03:59,635 - INFO - 127.0.0.1 - - [05/Feb/2026 21:03:59] "GET /socket.io/?EIO=4&transport=polling&t=PmlPuJp&sid=221-ZY1faez4bRFZAAAC HTTP/1.1" 200 -
+2026-02-05 21:03:59,677 - INFO - 127.0.0.1 - - [05/Feb/2026 21:03:59] "GET /socket.io/?EIO=4&transport=polling&t=PmlPuOs&sid=221-ZY1faez4bRFZAAAC HTTP/1.1" 200 -
+2026-02-05 21:04:00,092 - INFO - 127.0.0.1 - - [05/Feb/2026 21:04:00] "GET /socket.io/?EIO=4&transport=polling&t=PmlPuQN&sid=221-ZY1faez4bRFZAAAC HTTP/1.1" 200 -
+2026-02-05 21:04:03,178 - INFO - 127.0.0.1 - - [05/Feb/2026 21:04:03] "GET / HTTP/1.1" 200 -
+2026-02-05 21:04:03,765 - INFO - 127.0.0.1 - - [05/Feb/2026 21:04:03] "GET /static/js/app.js HTTP/1.1" 200 -
+2026-02-05 21:04:03,768 - INFO - 127.0.0.1 - - [05/Feb/2026 21:04:03] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-02-05 21:04:04,167 - INFO - 127.0.0.1 - - [05/Feb/2026 21:04:04] "GET /socket.io/?EIO=4&transport=polling&t=PmlPvQ7 HTTP/1.1" 200 -
+2026-02-05 21:04:04,178 - INFO - 127.0.0.1 - - [05/Feb/2026 21:04:04] "GET /api/config HTTP/1.1" 200 -
+2026-02-05 21:04:04,492 - INFO - Client connected: None
+2026-02-05 21:04:04,501 - INFO - 127.0.0.1 - - [05/Feb/2026 21:04:04] "POST /socket.io/?EIO=4&transport=polling&t=PmlPvVG&sid=nNdac9An9jys8znzAAAE HTTP/1.1" 200 -
+2026-02-05 21:04:04,648 - INFO - 127.0.0.1 - - [05/Feb/2026 21:04:04] "GET /socket.io/?EIO=4&transport=polling&t=PmlPvVI&sid=nNdac9An9jys8znzAAAE HTTP/1.1" 200 -
+2026-02-05 21:04:08,081 - INFO - OKX server time synchronized. Offset: 160ms
+2026-02-05 21:04:15,456 - INFO - Bot initialized. Starting live connection threads...
+2026-02-05 21:04:15,470 - INFO - OKX BOT STARTING
+2026-02-05 21:04:15,483 - INFO - 127.0.0.1 - - [05/Feb/2026 21:04:15] "POST /socket.io/?EIO=4&transport=polling&t=PmlPuDU&sid=KeYZNgxXHAvdCPZfAAAA HTTP/1.1" 200 -
+2026-02-05 21:04:19,387 - INFO - Websocket connected
+2026-02-05 21:04:19,391 - INFO - OKX WebSocket connection opened.
+2026-02-05 21:04:20,421 - INFO - 127.0.0.1 - - [05/Feb/2026 21:04:20] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 21:04:23,054 - INFO - Bot starting background monitoring...
+2026-02-05 21:04:23,055 - INFO - 127.0.0.1 - - [05/Feb/2026 21:04:23] "POST /api/config HTTP/1.1" 200 -
+2026-02-05 21:04:27,842 - INFO - Bot startup sequence complete.
+2026-02-05 21:04:32,335 - INFO - OKX server time synchronized. Offset: -239ms
+2026-02-05 21:04:33,783 - INFO - 127.0.0.1 - - [05/Feb/2026 21:04:33] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 21:04:37,402 - INFO - 127.0.0.1 - - [05/Feb/2026 21:04:37] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 21:04:41,566 - INFO - Initial account balance fetched.
+2026-02-05 21:04:48,961 - INFO - 127.0.0.1 - - [05/Feb/2026 21:04:48] "GET /api/status HTTP/1.1" 200 -
