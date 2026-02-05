@@ -2735,3 +2735,2132 @@
 2026-02-05 05:03:18,305 - INFO - New Avg Entry: 2138.5217837837836 -> Setting Limit Exit at 2138.2957
 2026-02-05 05:03:18,307 - INFO - Placing Limit Buy order for 31.45 ETH-USDT-SWAP at 2138.2956861702796
 2026-02-05 05:03:20,086 - INFO - [OK] Order placed: OrderID=3280341662807232512
+2026-02-05 11:42:44,792 - INFO - Logger initialized. Writing to debug.log
+2026-02-05 11:42:44,795 - INFO - Bot starting background monitoring...
+2026-02-05 11:42:44,860 - INFO - 127.0.0.1 - - [05/Feb/2026 11:42:44] "GET /socket.io/?EIO=4&transport=polling&t=PmjPQx5&sid=kR57TA9aAIfJex6mAAAA HTTP/1.1" 200 -
+2026-02-05 11:42:51,862 - INFO - OKX server time synchronized. Offset: -381ms
+2026-02-05 11:42:55,155 - INFO - Bot initialized. Starting live connection threads...
+2026-02-05 11:42:55,256 - INFO - OKX BOT STARTING
+2026-02-05 11:42:55,304 - INFO - 127.0.0.1 - - [05/Feb/2026 11:42:55] "POST /socket.io/?EIO=4&transport=polling&t=PmjPQx1&sid=kR57TA9aAIfJex6mAAAA HTTP/1.1" 200 -
+2026-02-05 11:42:57,196 - INFO - Websocket connected
+2026-02-05 11:42:57,232 - INFO - OKX WebSocket connection opened.
+2026-02-05 11:42:59,813 - INFO - 127.0.0.1 - - [05/Feb/2026 11:42:59] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 11:43:01,331 - INFO - Bot startup sequence complete.
+2026-02-05 11:43:10,815 - INFO - 127.0.0.1 - - [05/Feb/2026 11:43:10] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 11:43:11,609 - INFO - Initial account balance fetched.
+2026-02-05 11:43:14,521 - INFO - 127.0.0.1 - - [05/Feb/2026 11:43:14] "POST /api/config HTTP/1.1" 200 -
+2026-02-05 11:43:16,513 - INFO - 127.0.0.1 - - [05/Feb/2026 11:43:16] "POST /api/config HTTP/1.1" 200 -
+2026-02-05 11:47:42,401 - INFO - Logger initialized. Writing to debug.log
+2026-02-05 11:47:42,441 - INFO - Bot starting background monitoring...
+2026-02-05 11:47:42,468 - INFO - 127.0.0.1 - - [05/Feb/2026 11:47:42] "GET /socket.io/?EIO=4&transport=polling&t=PmjQZb9&sid=LRFUga4f0XsRcQT2AAAA HTTP/1.1" 200 -
+2026-02-05 11:47:42,612 - INFO - 127.0.0.1 - - [05/Feb/2026 11:47:42] "GET /socket.io/?EIO=4&transport=polling&t=PmjQZgC&sid=LRFUga4f0XsRcQT2AAAA HTTP/1.1" 200 -
+2026-02-05 11:47:47,666 - INFO - OKX server time synchronized. Offset: -409ms
+2026-02-05 11:47:50,153 - INFO - Bot initialized. Starting live connection threads...
+2026-02-05 11:47:50,157 - INFO - OKX BOT STARTING
+2026-02-05 11:47:50,162 - INFO - 127.0.0.1 - - [05/Feb/2026 11:47:50] "POST /socket.io/?EIO=4&transport=polling&t=PmjQZb4&sid=LRFUga4f0XsRcQT2AAAA HTTP/1.1" 200 -
+2026-02-05 11:47:51,680 - INFO - Websocket connected
+2026-02-05 11:47:51,683 - INFO - OKX WebSocket connection opened.
+2026-02-05 11:47:53,167 - INFO - 127.0.0.1 - - [05/Feb/2026 11:47:53] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 11:47:54,432 - INFO - Bot startup sequence complete.
+2026-02-05 11:48:00,887 - INFO - 127.0.0.1 - - [05/Feb/2026 11:48:00] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 11:48:02,636 - INFO - Initial account balance fetched.
+2026-02-05 11:50:11,673 - INFO - Logger initialized. Writing to debug.log
+2026-02-05 11:50:11,677 - INFO - Bot starting background monitoring...
+2026-02-05 11:50:11,782 - INFO - Client connected: None
+2026-02-05 11:50:11,784 - INFO - 127.0.0.1 - - [05/Feb/2026 11:50:11] "POST /socket.io/?EIO=4&transport=polling&t=PmjR82Y&sid=TofxYjus-6QqWzrjAAAA HTTP/1.1" 200 -
+2026-02-05 11:50:11,816 - INFO - 127.0.0.1 - - [05/Feb/2026 11:50:11] "GET /socket.io/?EIO=4&transport=polling&t=PmjR82g&sid=TofxYjus-6QqWzrjAAAA HTTP/1.1" 200 -
+2026-02-05 11:50:14,628 - INFO - 127.0.0.1 - - [05/Feb/2026 11:50:14] "GET /socket.io/?EIO=4&transport=polling&t=PmjR8pW HTTP/1.1" 200 -
+2026-02-05 11:50:14,960 - INFO - Client connected: None
+2026-02-05 11:50:14,969 - INFO - 127.0.0.1 - - [05/Feb/2026 11:50:14] "POST /socket.io/?EIO=4&transport=polling&t=PmjR8pe&sid=oPQVq-OOawfcszsPAAAC HTTP/1.1" 200 -
+2026-02-05 11:50:14,973 - INFO - 127.0.0.1 - - [05/Feb/2026 11:50:14] "GET /socket.io/?EIO=4&transport=polling&t=PmjR8pg&sid=oPQVq-OOawfcszsPAAAC HTTP/1.1" 200 -
+2026-02-05 11:50:17,900 - INFO - OKX server time synchronized. Offset: -441ms
+2026-02-05 11:50:20,061 - INFO - Bot initialized. Starting live connection threads...
+2026-02-05 11:50:20,066 - INFO - OKX BOT STARTING
+2026-02-05 11:50:21,946 - INFO - Websocket connected
+2026-02-05 11:50:21,948 - INFO - OKX WebSocket connection opened.
+2026-02-05 11:50:25,023 - INFO - Bot startup sequence complete.
+2026-02-05 11:50:28,165 - INFO - 127.0.0.1 - - [05/Feb/2026 11:50:28] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 11:50:32,721 - INFO - Initial account balance fetched.
+2026-02-05 11:50:36,132 - INFO - 127.0.0.1 - - [05/Feb/2026 11:50:36] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 11:50:43,412 - INFO - 127.0.0.1 - - [05/Feb/2026 11:50:43] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 11:50:46,469 - INFO - 127.0.0.1 - - [05/Feb/2026 11:50:46] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-02-05 11:50:46,471 - INFO - 127.0.0.1 - - [05/Feb/2026 11:50:46] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2026-02-05 11:52:22,131 - INFO - Logger initialized. Writing to debug.log
+2026-02-05 11:52:22,133 - INFO - 127.0.0.1 - - [05/Feb/2026 11:52:22] "GET /socket.io/?EIO=4&transport=polling&t=PmjRdru&sid=M9FfXX2HWixfwxVyAAAA HTTP/1.1" 200 -
+2026-02-05 11:52:22,219 - INFO - Bot starting background monitoring...
+2026-02-05 11:52:22,264 - INFO - Client connected: None
+2026-02-05 11:52:22,266 - INFO - 127.0.0.1 - - [05/Feb/2026 11:52:22] "POST /socket.io/?EIO=4&transport=polling&t=PmjRdtM&sid=Bw_ASp8iPgxq8C7-AAAB HTTP/1.1" 200 -
+2026-02-05 11:52:22,311 - INFO - 127.0.0.1 - - [05/Feb/2026 11:52:22] "GET /socket.io/?EIO=4&transport=polling&t=PmjRd-8&sid=Bw_ASp8iPgxq8C7-AAAB HTTP/1.1" 200 -
+2026-02-05 11:52:23,198 - INFO - 127.0.0.1 - - [05/Feb/2026 11:52:23] "GET / HTTP/1.1" 200 -
+2026-02-05 11:52:23,732 - INFO - 127.0.0.1 - - [05/Feb/2026 11:52:23] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-02-05 11:52:23,737 - INFO - 127.0.0.1 - - [05/Feb/2026 11:52:23] "[36mGET /static/js/app.js HTTP/1.1[0m" 304 -
+2026-02-05 11:52:24,236 - INFO - 127.0.0.1 - - [05/Feb/2026 11:52:24] "GET /socket.io/?EIO=4&transport=polling&t=PmjReNc HTTP/1.1" 200 -
+2026-02-05 11:52:24,261 - INFO - 127.0.0.1 - - [05/Feb/2026 11:52:24] "GET /api/config HTTP/1.1" 200 -
+2026-02-05 11:52:24,618 - INFO - Client connected: None
+2026-02-05 11:52:24,632 - INFO - 127.0.0.1 - - [05/Feb/2026 11:52:24] "POST /socket.io/?EIO=4&transport=polling&t=PmjReTe&sid=eiK1NsMZ1sxMTpxdAAAE HTTP/1.1" 200 -
+2026-02-05 11:52:24,697 - INFO - 127.0.0.1 - - [05/Feb/2026 11:52:24] "GET /socket.io/?EIO=4&transport=polling&t=PmjReTm&sid=eiK1NsMZ1sxMTpxdAAAE HTTP/1.1" 200 -
+2026-02-05 11:52:27,853 - INFO - OKX server time synchronized. Offset: -368ms
+2026-02-05 11:52:30,620 - INFO - Bot initialized. Starting live connection threads...
+2026-02-05 11:52:30,626 - INFO - OKX BOT STARTING
+2026-02-05 11:52:30,638 - INFO - 127.0.0.1 - - [05/Feb/2026 11:52:30] "POST /socket.io/?EIO=4&transport=polling&t=PmjRdrq&sid=M9FfXX2HWixfwxVyAAAA HTTP/1.1" 200 -
+2026-02-05 11:52:32,144 - INFO - Websocket connected
+2026-02-05 11:52:32,145 - INFO - OKX WebSocket connection opened.
+2026-02-05 11:52:33,573 - INFO - 127.0.0.1 - - [05/Feb/2026 11:52:33] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 11:52:35,939 - INFO - Bot startup sequence complete.
+2026-02-05 11:52:43,160 - INFO - 127.0.0.1 - - [05/Feb/2026 11:52:43] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 11:52:43,549 - INFO - Initial account balance fetched.
+2026-02-05 11:52:46,917 - INFO - Client disconnected
+2026-02-05 11:52:46,933 - INFO - 127.0.0.1 - - [05/Feb/2026 11:52:46] "GET /socket.io/?EIO=4&transport=websocket&sid=eiK1NsMZ1sxMTpxdAAAE HTTP/1.1" 200 -
+2026-02-05 11:52:48,664 - INFO - Client disconnected
+2026-02-05 11:52:48,675 - INFO - 127.0.0.1 - - [05/Feb/2026 11:52:48] "GET /socket.io/?EIO=4&transport=websocket&sid=M9FfXX2HWixfwxVyAAAA HTTP/1.1" 200 -
+2026-02-05 11:59:29,261 - INFO - Logger initialized. Writing to debug.log
+2026-02-05 11:59:29,275 - INFO - Bot starting background monitoring...
+2026-02-05 11:59:29,258 - INFO - 127.0.0.1 - - [05/Feb/2026 11:59:29] "GET /socket.io/?EIO=4&transport=polling&t=PmjTG8a&sid=nvgpNps20SNRyBpOAAAA HTTP/1.1" 200 -
+2026-02-05 11:59:29,517 - INFO - 127.0.0.1 - - [05/Feb/2026 11:59:29] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-02-05 11:59:29,617 - INFO - 127.0.0.1 - - [05/Feb/2026 11:59:29] "[36mGET /static/js/app.js HTTP/1.1[0m" 304 -
+2026-02-05 11:59:29,713 - INFO - 127.0.0.1 - - [05/Feb/2026 11:59:29] "GET /socket.io/?EIO=4&transport=polling&t=PmjTGKb HTTP/1.1" 200 -
+2026-02-05 11:59:30,065 - INFO - Client connected: None
+2026-02-05 11:59:30,069 - INFO - 127.0.0.1 - - [05/Feb/2026 11:59:30] "POST /socket.io/?EIO=4&transport=polling&t=PmjTGLM&sid=9I_xA7ajJTvId7xbAAAC HTTP/1.1" 200 -
+2026-02-05 11:59:30,069 - INFO - 127.0.0.1 - - [05/Feb/2026 11:59:30] "GET /socket.io/?EIO=4&transport=polling&t=PmjTGLP&sid=9I_xA7ajJTvId7xbAAAC HTTP/1.1" 200 -
+2026-02-05 11:59:30,070 - INFO - 127.0.0.1 - - [05/Feb/2026 11:59:30] "GET /api/config HTTP/1.1" 200 -
+2026-02-05 11:59:35,751 - INFO - OKX server time synchronized. Offset: -307ms
+2026-02-05 11:59:38,400 - INFO - Bot initialized. Starting live connection threads...
+2026-02-05 11:59:38,404 - INFO - OKX BOT STARTING
+2026-02-05 11:59:38,407 - INFO - 127.0.0.1 - - [05/Feb/2026 11:59:38] "POST /socket.io/?EIO=4&transport=polling&t=PmjTG8X&sid=nvgpNps20SNRyBpOAAAA HTTP/1.1" 200 -
+2026-02-05 11:59:40,080 - INFO - Websocket connected
+2026-02-05 11:59:40,081 - INFO - OKX WebSocket connection opened.
+2026-02-05 11:59:41,504 - ERROR - Exception on /api/status [GET]
+Traceback (most recent call last):
+  File "C:\Users\abc\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 2190, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\abc\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 1486, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\abc\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 1484, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\abc\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 1469, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\abc\Desktop\WORKSPACE\OKX\NEW CONDITIONS\app.py", line 274, in get_status
+    'size_amount': okx_pos_notional,
+                   ^^^^^^^^^^^^^^^^
+NameError: name 'okx_pos_notional' is not defined
+2026-02-05 11:59:41,629 - INFO - 127.0.0.1 - - [05/Feb/2026 11:59:41] "[35m[1mGET /api/status HTTP/1.1[0m" 500 -
+2026-02-05 11:59:43,210 - INFO - Bot startup sequence complete.
+2026-02-05 11:59:49,407 - ERROR - Exception on /api/status [GET]
+Traceback (most recent call last):
+  File "C:\Users\abc\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 2190, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\abc\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 1486, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\abc\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 1484, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\abc\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 1469, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\abc\Desktop\WORKSPACE\OKX\NEW CONDITIONS\app.py", line 274, in get_status
+    'size_amount': okx_pos_notional,
+                   ^^^^^^^^^^^^^^^^
+NameError: name 'okx_pos_notional' is not defined
+2026-02-05 11:59:49,494 - INFO - 127.0.0.1 - - [05/Feb/2026 11:59:49] "[35m[1mGET /api/status HTTP/1.1[0m" 500 -
+2026-02-05 11:59:51,936 - INFO - Initial account balance fetched.
+2026-02-05 11:59:57,220 - ERROR - Exception on /api/status [GET]
+Traceback (most recent call last):
+  File "C:\Users\abc\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 2190, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\abc\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 1486, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\abc\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 1484, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\abc\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 1469, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\abc\Desktop\WORKSPACE\OKX\NEW CONDITIONS\app.py", line 274, in get_status
+    'size_amount': okx_pos_notional,
+                   ^^^^^^^^^^^^^^^^
+NameError: name 'okx_pos_notional' is not defined
+2026-02-05 11:59:57,344 - INFO - 127.0.0.1 - - [05/Feb/2026 11:59:57] "[35m[1mGET /api/status HTTP/1.1[0m" 500 -
+2026-02-05 12:01:31,312 - INFO - Logger initialized. Writing to debug.log
+2026-02-05 12:01:31,319 - INFO - Bot starting background monitoring...
+2026-02-05 12:01:31,385 - INFO - 127.0.0.1 - - [05/Feb/2026 12:01:31] "GET /socket.io/?EIO=4&transport=polling&t=PmjTjyp&sid=-TZszpXVvc79L_IPAAAA HTTP/1.1" 200 -
+2026-02-05 12:01:31,596 - INFO - 127.0.0.1 - - [05/Feb/2026 12:01:31] "GET /socket.io/?EIO=4&transport=polling&t=PmjTk59 HTTP/1.1" 200 -
+2026-02-05 12:01:31,934 - INFO - Client connected: None
+2026-02-05 12:01:31,937 - INFO - 127.0.0.1 - - [05/Feb/2026 12:01:31] "POST /socket.io/?EIO=4&transport=polling&t=PmjTk5X&sid=liebUPGvjL3MJNWKAAAC HTTP/1.1" 200 -
+2026-02-05 12:01:31,940 - INFO - 127.0.0.1 - - [05/Feb/2026 12:01:31] "GET /socket.io/?EIO=4&transport=polling&t=PmjTk5k&sid=liebUPGvjL3MJNWKAAAC HTTP/1.1" 200 -
+2026-02-05 12:01:35,465 - INFO - OKX server time synchronized. Offset: -335ms
+2026-02-05 12:01:37,202 - INFO - 127.0.0.1 - - [05/Feb/2026 12:01:37] "GET / HTTP/1.1" 200 -
+2026-02-05 12:01:37,730 - INFO - 127.0.0.1 - - [05/Feb/2026 12:01:37] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-02-05 12:01:37,731 - INFO - 127.0.0.1 - - [05/Feb/2026 12:01:37] "[36mGET /static/js/app.js HTTP/1.1[0m" 304 -
+2026-02-05 12:01:38,141 - INFO - Bot initialized. Starting live connection threads...
+2026-02-05 12:01:38,147 - INFO - OKX BOT STARTING
+2026-02-05 12:01:38,182 - INFO - 127.0.0.1 - - [05/Feb/2026 12:01:38] "POST /socket.io/?EIO=4&transport=polling&t=PmjTjyl&sid=-TZszpXVvc79L_IPAAAA HTTP/1.1" 200 -
+2026-02-05 12:01:38,228 - INFO - 127.0.0.1 - - [05/Feb/2026 12:01:38] "GET /socket.io/?EIO=4&transport=polling&t=PmjTldT HTTP/1.1" 200 -
+2026-02-05 12:01:38,234 - INFO - 127.0.0.1 - - [05/Feb/2026 12:01:38] "GET /api/config HTTP/1.1" 200 -
+2026-02-05 12:01:38,575 - INFO - Client connected: None
+2026-02-05 12:01:38,577 - INFO - 127.0.0.1 - - [05/Feb/2026 12:01:38] "POST /socket.io/?EIO=4&transport=polling&t=PmjTljO&sid=dwBCrxv1edmiiwNxAAAE HTTP/1.1" 200 -
+2026-02-05 12:01:38,585 - INFO - 127.0.0.1 - - [05/Feb/2026 12:01:38] "GET /socket.io/?EIO=4&transport=polling&t=PmjTljR&sid=dwBCrxv1edmiiwNxAAAE HTTP/1.1" 200 -
+2026-02-05 12:01:39,657 - INFO - Websocket connected
+2026-02-05 12:01:39,682 - INFO - OKX WebSocket connection opened.
+2026-02-05 12:01:40,708 - INFO - 127.0.0.1 - - [05/Feb/2026 12:01:40] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 12:01:42,970 - INFO - Bot startup sequence complete.
+2026-02-05 12:01:49,244 - INFO - 127.0.0.1 - - [05/Feb/2026 12:01:49] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 12:01:51,443 - INFO - Initial account balance fetched.
+2026-02-05 12:01:55,455 - INFO - 127.0.0.1 - - [05/Feb/2026 12:01:55] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 12:02:00,938 - INFO - 127.0.0.1 - - [05/Feb/2026 12:02:00] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 12:04:25,939 - INFO - Logger initialized. Writing to debug.log
+2026-02-05 12:04:25,938 - INFO - 127.0.0.1 - - [05/Feb/2026 12:04:25] "GET /socket.io/?EIO=4&transport=polling&t=PmjUOa8&sid=HRyNJyT8XUwtm6LeAAAA HTTP/1.1" 200 -
+2026-02-05 12:04:25,944 - INFO - Bot starting background monitoring...
+2026-02-05 12:04:26,171 - INFO - 127.0.0.1 - - [05/Feb/2026 12:04:26] "GET /socket.io/?EIO=4&transport=polling&t=PmjUOfj&sid=HRyNJyT8XUwtm6LeAAAA HTTP/1.1" 200 -
+2026-02-05 12:04:27,608 - INFO - 127.0.0.1 - - [05/Feb/2026 12:04:27] "GET /socket.io/?EIO=4&transport=polling&t=PmjUP3F HTTP/1.1" 200 -
+2026-02-05 12:04:27,935 - INFO - Client connected: None
+2026-02-05 12:04:27,943 - INFO - 127.0.0.1 - - [05/Feb/2026 12:04:27] "POST /socket.io/?EIO=4&transport=polling&t=PmjUP3Y&sid=Ilt5lYfdRxc8aOncAAAC HTTP/1.1" 200 -
+2026-02-05 12:04:27,955 - INFO - 127.0.0.1 - - [05/Feb/2026 12:04:27] "GET /socket.io/?EIO=4&transport=polling&t=PmjUP3e&sid=Ilt5lYfdRxc8aOncAAAC HTTP/1.1" 200 -
+2026-02-05 12:04:28,720 - INFO - 127.0.0.1 - - [05/Feb/2026 12:04:28] "GET / HTTP/1.1" 200 -
+2026-02-05 12:04:29,045 - INFO - 127.0.0.1 - - [05/Feb/2026 12:04:29] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-02-05 12:04:29,115 - INFO - 127.0.0.1 - - [05/Feb/2026 12:04:29] "GET /socket.io/?EIO=4&transport=polling&t=PmjUPIh HTTP/1.1" 200 -
+2026-02-05 12:04:29,118 - INFO - 127.0.0.1 - - [05/Feb/2026 12:04:29] "[36mGET /static/js/app.js HTTP/1.1[0m" 304 -
+2026-02-05 12:04:29,451 - INFO - Client connected: None
+2026-02-05 12:04:29,452 - INFO - 127.0.0.1 - - [05/Feb/2026 12:04:29] "POST /socket.io/?EIO=4&transport=polling&t=PmjUPRD&sid=RJ21w9l7tXEl8QhdAAAE HTTP/1.1" 200 -
+2026-02-05 12:04:29,458 - INFO - 127.0.0.1 - - [05/Feb/2026 12:04:29] "GET /socket.io/?EIO=4&transport=polling&t=PmjUPRH&sid=RJ21w9l7tXEl8QhdAAAE HTTP/1.1" 200 -
+2026-02-05 12:04:29,624 - INFO - 127.0.0.1 - - [05/Feb/2026 12:04:29] "GET /socket.io/?EIO=4&transport=polling&t=PmjUPTF HTTP/1.1" 200 -
+2026-02-05 12:04:29,625 - INFO - 127.0.0.1 - - [05/Feb/2026 12:04:29] "GET /api/config HTTP/1.1" 200 -
+2026-02-05 12:04:29,801 - INFO - 127.0.0.1 - - [05/Feb/2026 12:04:29] "GET /socket.io/?EIO=4&transport=polling&t=PmjUPWq&sid=RJ21w9l7tXEl8QhdAAAE HTTP/1.1" 200 -
+2026-02-05 12:04:29,948 - INFO - Client connected: None
+2026-02-05 12:04:29,957 - INFO - 127.0.0.1 - - [05/Feb/2026 12:04:29] "POST /socket.io/?EIO=4&transport=polling&t=PmjUPYz&sid=kgbMGY8BjJnMmFTCAAAG HTTP/1.1" 200 -
+2026-02-05 12:04:29,960 - INFO - 127.0.0.1 - - [05/Feb/2026 12:04:29] "GET /socket.io/?EIO=4&transport=polling&t=PmjUPZ0&sid=kgbMGY8BjJnMmFTCAAAG HTTP/1.1" 200 -
+2026-02-05 12:04:30,315 - INFO - 127.0.0.1 - - [05/Feb/2026 12:04:30] "GET /socket.io/?EIO=4&transport=polling&t=PmjUPee&sid=kgbMGY8BjJnMmFTCAAAG HTTP/1.1" 200 -
+2026-02-05 12:04:30,360 - INFO - OKX server time synchronized. Offset: -330ms
+2026-02-05 12:04:33,606 - INFO - Bot initialized. Starting live connection threads...
+2026-02-05 12:04:33,618 - INFO - OKX BOT STARTING
+2026-02-05 12:04:33,642 - INFO - 127.0.0.1 - - [05/Feb/2026 12:04:33] "POST /socket.io/?EIO=4&transport=polling&t=PmjUOa5&sid=HRyNJyT8XUwtm6LeAAAA HTTP/1.1" 200 -
+2026-02-05 12:04:35,071 - INFO - Websocket connected
+2026-02-05 12:04:35,073 - INFO - OKX WebSocket connection opened.
+2026-02-05 12:04:38,560 - INFO - Bot startup sequence complete.
+2026-02-05 12:04:38,959 - INFO - 127.0.0.1 - - [05/Feb/2026 12:04:38] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 12:04:46,784 - INFO - Initial account balance fetched.
+2026-02-05 12:04:47,062 - INFO - 127.0.0.1 - - [05/Feb/2026 12:04:47] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 12:04:55,277 - INFO - 127.0.0.1 - - [05/Feb/2026 12:04:55] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 12:04:58,600 - INFO - 127.0.0.1 - - [05/Feb/2026 12:04:58] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 12:05:00,904 - INFO - 127.0.0.1 - - [05/Feb/2026 12:05:00] "GET / HTTP/1.1" 200 -
+2026-02-05 12:05:01,298 - INFO - 127.0.0.1 - - [05/Feb/2026 12:05:01] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-02-05 12:05:01,305 - INFO - 127.0.0.1 - - [05/Feb/2026 12:05:01] "[36mGET /static/js/app.js HTTP/1.1[0m" 304 -
+2026-02-05 12:05:01,879 - INFO - 127.0.0.1 - - [05/Feb/2026 12:05:01] "GET /api/config HTTP/1.1" 200 -
+2026-02-05 12:05:01,913 - INFO - 127.0.0.1 - - [05/Feb/2026 12:05:01] "GET /socket.io/?EIO=4&transport=polling&t=PmjUXL7 HTTP/1.1" 200 -
+2026-02-05 12:05:02,245 - INFO - Client connected: None
+2026-02-05 12:05:02,255 - INFO - 127.0.0.1 - - [05/Feb/2026 12:05:02] "POST /socket.io/?EIO=4&transport=polling&t=PmjUXRd&sid=yUu7E7XQixq_UaazAAAI HTTP/1.1" 200 -
+2026-02-05 12:05:02,261 - INFO - 127.0.0.1 - - [05/Feb/2026 12:05:02] "GET /socket.io/?EIO=4&transport=polling&t=PmjUXRf&sid=yUu7E7XQixq_UaazAAAI HTTP/1.1" 200 -
+2026-02-05 12:05:02,663 - INFO - 127.0.0.1 - - [05/Feb/2026 12:05:02] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 12:05:09,084 - INFO - Bot starting background monitoring...
+2026-02-05 12:05:09,085 - INFO - 127.0.0.1 - - [05/Feb/2026 12:05:09] "POST /api/config HTTP/1.1" 200 -
+2026-02-05 12:05:09,888 - INFO - 127.0.0.1 - - [05/Feb/2026 12:05:09] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 12:05:14,496 - INFO - OKX server time synchronized. Offset: -307ms
+2026-02-05 12:05:18,682 - INFO - 127.0.0.1 - - [05/Feb/2026 12:05:18] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 12:05:19,373 - INFO - Bot starting background monitoring...
+2026-02-05 12:05:19,373 - INFO - 127.0.0.1 - - [05/Feb/2026 12:05:19] "POST /api/config HTTP/1.1" 200 -
+2026-02-05 12:05:19,834 - INFO - Bot starting background monitoring...
+2026-02-05 12:05:19,835 - INFO - 127.0.0.1 - - [05/Feb/2026 12:05:19] "POST /api/config HTTP/1.1" 200 -
+2026-02-05 12:05:20,296 - INFO - Bot starting background monitoring...
+2026-02-05 12:05:20,297 - INFO - 127.0.0.1 - - [05/Feb/2026 12:05:20] "POST /api/config HTTP/1.1" 200 -
+2026-02-05 12:05:20,738 - INFO - Bot starting background monitoring...
+2026-02-05 12:05:20,740 - INFO - 127.0.0.1 - - [05/Feb/2026 12:05:20] "POST /api/config HTTP/1.1" 200 -
+2026-02-05 12:05:21,701 - INFO - Bot starting background monitoring...
+2026-02-05 12:05:21,702 - INFO - 127.0.0.1 - - [05/Feb/2026 12:05:21] "POST /api/config HTTP/1.1" 200 -
+2026-02-05 12:05:26,704 - INFO - OKX server time synchronized. Offset: -118ms
+2026-02-05 12:05:26,775 - INFO - 127.0.0.1 - - [05/Feb/2026 12:05:26] "GET / HTTP/1.1" 200 -
+2026-02-05 12:05:27,127 - INFO - 127.0.0.1 - - [05/Feb/2026 12:05:27] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-02-05 12:05:27,386 - INFO - 127.0.0.1 - - [05/Feb/2026 12:05:27] "[36mGET /static/js/app.js HTTP/1.1[0m" 304 -
+2026-02-05 12:05:27,400 - INFO - OKX server time synchronized. Offset: -303ms
+2026-02-05 12:05:27,928 - INFO - OKX server time synchronized. Offset: -297ms
+2026-02-05 12:05:28,060 - INFO - OKX server time synchronized. Offset: -299ms
+2026-02-05 12:05:28,129 - INFO - 127.0.0.1 - - [05/Feb/2026 12:05:28] "GET /socket.io/?EIO=4&transport=polling&t=PmjUdiK HTTP/1.1" 200 -
+2026-02-05 12:05:28,262 - INFO - 127.0.0.1 - - [05/Feb/2026 12:05:28] "GET /api/config HTTP/1.1" 200 -
+2026-02-05 12:05:28,409 - INFO - Client connected: None
+2026-02-05 12:05:28,452 - INFO - 127.0.0.1 - - [05/Feb/2026 12:05:28] "POST /socket.io/?EIO=4&transport=polling&t=PmjUdvN&sid=ZzUczLRGsGuLm4n7AAAK HTTP/1.1" 200 -
+2026-02-05 12:05:28,983 - INFO - 127.0.0.1 - - [05/Feb/2026 12:05:28] "GET /socket.io/?EIO=4&transport=polling&t=PmjUdvP&sid=ZzUczLRGsGuLm4n7AAAK HTTP/1.1" 200 -
+2026-02-05 12:05:29,128 - INFO - OKX server time synchronized. Offset: -281ms
+2026-02-05 12:05:40,879 - INFO - 127.0.0.1 - - [05/Feb/2026 12:05:40] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 12:05:47,777 - INFO - 127.0.0.1 - - [05/Feb/2026 12:05:47] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 12:09:06,481 - INFO - Client disconnected
+2026-02-05 12:09:06,482 - INFO - 127.0.0.1 - - [05/Feb/2026 12:09:06] "GET /socket.io/?EIO=4&transport=websocket&sid=ZzUczLRGsGuLm4n7AAAK HTTP/1.1" 200 -
+2026-02-05 12:09:06,807 - INFO - 127.0.0.1 - - [05/Feb/2026 12:09:06] "GET / HTTP/1.1" 200 -
+2026-02-05 12:09:06,921 - INFO - 127.0.0.1 - - [05/Feb/2026 12:09:06] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-02-05 12:09:07,055 - INFO - 127.0.0.1 - - [05/Feb/2026 12:09:07] "GET /static/js/app.js HTTP/1.1" 200 -
+2026-02-05 12:09:07,475 - INFO - 127.0.0.1 - - [05/Feb/2026 12:09:07] "GET /socket.io/?EIO=4&transport=polling&t=PmjVTIL HTTP/1.1" 200 -
+2026-02-05 12:09:07,476 - INFO - 127.0.0.1 - - [05/Feb/2026 12:09:07] "GET /api/config HTTP/1.1" 200 -
+2026-02-05 12:09:07,724 - INFO - Client connected: None
+2026-02-05 12:09:07,727 - INFO - 127.0.0.1 - - [05/Feb/2026 12:09:07] "POST /socket.io/?EIO=4&transport=polling&t=PmjVTOY&sid=P41YNzmai8DAaQwGAAAM HTTP/1.1" 200 -
+2026-02-05 12:09:07,802 - INFO - 127.0.0.1 - - [05/Feb/2026 12:09:07] "GET /socket.io/?EIO=4&transport=polling&t=PmjVTOZ&sid=P41YNzmai8DAaQwGAAAM HTTP/1.1" 200 -
+2026-02-05 12:09:12,209 - INFO - Bot starting background monitoring...
+2026-02-05 12:09:12,210 - INFO - 127.0.0.1 - - [05/Feb/2026 12:09:12] "POST /api/config HTTP/1.1" 200 -
+2026-02-05 12:09:15,543 - INFO - 127.0.0.1 - - [05/Feb/2026 12:09:15] "GET / HTTP/1.1" 200 -
+2026-02-05 12:09:15,893 - INFO - 127.0.0.1 - - [05/Feb/2026 12:09:15] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-02-05 12:09:15,931 - INFO - 127.0.0.1 - - [05/Feb/2026 12:09:15] "[36mGET /static/js/app.js HTTP/1.1[0m" 304 -
+2026-02-05 12:09:16,028 - INFO - 127.0.0.1 - - [05/Feb/2026 12:09:16] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 12:09:16,682 - INFO - 127.0.0.1 - - [05/Feb/2026 12:09:16] "GET /socket.io/?EIO=4&transport=polling&t=PmjVVVX HTTP/1.1" 200 -
+2026-02-05 12:09:16,716 - INFO - 127.0.0.1 - - [05/Feb/2026 12:09:16] "GET /api/config HTTP/1.1" 200 -
+2026-02-05 12:09:16,969 - INFO - Client connected: None
+2026-02-05 12:09:16,977 - INFO - 127.0.0.1 - - [05/Feb/2026 12:09:16] "POST /socket.io/?EIO=4&transport=polling&t=PmjVVib&sid=6FmdL_d3rNgYgpOWAAAO HTTP/1.1" 200 -
+2026-02-05 12:09:17,441 - INFO - 127.0.0.1 - - [05/Feb/2026 12:09:17] "GET /socket.io/?EIO=4&transport=polling&t=PmjVVif&sid=6FmdL_d3rNgYgpOWAAAO HTTP/1.1" 200 -
+2026-02-05 12:09:18,409 - INFO - OKX server time synchronized. Offset: -331ms
+2026-02-05 12:09:19,901 - INFO - Bot starting background monitoring...
+2026-02-05 12:09:19,902 - INFO - 127.0.0.1 - - [05/Feb/2026 12:09:19] "POST /api/config HTTP/1.1" 200 -
+2026-02-05 12:09:25,640 - INFO - Bot starting background monitoring...
+2026-02-05 12:09:25,641 - INFO - 127.0.0.1 - - [05/Feb/2026 12:09:25] "POST /api/config HTTP/1.1" 200 -
+2026-02-05 12:09:26,055 - INFO - 127.0.0.1 - - [05/Feb/2026 12:09:26] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 12:09:27,870 - INFO - OKX server time synchronized. Offset: -300ms
+2026-02-05 12:09:28,247 - INFO - 127.0.0.1 - - [05/Feb/2026 12:09:28] "GET / HTTP/1.1" 200 -
+2026-02-05 12:09:29,026 - INFO - 127.0.0.1 - - [05/Feb/2026 12:09:29] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-02-05 12:09:29,153 - INFO - 127.0.0.1 - - [05/Feb/2026 12:09:29] "[36mGET /static/js/app.js HTTP/1.1[0m" 304 -
+2026-02-05 12:09:29,847 - INFO - 127.0.0.1 - - [05/Feb/2026 12:09:29] "GET /api/config HTTP/1.1" 200 -
+2026-02-05 12:09:29,955 - INFO - 127.0.0.1 - - [05/Feb/2026 12:09:29] "GET /socket.io/?EIO=4&transport=polling&t=PmjVYl6 HTTP/1.1" 200 -
+2026-02-05 12:09:30,403 - INFO - Client connected: None
+2026-02-05 12:09:30,413 - INFO - 127.0.0.1 - - [05/Feb/2026 12:09:30] "POST /socket.io/?EIO=4&transport=polling&t=PmjVYv9&sid=SSHNB1Vzw2NX86_PAAAQ HTTP/1.1" 200 -
+2026-02-05 12:09:30,457 - INFO - 127.0.0.1 - - [05/Feb/2026 12:09:30] "GET /socket.io/?EIO=4&transport=polling&t=PmjVYvC&sid=SSHNB1Vzw2NX86_PAAAQ HTTP/1.1" 200 -
+2026-02-05 12:09:32,918 - INFO - Bot starting background monitoring...
+2026-02-05 12:09:32,919 - INFO - 127.0.0.1 - - [05/Feb/2026 12:09:32] "POST /api/config HTTP/1.1" 200 -
+2026-02-05 12:09:33,125 - INFO - OKX server time synchronized. Offset: -269ms
+2026-02-05 12:09:36,103 - INFO - 127.0.0.1 - - [05/Feb/2026 12:09:36] "POST /api/config HTTP/1.1" 200 -
+2026-02-05 12:09:38,311 - INFO - 127.0.0.1 - - [05/Feb/2026 12:09:38] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 12:09:39,096 - INFO - 127.0.0.1 - - [05/Feb/2026 12:09:39] "GET / HTTP/1.1" 200 -
+2026-02-05 12:09:39,861 - INFO - 127.0.0.1 - - [05/Feb/2026 12:09:39] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-02-05 12:09:39,908 - INFO - 127.0.0.1 - - [05/Feb/2026 12:09:39] "[36mGET /static/js/app.js HTTP/1.1[0m" 304 -
+2026-02-05 12:09:40,632 - INFO - 127.0.0.1 - - [05/Feb/2026 12:09:40] "GET /api/config HTTP/1.1" 200 -
+2026-02-05 12:09:40,634 - INFO - 127.0.0.1 - - [05/Feb/2026 12:09:40] "GET /socket.io/?EIO=4&transport=polling&t=PmjVbO1 HTTP/1.1" 200 -
+2026-02-05 12:09:41,040 - INFO - Client connected: None
+2026-02-05 12:09:41,045 - INFO - 127.0.0.1 - - [05/Feb/2026 12:09:41] "POST /socket.io/?EIO=4&transport=polling&t=PmjVbVl&sid=BxIVssbihJtydACqAAAS HTTP/1.1" 200 -
+2026-02-05 12:09:41,065 - INFO - 127.0.0.1 - - [05/Feb/2026 12:09:41] "GET /socket.io/?EIO=4&transport=polling&t=PmjVbVq&sid=BxIVssbihJtydACqAAAS HTTP/1.1" 200 -
+2026-02-05 12:09:41,593 - INFO - OKX server time synchronized. Offset: -268ms
+2026-02-05 12:09:47,806 - INFO - 127.0.0.1 - - [05/Feb/2026 12:09:47] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 12:09:48,476 - INFO - 127.0.0.1 - - [05/Feb/2026 12:09:48] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 12:09:48,811 - INFO - 127.0.0.1 - - [05/Feb/2026 12:09:48] "POST /api/config HTTP/1.1" 200 -
+2026-02-05 12:09:49,359 - INFO - 127.0.0.1 - - [05/Feb/2026 12:09:49] "POST /api/config HTTP/1.1" 200 -
+2026-02-05 12:09:54,623 - INFO - 127.0.0.1 - - [05/Feb/2026 12:09:54] "GET / HTTP/1.1" 200 -
+2026-02-05 12:09:55,153 - INFO - 127.0.0.1 - - [05/Feb/2026 12:09:55] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-02-05 12:09:55,165 - INFO - 127.0.0.1 - - [05/Feb/2026 12:09:55] "[36mGET /static/js/app.js HTTP/1.1[0m" 304 -
+2026-02-05 12:09:55,763 - INFO - 127.0.0.1 - - [05/Feb/2026 12:09:55] "GET /socket.io/?EIO=4&transport=polling&t=PmjVf4p HTTP/1.1" 200 -
+2026-02-05 12:09:55,765 - INFO - 127.0.0.1 - - [05/Feb/2026 12:09:55] "GET /api/config HTTP/1.1" 200 -
+2026-02-05 12:09:56,090 - INFO - Client connected: None
+2026-02-05 12:09:56,099 - INFO - 127.0.0.1 - - [05/Feb/2026 12:09:56] "POST /socket.io/?EIO=4&transport=polling&t=PmjVfA-&sid=tPuNzcahLj5nPnQ1AAAU HTTP/1.1" 200 -
+2026-02-05 12:09:56,103 - INFO - 127.0.0.1 - - [05/Feb/2026 12:09:56] "GET /socket.io/?EIO=4&transport=polling&t=PmjVfB1&sid=tPuNzcahLj5nPnQ1AAAU HTTP/1.1" 200 -
+2026-02-05 12:09:57,365 - INFO - 127.0.0.1 - - [05/Feb/2026 12:09:57] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 12:10:06,240 - INFO - 127.0.0.1 - - [05/Feb/2026 12:10:06] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 12:10:09,127 - INFO - 127.0.0.1 - - [05/Feb/2026 12:10:09] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 12:10:14,514 - INFO - 127.0.0.1 - - [05/Feb/2026 12:10:14] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 12:10:21,981 - INFO - 127.0.0.1 - - [05/Feb/2026 12:10:21] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 12:15:25,863 - INFO - Logger initialized. Writing to debug.log
+2026-02-05 12:15:25,902 - INFO - Bot starting background monitoring...
+2026-02-05 12:15:25,966 - INFO - 127.0.0.1 - - [05/Feb/2026 12:15:25] "GET /socket.io/?EIO=4&transport=polling&t=PmjWvhW&sid=xC33vHiKO0GCXu2oAAAA HTTP/1.1" 200 -
+2026-02-05 12:15:31,418 - INFO - OKX server time synchronized. Offset: -338ms
+2026-02-05 12:15:34,275 - INFO - Bot initialized. Starting live connection threads...
+2026-02-05 12:15:34,280 - INFO - OKX BOT STARTING
+2026-02-05 12:15:34,288 - INFO - 127.0.0.1 - - [05/Feb/2026 12:15:34] "POST /socket.io/?EIO=4&transport=polling&t=PmjWvhS&sid=xC33vHiKO0GCXu2oAAAA HTTP/1.1" 200 -
+2026-02-05 12:15:34,493 - INFO - 127.0.0.1 - - [05/Feb/2026 12:15:34] "POST /api/config HTTP/1.1" 200 -
+2026-02-05 12:15:36,150 - INFO - Websocket connected
+2026-02-05 12:15:36,195 - INFO - OKX WebSocket connection opened.
+2026-02-05 12:15:36,547 - INFO - 127.0.0.1 - - [05/Feb/2026 12:15:36] "GET / HTTP/1.1" 200 -
+2026-02-05 12:15:36,968 - INFO - 127.0.0.1 - - [05/Feb/2026 12:15:36] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-02-05 12:15:37,122 - INFO - 127.0.0.1 - - [05/Feb/2026 12:15:37] "[36mGET /static/js/app.js HTTP/1.1[0m" 304 -
+2026-02-05 12:15:37,277 - INFO - 127.0.0.1 - - [05/Feb/2026 12:15:37] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 12:15:37,446 - INFO - 127.0.0.1 - - [05/Feb/2026 12:15:37] "GET /socket.io/?EIO=4&transport=polling&t=PmjWyWm HTTP/1.1" 200 -
+2026-02-05 12:15:37,492 - INFO - 127.0.0.1 - - [05/Feb/2026 12:15:37] "GET /api/config HTTP/1.1" 200 -
+2026-02-05 12:15:37,779 - INFO - Client connected: None
+2026-02-05 12:15:37,784 - INFO - 127.0.0.1 - - [05/Feb/2026 12:15:37] "POST /socket.io/?EIO=4&transport=polling&t=PmjWybg&sid=J79w8Ha7ZluQctHCAAAC HTTP/1.1" 200 -
+2026-02-05 12:15:37,815 - INFO - 127.0.0.1 - - [05/Feb/2026 12:15:37] "GET /socket.io/?EIO=4&transport=polling&t=PmjWybi&sid=J79w8Ha7ZluQctHCAAAC HTTP/1.1" 200 -
+2026-02-05 12:15:39,545 - INFO - Bot startup sequence complete.
+2026-02-05 12:15:43,444 - INFO - Bot starting background monitoring...
+2026-02-05 12:15:43,445 - INFO - 127.0.0.1 - - [05/Feb/2026 12:15:43] "POST /api/config HTTP/1.1" 200 -
+2026-02-05 12:15:45,374 - INFO - 127.0.0.1 - - [05/Feb/2026 12:15:45] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 12:15:46,213 - INFO - 127.0.0.1 - - [05/Feb/2026 12:15:46] "GET / HTTP/1.1" 200 -
+2026-02-05 12:15:46,778 - INFO - 127.0.0.1 - - [05/Feb/2026 12:15:46] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-02-05 12:15:47,235 - INFO - 127.0.0.1 - - [05/Feb/2026 12:15:47] "[36mGET /static/js/app.js HTTP/1.1[0m" 304 -
+2026-02-05 12:15:48,182 - INFO - 127.0.0.1 - - [05/Feb/2026 12:15:48] "GET /socket.io/?EIO=4&transport=polling&t=PmjW_4V HTTP/1.1" 200 -
+2026-02-05 12:15:48,336 - INFO - 127.0.0.1 - - [05/Feb/2026 12:15:48] "GET /api/config HTTP/1.1" 200 -
+2026-02-05 12:15:49,060 - INFO - Client connected: None
+2026-02-05 12:15:49,136 - INFO - 127.0.0.1 - - [05/Feb/2026 12:15:49] "POST /socket.io/?EIO=4&transport=polling&t=PmjW_KO&sid=MOdLaiOk1XfiNtQjAAAE HTTP/1.1" 200 -
+2026-02-05 12:15:49,282 - INFO - 127.0.0.1 - - [05/Feb/2026 12:15:49] "GET /socket.io/?EIO=4&transport=polling&t=PmjW_KR&sid=MOdLaiOk1XfiNtQjAAAE HTTP/1.1" 200 -
+2026-02-05 12:15:49,862 - INFO - Initial account balance fetched.
+2026-02-05 12:15:50,267 - INFO - OKX server time synchronized. Offset: -269ms
+2026-02-05 12:15:56,021 - INFO - Bot starting background monitoring...
+2026-02-05 12:15:56,021 - INFO - 127.0.0.1 - - [05/Feb/2026 12:15:56] "POST /api/config HTTP/1.1" 200 -
+2026-02-05 12:15:58,142 - INFO - 127.0.0.1 - - [05/Feb/2026 12:15:58] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 12:15:58,355 - INFO - 127.0.0.1 - - [05/Feb/2026 12:15:58] "GET / HTTP/1.1" 200 -
+2026-02-05 12:15:59,812 - INFO - 127.0.0.1 - - [05/Feb/2026 12:15:59] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-02-05 12:15:59,872 - INFO - 127.0.0.1 - - [05/Feb/2026 12:15:59] "[36mGET /static/js/app.js HTTP/1.1[0m" 304 -
+2026-02-05 12:16:00,550 - INFO - 127.0.0.1 - - [05/Feb/2026 12:16:00] "GET /socket.io/?EIO=4&transport=polling&t=PmjX27z HTTP/1.1" 200 -
+2026-02-05 12:16:00,575 - INFO - 127.0.0.1 - - [05/Feb/2026 12:16:00] "GET /api/config HTTP/1.1" 200 -
+2026-02-05 12:16:01,046 - INFO - Client connected: None
+2026-02-05 12:16:01,078 - INFO - 127.0.0.1 - - [05/Feb/2026 12:16:01] "POST /socket.io/?EIO=4&transport=polling&t=PmjX2H8&sid=K6nQhkHmWw-vBKQvAAAG HTTP/1.1" 200 -
+2026-02-05 12:16:01,135 - INFO - 127.0.0.1 - - [05/Feb/2026 12:16:01] "GET /socket.io/?EIO=4&transport=polling&t=PmjX2HA&sid=K6nQhkHmWw-vBKQvAAAG HTTP/1.1" 200 -
+2026-02-05 12:16:03,666 - INFO - OKX server time synchronized. Offset: -292ms
+2026-02-05 12:16:05,522 - INFO - Bot starting background monitoring...
+2026-02-05 12:16:05,522 - INFO - 127.0.0.1 - - [05/Feb/2026 12:16:05] "POST /api/config HTTP/1.1" 200 -
+2026-02-05 12:16:07,959 - INFO - 127.0.0.1 - - [05/Feb/2026 12:16:07] "GET / HTTP/1.1" 200 -
+2026-02-05 12:16:09,244 - INFO - 127.0.0.1 - - [05/Feb/2026 12:16:09] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 12:16:09,250 - INFO - 127.0.0.1 - - [05/Feb/2026 12:16:09] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 12:16:09,344 - INFO - 127.0.0.1 - - [05/Feb/2026 12:16:09] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-02-05 12:16:09,469 - INFO - 127.0.0.1 - - [05/Feb/2026 12:16:09] "[36mGET /static/js/app.js HTTP/1.1[0m" 304 -
+2026-02-05 12:16:10,287 - INFO - 127.0.0.1 - - [05/Feb/2026 12:16:10] "GET /socket.io/?EIO=4&transport=polling&t=PmjX4UT HTTP/1.1" 200 -
+2026-02-05 12:16:10,581 - INFO - 127.0.0.1 - - [05/Feb/2026 12:16:10] "GET /api/config HTTP/1.1" 200 -
+2026-02-05 12:16:11,531 - INFO - Client connected: None
+2026-02-05 12:16:11,626 - INFO - 127.0.0.1 - - [05/Feb/2026 12:16:11] "POST /socket.io/?EIO=4&transport=polling&t=PmjX4nc&sid=ZSBjnyVt2AhH1lm6AAAI HTTP/1.1" 200 -
+2026-02-05 12:16:11,766 - INFO - 127.0.0.1 - - [05/Feb/2026 12:16:11] "GET /socket.io/?EIO=4&transport=polling&t=PmjX4ng&sid=ZSBjnyVt2AhH1lm6AAAI HTTP/1.1" 200 -
+2026-02-05 12:16:13,808 - INFO - OKX server time synchronized. Offset: -257ms
+2026-02-05 12:16:17,701 - INFO - Bot starting background monitoring...
+2026-02-05 12:16:17,703 - INFO - 127.0.0.1 - - [05/Feb/2026 12:16:17] "POST /api/config HTTP/1.1" 200 -
+2026-02-05 12:16:18,019 - INFO - Bot starting background monitoring...
+2026-02-05 12:16:18,020 - INFO - 127.0.0.1 - - [05/Feb/2026 12:16:18] "POST /api/config HTTP/1.1" 200 -
+2026-02-05 12:16:18,245 - INFO - Bot starting background monitoring...
+2026-02-05 12:16:18,247 - INFO - 127.0.0.1 - - [05/Feb/2026 12:16:18] "POST /api/config HTTP/1.1" 200 -
+2026-02-05 12:16:21,850 - INFO - 127.0.0.1 - - [05/Feb/2026 12:16:21] "GET / HTTP/1.1" 200 -
+2026-02-05 12:16:23,299 - INFO - 127.0.0.1 - - [05/Feb/2026 12:16:23] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-02-05 12:16:23,380 - INFO - 127.0.0.1 - - [05/Feb/2026 12:16:23] "[36mGET /static/js/app.js HTTP/1.1[0m" 304 -
+2026-02-05 12:16:24,289 - INFO - 127.0.0.1 - - [05/Feb/2026 12:16:24] "GET /socket.io/?EIO=4&transport=polling&t=PmjX7uf HTTP/1.1" 200 -
+2026-02-05 12:16:24,360 - INFO - 127.0.0.1 - - [05/Feb/2026 12:16:24] "GET /api/config HTTP/1.1" 200 -
+2026-02-05 12:16:24,780 - INFO - Client connected: None
+2026-02-05 12:16:24,785 - INFO - 127.0.0.1 - - [05/Feb/2026 12:16:24] "POST /socket.io/?EIO=4&transport=polling&t=PmjX843&sid=wq8KrfMULM3mGfIzAAAK HTTP/1.1" 200 -
+2026-02-05 12:16:24,843 - INFO - 127.0.0.1 - - [05/Feb/2026 12:16:24] "GET /socket.io/?EIO=4&transport=polling&t=PmjX846&sid=wq8KrfMULM3mGfIzAAAK HTTP/1.1" 200 -
+2026-02-05 12:16:25,100 - INFO - 127.0.0.1 - - [05/Feb/2026 12:16:25] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 12:16:25,104 - INFO - 127.0.0.1 - - [05/Feb/2026 12:16:25] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 12:16:27,829 - INFO - Bot starting background monitoring...
+2026-02-05 12:16:27,832 - INFO - 127.0.0.1 - - [05/Feb/2026 12:16:27] "POST /api/config HTTP/1.1" 200 -
+2026-02-05 12:16:28,026 - INFO - Bot starting background monitoring...
+2026-02-05 12:16:28,027 - INFO - 127.0.0.1 - - [05/Feb/2026 12:16:28] "POST /api/config HTTP/1.1" 200 -
+2026-02-05 12:16:28,750 - INFO - OKX server time synchronized. Offset: -258ms
+2026-02-05 12:16:28,818 - INFO - OKX server time synchronized. Offset: -266ms
+2026-02-05 12:16:29,397 - INFO - OKX server time synchronized. Offset: -266ms
+2026-02-05 12:16:32,760 - INFO - Bot starting background monitoring...
+2026-02-05 12:16:32,761 - INFO - 127.0.0.1 - - [05/Feb/2026 12:16:32] "POST /api/config HTTP/1.1" 200 -
+2026-02-05 12:16:32,904 - INFO - Bot starting background monitoring...
+2026-02-05 12:16:32,905 - INFO - 127.0.0.1 - - [05/Feb/2026 12:16:32] "POST /api/config HTTP/1.1" 200 -
+2026-02-05 12:16:36,224 - INFO - 127.0.0.1 - - [05/Feb/2026 12:16:36] "POST /api/config HTTP/1.1" 200 -
+2026-02-05 12:16:36,475 - INFO - 127.0.0.1 - - [05/Feb/2026 12:16:36] "POST /api/config HTTP/1.1" 200 -
+2026-02-05 12:16:36,543 - INFO - 127.0.0.1 - - [05/Feb/2026 12:16:36] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 12:16:36,654 - INFO - 127.0.0.1 - - [05/Feb/2026 12:16:36] "POST /api/config HTTP/1.1" 200 -
+2026-02-05 12:16:37,163 - INFO - 127.0.0.1 - - [05/Feb/2026 12:16:37] "POST /api/config HTTP/1.1" 200 -
+2026-02-05 12:16:37,379 - INFO - 127.0.0.1 - - [05/Feb/2026 12:16:37] "POST /api/config HTTP/1.1" 200 -
+2026-02-05 12:16:37,620 - INFO - 127.0.0.1 - - [05/Feb/2026 12:16:37] "POST /api/config HTTP/1.1" 200 -
+2026-02-05 12:16:38,527 - INFO - 127.0.0.1 - - [05/Feb/2026 12:16:38] "POST /api/config HTTP/1.1" 200 -
+2026-02-05 12:16:38,820 - INFO - 127.0.0.1 - - [05/Feb/2026 12:16:38] "POST /api/config HTTP/1.1" 200 -
+2026-02-05 12:16:38,951 - INFO - 127.0.0.1 - - [05/Feb/2026 12:16:38] "POST /api/config HTTP/1.1" 200 -
+2026-02-05 12:16:39,083 - INFO - 127.0.0.1 - - [05/Feb/2026 12:16:39] "POST /api/config HTTP/1.1" 200 -
+2026-02-05 12:16:39,221 - INFO - 127.0.0.1 - - [05/Feb/2026 12:16:39] "POST /api/config HTTP/1.1" 200 -
+2026-02-05 12:16:39,362 - INFO - OKX server time synchronized. Offset: -263ms
+2026-02-05 12:16:39,409 - INFO - 127.0.0.1 - - [05/Feb/2026 12:16:39] "POST /api/config HTTP/1.1" 200 -
+2026-02-05 12:16:39,539 - INFO - 127.0.0.1 - - [05/Feb/2026 12:16:39] "POST /api/config HTTP/1.1" 200 -
+2026-02-05 12:16:40,060 - INFO - OKX server time synchronized. Offset: -257ms
+2026-02-05 12:16:41,949 - INFO - 127.0.0.1 - - [05/Feb/2026 12:16:41] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 12:16:41,995 - INFO - 127.0.0.1 - - [05/Feb/2026 12:16:41] "POST /api/config HTTP/1.1" 200 -
+2026-02-05 12:16:42,210 - INFO - 127.0.0.1 - - [05/Feb/2026 12:16:42] "POST /api/config HTTP/1.1" 200 -
+2026-02-05 12:16:42,345 - INFO - 127.0.0.1 - - [05/Feb/2026 12:16:42] "POST /api/config HTTP/1.1" 200 -
+2026-02-05 12:16:42,548 - INFO - 127.0.0.1 - - [05/Feb/2026 12:16:42] "POST /api/config HTTP/1.1" 200 -
+2026-02-05 12:16:42,672 - INFO - 127.0.0.1 - - [05/Feb/2026 12:16:42] "POST /api/config HTTP/1.1" 200 -
+2026-02-05 12:16:42,841 - INFO - 127.0.0.1 - - [05/Feb/2026 12:16:42] "POST /api/config HTTP/1.1" 200 -
+2026-02-05 12:16:43,108 - INFO - 127.0.0.1 - - [05/Feb/2026 12:16:43] "POST /api/config HTTP/1.1" 200 -
+2026-02-05 12:16:45,042 - INFO - OKX server time synchronized. Offset: -113ms
+2026-02-05 12:16:45,293 - INFO - OKX server time synchronized. Offset: -98ms
+2026-02-05 12:16:45,436 - INFO - 127.0.0.1 - - [05/Feb/2026 12:16:45] "GET / HTTP/1.1" 200 -
+2026-02-05 12:16:46,442 - INFO - 127.0.0.1 - - [05/Feb/2026 12:16:46] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-02-05 12:16:46,506 - INFO - 127.0.0.1 - - [05/Feb/2026 12:16:46] "[36mGET /static/js/app.js HTTP/1.1[0m" 304 -
+2026-02-05 12:16:47,688 - INFO - 127.0.0.1 - - [05/Feb/2026 12:16:47] "GET /socket.io/?EIO=4&transport=polling&t=PmjXDZ- HTTP/1.1" 200 -
+2026-02-05 12:16:47,837 - INFO - 127.0.0.1 - - [05/Feb/2026 12:16:47] "GET /api/config HTTP/1.1" 200 -
+2026-02-05 12:16:48,603 - INFO - Client connected: None
+2026-02-05 12:16:48,645 - INFO - 127.0.0.1 - - [05/Feb/2026 12:16:48] "POST /socket.io/?EIO=4&transport=polling&t=PmjXDsi&sid=YgW33GfUW7D0U5_9AAAM HTTP/1.1" 200 -
+2026-02-05 12:16:48,915 - INFO - 127.0.0.1 - - [05/Feb/2026 12:16:48] "GET /socket.io/?EIO=4&transport=polling&t=PmjXDsk&sid=YgW33GfUW7D0U5_9AAAM HTTP/1.1" 200 -
+2026-02-05 12:16:51,010 - INFO - 127.0.0.1 - - [05/Feb/2026 12:16:51] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 12:16:55,859 - INFO - 127.0.0.1 - - [05/Feb/2026 12:16:55] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 12:16:58,198 - INFO - 127.0.0.1 - - [05/Feb/2026 12:16:58] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 12:17:02,172 - INFO - 127.0.0.1 - - [05/Feb/2026 12:17:02] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 12:17:08,209 - INFO - 127.0.0.1 - - [05/Feb/2026 12:17:08] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 12:20:09,946 - INFO - Logger initialized. Writing to debug.log
+2026-02-05 12:20:09,949 - INFO - Bot starting background monitoring...
+2026-02-05 12:20:10,104 - INFO - 127.0.0.1 - - [05/Feb/2026 12:20:10] "GET /socket.io/?EIO=4&transport=polling&t=PmjX_4y&sid=dDny1ro2Fnmoy2qbAAAA HTTP/1.1" 200 -
+2026-02-05 12:20:15,804 - INFO - OKX server time synchronized. Offset: -247ms
+2026-02-05 12:20:18,680 - INFO - Bot initialized. Starting live connection threads...
+2026-02-05 12:20:18,687 - INFO - OKX BOT STARTING
+2026-02-05 12:20:18,696 - INFO - 127.0.0.1 - - [05/Feb/2026 12:20:18] "POST /socket.io/?EIO=4&transport=polling&t=PmjX_4s&sid=dDny1ro2Fnmoy2qbAAAA HTTP/1.1" 200 -
+2026-02-05 12:20:20,315 - INFO - Websocket connected
+2026-02-05 12:20:20,315 - INFO - OKX WebSocket connection opened.
+2026-02-05 12:20:21,324 - INFO - 127.0.0.1 - - [05/Feb/2026 12:20:21] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 12:20:22,333 - INFO - 127.0.0.1 - - [05/Feb/2026 12:20:22] "POST /api/config HTTP/1.1" 200 -
+2026-02-05 12:20:23,973 - INFO - Bot startup sequence complete.
+2026-02-05 12:20:24,525 - INFO - 127.0.0.1 - - [05/Feb/2026 12:20:24] "GET / HTTP/1.1" 200 -
+2026-02-05 12:20:25,043 - INFO - 127.0.0.1 - - [05/Feb/2026 12:20:25] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-02-05 12:20:25,049 - INFO - 127.0.0.1 - - [05/Feb/2026 12:20:25] "[36mGET /static/js/app.js HTTP/1.1[0m" 304 -
+2026-02-05 12:20:25,660 - INFO - 127.0.0.1 - - [05/Feb/2026 12:20:25] "GET /socket.io/?EIO=4&transport=polling&t=PmjY2sw HTTP/1.1" 200 -
+2026-02-05 12:20:25,664 - INFO - 127.0.0.1 - - [05/Feb/2026 12:20:25] "GET /api/config HTTP/1.1" 200 -
+2026-02-05 12:20:25,999 - INFO - Client connected: None
+2026-02-05 12:20:26,002 - INFO - 127.0.0.1 - - [05/Feb/2026 12:20:26] "POST /socket.io/?EIO=4&transport=polling&t=PmjY2zB&sid=8ypV4z1C5aYUCAl6AAAC HTTP/1.1" 200 -
+2026-02-05 12:20:26,019 - INFO - 127.0.0.1 - - [05/Feb/2026 12:20:26] "GET /socket.io/?EIO=4&transport=polling&t=PmjY2zD&sid=8ypV4z1C5aYUCAl6AAAC HTTP/1.1" 200 -
+2026-02-05 12:20:30,359 - INFO - 127.0.0.1 - - [05/Feb/2026 12:20:30] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 12:20:30,492 - INFO - 127.0.0.1 - - [05/Feb/2026 12:20:30] "POST /api/config HTTP/1.1" 200 -
+2026-02-05 12:20:32,635 - INFO - 127.0.0.1 - - [05/Feb/2026 12:20:32] "GET / HTTP/1.1" 200 -
+2026-02-05 12:20:32,989 - INFO - 127.0.0.1 - - [05/Feb/2026 12:20:32] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-02-05 12:20:33,031 - INFO - 127.0.0.1 - - [05/Feb/2026 12:20:33] "[36mGET /static/js/app.js HTTP/1.1[0m" 304 -
+2026-02-05 12:20:33,159 - INFO - Initial account balance fetched.
+2026-02-05 12:20:33,375 - INFO - 127.0.0.1 - - [05/Feb/2026 12:20:33] "GET /api/config HTTP/1.1" 200 -
+2026-02-05 12:20:33,376 - INFO - 127.0.0.1 - - [05/Feb/2026 12:20:33] "GET /socket.io/?EIO=4&transport=polling&t=PmjY4mE HTTP/1.1" 200 -
+2026-02-05 12:20:33,727 - INFO - Client connected: None
+2026-02-05 12:20:33,731 - INFO - 127.0.0.1 - - [05/Feb/2026 12:20:33] "POST /socket.io/?EIO=4&transport=polling&t=PmjY4s3&sid=Of8ROdHIgmTiO1XPAAAE HTTP/1.1" 200 -
+2026-02-05 12:20:33,771 - INFO - 127.0.0.1 - - [05/Feb/2026 12:20:33] "GET /socket.io/?EIO=4&transport=polling&t=PmjY4s6&sid=Of8ROdHIgmTiO1XPAAAE HTTP/1.1" 200 -
+2026-02-05 12:20:38,592 - INFO - 127.0.0.1 - - [05/Feb/2026 12:20:38] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 12:20:43,312 - INFO - Bot starting background monitoring...
+2026-02-05 12:20:43,313 - INFO - 127.0.0.1 - - [05/Feb/2026 12:20:43] "POST /api/config HTTP/1.1" 200 -
+2026-02-05 12:20:45,984 - INFO - 127.0.0.1 - - [05/Feb/2026 12:20:45] "GET / HTTP/1.1" 200 -
+2026-02-05 12:20:46,735 - INFO - 127.0.0.1 - - [05/Feb/2026 12:20:46] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-02-05 12:20:46,765 - INFO - 127.0.0.1 - - [05/Feb/2026 12:20:46] "[36mGET /static/js/app.js HTTP/1.1[0m" 304 -
+2026-02-05 12:20:47,365 - INFO - 127.0.0.1 - - [05/Feb/2026 12:20:47] "GET /socket.io/?EIO=4&transport=polling&t=PmjY8AN HTTP/1.1" 200 -
+2026-02-05 12:20:47,370 - INFO - 127.0.0.1 - - [05/Feb/2026 12:20:47] "GET /api/config HTTP/1.1" 200 -
+2026-02-05 12:20:47,535 - INFO - 127.0.0.1 - - [05/Feb/2026 12:20:47] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 12:20:47,687 - INFO - Client connected: None
+2026-02-05 12:20:47,694 - INFO - 127.0.0.1 - - [05/Feb/2026 12:20:47] "POST /socket.io/?EIO=4&transport=polling&t=PmjY8GB&sid=5qi0pixuGilEUOHuAAAG HTTP/1.1" 200 -
+2026-02-05 12:20:47,697 - INFO - 127.0.0.1 - - [05/Feb/2026 12:20:47] "GET /socket.io/?EIO=4&transport=polling&t=PmjY8GD&sid=5qi0pixuGilEUOHuAAAG HTTP/1.1" 200 -
+2026-02-05 12:20:48,934 - INFO - OKX server time synchronized. Offset: -267ms
+2026-02-05 12:20:52,193 - INFO - Bot starting background monitoring...
+2026-02-05 12:20:52,193 - INFO - 127.0.0.1 - - [05/Feb/2026 12:20:52] "POST /api/config HTTP/1.1" 200 -
+2026-02-05 12:20:58,812 - INFO - 127.0.0.1 - - [05/Feb/2026 12:20:58] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 12:20:59,746 - INFO - OKX server time synchronized. Offset: -245ms
+2026-02-05 12:21:02,704 - INFO - 127.0.0.1 - - [05/Feb/2026 12:21:02] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 12:21:05,055 - INFO - 127.0.0.1 - - [05/Feb/2026 12:21:05] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 12:23:14,164 - INFO - Logger initialized. Writing to debug.log
+2026-02-05 12:23:14,166 - INFO - Bot starting background monitoring...
+2026-02-05 12:23:14,334 - INFO - 127.0.0.1 - - [05/Feb/2026 12:23:14] "GET /socket.io/?EIO=4&transport=polling&t=PmjYi33&sid=ENeq5xd3kM-PMgcUAAAA HTTP/1.1" 200 -
+2026-02-05 12:23:14,351 - INFO - 127.0.0.1 - - [05/Feb/2026 12:23:14] "GET /socket.io/?EIO=4&transport=polling&t=PmjYi3_ HTTP/1.1" 200 -
+2026-02-05 12:23:14,416 - INFO - Client connected: None
+2026-02-05 12:23:14,419 - INFO - 127.0.0.1 - - [05/Feb/2026 12:23:14] "POST /socket.io/?EIO=4&transport=polling&t=PmjYi8t&sid=DVoZkJLpTc7mVmx2AAAC HTTP/1.1" 200 -
+2026-02-05 12:23:14,672 - INFO - 127.0.0.1 - - [05/Feb/2026 12:23:14] "GET /socket.io/?EIO=4&transport=polling&t=PmjYi8v&sid=DVoZkJLpTc7mVmx2AAAC HTTP/1.1" 200 -
+2026-02-05 12:23:14,676 - INFO - 127.0.0.1 - - [05/Feb/2026 12:23:14] "GET /socket.io/?EIO=4&transport=polling&t=PmjYi8_&sid=ENeq5xd3kM-PMgcUAAAA HTTP/1.1" 200 -
+2026-02-05 12:23:15,178 - INFO - Client disconnected
+2026-02-05 12:23:15,182 - INFO - 127.0.0.1 - - [05/Feb/2026 12:23:15] "GET /socket.io/?EIO=4&transport=websocket&sid=DVoZkJLpTc7mVmx2AAAC HTTP/1.1" 200 -
+2026-02-05 12:23:16,734 - INFO - 127.0.0.1 - - [05/Feb/2026 12:23:16] "GET /socket.io/?EIO=4&transport=websocket&sid=ENeq5xd3kM-PMgcUAAAA HTTP/1.1" 200 -
+2026-02-05 12:23:19,506 - INFO - 127.0.0.1 - - [05/Feb/2026 12:23:19] "GET / HTTP/1.1" 200 -
+2026-02-05 12:23:19,862 - INFO - OKX server time synchronized. Offset: -302ms
+2026-02-05 12:23:20,017 - INFO - 127.0.0.1 - - [05/Feb/2026 12:23:20] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-02-05 12:23:20,048 - INFO - 127.0.0.1 - - [05/Feb/2026 12:23:20] "[36mGET /static/js/app.js HTTP/1.1[0m" 304 -
+2026-02-05 12:23:20,245 - INFO - 127.0.0.1 - - [05/Feb/2026 12:23:20] "GET /socket.io/?EIO=4&transport=polling&t=PmjYjZz HTTP/1.1" 200 -
+2026-02-05 12:23:20,552 - INFO - 127.0.0.1 - - [05/Feb/2026 12:23:20] "GET /api/config HTTP/1.1" 200 -
+2026-02-05 12:23:20,612 - INFO - Client connected: None
+2026-02-05 12:23:20,616 - INFO - 127.0.0.1 - - [05/Feb/2026 12:23:20] "POST /socket.io/?EIO=4&transport=polling&t=PmjYja_&sid=jswsl4T19X40rGzZAAAE HTTP/1.1" 200 -
+2026-02-05 12:23:20,666 - INFO - 127.0.0.1 - - [05/Feb/2026 12:23:20] "GET /socket.io/?EIO=4&transport=polling&t=PmjYjb2&sid=jswsl4T19X40rGzZAAAE HTTP/1.1" 200 -
+2026-02-05 12:23:22,764 - INFO - Bot initialized. Starting live connection threads...
+2026-02-05 12:23:22,772 - INFO - OKX BOT STARTING
+2026-02-05 12:23:22,786 - INFO - 127.0.0.1 - - [05/Feb/2026 12:23:22] "POST /socket.io/?EIO=4&transport=polling&t=PmjYi2i&sid=ENeq5xd3kM-PMgcUAAAA HTTP/1.1" 200 -
+2026-02-05 12:23:24,425 - INFO - Bot starting background monitoring...
+2026-02-05 12:23:24,426 - INFO - 127.0.0.1 - - [05/Feb/2026 12:23:24] "POST /api/config HTTP/1.1" 200 -
+2026-02-05 12:23:24,534 - INFO - Websocket connected
+2026-02-05 12:23:24,537 - INFO - OKX WebSocket connection opened.
+2026-02-05 12:23:25,343 - INFO - 127.0.0.1 - - [05/Feb/2026 12:23:25] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 12:23:27,137 - INFO - 127.0.0.1 - - [05/Feb/2026 12:23:27] "GET / HTTP/1.1" 200 -
+2026-02-05 12:23:27,751 - INFO - 127.0.0.1 - - [05/Feb/2026 12:23:27] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-02-05 12:23:27,755 - INFO - 127.0.0.1 - - [05/Feb/2026 12:23:27] "[36mGET /static/js/app.js HTTP/1.1[0m" 304 -
+2026-02-05 12:23:28,406 - INFO - 127.0.0.1 - - [05/Feb/2026 12:23:28] "GET /socket.io/?EIO=4&transport=polling&t=PmjYlTe HTTP/1.1" 200 -
+2026-02-05 12:23:28,489 - INFO - 127.0.0.1 - - [05/Feb/2026 12:23:28] "GET /api/config HTTP/1.1" 200 -
+2026-02-05 12:23:28,665 - INFO - Bot startup sequence complete.
+2026-02-05 12:23:28,808 - INFO - Client connected: None
+2026-02-05 12:23:28,812 - INFO - 127.0.0.1 - - [05/Feb/2026 12:23:28] "POST /socket.io/?EIO=4&transport=polling&t=PmjYlbk&sid=mht7pcGh85gTw1eIAAAG HTTP/1.1" 200 -
+2026-02-05 12:23:28,830 - INFO - 127.0.0.1 - - [05/Feb/2026 12:23:28] "GET /socket.io/?EIO=4&transport=polling&t=PmjYlbn&sid=mht7pcGh85gTw1eIAAAG HTTP/1.1" 200 -
+2026-02-05 12:23:29,338 - INFO - 127.0.0.1 - - [05/Feb/2026 12:23:29] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 12:23:30,352 - INFO - OKX server time synchronized. Offset: -343ms
+2026-02-05 12:23:34,008 - INFO - Bot starting background monitoring...
+2026-02-05 12:23:34,008 - INFO - 127.0.0.1 - - [05/Feb/2026 12:23:34] "POST /api/config HTTP/1.1" 200 -
+2026-02-05 12:23:38,227 - INFO - Initial account balance fetched.
+2026-02-05 12:23:41,339 - INFO - 127.0.0.1 - - [05/Feb/2026 12:23:41] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 12:23:41,537 - INFO - OKX server time synchronized. Offset: -270ms
+2026-02-05 12:23:51,735 - INFO - 127.0.0.1 - - [05/Feb/2026 12:23:51] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 12:23:57,301 - INFO - 127.0.0.1 - - [05/Feb/2026 12:23:57] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 12:24:01,900 - INFO - Client disconnected
+2026-02-05 12:24:01,901 - INFO - 127.0.0.1 - - [05/Feb/2026 12:24:01] "POST /api/config HTTP/1.1" 200 -
+2026-02-05 12:24:01,903 - INFO - Bot starting background monitoring...
+2026-02-05 12:24:06,994 - INFO - OKX server time synchronized. Offset: -83ms
+2026-02-05 12:24:27,859 - INFO - Bot starting trading logic...
+2026-02-05 12:24:27,861 - INFO - Session trade metrics reset.
+2026-02-05 12:24:33,529 - INFO - OKX server time synchronized. Offset: -303ms
+2026-02-05 12:24:41,621 - INFO - [OK] Leverage set to 20x for ETH-USDT-SWAP (net)
+2026-02-05 12:24:41,627 - INFO - 127.0.0.1 - - [05/Feb/2026 12:24:41] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 12:24:41,628 - INFO - Checking for and closing any existing open positions...
+2026-02-05 12:24:44,243 - INFO - No open OKX positions found to close.
+2026-02-05 12:24:44,688 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:24:44,691 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:24:44,694 - INFO - Check Entry Condition
+2026-02-05 12:24:44,705 - INFO - Entry-1:SHORT Market 2120.03, Safety:2000, Passed
+2026-02-05 12:24:44,710 - INFO - Entry-3:Remaining: 700.00 > Target 3500: Passed
+2026-02-05 12:24:44,712 - INFO - Entry-4:Remaining: 700.00 > Min 50: Passed
+2026-02-05 12:24:44,713 - INFO - Place Order Batch 1
+2026-02-05 12:24:44,714 - INFO - Batch1-1:M:2120.03|En:2122.03|Tp:2117.03|SL:0.00|3500|Short|Cross
+2026-02-05 12:24:47,430 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-05 12:24:57,446 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:24:57,539 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:24:57,675 - INFO - Check Entry Condition
+2026-02-05 12:24:57,737 - INFO - Entry-1:SHORT Market 2120.03, Safety:2000, Passed
+2026-02-05 12:24:57,796 - INFO - Entry-3:Remaining: 700.00 > Target 3500: Passed
+2026-02-05 12:24:57,863 - INFO - Entry-4:Remaining: 700.00 > Min 50: Passed
+2026-02-05 12:24:57,994 - INFO - Place Order Batch 2
+2026-02-05 12:24:58,151 - INFO - Batch2-1:M:2120.03|En:2122.03|Tp:2117.03|SL:0.00|3500|Short|Cross
+2026-02-05 12:25:01,380 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-05 12:25:08,178 - INFO - Batch Sync: SL offset is null or 0 for SHORT. Skipping SL calc.
+2026-02-05 12:25:08,219 - INFO - Syncing TP/SL for SHORT position. Avg Price: 2122.03
+2026-02-05 12:25:11,383 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:25:11,408 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:25:11,423 - INFO - Check Entry Condition
+2026-02-05 12:25:19,574 - INFO - [TARGET] SHORT TP Set: 2117.03
+2026-02-05 12:25:19,576 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-05 12:25:19,584 - INFO - Entry-3:Remaining Capacity: -1394.44 < Min 50: NOT Passed
+2026-02-05 12:25:19,588 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 12:25:19,593 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 12:25:25,845 - INFO - Batch Sync: SL offset is null or 0 for SHORT. Skipping SL calc.
+2026-02-05 12:25:25,848 - INFO - Syncing TP/SL for SHORT position. Avg Price: 2122.03
+2026-02-05 12:25:29,642 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:25:29,733 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:25:29,807 - INFO - Check Entry Condition
+2026-02-05 12:25:35,485 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-05 12:25:35,486 - INFO - Entry-3:Remaining Capacity: -696.30 < Min 50: NOT Passed
+2026-02-05 12:25:35,488 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 12:25:35,492 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 12:25:45,498 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:25:45,508 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:25:45,522 - INFO - Check Entry Condition
+2026-02-05 12:25:45,551 - INFO - Entry-1:SHORT Market 2115.00, Safety:2000, Passed
+2026-02-05 12:25:45,578 - INFO - Entry-3:Remaining: 700.00 > Target 3500: Passed
+2026-02-05 12:25:45,582 - INFO - Entry-4:Remaining: 700.00 > Min 50: Passed
+2026-02-05 12:25:45,586 - INFO - Place Order Batch 3
+2026-02-05 12:25:45,588 - INFO - Batch3-1:M:2115.00|En:2117.00|Tp:2112.00|SL:0.00|3500|Short|Cross
+2026-02-05 12:25:48,097 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-05 12:25:58,102 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:25:58,107 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:25:58,123 - INFO - Check Entry Condition
+2026-02-05 12:25:58,139 - INFO - Entry-3:Remaining Capacity: 1.39 < Min 50: NOT Passed
+2026-02-05 12:25:58,143 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 12:25:58,167 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 12:26:00,969 - INFO - Batch Sync: SL offset is null or 0 for SHORT. Skipping SL calc.
+2026-02-05 12:26:00,971 - INFO - Syncing TP/SL for SHORT position. Avg Price: 2117.00
+2026-02-05 12:26:03,660 - INFO - Batch Sync: SL offset is null or 0 for SHORT. Skipping SL calc.
+2026-02-05 12:26:03,669 - INFO - Syncing TP/SL for SHORT position. Avg Price: 2117.00
+2026-02-05 12:26:08,187 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:26:08,199 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:26:08,203 - INFO - Check Entry Condition
+2026-02-05 12:26:09,685 - INFO - [TARGET] SHORT TP Set: 2112.00
+2026-02-05 12:26:09,687 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-05 12:26:16,410 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-05 12:26:16,413 - INFO - Entry-3:Remaining Capacity: 1.39 < Min 50: NOT Passed
+2026-02-05 12:26:16,418 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 12:26:16,447 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 12:26:26,463 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:26:26,470 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:26:26,489 - INFO - Check Entry Condition
+2026-02-05 12:26:26,491 - INFO - Entry-1:SHORT Market 2110.00, Safety:2000, Passed
+2026-02-05 12:26:26,494 - INFO - Entry-3:Remaining: 700.00 > Target 3500: Passed
+2026-02-05 12:26:26,497 - INFO - Entry-4:Remaining: 700.00 > Min 50: Passed
+2026-02-05 12:26:26,499 - INFO - Place Order Batch 4
+2026-02-05 12:26:26,501 - INFO - Batch4-1:M:2110.00|En:2112.00|Tp:2107.00|SL:0.00|3500|Short|Cross
+2026-02-05 12:26:29,042 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-05 12:26:39,052 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:26:39,185 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:26:39,276 - INFO - Check Entry Condition
+2026-02-05 12:26:39,310 - INFO - Entry-1:SHORT Market 2112.81, Safety:2000, Passed
+2026-02-05 12:26:39,325 - INFO - Entry-3:Remaining: 700.00 > Target 3500: Passed
+2026-02-05 12:26:39,328 - INFO - Entry-4:Remaining: 700.00 > Min 50: Passed
+2026-02-05 12:26:39,343 - INFO - Place Order Batch 5
+2026-02-05 12:26:39,345 - INFO - Batch5-1:M:2112.81|En:2114.81|Tp:2109.81|SL:0.00|3500|Short|Cross
+2026-02-05 12:26:43,425 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-05 12:26:46,428 - INFO - Batch Sync: SL offset is null or 0 for SHORT. Skipping SL calc.
+2026-02-05 12:26:46,429 - INFO - Syncing TP/SL for SHORT position. Avg Price: 2112.00
+2026-02-05 12:26:46,546 - INFO - Batch Sync: SL offset is null or 0 for SHORT. Skipping SL calc.
+2026-02-05 12:26:46,549 - INFO - Syncing TP/SL for SHORT position. Avg Price: 2112.00
+2026-02-05 12:26:53,440 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:26:53,446 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:26:53,449 - INFO - Check Entry Condition
+2026-02-05 12:26:59,678 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-05 12:27:05,186 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-05 12:27:05,188 - INFO - Entry-3:Remaining Capacity: 0.93 < Min 50: NOT Passed
+2026-02-05 12:27:05,198 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 12:27:05,209 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 12:27:15,288 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:27:15,295 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:27:15,303 - INFO - Check Entry Condition
+2026-02-05 12:27:15,311 - INFO - Entry-1:SHORT Market 2100.81, Safety:2000, Passed
+2026-02-05 12:27:15,332 - INFO - Entry-3:Remaining: 700.00 > Target 3500: Passed
+2026-02-05 12:27:15,342 - INFO - Entry-4:Remaining: 700.00 > Min 50: Passed
+2026-02-05 12:27:15,356 - INFO - Place Order Batch 6
+2026-02-05 12:27:15,360 - INFO - Batch6-1:M:2100.81|En:2102.81|Tp:2097.81|SL:0.00|3500|Short|Cross
+2026-02-05 12:27:18,698 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-05 12:27:28,704 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:27:28,764 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:27:28,846 - INFO - Check Entry Condition
+2026-02-05 12:27:28,866 - INFO - Entry-1:SHORT Market 2104.59, Safety:2000, Passed
+2026-02-05 12:27:28,882 - INFO - Entry-3:Remaining: 700.00 > Target 3500: Passed
+2026-02-05 12:27:28,942 - INFO - Entry-4:Remaining: 700.00 > Min 50: Passed
+2026-02-05 12:27:29,017 - INFO - Place Order Batch 7
+2026-02-05 12:27:29,087 - INFO - Batch7-1:M:2104.59|En:2106.59|Tp:2101.59|SL:0.00|3500|Short|Cross
+2026-02-05 12:27:31,117 - ERROR - Error in periodic account info update: cannot access local variable 'current_side' where it is not associated with a value
+2026-02-05 12:27:33,424 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-05 12:27:37,290 - INFO - Batch Sync: SL offset is null or 0 for SHORT. Skipping SL calc.
+2026-02-05 12:27:37,302 - INFO - Syncing TP/SL for SHORT position. Avg Price: 2102.81
+2026-02-05 12:27:43,429 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:27:43,506 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:27:43,557 - INFO - Check Entry Condition
+2026-02-05 12:27:46,647 - INFO - [TARGET] SHORT TP Set: 2097.81
+2026-02-05 12:27:46,650 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-05 12:27:46,655 - INFO - Entry-3:Remaining Capacity: 1.87 < Min 50: NOT Passed
+2026-02-05 12:27:46,671 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 12:27:46,720 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 12:27:55,135 - INFO - Cancelling OKX order 328123599851 (Short: TP price reached/passed before fill (TP 2101.59 > Market 2101.23))...
+2026-02-05 12:27:56,036 - INFO - Batch Sync: SL offset is null or 0 for SHORT. Skipping SL calc.
+2026-02-05 12:27:56,038 - INFO - Syncing TP/SL for SHORT position. Avg Price: 2102.81
+2026-02-05 12:27:56,748 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:27:56,761 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:27:56,775 - INFO - Check Entry Condition
+2026-02-05 12:27:57,273 - INFO - [OK] Order cancelled
+2026-02-05 12:28:03,320 - INFO - [TARGET] SHORT TP Set: 2097.81
+2026-02-05 12:28:03,324 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-05 12:28:03,326 - INFO - Entry-3:Remaining Capacity: -697.52 < Min 50: NOT Passed
+2026-02-05 12:28:03,331 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 12:28:03,342 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 12:28:13,350 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:28:13,397 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:28:13,448 - INFO - Check Entry Condition
+2026-02-05 12:28:13,525 - INFO - Entry-3:Remaining Capacity: 1.87 < Min 50: NOT Passed
+2026-02-05 12:28:13,578 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 12:28:13,645 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 12:28:15,332 - INFO - Batch Sync: SL offset is null or 0 for SHORT. Skipping SL calc.
+2026-02-05 12:28:15,340 - INFO - Syncing TP/SL for SHORT position. Avg Price: 2102.81
+2026-02-05 12:28:21,886 - INFO - [TARGET] SHORT TP Set: 2097.81
+2026-02-05 12:28:21,891 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-05 12:28:23,746 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:28:23,751 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:28:23,765 - INFO - Check Entry Condition
+2026-02-05 12:28:23,796 - INFO - Entry-3:Remaining Capacity: 1.87 < Min 50: NOT Passed
+2026-02-05 12:28:23,805 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 12:28:23,843 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 12:28:24,140 - WARNING - [AUTO-ADD] Gap Triggered: Diff 9.08 >= 5.0. Current Avg: 2102.81
+2026-02-05 12:28:24,152 - WARNING - === AUTO-ADD TRIGGERED (Step 1) ===
+2026-02-05 12:28:24,156 - INFO - 1. Gap Check: Market 2111.89 vs AvgEntry 2102.81 | Gap 9.08 > Threshold 5.0
+2026-02-05 12:28:24,160 - INFO - 2. Sizing: Current Size $698.66 x 30.0% = $209.60
+2026-02-05 12:28:24,165 - WARNING - [AUTO-ADD] Triggering Gap Add (Step 1). Gap: 9.08 > 5.0. Cost: $10.48 (Notional: $209.60, Qty: 0)
+2026-02-05 12:28:24,168 - INFO - Placing Market Sell order for 0.00 ETH-USDT-SWAP at None
+2026-02-05 12:28:26,775 - INFO - Batch Sync: SL offset is null or 0 for SHORT. Skipping SL calc.
+2026-02-05 12:28:26,777 - INFO - Syncing TP/SL for SHORT position. Avg Price: 2102.81
+2026-02-05 12:28:26,923 - ERROR - [FAIL] Order placement failed: All operations failed. Response: {'code': '1', 'data': [{'clOrdId': '', 'ordId': '', 'sCode': '51000', 'sMsg': 'Parameter sz error', 'tag': '', 'ts': '1770290906677'}], 'inTime': '1770290906677743', 'msg': 'All operations failed', 'outTime': '1770290906677918'}
+2026-02-05 12:28:26,925 - ERROR - [FAIL] Auto-Add Step 1 Failed: None
+2026-02-05 12:28:33,110 - INFO - [TARGET] SHORT TP Set: 2097.81
+2026-02-05 12:28:33,111 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-05 12:28:33,944 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:28:33,952 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:28:33,983 - INFO - Check Entry Condition
+2026-02-05 12:28:33,986 - INFO - Entry-3:Remaining Capacity: 1.87 < Min 50: NOT Passed
+2026-02-05 12:28:33,988 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 12:28:33,992 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 12:28:36,730 - INFO - Batch Sync: SL offset is null or 0 for SHORT. Skipping SL calc.
+2026-02-05 12:28:36,732 - INFO - Syncing TP/SL for SHORT position. Avg Price: 2102.81
+2026-02-05 12:28:43,996 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:28:43,998 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:28:44,002 - INFO - Check Entry Condition
+2026-02-05 12:28:44,567 - INFO - [TARGET] SHORT TP Set: 2097.81
+2026-02-05 12:28:44,576 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-05 12:28:44,589 - INFO - Entry-3:Remaining Capacity: 1.87 < Min 50: NOT Passed
+2026-02-05 12:28:44,603 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 12:28:44,624 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 12:28:53,023 - INFO - Batch Sync: SL offset is null or 0 for SHORT. Skipping SL calc.
+2026-02-05 12:28:53,034 - INFO - Syncing TP/SL for SHORT position. Avg Price: 2102.81
+2026-02-05 12:28:54,634 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:28:54,640 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:28:54,647 - INFO - Check Entry Condition
+2026-02-05 12:28:58,104 - INFO - Applying live configuration updates (including new Auto-Add parameters)...
+2026-02-05 12:28:58,198 - INFO - Configuration updated live from dashboard.
+2026-02-05 12:28:58,365 - INFO - 127.0.0.1 - - [05/Feb/2026 12:28:58] "POST /api/config HTTP/1.1" 200 -
+2026-02-05 12:28:58,795 - INFO - Applying live configuration updates (including new Auto-Add parameters)...
+2026-02-05 12:28:58,806 - INFO - Configuration updated live from dashboard.
+2026-02-05 12:28:58,890 - INFO - 127.0.0.1 - - [05/Feb/2026 12:28:58] "POST /api/config HTTP/1.1" 200 -
+2026-02-05 12:29:00,988 - INFO - Applying live configuration updates (including new Auto-Add parameters)...
+2026-02-05 12:29:00,990 - INFO - Configuration updated live from dashboard.
+2026-02-05 12:29:01,001 - INFO - 127.0.0.1 - - [05/Feb/2026 12:29:01] "POST /api/config HTTP/1.1" 200 -
+2026-02-05 12:29:02,510 - INFO - [TARGET] SHORT TP Set: 2097.81
+2026-02-05 12:29:02,513 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-05 12:29:02,514 - INFO - Entry-3:Remaining Capacity: 1.87 < Min 50: NOT Passed
+2026-02-05 12:29:02,521 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 12:29:02,530 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 12:29:02,747 - INFO - Applying live configuration updates (including new Auto-Add parameters)...
+2026-02-05 12:29:02,778 - INFO - Configuration updated live from dashboard.
+2026-02-05 12:29:02,796 - INFO - 127.0.0.1 - - [05/Feb/2026 12:29:02] "POST /api/config HTTP/1.1" 200 -
+2026-02-05 12:29:04,560 - INFO - Applying live configuration updates (including new Auto-Add parameters)...
+2026-02-05 12:29:04,565 - INFO - Configuration updated live from dashboard.
+2026-02-05 12:29:04,612 - INFO - 127.0.0.1 - - [05/Feb/2026 12:29:04] "POST /api/config HTTP/1.1" 200 -
+2026-02-05 12:29:07,394 - INFO - 127.0.0.1 - - [05/Feb/2026 12:29:07] "GET / HTTP/1.1" 200 -
+2026-02-05 12:29:08,859 - INFO - 127.0.0.1 - - [05/Feb/2026 12:29:08] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-02-05 12:29:08,894 - INFO - 127.0.0.1 - - [05/Feb/2026 12:29:08] "[36mGET /static/js/app.js HTTP/1.1[0m" 304 -
+2026-02-05 12:29:09,628 - INFO - 127.0.0.1 - - [05/Feb/2026 12:29:09] "GET /socket.io/?EIO=4&transport=polling&t=Pmja2lv HTTP/1.1" 200 -
+2026-02-05 12:29:09,851 - INFO - 127.0.0.1 - - [05/Feb/2026 12:29:09] "GET /api/config HTTP/1.1" 200 -
+2026-02-05 12:29:10,576 - INFO - Client connected: None
+2026-02-05 12:29:10,725 - INFO - 127.0.0.1 - - [05/Feb/2026 12:29:10] "POST /socket.io/?EIO=4&transport=polling&t=Pmja2_A&sid=EbJ_dd7lHVDjB1y0AAAI HTTP/1.1" 200 -
+2026-02-05 12:29:10,839 - INFO - 127.0.0.1 - - [05/Feb/2026 12:29:10] "GET /socket.io/?EIO=4&transport=polling&t=Pmja2_D&sid=EbJ_dd7lHVDjB1y0AAAI HTTP/1.1" 200 -
+2026-02-05 12:29:10,850 - INFO - 127.0.0.1 - - [05/Feb/2026 12:29:10] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 12:29:11,173 - INFO - Batch Sync: SL offset is null or 0 for SHORT. Skipping SL calc.
+2026-02-05 12:29:11,220 - INFO - Syncing TP/SL for SHORT position. Avg Price: 2102.81
+2026-02-05 12:29:11,304 - INFO - 127.0.0.1 - - [05/Feb/2026 12:29:11] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 12:29:12,549 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:29:12,632 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:29:12,667 - INFO - Check Entry Condition
+2026-02-05 12:29:17,328 - INFO - Applying live configuration updates (including new Auto-Add parameters)...
+2026-02-05 12:29:17,333 - INFO - Configuration updated live from dashboard.
+2026-02-05 12:29:17,382 - INFO - 127.0.0.1 - - [05/Feb/2026 12:29:17] "POST /api/config HTTP/1.1" 200 -
+2026-02-05 12:29:21,066 - INFO - [TARGET] SHORT TP Set: 2097.81
+2026-02-05 12:29:21,159 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-05 12:29:21,159 - INFO - Entry-3:Remaining Capacity: 1.87 < Min 50: NOT Passed
+2026-02-05 12:29:21,513 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 12:29:21,702 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 12:29:22,492 - INFO - 127.0.0.1 - - [05/Feb/2026 12:29:22] "GET / HTTP/1.1" 200 -
+2026-02-05 12:29:23,481 - INFO - 127.0.0.1 - - [05/Feb/2026 12:29:23] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-02-05 12:29:23,956 - INFO - 127.0.0.1 - - [05/Feb/2026 12:29:23] "[36mGET /static/js/app.js HTTP/1.1[0m" 304 -
+2026-02-05 12:29:24,551 - INFO - 127.0.0.1 - - [05/Feb/2026 12:29:24] "GET /socket.io/?EIO=4&transport=polling&t=Pmja6PB HTTP/1.1" 200 -
+2026-02-05 12:29:24,555 - INFO - 127.0.0.1 - - [05/Feb/2026 12:29:24] "GET /api/config HTTP/1.1" 200 -
+2026-02-05 12:29:25,314 - INFO - Client connected: None
+2026-02-05 12:29:25,382 - INFO - 127.0.0.1 - - [05/Feb/2026 12:29:25] "POST /socket.io/?EIO=4&transport=polling&t=Pmja6i-&sid=MSvUkxveJ3ah-vKrAAAK HTTP/1.1" 200 -
+2026-02-05 12:29:26,536 - INFO - 127.0.0.1 - - [05/Feb/2026 12:29:26] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 12:29:26,536 - INFO - 127.0.0.1 - - [05/Feb/2026 12:29:26] "GET /socket.io/?EIO=4&transport=polling&t=Pmja6j1&sid=MSvUkxveJ3ah-vKrAAAK HTTP/1.1" 200 -
+2026-02-05 12:29:27,477 - INFO - 127.0.0.1 - - [05/Feb/2026 12:29:27] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 12:29:28,661 - INFO - Batch Sync: SL offset is null or 0 for SHORT. Skipping SL calc.
+2026-02-05 12:29:28,676 - INFO - Syncing TP/SL for SHORT position. Avg Price: 2102.81
+2026-02-05 12:29:31,899 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:29:31,956 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:29:31,977 - INFO - Check Entry Condition
+2026-02-05 12:29:38,655 - INFO - [TARGET] SHORT TP Set: 2097.81
+2026-02-05 12:29:38,680 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-05 12:29:38,682 - INFO - Entry-3:Remaining Capacity: 1.87 < Min 50: NOT Passed
+2026-02-05 12:29:38,853 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 12:29:38,944 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 12:29:41,506 - INFO - Batch Sync: SL offset is null or 0 for SHORT. Skipping SL calc.
+2026-02-05 12:29:41,507 - INFO - Syncing TP/SL for SHORT position. Avg Price: 2102.81
+2026-02-05 12:29:44,210 - INFO - Batch Sync: SL offset is null or 0 for SHORT. Skipping SL calc.
+2026-02-05 12:29:44,214 - INFO - Syncing TP/SL for SHORT position. Avg Price: 2102.81
+2026-02-05 12:29:48,781 - INFO - [TARGET] SHORT TP Set: 2097.81
+2026-02-05 12:29:48,785 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-05 12:29:48,961 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:29:48,967 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:29:48,970 - INFO - Check Entry Condition
+2026-02-05 12:29:56,417 - INFO - [TARGET] SHORT TP Set: 2097.81
+2026-02-05 12:29:56,421 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-05 12:29:56,426 - INFO - Entry-3:Remaining Capacity: 1.87 < Min 50: NOT Passed
+2026-02-05 12:29:56,439 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 12:29:56,478 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 12:30:00,804 - INFO - Batch Sync: SL offset is null or 0 for SHORT. Skipping SL calc.
+2026-02-05 12:30:00,816 - INFO - Syncing TP/SL for SHORT position. Avg Price: 2102.81
+2026-02-05 12:30:06,501 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:30:06,502 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:30:06,504 - INFO - Check Entry Condition
+2026-02-05 12:30:07,747 - INFO - [TARGET] SHORT TP Set: 2097.81
+2026-02-05 12:30:07,760 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-05 12:30:07,762 - INFO - Entry-3:Remaining Capacity: 1.87 < Min 50: NOT Passed
+2026-02-05 12:30:07,791 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 12:30:07,801 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 12:30:17,814 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:30:17,827 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:30:17,848 - INFO - Check Entry Condition
+2026-02-05 12:30:17,919 - INFO - Entry-3:Remaining Capacity: 1.87 < Min 50: NOT Passed
+2026-02-05 12:30:17,926 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 12:30:17,933 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 12:30:19,991 - INFO - Batch Sync: SL offset is null or 0 for SHORT. Skipping SL calc.
+2026-02-05 12:30:19,992 - INFO - Syncing TP/SL for SHORT position. Avg Price: 2102.81
+2026-02-05 12:30:26,542 - INFO - [TARGET] SHORT TP Set: 2097.81
+2026-02-05 12:30:26,545 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-05 12:30:27,974 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:30:28,173 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:30:28,420 - INFO - Check Entry Condition
+2026-02-05 12:30:28,605 - INFO - Entry-3:Remaining Capacity: 1.87 < Min 50: NOT Passed
+2026-02-05 12:30:28,718 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 12:30:28,795 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 12:30:28,801 - INFO - Batch Sync: SL offset is null or 0 for SHORT. Skipping SL calc.
+2026-02-05 12:30:29,091 - INFO - Syncing TP/SL for SHORT position. Avg Price: 2102.81
+2026-02-05 12:30:36,018 - INFO - [TARGET] SHORT TP Set: 2097.81
+2026-02-05 12:30:36,021 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-05 12:30:38,982 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:30:38,986 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:30:38,988 - INFO - Check Entry Condition
+2026-02-05 12:30:38,990 - INFO - Entry-3:Remaining Capacity: 1.87 < Min 50: NOT Passed
+2026-02-05 12:30:38,992 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 12:30:38,994 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 12:30:40,445 - INFO - Batch Sync: SL offset is null or 0 for SHORT. Skipping SL calc.
+2026-02-05 12:30:40,448 - INFO - Syncing TP/SL for SHORT position. Avg Price: 2102.81
+2026-02-05 12:30:47,292 - INFO - [TARGET] SHORT TP Set: 2097.81
+2026-02-05 12:30:47,303 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-05 12:30:48,997 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:30:49,000 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:30:49,002 - INFO - Check Entry Condition
+2026-02-05 12:30:49,007 - INFO - Entry-3:Remaining Capacity: 1.87 < Min 50: NOT Passed
+2026-02-05 12:30:49,011 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 12:30:49,018 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 12:30:51,794 - INFO - Batch Sync: SL offset is null or 0 for SHORT. Skipping SL calc.
+2026-02-05 12:30:51,795 - INFO - Syncing TP/SL for SHORT position. Avg Price: 2102.81
+2026-02-05 12:30:57,949 - INFO - [TARGET] SHORT TP Set: 2097.81
+2026-02-05 12:30:57,953 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-05 12:30:59,025 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:30:59,028 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:30:59,030 - INFO - Check Entry Condition
+2026-02-05 12:30:59,032 - INFO - Entry-3:Remaining Capacity: 1.87 < Min 50: NOT Passed
+2026-02-05 12:30:59,034 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 12:30:59,037 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 12:31:00,021 - ERROR - Error in periodic account info update: cannot access local variable 'current_side' where it is not associated with a value
+2026-02-05 12:31:09,104 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:31:09,205 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:31:09,252 - INFO - Check Entry Condition
+2026-02-05 12:31:09,303 - INFO - Entry-3:Remaining Capacity: 1.87 < Min 50: NOT Passed
+2026-02-05 12:31:09,385 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 12:31:09,429 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 12:31:12,435 - INFO - Batch Sync: SL offset is null or 0 for SHORT. Skipping SL calc.
+2026-02-05 12:31:12,438 - INFO - Syncing TP/SL for SHORT position. Avg Price: 2102.81
+2026-02-05 12:32:21,432 - INFO - Logger initialized. Writing to debug.log
+2026-02-05 12:32:21,446 - INFO - Bot starting background monitoring...
+2026-02-05 12:32:21,497 - INFO - 127.0.0.1 - - [05/Feb/2026 12:32:21] "GET /socket.io/?EIO=4&transport=polling&t=Pmjanf4&sid=QwQP_Cmf_SO8PFWgAAAA HTTP/1.1" 200 -
+2026-02-05 12:32:27,943 - INFO - OKX server time synchronized. Offset: -370ms
+2026-02-05 12:32:30,404 - INFO - Bot initialized. Starting live connection threads...
+2026-02-05 12:32:30,409 - INFO - OKX BOT STARTING
+2026-02-05 12:32:30,419 - INFO - 127.0.0.1 - - [05/Feb/2026 12:32:30] "POST /socket.io/?EIO=4&transport=polling&t=Pmjanf1&sid=QwQP_Cmf_SO8PFWgAAAA HTTP/1.1" 200 -
+2026-02-05 12:32:32,138 - INFO - Websocket connected
+2026-02-05 12:32:32,139 - INFO - OKX WebSocket connection opened.
+2026-02-05 12:32:33,298 - INFO - 127.0.0.1 - - [05/Feb/2026 12:32:33] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 12:32:35,247 - INFO - Bot startup sequence complete.
+2026-02-05 12:32:42,451 - INFO - 127.0.0.1 - - [05/Feb/2026 12:32:42] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 12:32:44,278 - INFO - Initial account balance fetched.
+2026-02-05 12:32:48,322 - INFO - Bot starting trading logic...
+2026-02-05 12:32:48,329 - INFO - Session trade metrics reset.
+2026-02-05 12:32:54,150 - INFO - OKX server time synchronized. Offset: -296ms
+2026-02-05 12:33:02,559 - INFO - [OK] Leverage set to 20x for ETH-USDT-SWAP (net)
+2026-02-05 12:33:02,564 - INFO - 127.0.0.1 - - [05/Feb/2026 12:33:02] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 12:33:02,565 - INFO - Checking for and closing any existing open positions...
+2026-02-05 12:33:04,958 - INFO - No open OKX positions found to close.
+2026-02-05 12:33:05,329 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:33:05,333 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:33:05,336 - INFO - Check Entry Condition
+2026-02-05 12:33:05,347 - INFO - Entry-1:SHORT Market 2074.00, Safety:2000, Passed
+2026-02-05 12:33:05,363 - INFO - Entry-3:Remaining: 700.00 > Target 3500: Passed
+2026-02-05 12:33:05,382 - INFO - Entry-4:Remaining: 700.00 > Min 50: Passed
+2026-02-05 12:33:05,395 - INFO - Place Order Batch 1
+2026-02-05 12:33:05,426 - INFO - Batch1-1:M:2074.00|En:2076.00|Tp:2071.00|SL:0.00|3500|Short|Cross
+2026-02-05 12:33:07,809 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-05 12:33:17,822 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:33:17,830 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:33:17,867 - INFO - Check Entry Condition
+2026-02-05 12:33:17,942 - INFO - Entry-1:SHORT Market 2074.68, Safety:2000, Passed
+2026-02-05 12:33:17,967 - INFO - Entry-3:Remaining: 700.00 > Target 3500: Passed
+2026-02-05 12:33:18,010 - INFO - Entry-4:Remaining: 700.00 > Min 50: Passed
+2026-02-05 12:33:18,043 - INFO - Place Order Batch 2
+2026-02-05 12:33:18,082 - INFO - Batch2-1:M:2074.68|En:2076.68|Tp:2071.68|SL:0.00|3500|Short|Cross
+2026-02-05 12:33:20,577 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-05 12:33:30,585 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:33:30,587 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:33:30,589 - INFO - Check Entry Condition
+2026-02-05 12:33:30,590 - INFO - Entry-3:Remaining Capacity: 0.16 < Min 50: NOT Passed
+2026-02-05 12:33:30,595 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 12:33:30,604 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 12:33:40,607 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:33:40,610 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:33:40,612 - INFO - Check Entry Condition
+2026-02-05 12:33:40,613 - INFO - Entry-3:Remaining Capacity: 0.16 < Min 50: NOT Passed
+2026-02-05 12:33:40,615 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 12:33:40,619 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 12:33:50,624 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:33:50,628 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:33:50,634 - INFO - Check Entry Condition
+2026-02-05 12:33:50,639 - INFO - Entry-3:Remaining Capacity: 0.16 < Min 50: NOT Passed
+2026-02-05 12:33:50,641 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 12:33:50,644 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 12:34:00,674 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:34:00,677 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:34:00,678 - INFO - Check Entry Condition
+2026-02-05 12:34:00,681 - INFO - Entry-3:Remaining Capacity: 0.16 < Min 50: NOT Passed
+2026-02-05 12:34:00,685 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 12:34:00,705 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 12:34:09,733 - INFO - Batch Sync: SL offset is null or 0 for SHORT. Skipping SL calc.
+2026-02-05 12:34:09,735 - INFO - Syncing TP/SL for SHORT position. Avg Price: 2076.68
+2026-02-05 12:34:10,733 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:34:10,736 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:34:10,739 - INFO - Check Entry Condition
+2026-02-05 12:34:19,562 - INFO - [TARGET] SHORT TP Set: 2071.68
+2026-02-05 12:34:19,564 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-05 12:34:19,564 - INFO - Entry-3:Remaining Capacity: 0.16 < Min 50: NOT Passed
+2026-02-05 12:34:19,569 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 12:34:19,573 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 12:34:25,082 - INFO - Batch Sync: SL offset is null or 0 for SHORT. Skipping SL calc.
+2026-02-05 12:34:25,090 - INFO - Syncing TP/SL for SHORT position. Avg Price: 2076.68
+2026-02-05 12:34:29,591 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:34:29,608 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:34:29,648 - INFO - Check Entry Condition
+2026-02-05 12:34:34,093 - INFO - [TARGET] SHORT TP Set: 2071.68
+2026-02-05 12:34:34,095 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-05 12:34:34,096 - INFO - Entry-3:Remaining Capacity: 0.16 < Min 50: NOT Passed
+2026-02-05 12:34:34,101 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 12:34:34,116 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 12:34:39,835 - INFO - Batch Sync: SL offset is null or 0 for SHORT. Skipping SL calc.
+2026-02-05 12:34:39,836 - INFO - Syncing TP/SL for SHORT position. Avg Price: 2076.68
+2026-02-05 12:34:44,122 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:34:44,127 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:34:44,147 - INFO - Check Entry Condition
+2026-02-05 12:34:49,039 - INFO - [TARGET] SHORT TP Set: 2071.68
+2026-02-05 12:34:49,043 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-05 12:34:49,046 - INFO - Entry-3:Remaining Capacity: 0.16 < Min 50: NOT Passed
+2026-02-05 12:34:49,070 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 12:34:49,079 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 12:34:51,798 - WARNING - [AUTO-ADD] Gap Triggered: Diff 8.30 >= 5.0. Current Avg: 2076.68
+2026-02-05 12:34:51,804 - WARNING - === AUTO-ADD TRIGGERED (Step 1) ===
+2026-02-05 12:34:51,810 - INFO - 1. Gap Check: Market 2084.98 vs AvgEntry 2076.68 | Gap 8.30 > Threshold 5.0
+2026-02-05 12:34:51,820 - INFO - 2. Sizing: Current Size $700.24 x 30.0% = $210.07
+2026-02-05 12:34:51,859 - WARNING - [AUTO-ADD] Triggering Gap Add (Step 1). Gap: 8.30 > 5.0. Cost: $10.50 (Notional: $210.07, Qty: 1)
+2026-02-05 12:34:51,937 - INFO - Placing Market Sell order for 1.00 ETH-USDT-SWAP at None
+2026-02-05 12:34:54,438 - INFO - Batch Sync: SL offset is null or 0 for SHORT. Skipping SL calc.
+2026-02-05 12:34:54,445 - INFO - Syncing TP/SL for SHORT position. Avg Price: 2076.68
+2026-02-05 12:34:55,016 - INFO - [OK] Order placed: OrderID=3281250814035382274
+2026-02-05 12:34:55,042 - INFO - [OK] Auto-Add Step 1 Executed. Order: 3281250814035382274
+2026-02-05 12:34:59,122 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:34:59,133 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:34:59,135 - INFO - Check Entry Condition
+2026-02-05 12:35:01,219 - INFO - === AUTO-ADD STEP 2 (CLOSE) ===
+2026-02-05 12:35:01,220 - INFO - Logic used: Profit Multiplier (1.5x Fees)
+2026-02-05 12:35:01,221 - INFO - New Avg Entry: 2078.579313501144 -> Setting Limit Exit at 2078.3608
+2026-02-05 12:35:01,222 - INFO - Placing Limit Buy order for 4.37 ETH-USDT-SWAP at 2078.360773252224
+2026-02-05 12:35:02,981 - INFO - [TARGET] SHORT TP Set: 2071.68
+2026-02-05 12:35:02,985 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-05 12:35:02,986 - INFO - Entry-3:Remaining Capacity: 0.16 < Min 50: NOT Passed
+2026-02-05 12:35:03,000 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 12:35:03,022 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 12:35:03,182 - INFO - [OK] Order placed: OrderID=3281251090658119681
+2026-02-05 12:35:07,223 - INFO - Batch Sync: SL offset is null or 0 for SHORT. Skipping SL calc.
+2026-02-05 12:35:07,226 - INFO - Syncing TP/SL for SHORT position. Avg Price: 2078.58
+2026-02-05 12:35:13,036 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:35:13,039 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:35:13,044 - INFO - Check Entry Condition
+2026-02-05 12:35:13,648 - INFO - [TARGET] SHORT TP Set: 2073.58
+2026-02-05 12:35:13,650 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-05 12:35:13,660 - INFO - Entry-3:Remaining Capacity: -208.34 < Min 50: NOT Passed
+2026-02-05 12:35:13,672 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 12:35:13,685 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 12:35:18,036 - INFO - Batch Sync: SL offset is null or 0 for SHORT. Skipping SL calc.
+2026-02-05 12:35:18,038 - INFO - Syncing TP/SL for SHORT position. Avg Price: 2078.58
+2026-02-05 12:35:23,696 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:35:23,700 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:35:23,702 - INFO - Check Entry Condition
+2026-02-05 12:35:24,353 - INFO - [TARGET] SHORT TP Set: 2073.58
+2026-02-05 12:35:24,356 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-05 12:35:24,358 - INFO - Entry-3:Remaining Capacity: -208.34 < Min 50: NOT Passed
+2026-02-05 12:35:24,363 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 12:35:24,369 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 12:35:26,594 - WARNING - [AUTO-ADD] Gap Triggered: Diff 6.02 >= 5.0. Current Avg: 2084.98
+2026-02-05 12:35:26,600 - WARNING - === AUTO-ADD TRIGGERED (Step 2) ===
+2026-02-05 12:35:26,605 - INFO - 1. Gap Check: Market 2091.00 vs AvgEntry 2078.58 | Gap 12.42 > Threshold 5.0
+2026-02-05 12:35:26,616 - INFO - 2. Sizing: Current Size $911.48 x 30.0% = $273.44
+2026-02-05 12:35:26,619 - WARNING - [AUTO-ADD] Triggering Gap Add (Step 2). Gap: 12.42 > 5.0. Cost: $13.67 (Notional: $273.44, Qty: 1)
+2026-02-05 12:35:26,625 - INFO - Placing Market Sell order for 1.00 ETH-USDT-SWAP at None
+2026-02-05 12:35:28,437 - INFO - [OK] Order placed: OrderID=3281251946799452160
+2026-02-05 12:35:28,439 - INFO - [OK] Auto-Add Step 2 Executed. Order: 3281251946799452160
+2026-02-05 12:35:28,560 - INFO - Batch Sync: SL offset is null or 0 for SHORT. Skipping SL calc.
+2026-02-05 12:35:28,562 - INFO - Syncing TP/SL for SHORT position. Avg Price: 2078.58
+2026-02-05 12:35:34,351 - INFO - === AUTO-ADD STEP 2 (CLOSE) ===
+2026-02-05 12:35:34,357 - INFO - Logic used: Profit Multiplier (1.5x Fees)
+2026-02-05 12:35:34,364 - INFO - New Avg Entry: 2080.5403351955306 -> Setting Limit Exit at 2080.3212
+2026-02-05 12:35:34,368 - INFO - Placing Limit Buy order for 5.37 ETH-USDT-SWAP at 2080.3212455837756
+2026-02-05 12:35:34,387 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:35:34,391 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:35:34,406 - INFO - Check Entry Condition
+2026-02-05 12:35:36,665 - INFO - [TARGET] SHORT TP Set: 2073.58
+2026-02-05 12:35:36,673 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-05 12:35:36,684 - INFO - Entry-3:Remaining Capacity: -208.34 < Min 50: NOT Passed
+2026-02-05 12:35:36,760 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 12:35:36,784 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 12:35:37,071 - INFO - [OK] Order placed: OrderID=3281252226509197312
+2026-02-05 12:35:41,470 - INFO - Batch Sync: SL offset is null or 0 for SHORT. Skipping SL calc.
+2026-02-05 12:35:41,474 - INFO - Syncing TP/SL for SHORT position. Avg Price: 2080.54
+2026-02-05 12:35:46,827 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:35:46,859 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 12:35:46,866 - INFO - Check Entry Condition
+2026-02-05 12:35:48,153 - INFO - [TARGET] SHORT TP Set: 2075.54
+2026-02-05 12:35:48,154 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-05 12:35:48,156 - INFO - Entry-3:Remaining Capacity: -417.25 < Min 50: NOT Passed
+2026-02-05 12:35:48,159 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 12:35:48,165 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 17:49:08,532 - INFO - Logger initialized. Writing to debug.log
+2026-02-05 17:49:08,539 - INFO - Bot starting background monitoring...
+2026-02-05 17:49:08,635 - INFO - 127.0.0.1 - - [05/Feb/2026 17:49:08] "GET /socket.io/?EIO=4&transport=polling&t=PmkjI3o&sid=0wS4hSJnjk3YQMTtAAAA HTTP/1.1" 200 -
+2026-02-05 17:49:08,783 - INFO - 127.0.0.1 - - [05/Feb/2026 17:49:08] "GET /socket.io/?EIO=4&transport=polling&t=PmkjIAh&sid=0wS4hSJnjk3YQMTtAAAA HTTP/1.1" 200 -
+2026-02-05 17:49:12,910 - INFO - OKX server time synchronized. Offset: -54ms
+2026-02-05 17:49:15,074 - INFO - Bot initialized. Starting live connection threads...
+2026-02-05 17:49:15,075 - INFO - OKX BOT STARTING
+2026-02-05 17:49:15,077 - INFO - 127.0.0.1 - - [05/Feb/2026 17:49:15] "POST /socket.io/?EIO=4&transport=polling&t=PmkjI33&sid=0wS4hSJnjk3YQMTtAAAA HTTP/1.1" 200 -
+2026-02-05 17:49:15,155 - INFO - Client disconnected
+2026-02-05 17:49:15,168 - INFO - 127.0.0.1 - - [05/Feb/2026 17:49:15] "GET /socket.io/?EIO=4&transport=websocket&sid=0wS4hSJnjk3YQMTtAAAA HTTP/1.1" 200 -
+2026-02-05 17:49:16,823 - INFO - Websocket connected
+2026-02-05 17:49:16,891 - INFO - OKX WebSocket connection opened.
+2026-02-05 17:49:19,228 - INFO - 127.0.0.1 - - [05/Feb/2026 17:49:19] "GET / HTTP/1.1" 200 -
+2026-02-05 17:49:20,061 - INFO - 127.0.0.1 - - [05/Feb/2026 17:49:20] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-02-05 17:49:20,162 - INFO - 127.0.0.1 - - [05/Feb/2026 17:49:20] "[36mGET /static/js/app.js HTTP/1.1[0m" 304 -
+2026-02-05 17:49:20,521 - INFO - Bot startup sequence complete.
+2026-02-05 17:49:20,811 - INFO - 127.0.0.1 - - [05/Feb/2026 17:49:20] "GET /socket.io/?EIO=4&transport=polling&t=PmkjK_j HTTP/1.1" 200 -
+2026-02-05 17:49:20,928 - INFO - 127.0.0.1 - - [05/Feb/2026 17:49:20] "GET /api/config HTTP/1.1" 200 -
+2026-02-05 17:49:21,456 - INFO - Client connected: None
+2026-02-05 17:49:21,502 - INFO - 127.0.0.1 - - [05/Feb/2026 17:49:21] "POST /socket.io/?EIO=4&transport=polling&t=PmkjLBP&sid=n98ovBu6wkds2pA7AAAC HTTP/1.1" 200 -
+2026-02-05 17:49:21,556 - INFO - 127.0.0.1 - - [05/Feb/2026 17:49:21] "GET /socket.io/?EIO=4&transport=polling&t=PmkjLBR&sid=n98ovBu6wkds2pA7AAAC HTTP/1.1" 200 -
+2026-02-05 17:49:25,228 - INFO - 127.0.0.1 - - [05/Feb/2026 17:49:25] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 17:49:27,676 - INFO - Initial account balance fetched.
+2026-02-05 17:49:28,773 - INFO - 127.0.0.1 - - [05/Feb/2026 17:49:28] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 17:49:33,991 - INFO - 127.0.0.1 - - [05/Feb/2026 17:49:33] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 17:49:46,759 - INFO - Bot starting trading logic...
+2026-02-05 17:49:46,766 - INFO - Session trade metrics reset.
+2026-02-05 17:49:49,980 - INFO - OKX server time synchronized. Offset: -234ms
+2026-02-05 17:49:54,459 - INFO - [OK] Leverage set to 20x for ETH-USDT-SWAP (net)
+2026-02-05 17:49:54,460 - INFO - Checking for and closing any existing open positions...
+2026-02-05 17:49:56,177 - INFO - No open OKX positions found to close.
+2026-02-05 17:49:56,710 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:49:56,711 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:49:56,712 - INFO - Check Entry Condition
+2026-02-05 17:49:56,713 - INFO - Entry-1:SHORT Market 1992.22, Safety:2000, NOT Passed
+2026-02-05 17:49:56,714 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 17:49:56,715 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 17:49:59,235 - INFO - 127.0.0.1 - - [05/Feb/2026 17:49:59] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 17:50:06,716 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:50:06,717 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:50:06,718 - INFO - Check Entry Condition
+2026-02-05 17:50:06,719 - INFO - Entry-1:SHORT Market 1995.00, Safety:2000, NOT Passed
+2026-02-05 17:50:06,719 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 17:50:06,721 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 17:50:16,723 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:50:16,725 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:50:16,726 - INFO - Check Entry Condition
+2026-02-05 17:50:16,728 - INFO - Entry-1:SHORT Market 1995.01, Safety:2000, NOT Passed
+2026-02-05 17:50:16,731 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 17:50:16,756 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 17:50:22,704 - INFO - Bot trading logic paused. Background monitoring remains active.
+2026-02-05 17:50:45,375 - INFO - Bot starting background monitoring...
+2026-02-05 17:50:45,377 - INFO - 127.0.0.1 - - [05/Feb/2026 17:50:45] "POST /api/config HTTP/1.1" 200 -
+2026-02-05 17:50:48,765 - INFO - OKX server time synchronized. Offset: -56ms
+2026-02-05 17:50:48,918 - INFO - Bot starting trading logic...
+2026-02-05 17:50:48,918 - INFO - Session trade metrics reset.
+2026-02-05 17:50:54,284 - INFO - OKX server time synchronized. Offset: -219ms
+2026-02-05 17:51:01,129 - INFO - [OK] Leverage set to 20x for ETH-USDT-SWAP (net)
+2026-02-05 17:51:01,132 - INFO - Checking for and closing any existing open positions...
+2026-02-05 17:51:02,759 - INFO - 127.0.0.1 - - [05/Feb/2026 17:51:02] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 17:51:03,398 - INFO - No open OKX positions found to close.
+2026-02-05 17:51:03,910 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:51:03,912 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:51:03,914 - INFO - Check Entry Condition
+2026-02-05 17:51:03,917 - INFO - Entry-1:LONG Market 2000.00, Safety:3000, Passed
+2026-02-05 17:51:03,918 - INFO - Entry-3:Remaining: 700.00 > Target 3500: Passed
+2026-02-05 17:51:03,920 - INFO - Entry-4:Remaining: 700.00 > Min 50: Passed
+2026-02-05 17:51:03,922 - INFO - Place Order Batch 1
+2026-02-05 17:51:03,922 - INFO - Batch1-1:M:2000.00|En:1998.00|Tp:2003.00|SL:0.00|3500|Long|Cross
+2026-02-05 17:51:05,886 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-05 17:51:15,912 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:51:15,915 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:51:15,930 - INFO - Check Entry Condition
+2026-02-05 17:51:15,935 - INFO - Entry-3:Remaining Capacity: 0.70 < Min 50: NOT Passed
+2026-02-05 17:51:15,947 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 17:51:15,951 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 17:51:25,967 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:51:26,030 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:51:26,091 - INFO - Check Entry Condition
+2026-02-05 17:51:26,105 - INFO - Entry-3:Remaining Capacity: 0.70 < Min 50: NOT Passed
+2026-02-05 17:51:26,125 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 17:51:26,137 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 17:51:36,183 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:51:36,184 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:51:36,186 - INFO - Check Entry Condition
+2026-02-05 17:51:36,187 - INFO - Entry-3:Remaining Capacity: 0.70 < Min 50: NOT Passed
+2026-02-05 17:51:36,192 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 17:51:36,196 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 17:51:46,199 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:51:46,209 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:51:46,217 - INFO - Check Entry Condition
+2026-02-05 17:51:46,220 - INFO - Entry-3:Remaining Capacity: 0.70 < Min 50: NOT Passed
+2026-02-05 17:51:46,224 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 17:51:46,226 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 17:51:56,229 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:51:56,231 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:51:56,232 - INFO - Check Entry Condition
+2026-02-05 17:51:56,234 - INFO - Entry-3:Remaining Capacity: 0.70 < Min 50: NOT Passed
+2026-02-05 17:51:56,241 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 17:51:56,249 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 17:52:06,258 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:52:06,261 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:52:06,265 - INFO - Check Entry Condition
+2026-02-05 17:52:06,269 - INFO - Entry-3:Remaining Capacity: 0.70 < Min 50: NOT Passed
+2026-02-05 17:52:06,271 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 17:52:06,273 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 17:52:16,276 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:52:16,277 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:52:16,278 - INFO - Check Entry Condition
+2026-02-05 17:52:16,281 - INFO - Entry-3:Remaining Capacity: 0.70 < Min 50: NOT Passed
+2026-02-05 17:52:16,285 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 17:52:16,287 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 17:52:26,293 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:52:26,293 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:52:26,294 - INFO - Check Entry Condition
+2026-02-05 17:52:26,295 - INFO - Entry-3:Remaining Capacity: 0.70 < Min 50: NOT Passed
+2026-02-05 17:52:26,296 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 17:52:26,302 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 17:52:36,325 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:52:36,426 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:52:36,551 - INFO - Check Entry Condition
+2026-02-05 17:52:36,653 - INFO - Entry-3:Remaining Capacity: 0.70 < Min 50: NOT Passed
+2026-02-05 17:52:36,892 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 17:52:37,127 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 17:52:47,364 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:52:47,388 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:52:47,465 - INFO - Check Entry Condition
+2026-02-05 17:52:47,480 - INFO - Entry-3:Remaining Capacity: 0.70 < Min 50: NOT Passed
+2026-02-05 17:52:47,487 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 17:52:47,490 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 17:52:57,494 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:52:57,495 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:52:57,496 - INFO - Check Entry Condition
+2026-02-05 17:52:57,497 - INFO - Entry-3:Remaining Capacity: 0.70 < Min 50: NOT Passed
+2026-02-05 17:52:57,504 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 17:52:57,511 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 17:53:07,513 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:53:07,514 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:53:07,516 - INFO - Check Entry Condition
+2026-02-05 17:53:07,519 - INFO - Entry-3:Remaining Capacity: 0.70 < Min 50: NOT Passed
+2026-02-05 17:53:07,523 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 17:53:07,527 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 17:53:17,529 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:53:17,530 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:53:17,531 - INFO - Check Entry Condition
+2026-02-05 17:53:17,547 - INFO - Entry-3:Remaining Capacity: 0.70 < Min 50: NOT Passed
+2026-02-05 17:53:17,559 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 17:53:17,561 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 17:53:27,563 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:53:27,574 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:53:27,593 - INFO - Check Entry Condition
+2026-02-05 17:53:27,610 - INFO - Entry-3:Remaining Capacity: 0.70 < Min 50: NOT Passed
+2026-02-05 17:53:27,623 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 17:53:27,626 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 17:53:37,639 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:53:37,643 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:53:37,646 - INFO - Check Entry Condition
+2026-02-05 17:53:37,653 - INFO - Entry-3:Remaining Capacity: 0.70 < Min 50: NOT Passed
+2026-02-05 17:53:37,669 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 17:53:37,677 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 17:53:47,682 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:53:47,684 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:53:47,685 - INFO - Check Entry Condition
+2026-02-05 17:53:47,686 - INFO - Entry-3:Remaining Capacity: 0.70 < Min 50: NOT Passed
+2026-02-05 17:53:47,688 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 17:53:47,692 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 17:53:57,698 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:53:57,702 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:53:57,704 - INFO - Check Entry Condition
+2026-02-05 17:53:57,706 - INFO - Entry-3:Remaining Capacity: 0.70 < Min 50: NOT Passed
+2026-02-05 17:53:57,720 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 17:53:57,759 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 17:54:07,834 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:54:08,003 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:54:08,255 - INFO - Check Entry Condition
+2026-02-05 17:54:08,447 - INFO - Entry-3:Remaining Capacity: 0.70 < Min 50: NOT Passed
+2026-02-05 17:54:08,590 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 17:54:08,716 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 17:54:19,007 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:54:19,089 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:54:19,265 - INFO - Check Entry Condition
+2026-02-05 17:54:19,436 - INFO - Entry-3:Remaining Capacity: 0.70 < Min 50: NOT Passed
+2026-02-05 17:54:19,509 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 17:54:19,734 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 17:54:24,188 - INFO - Cancelling OKX order 328188737623 (Time Limit (180s) reached)...
+2026-02-05 17:54:30,224 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:54:30,456 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:54:30,698 - INFO - Check Entry Condition
+2026-02-05 17:54:30,721 - INFO - Entry-3:Remaining Capacity: 0.70 < Min 50: NOT Passed
+2026-02-05 17:54:30,909 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 17:54:31,035 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 17:54:33,705 - INFO - [OK] Order cancelled
+2026-02-05 17:54:41,142 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:54:41,174 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:54:41,259 - INFO - Check Entry Condition
+2026-02-05 17:54:41,339 - INFO - Entry-3:Remaining Capacity: 0.70 < Min 50: NOT Passed
+2026-02-05 17:54:41,450 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 17:54:41,554 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 17:54:51,876 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:54:52,073 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:54:52,259 - INFO - Check Entry Condition
+2026-02-05 17:54:52,398 - INFO - Entry-3:Remaining Capacity: 0.70 < Min 50: NOT Passed
+2026-02-05 17:54:52,579 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 17:54:53,006 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 17:55:03,151 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:55:03,153 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:55:03,155 - INFO - Check Entry Condition
+2026-02-05 17:55:03,156 - INFO - Entry-1:LONG Market 2015.28, Safety:3000, Passed
+2026-02-05 17:55:03,158 - INFO - Entry-3:Remaining: 700.00 > Target 3500: Passed
+2026-02-05 17:55:03,161 - INFO - Entry-4:Remaining: 700.00 > Min 50: Passed
+2026-02-05 17:55:03,175 - INFO - Place Order Batch 2
+2026-02-05 17:55:03,185 - INFO - Batch2-1:M:2015.28|En:2013.28|Tp:2018.28|SL:0.00|3500|Long|Cross
+2026-02-05 17:55:05,410 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-05 17:55:15,415 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:55:15,416 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:55:15,418 - INFO - Check Entry Condition
+2026-02-05 17:55:15,418 - INFO - Entry-3:Remaining Capacity: 1.39 < Min 50: NOT Passed
+2026-02-05 17:55:15,419 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 17:55:15,420 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 17:55:25,422 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:55:25,423 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:55:25,424 - INFO - Check Entry Condition
+2026-02-05 17:55:25,425 - INFO - Entry-3:Remaining Capacity: 1.39 < Min 50: NOT Passed
+2026-02-05 17:55:25,426 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 17:55:25,427 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 17:55:35,430 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:55:35,432 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:55:35,433 - INFO - Check Entry Condition
+2026-02-05 17:55:35,434 - INFO - Entry-3:Remaining Capacity: 1.39 < Min 50: NOT Passed
+2026-02-05 17:55:35,435 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 17:55:35,436 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 17:55:45,439 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:55:45,440 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:55:45,441 - INFO - Check Entry Condition
+2026-02-05 17:55:45,442 - INFO - Entry-3:Remaining Capacity: 1.39 < Min 50: NOT Passed
+2026-02-05 17:55:45,443 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 17:55:45,444 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 17:55:55,447 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:55:55,448 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:55:55,449 - INFO - Check Entry Condition
+2026-02-05 17:55:55,450 - INFO - Entry-3:Remaining Capacity: 1.39 < Min 50: NOT Passed
+2026-02-05 17:55:55,451 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 17:55:55,452 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 17:56:05,472 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:56:05,495 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:56:05,508 - INFO - Check Entry Condition
+2026-02-05 17:56:05,581 - INFO - Entry-3:Remaining Capacity: 1.39 < Min 50: NOT Passed
+2026-02-05 17:56:05,611 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 17:56:05,665 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 17:56:15,124 - INFO - 127.0.0.1 - - [05/Feb/2026 17:56:15] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-02-05 17:56:15,261 - INFO - 127.0.0.1 - - [05/Feb/2026 17:56:15] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2026-02-05 17:56:16,049 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:56:16,412 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:56:16,771 - INFO - Check Entry Condition
+2026-02-05 17:56:17,061 - INFO - Entry-3:Remaining Capacity: 1.39 < Min 50: NOT Passed
+2026-02-05 17:56:17,220 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 17:56:17,598 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 17:56:27,810 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:56:27,984 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:56:28,066 - INFO - Check Entry Condition
+2026-02-05 17:56:28,233 - INFO - Entry-3:Remaining Capacity: 1.39 < Min 50: NOT Passed
+2026-02-05 17:56:28,278 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 17:56:28,381 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 17:56:38,560 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:56:38,563 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:56:38,565 - INFO - Check Entry Condition
+2026-02-05 17:56:38,569 - INFO - Entry-3:Remaining Capacity: 1.39 < Min 50: NOT Passed
+2026-02-05 17:56:38,580 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 17:56:38,586 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 17:56:48,596 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:56:48,598 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:56:48,598 - INFO - Check Entry Condition
+2026-02-05 17:56:48,599 - INFO - Entry-3:Remaining Capacity: 1.39 < Min 50: NOT Passed
+2026-02-05 17:56:48,600 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 17:56:48,600 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 17:56:58,603 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:56:58,607 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:56:58,610 - INFO - Check Entry Condition
+2026-02-05 17:56:58,629 - INFO - Entry-3:Remaining Capacity: 1.39 < Min 50: NOT Passed
+2026-02-05 17:56:58,635 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 17:56:58,647 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 17:57:08,654 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:57:08,656 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:57:08,657 - INFO - Check Entry Condition
+2026-02-05 17:57:08,658 - INFO - Entry-3:Remaining Capacity: 1.39 < Min 50: NOT Passed
+2026-02-05 17:57:08,659 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 17:57:08,660 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 17:57:18,687 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:57:18,693 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:57:18,700 - INFO - Check Entry Condition
+2026-02-05 17:57:18,701 - INFO - Entry-3:Remaining Capacity: 1.39 < Min 50: NOT Passed
+2026-02-05 17:57:18,704 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 17:57:18,706 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 17:57:28,709 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:57:28,710 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:57:28,711 - INFO - Check Entry Condition
+2026-02-05 17:57:28,712 - INFO - Entry-3:Remaining Capacity: 1.39 < Min 50: NOT Passed
+2026-02-05 17:57:28,712 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 17:57:28,713 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 17:57:38,714 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:57:38,714 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:57:38,715 - INFO - Check Entry Condition
+2026-02-05 17:57:38,716 - INFO - Entry-3:Remaining Capacity: 1.39 < Min 50: NOT Passed
+2026-02-05 17:57:38,717 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 17:57:38,718 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 17:57:48,719 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:57:48,720 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:57:48,720 - INFO - Check Entry Condition
+2026-02-05 17:57:48,721 - INFO - Entry-3:Remaining Capacity: 1.39 < Min 50: NOT Passed
+2026-02-05 17:57:48,722 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 17:57:48,723 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 17:57:58,724 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:57:58,725 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:57:58,726 - INFO - Check Entry Condition
+2026-02-05 17:57:58,726 - INFO - Entry-3:Remaining Capacity: 1.39 < Min 50: NOT Passed
+2026-02-05 17:57:58,727 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 17:57:58,728 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 17:58:05,786 - INFO - Cancelling OKX order 328189541437 (Time Limit (180s) reached)...
+2026-02-05 17:58:08,230 - INFO - [OK] Order cancelled
+2026-02-05 17:58:08,730 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:58:08,747 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:58:08,753 - INFO - Check Entry Condition
+2026-02-05 17:58:08,757 - INFO - Entry-3:Remaining Capacity: 1.39 < Min 50: NOT Passed
+2026-02-05 17:58:08,759 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 17:58:08,762 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 17:58:18,771 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:58:18,773 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:58:18,775 - INFO - Check Entry Condition
+2026-02-05 17:58:18,776 - INFO - Entry-1:LONG Market 2028.30, Safety:3000, Passed
+2026-02-05 17:58:18,777 - INFO - Entry-3:Remaining: 700.00 > Target 3500: Passed
+2026-02-05 17:58:18,778 - INFO - Entry-4:Remaining: 700.00 > Min 50: Passed
+2026-02-05 17:58:18,780 - INFO - Place Order Batch 3
+2026-02-05 17:58:18,781 - INFO - Batch3-1:M:2028.30|En:2026.30|Tp:2031.30|SL:0.00|3500|Long|Cross
+2026-02-05 17:58:20,829 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-05 17:58:30,868 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:58:30,869 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:58:30,870 - INFO - Check Entry Condition
+2026-02-05 17:58:30,871 - INFO - Entry-3:Remaining Capacity: 0.93 < Min 50: NOT Passed
+2026-02-05 17:58:30,872 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 17:58:30,873 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 17:58:37,396 - INFO - 127.0.0.1 - - [05/Feb/2026 17:58:37] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2026-02-05 17:58:40,874 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:58:40,876 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:58:40,877 - INFO - Check Entry Condition
+2026-02-05 17:58:40,882 - INFO - Entry-3:Remaining Capacity: 0.93 < Min 50: NOT Passed
+2026-02-05 17:58:40,964 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 17:58:41,054 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 17:58:43,744 - INFO - 127.0.0.1 - - [05/Feb/2026 17:58:43] "GET / HTTP/1.1" 200 -
+2026-02-05 17:58:44,237 - INFO - 127.0.0.1 - - [05/Feb/2026 17:58:44] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-02-05 17:58:44,272 - INFO - 127.0.0.1 - - [05/Feb/2026 17:58:44] "[36mGET /static/js/app.js HTTP/1.1[0m" 304 -
+2026-02-05 17:58:44,510 - INFO - 127.0.0.1 - - [05/Feb/2026 17:58:44] "GET /socket.io/?EIO=4&transport=polling&t=PmklUgv HTTP/1.1" 200 -
+2026-02-05 17:58:44,605 - INFO - Client connected: None
+2026-02-05 17:58:44,621 - INFO - 127.0.0.1 - - [05/Feb/2026 17:58:44] "POST /socket.io/?EIO=4&transport=polling&t=PmklUkm&sid=kE-wwvjlgfr3tkpeAAAE HTTP/1.1" 200 -
+2026-02-05 17:58:44,639 - INFO - 127.0.0.1 - - [05/Feb/2026 17:58:44] "GET /api/config HTTP/1.1" 200 -
+2026-02-05 17:58:44,846 - INFO - 127.0.0.1 - - [05/Feb/2026 17:58:44] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 17:58:44,847 - INFO - 127.0.0.1 - - [05/Feb/2026 17:58:44] "GET /socket.io/?EIO=4&transport=polling&t=PmklUko&sid=kE-wwvjlgfr3tkpeAAAE HTTP/1.1" 200 -
+2026-02-05 17:58:44,987 - INFO - 127.0.0.1 - - [05/Feb/2026 17:58:44] "GET /socket.io/?EIO=4&transport=polling&t=PmklUqE&sid=kE-wwvjlgfr3tkpeAAAE HTTP/1.1" 200 -
+2026-02-05 17:58:45,182 - INFO - 127.0.0.1 - - [05/Feb/2026 17:58:45] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 17:58:45,361 - INFO - 127.0.0.1 - - [05/Feb/2026 17:58:45] "GET /socket.io/?EIO=4&transport=polling&t=PmklUtL&sid=kE-wwvjlgfr3tkpeAAAE HTTP/1.1" 200 -
+2026-02-05 17:58:51,081 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:58:51,082 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:58:51,083 - INFO - Check Entry Condition
+2026-02-05 17:58:51,084 - INFO - Entry-3:Remaining Capacity: 0.93 < Min 50: NOT Passed
+2026-02-05 17:58:51,085 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 17:58:51,086 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 17:59:01,139 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:59:01,147 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:59:01,187 - INFO - Check Entry Condition
+2026-02-05 17:59:01,208 - INFO - Entry-3:Remaining Capacity: 0.93 < Min 50: NOT Passed
+2026-02-05 17:59:01,210 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 17:59:01,213 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 17:59:11,237 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:59:11,243 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:59:11,246 - INFO - Check Entry Condition
+2026-02-05 17:59:11,257 - INFO - Entry-3:Remaining Capacity: 0.93 < Min 50: NOT Passed
+2026-02-05 17:59:11,323 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 17:59:11,345 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 17:59:21,359 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:59:21,361 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:59:21,362 - INFO - Check Entry Condition
+2026-02-05 17:59:21,365 - INFO - Entry-3:Remaining Capacity: 0.93 < Min 50: NOT Passed
+2026-02-05 17:59:21,367 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 17:59:21,368 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 17:59:31,370 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:59:31,371 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:59:31,373 - INFO - Check Entry Condition
+2026-02-05 17:59:31,375 - INFO - Entry-3:Remaining Capacity: 0.93 < Min 50: NOT Passed
+2026-02-05 17:59:31,377 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 17:59:31,379 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 17:59:41,386 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:59:41,387 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:59:41,389 - INFO - Check Entry Condition
+2026-02-05 17:59:41,390 - INFO - Entry-3:Remaining Capacity: 0.93 < Min 50: NOT Passed
+2026-02-05 17:59:41,392 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 17:59:41,395 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 17:59:51,398 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:59:51,399 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 17:59:51,400 - INFO - Check Entry Condition
+2026-02-05 17:59:51,401 - INFO - Entry-3:Remaining Capacity: 0.93 < Min 50: NOT Passed
+2026-02-05 17:59:51,402 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 17:59:51,404 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 18:00:01,407 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:00:01,409 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:00:01,410 - INFO - Check Entry Condition
+2026-02-05 18:00:01,412 - INFO - Entry-3:Remaining Capacity: 0.93 < Min 50: NOT Passed
+2026-02-05 18:00:01,417 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 18:00:01,418 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 18:00:11,422 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:00:11,426 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:00:11,429 - INFO - Check Entry Condition
+2026-02-05 18:00:11,431 - INFO - Entry-3:Remaining Capacity: 0.93 < Min 50: NOT Passed
+2026-02-05 18:00:11,433 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 18:00:11,435 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 18:00:21,438 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:00:21,440 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:00:21,442 - INFO - Check Entry Condition
+2026-02-05 18:00:21,443 - INFO - Entry-3:Remaining Capacity: 0.93 < Min 50: NOT Passed
+2026-02-05 18:00:21,445 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 18:00:21,447 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 18:00:31,450 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:00:31,452 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:00:31,453 - INFO - Check Entry Condition
+2026-02-05 18:00:31,455 - INFO - Entry-3:Remaining Capacity: 0.93 < Min 50: NOT Passed
+2026-02-05 18:00:31,459 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 18:00:31,460 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 18:00:41,462 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:00:41,463 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:00:41,465 - INFO - Check Entry Condition
+2026-02-05 18:00:41,466 - INFO - Entry-3:Remaining Capacity: 0.93 < Min 50: NOT Passed
+2026-02-05 18:00:41,469 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 18:00:41,472 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 18:00:51,475 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:00:51,476 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:00:51,478 - INFO - Check Entry Condition
+2026-02-05 18:00:51,479 - INFO - Entry-3:Remaining Capacity: 0.93 < Min 50: NOT Passed
+2026-02-05 18:00:51,482 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 18:00:51,485 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 18:00:55,725 - INFO - Batch Sync: SL offset is null or 0 for LONG. Skipping SL calc.
+2026-02-05 18:00:55,726 - INFO - Syncing TP/SL for LONG position. Avg Price: 2026.30
+2026-02-05 18:01:01,487 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:01:01,500 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:01:01,532 - INFO - Check Entry Condition
+2026-02-05 18:01:03,215 - INFO - [TARGET] LONG TP Set: 2031.30
+2026-02-05 18:01:03,267 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-05 18:01:03,268 - INFO - Entry-3:Remaining Capacity: 0.93 < Min 50: NOT Passed
+2026-02-05 18:01:03,343 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 18:01:03,345 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 18:01:06,108 - INFO - Batch Sync: SL offset is null or 0 for LONG. Skipping SL calc.
+2026-02-05 18:01:06,111 - INFO - Syncing TP/SL for LONG position. Avg Price: 2026.30
+2026-02-05 18:01:13,153 - INFO - [TARGET] LONG TP Set: 2031.30
+2026-02-05 18:01:13,156 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-05 18:01:13,350 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:01:13,352 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:01:13,353 - INFO - Check Entry Condition
+2026-02-05 18:01:13,354 - INFO - Entry-3:Remaining Capacity: 0.93 < Min 50: NOT Passed
+2026-02-05 18:01:13,355 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 18:01:13,356 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 18:01:17,019 - INFO - Batch Sync: SL offset is null or 0 for LONG. Skipping SL calc.
+2026-02-05 18:01:17,020 - INFO - Syncing TP/SL for LONG position. Avg Price: 2026.30
+2026-02-05 18:01:23,364 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:01:23,374 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:01:23,414 - INFO - Check Entry Condition
+2026-02-05 18:01:27,321 - INFO - [TARGET] LONG TP Set: 2031.30
+2026-02-05 18:01:27,325 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-05 18:01:27,327 - INFO - Entry-3:Remaining Capacity: 0.93 < Min 50: NOT Passed
+2026-02-05 18:01:27,333 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 18:01:27,347 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 18:01:30,963 - INFO - Batch Sync: SL offset is null or 0 for LONG. Skipping SL calc.
+2026-02-05 18:01:30,965 - INFO - Syncing TP/SL for LONG position. Avg Price: 2026.30
+2026-02-05 18:01:37,154 - INFO - [TARGET] LONG TP Set: 2031.30
+2026-02-05 18:01:37,156 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-05 18:01:37,350 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:01:37,350 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:01:37,351 - INFO - Check Entry Condition
+2026-02-05 18:01:37,352 - INFO - Entry-3:Remaining Capacity: 0.93 < Min 50: NOT Passed
+2026-02-05 18:01:37,353 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 18:01:37,354 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 18:01:39,846 - INFO - Batch Sync: SL offset is null or 0 for LONG. Skipping SL calc.
+2026-02-05 18:01:39,849 - INFO - Syncing TP/SL for LONG position. Avg Price: 2026.30
+2026-02-05 18:01:46,903 - INFO - [TARGET] LONG TP Set: 2031.30
+2026-02-05 18:01:46,906 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-05 18:01:47,356 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:01:47,358 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:01:47,363 - INFO - Check Entry Condition
+2026-02-05 18:01:47,366 - INFO - Entry-3:Remaining Capacity: 0.93 < Min 50: NOT Passed
+2026-02-05 18:01:47,375 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 18:01:47,378 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 18:01:50,661 - INFO - Batch Sync: SL offset is null or 0 for LONG. Skipping SL calc.
+2026-02-05 18:01:50,674 - INFO - Syncing TP/SL for LONG position. Avg Price: 2026.30
+2026-02-05 18:01:51,751 - INFO - 127.0.0.1 - - [05/Feb/2026 18:01:51] "GET / HTTP/1.1" 200 -
+2026-02-05 18:01:51,973 - INFO - 127.0.0.1 - - [05/Feb/2026 18:01:51] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-02-05 18:01:52,486 - INFO - 127.0.0.1 - - [05/Feb/2026 18:01:52] "[36mGET /static/js/app.js HTTP/1.1[0m" 304 -
+2026-02-05 18:01:52,638 - INFO - 127.0.0.1 - - [05/Feb/2026 18:01:52] "GET /socket.io/?EIO=4&transport=polling&t=PmkmCfb HTTP/1.1" 200 -
+2026-02-05 18:01:52,925 - INFO - 127.0.0.1 - - [05/Feb/2026 18:01:52] "GET /api/config HTTP/1.1" 200 -
+2026-02-05 18:01:52,961 - INFO - Client connected: None
+2026-02-05 18:01:52,974 - INFO - 127.0.0.1 - - [05/Feb/2026 18:01:52] "GET /socket.io/?EIO=4&transport=polling&t=PmkmCg4&sid=T1T2UhMeidyW6rwXAAAG HTTP/1.1" 200 -
+2026-02-05 18:01:53,341 - INFO - 127.0.0.1 - - [05/Feb/2026 18:01:53] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 18:01:57,380 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:01:57,382 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:01:57,383 - INFO - Check Entry Condition
+2026-02-05 18:01:57,846 - INFO - [TARGET] LONG TP Set: 2031.30
+2026-02-05 18:01:57,850 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-05 18:01:57,897 - INFO - Entry-3:Remaining Capacity: 0.93 < Min 50: NOT Passed
+2026-02-05 18:01:57,906 - INFO - 127.0.0.1 - - [05/Feb/2026 18:01:57] "POST /socket.io/?EIO=4&transport=polling&t=PmkmCg2&sid=T1T2UhMeidyW6rwXAAAG HTTP/1.1" 200 -
+2026-02-05 18:01:57,907 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 18:01:57,914 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 18:01:58,331 - INFO - 127.0.0.1 - - [05/Feb/2026 18:01:58] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 18:02:01,022 - INFO - Batch Sync: SL offset is null or 0 for LONG. Skipping SL calc.
+2026-02-05 18:02:01,025 - INFO - Syncing TP/SL for LONG position. Avg Price: 2026.30
+2026-02-05 18:02:06,727 - INFO - [TARGET] LONG TP Set: 2031.30
+2026-02-05 18:02:06,729 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-05 18:02:07,920 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:02:07,927 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:02:07,929 - INFO - Check Entry Condition
+2026-02-05 18:02:07,932 - INFO - Entry-3:Remaining Capacity: 0.93 < Min 50: NOT Passed
+2026-02-05 18:02:07,935 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 18:02:07,942 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 18:02:10,278 - INFO - Batch Sync: SL offset is null or 0 for LONG. Skipping SL calc.
+2026-02-05 18:02:10,280 - INFO - Syncing TP/SL for LONG position. Avg Price: 2026.30
+2026-02-05 18:02:16,117 - INFO - [TARGET] LONG TP Set: 2031.30
+2026-02-05 18:02:16,117 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-05 18:02:17,945 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:02:17,947 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:02:17,949 - INFO - Check Entry Condition
+2026-02-05 18:02:17,951 - INFO - Entry-3:Remaining Capacity: 0.93 < Min 50: NOT Passed
+2026-02-05 18:02:17,954 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 18:02:17,957 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 18:02:27,959 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:02:27,960 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:02:27,962 - INFO - Check Entry Condition
+2026-02-05 18:02:27,963 - INFO - Entry-1:LONG Market 2030.83, Safety:3000, Passed
+2026-02-05 18:02:27,967 - INFO - Entry-3:Remaining: 700.00 > Target 3500: Passed
+2026-02-05 18:02:27,969 - INFO - Entry-4:Remaining: 700.00 > Min 50: Passed
+2026-02-05 18:02:27,974 - INFO - Place Order Batch 4
+2026-02-05 18:02:27,977 - INFO - Batch4-1:M:2030.83|En:2028.83|Tp:2033.83|SL:0.00|3500|Long|Cross
+2026-02-05 18:02:29,899 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-05 18:02:39,904 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:02:39,910 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:02:39,941 - INFO - Check Entry Condition
+2026-02-05 18:02:39,946 - INFO - Entry-3:Remaining Capacity: 0.05 < Min 50: NOT Passed
+2026-02-05 18:02:39,949 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 18:02:39,952 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 18:02:49,962 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:02:49,973 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:02:49,975 - INFO - Check Entry Condition
+2026-02-05 18:02:49,976 - INFO - Entry-3:Remaining Capacity: 0.05 < Min 50: NOT Passed
+2026-02-05 18:02:49,977 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 18:02:49,978 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 18:02:59,981 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:02:59,982 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:02:59,983 - INFO - Check Entry Condition
+2026-02-05 18:02:59,984 - INFO - Entry-3:Remaining Capacity: 0.05 < Min 50: NOT Passed
+2026-02-05 18:02:59,986 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 18:02:59,987 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 18:03:09,989 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:03:09,991 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:03:09,992 - INFO - Check Entry Condition
+2026-02-05 18:03:09,993 - INFO - Entry-3:Remaining Capacity: 0.05 < Min 50: NOT Passed
+2026-02-05 18:03:09,995 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 18:03:09,997 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 18:03:20,000 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:03:20,002 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:03:20,003 - INFO - Check Entry Condition
+2026-02-05 18:03:20,004 - INFO - Entry-3:Remaining Capacity: 0.05 < Min 50: NOT Passed
+2026-02-05 18:03:20,006 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 18:03:20,008 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 18:03:30,013 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:03:30,014 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:03:30,015 - INFO - Check Entry Condition
+2026-02-05 18:03:30,017 - INFO - Entry-3:Remaining Capacity: 0.05 < Min 50: NOT Passed
+2026-02-05 18:03:30,019 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 18:03:30,022 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 18:03:40,031 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:03:40,036 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:03:40,043 - INFO - Check Entry Condition
+2026-02-05 18:03:40,052 - INFO - Entry-3:Remaining Capacity: 0.05 < Min 50: NOT Passed
+2026-02-05 18:03:40,056 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 18:03:40,058 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 18:03:50,066 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:03:50,067 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:03:50,068 - INFO - Check Entry Condition
+2026-02-05 18:03:50,069 - INFO - Entry-3:Remaining Capacity: 0.05 < Min 50: NOT Passed
+2026-02-05 18:03:50,070 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 18:03:50,071 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 18:04:00,120 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:04:00,202 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:04:00,262 - INFO - Check Entry Condition
+2026-02-05 18:04:00,280 - INFO - Entry-3:Remaining Capacity: 0.05 < Min 50: NOT Passed
+2026-02-05 18:04:00,282 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 18:04:00,285 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 18:04:10,289 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:04:10,292 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:04:10,295 - INFO - Check Entry Condition
+2026-02-05 18:04:10,300 - INFO - Entry-3:Remaining Capacity: 0.05 < Min 50: NOT Passed
+2026-02-05 18:04:10,307 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 18:04:10,313 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 18:04:20,326 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:04:20,358 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:04:20,366 - INFO - Check Entry Condition
+2026-02-05 18:04:20,370 - INFO - Entry-3:Remaining Capacity: 0.05 < Min 50: NOT Passed
+2026-02-05 18:04:20,375 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 18:04:20,390 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 18:04:30,403 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:04:30,405 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:04:30,406 - INFO - Check Entry Condition
+2026-02-05 18:04:30,407 - INFO - Entry-3:Remaining Capacity: 0.05 < Min 50: NOT Passed
+2026-02-05 18:04:30,408 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 18:04:30,409 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 18:04:40,419 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:04:40,464 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:04:40,466 - INFO - Check Entry Condition
+2026-02-05 18:04:40,467 - INFO - Entry-3:Remaining Capacity: 0.05 < Min 50: NOT Passed
+2026-02-05 18:04:40,470 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 18:04:40,472 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 18:04:50,475 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:04:50,477 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:04:50,478 - INFO - Check Entry Condition
+2026-02-05 18:04:50,479 - INFO - Entry-3:Remaining Capacity: 0.05 < Min 50: NOT Passed
+2026-02-05 18:04:50,480 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 18:04:50,484 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 18:05:00,486 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:05:00,487 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:05:00,489 - INFO - Check Entry Condition
+2026-02-05 18:05:00,490 - INFO - Entry-3:Remaining Capacity: 0.05 < Min 50: NOT Passed
+2026-02-05 18:05:00,491 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 18:05:00,498 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 18:05:08,334 - WARNING - [AUTO-ADD] Gap Triggered: Diff 8.64 >= 5.0. Current Avg: 2028.83
+2026-02-05 18:05:08,336 - WARNING - === AUTO-ADD TRIGGERED (Step 1) ===
+2026-02-05 18:05:08,337 - INFO - 1. Gap Check: Market 2020.19 vs AvgEntry 2028.83 | Gap 8.64 > Threshold 5.0
+2026-02-05 18:05:08,339 - INFO - 2. Sizing: Current Size $698.78 x 30.0% = $209.64
+2026-02-05 18:05:08,340 - WARNING - [AUTO-ADD] Triggering Gap Add (Step 1). Gap: 8.64 > 5.0. Cost: $10.48 (Notional: $209.64, Qty: 1)
+2026-02-05 18:05:08,343 - INFO - Placing Market Buy order for 1.00 ETH-USDT-SWAP at None
+2026-02-05 18:05:09,892 - INFO - [OK] Order placed: OrderID=3281915703829614592
+2026-02-05 18:05:09,907 - INFO - [OK] Auto-Add Step 1 Executed. Order: 3281915703829614592
+2026-02-05 18:05:10,194 - INFO - Batch Sync: SL offset is null or 0 for LONG. Skipping SL calc.
+2026-02-05 18:05:10,203 - INFO - Syncing TP/SL for LONG position. Avg Price: 2026.98
+2026-02-05 18:05:10,515 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:05:10,554 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:05:10,576 - INFO - Check Entry Condition
+2026-02-05 18:05:15,714 - INFO - === AUTO-ADD STEP 2 (CLOSE) ===
+2026-02-05 18:05:15,716 - INFO - Logic used: Profit Multiplier (1.5x Fees)
+2026-02-05 18:05:15,717 - INFO - New Avg Entry: 2026.9783146067416 -> Setting Limit Exit at 2027.1902
+2026-02-05 18:05:15,720 - INFO - Placing Limit Sell order for 4.45 ETH-USDT-SWAP at 2027.1901940498735
+2026-02-05 18:05:17,008 - INFO - [TARGET] LONG TP Set: 2031.98
+2026-02-05 18:05:17,010 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-05 18:05:17,012 - INFO - Entry-3:Remaining Capacity: 0.05 < Min 50: NOT Passed
+2026-02-05 18:05:17,015 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 18:05:17,034 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 18:05:17,505 - INFO - [OK] Order placed: OrderID=3281915953105489920
+2026-02-05 18:05:20,844 - INFO - Batch Sync: SL offset is null or 0 for LONG. Skipping SL calc.
+2026-02-05 18:05:20,856 - INFO - Syncing TP/SL for LONG position. Avg Price: 2026.98
+2026-02-05 18:05:26,422 - INFO - [TARGET] LONG TP Set: 2031.98
+2026-02-05 18:05:26,423 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-05 18:05:27,045 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:05:27,047 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:05:27,049 - INFO - Check Entry Condition
+2026-02-05 18:05:27,050 - INFO - Entry-3:Remaining Capacity: -202.01 < Min 50: NOT Passed
+2026-02-05 18:05:27,066 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 18:05:27,068 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 18:05:29,624 - INFO - Batch Sync: SL offset is null or 0 for LONG. Skipping SL calc.
+2026-02-05 18:05:29,634 - INFO - Syncing TP/SL for LONG position. Avg Price: 2026.98
+2026-02-05 18:05:36,058 - INFO - [TARGET] LONG TP Set: 2031.98
+2026-02-05 18:05:36,061 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-05 18:05:37,070 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:05:37,089 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:05:37,093 - INFO - Check Entry Condition
+2026-02-05 18:05:37,104 - INFO - Entry-3:Remaining Capacity: -202.01 < Min 50: NOT Passed
+2026-02-05 18:05:37,108 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 18:05:37,113 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 18:05:39,156 - INFO - Batch Sync: SL offset is null or 0 for LONG. Skipping SL calc.
+2026-02-05 18:05:39,158 - INFO - Syncing TP/SL for LONG position. Avg Price: 2026.98
+2026-02-05 18:05:44,395 - INFO - [TARGET] LONG TP Set: 2031.98
+2026-02-05 18:05:44,397 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-05 18:05:47,120 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:05:47,122 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:05:47,123 - INFO - Check Entry Condition
+2026-02-05 18:05:47,124 - INFO - Entry-3:Remaining Capacity: -202.01 < Min 50: NOT Passed
+2026-02-05 18:05:47,126 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 18:05:47,130 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 18:05:52,602 - INFO - Batch Sync: SL offset is null or 0 for LONG. Skipping SL calc.
+2026-02-05 18:05:52,611 - INFO - Syncing TP/SL for LONG position. Avg Price: 2026.98
+2026-02-05 18:05:57,135 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:05:57,138 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:05:57,141 - INFO - Check Entry Condition
+2026-02-05 18:05:58,717 - INFO - [TARGET] LONG TP Set: 2031.98
+2026-02-05 18:05:58,727 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-05 18:05:58,731 - INFO - Entry-3:Remaining Capacity: -202.01 < Min 50: NOT Passed
+2026-02-05 18:05:58,782 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 18:05:58,789 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 18:06:00,808 - INFO - Batch Sync: SL offset is null or 0 for LONG. Skipping SL calc.
+2026-02-05 18:06:00,809 - INFO - Syncing TP/SL for LONG position. Avg Price: 2026.98
+2026-02-05 18:06:06,565 - INFO - [TARGET] LONG TP Set: 2031.98
+2026-02-05 18:06:06,568 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-05 18:06:08,796 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:06:08,800 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:06:08,802 - INFO - Check Entry Condition
+2026-02-05 18:06:08,805 - INFO - Entry-3:Remaining Capacity: -202.01 < Min 50: NOT Passed
+2026-02-05 18:06:08,812 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 18:06:08,814 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 18:06:15,753 - INFO - Batch Sync: SL offset is null or 0 for LONG. Skipping SL calc.
+2026-02-05 18:06:15,754 - INFO - Syncing TP/SL for LONG position. Avg Price: 2026.98
+2026-02-05 18:06:18,818 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:06:18,821 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:06:18,824 - INFO - Check Entry Condition
+2026-02-05 18:06:21,049 - INFO - [TARGET] LONG TP Set: 2031.98
+2026-02-05 18:06:21,057 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-05 18:06:21,058 - INFO - Entry-3:Remaining Capacity: -202.01 < Min 50: NOT Passed
+2026-02-05 18:06:21,063 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 18:06:21,069 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 18:06:31,106 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:06:31,217 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:06:31,275 - INFO - Check Entry Condition
+2026-02-05 18:06:31,329 - INFO - Entry-3:Remaining Capacity: -202.01 < Min 50: NOT Passed
+2026-02-05 18:06:31,365 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 18:06:31,388 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 18:06:32,614 - INFO - Batch Sync: SL offset is null or 0 for LONG. Skipping SL calc.
+2026-02-05 18:06:32,822 - INFO - Syncing TP/SL for LONG position. Avg Price: 2026.98
+2026-02-05 18:06:38,283 - INFO - [TARGET] LONG TP Set: 2031.98
+2026-02-05 18:06:38,321 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-05 18:06:41,513 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:06:41,520 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:06:41,579 - INFO - Check Entry Condition
+2026-02-05 18:06:41,671 - INFO - Entry-3:Remaining Capacity: -202.01 < Min 50: NOT Passed
+2026-02-05 18:06:41,682 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 18:06:41,691 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 18:07:22,413 - INFO - Logger initialized. Writing to debug.log
+2026-02-05 18:07:22,417 - INFO - Bot starting background monitoring...
+2026-02-05 18:07:22,490 - INFO - Client connected: None
+2026-02-05 18:07:22,491 - INFO - 127.0.0.1 - - [05/Feb/2026 18:07:22] "POST /socket.io/?EIO=4&transport=polling&t=PmknT78&sid=qUY3X530-FG-RPPlAAAA HTTP/1.1" 200 -
+2026-02-05 18:07:22,493 - INFO - 127.0.0.1 - - [05/Feb/2026 18:07:22] "GET /socket.io/?EIO=4&transport=polling&t=PmknT7J&sid=qUY3X530-FG-RPPlAAAA HTTP/1.1" 200 -
+2026-02-05 18:07:22,563 - INFO - 127.0.0.1 - - [05/Feb/2026 18:07:22] "GET /socket.io/?EIO=4&transport=polling&t=PmknTCB&sid=qUY3X530-FG-RPPlAAAA HTTP/1.1" 200 -
+2026-02-05 18:07:27,451 - INFO - OKX server time synchronized. Offset: -216ms
+2026-02-05 18:07:29,607 - INFO - Bot initialized. Starting live connection threads...
+2026-02-05 18:07:29,640 - INFO - OKX BOT STARTING
+2026-02-05 18:07:31,226 - INFO - Websocket connected
+2026-02-05 18:07:31,242 - INFO - OKX WebSocket connection opened.
+2026-02-05 18:07:33,456 - INFO - Bot startup sequence complete.
+2026-02-05 18:07:36,421 - INFO - 127.0.0.1 - - [05/Feb/2026 18:07:36] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 18:07:39,815 - INFO - Initial account balance fetched.
+2026-02-05 18:07:43,312 - INFO - 127.0.0.1 - - [05/Feb/2026 18:07:43] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 18:09:43,582 - INFO - Logger initialized. Writing to debug.log
+2026-02-05 18:09:43,584 - INFO - Bot starting background monitoring...
+2026-02-05 18:09:43,654 - INFO - 127.0.0.1 - - [05/Feb/2026 18:09:43] "GET /socket.io/?EIO=4&transport=polling&t=Pmkn_ay&sid=xa7pdDV71NZ2BOw2AAAA HTTP/1.1" 200 -
+2026-02-05 18:09:43,683 - INFO - 127.0.0.1 - - [05/Feb/2026 18:09:43] "GET /socket.io/?EIO=4&transport=polling&t=Pmkn_fg&sid=xa7pdDV71NZ2BOw2AAAA HTTP/1.1" 200 -
+2026-02-05 18:09:46,212 - INFO - 127.0.0.1 - - [05/Feb/2026 18:09:46] "GET /socket.io/?EIO=4&transport=websocket&sid=xa7pdDV71NZ2BOw2AAAA HTTP/1.1" 200 -
+2026-02-05 18:09:47,244 - INFO - 127.0.0.1 - - [05/Feb/2026 18:09:47] "GET / HTTP/1.1" 200 -
+2026-02-05 18:09:47,996 - INFO - 127.0.0.1 - - [05/Feb/2026 18:09:47] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-02-05 18:09:48,212 - INFO - 127.0.0.1 - - [05/Feb/2026 18:09:48] "[36mGET /static/js/app.js HTTP/1.1[0m" 304 -
+2026-02-05 18:09:48,436 - INFO - 127.0.0.1 - - [05/Feb/2026 18:09:48] "GET /socket.io/?EIO=4&transport=polling&t=Pmko0q2 HTTP/1.1" 200 -
+2026-02-05 18:09:49,594 - INFO - 127.0.0.1 - - [05/Feb/2026 18:09:49] "GET /api/config HTTP/1.1" 200 -
+2026-02-05 18:09:49,781 - INFO - Client connected: None
+2026-02-05 18:09:49,984 - INFO - 127.0.0.1 - - [05/Feb/2026 18:09:49] "POST /socket.io/?EIO=4&transport=polling&t=Pmko0r8&sid=fYZIoqKmqc2AkTHPAAAC HTTP/1.1" 200 -
+2026-02-05 18:09:50,196 - INFO - 127.0.0.1 - - [05/Feb/2026 18:09:50] "GET /socket.io/?EIO=4&transport=polling&t=Pmko0rE&sid=fYZIoqKmqc2AkTHPAAAC HTTP/1.1" 200 -
+2026-02-05 18:09:52,227 - INFO - OKX server time synchronized. Offset: -190ms
+2026-02-05 18:09:53,701 - INFO - Bot initialized. Starting live connection threads...
+2026-02-05 18:09:53,702 - INFO - OKX BOT STARTING
+2026-02-05 18:09:53,704 - INFO - 127.0.0.1 - - [05/Feb/2026 18:09:53] "POST /socket.io/?EIO=4&transport=polling&t=Pmkn_am&sid=xa7pdDV71NZ2BOw2AAAA HTTP/1.1" 200 -
+2026-02-05 18:09:55,107 - INFO - Websocket connected
+2026-02-05 18:09:55,107 - INFO - OKX WebSocket connection opened.
+2026-02-05 18:09:57,251 - INFO - Bot startup sequence complete.
+2026-02-05 18:09:57,386 - INFO - 127.0.0.1 - - [05/Feb/2026 18:09:57] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 18:10:02,042 - INFO - Initial account balance fetched.
+2026-02-05 18:10:02,980 - INFO - 127.0.0.1 - - [05/Feb/2026 18:10:02] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 18:10:08,114 - INFO - Bot starting trading logic...
+2026-02-05 18:10:08,115 - INFO - Session trade metrics reset.
+2026-02-05 18:10:11,950 - INFO - OKX server time synchronized. Offset: -200ms
+2026-02-05 18:10:16,682 - INFO - [OK] Leverage set to 20x for ETH-USDT-SWAP (net)
+2026-02-05 18:10:16,687 - INFO - Checking for and closing any existing open positions...
+2026-02-05 18:10:18,961 - INFO - No open OKX positions found to close.
+2026-02-05 18:10:19,080 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:10:19,084 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:10:19,086 - INFO - Check Entry Condition
+2026-02-05 18:10:19,088 - INFO - Entry-1:LONG Market 2086.17, Safety:3000, Passed
+2026-02-05 18:10:19,090 - INFO - Entry-3:Remaining: 700.00 > Target 3500: Passed
+2026-02-05 18:10:19,092 - INFO - Entry-4:Remaining: 700.00 > Min 50: Passed
+2026-02-05 18:10:19,094 - INFO - Place Order Batch 1
+2026-02-05 18:10:19,095 - INFO - Batch1-1:M:2086.17|En:2084.17|Tp:2089.17|SL:0.00|3500|Long|Cross
+2026-02-05 18:10:20,861 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-05 18:10:22,964 - INFO - 127.0.0.1 - - [05/Feb/2026 18:10:22] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 18:10:29,138 - INFO - Client disconnected
+2026-02-05 18:10:30,864 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:10:30,866 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:10:30,867 - INFO - Check Entry Condition
+2026-02-05 18:10:30,867 - INFO - Entry-3:Remaining Capacity: 1.80 < Min 50: NOT Passed
+2026-02-05 18:10:30,868 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 18:10:30,870 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 18:10:36,219 - INFO - Cancelling OKX order 328192613717 (Long: TP price reached/passed before fill (TP 2089.17 < Market 2089.42))...
+2026-02-05 18:10:38,381 - INFO - [OK] Order cancelled
+2026-02-05 18:10:40,871 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:10:40,872 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:10:40,873 - INFO - Check Entry Condition
+2026-02-05 18:10:40,874 - INFO - Entry-3:Remaining Capacity: 1.80 < Min 50: NOT Passed
+2026-02-05 18:10:40,875 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 18:10:40,876 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 18:10:50,878 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:10:50,879 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:10:50,880 - INFO - Check Entry Condition
+2026-02-05 18:10:50,881 - INFO - Entry-1:LONG Market 2093.32, Safety:3000, Passed
+2026-02-05 18:10:50,882 - INFO - Entry-3:Remaining: 700.00 > Target 3500: Passed
+2026-02-05 18:10:50,882 - INFO - Entry-4:Remaining: 700.00 > Min 50: Passed
+2026-02-05 18:10:50,884 - INFO - Place Order Batch 2
+2026-02-05 18:10:50,886 - INFO - Batch2-1:M:2093.32|En:2091.32|Tp:2096.32|SL:0.00|3500|Long|Cross
+2026-02-05 18:10:52,698 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-05 18:11:02,700 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:11:02,701 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:11:02,702 - INFO - Check Entry Condition
+2026-02-05 18:11:02,703 - INFO - Entry-3:Remaining Capacity: 1.50 < Min 50: NOT Passed
+2026-02-05 18:11:02,704 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 18:11:02,705 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 18:11:05,266 - INFO - Cancelling OKX order 328192719988 (Long: TP price reached/passed before fill (TP 2096.32 < Market 2097.35))...
+2026-02-05 18:11:06,747 - INFO - [OK] Order cancelled
+2026-02-05 18:11:12,707 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:11:12,708 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:11:12,710 - INFO - Check Entry Condition
+2026-02-05 18:11:12,711 - INFO - Entry-3:Remaining Capacity: 1.50 < Min 50: NOT Passed
+2026-02-05 18:11:12,712 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 18:11:12,713 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 18:11:22,715 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:11:22,716 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:11:22,717 - INFO - Check Entry Condition
+2026-02-05 18:11:22,719 - INFO - Entry-1:LONG Market 2101.00, Safety:3000, Passed
+2026-02-05 18:11:22,720 - INFO - Entry-3:Remaining: 700.00 > Target 3500: Passed
+2026-02-05 18:11:22,722 - INFO - Entry-4:Remaining: 700.00 > Min 50: Passed
+2026-02-05 18:11:22,724 - INFO - Place Order Batch 3
+2026-02-05 18:11:22,725 - INFO - Batch3-1:M:2101.00|En:2099.00|Tp:2104.00|SL:0.00|3500|Long|Cross
+2026-02-05 18:11:25,258 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-05 18:11:35,261 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:11:35,261 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:11:35,263 - INFO - Check Entry Condition
+2026-02-05 18:11:35,263 - INFO - Entry-1:LONG Market 2106.76, Safety:3000, Passed
+2026-02-05 18:11:35,265 - INFO - Entry-3:Remaining: 700.00 > Target 3500: Passed
+2026-02-05 18:11:35,266 - INFO - Entry-4:Remaining: 700.00 > Min 50: Passed
+2026-02-05 18:11:35,268 - INFO - Place Order Batch 4
+2026-02-05 18:11:35,270 - INFO - Batch4-1:M:2106.76|En:2104.76|Tp:2109.76|SL:0.00|3500|Long|Cross
+2026-02-05 18:11:37,306 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-05 18:11:47,309 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:11:47,310 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:11:47,311 - INFO - Check Entry Condition
+2026-02-05 18:11:47,313 - INFO - Entry-3:Remaining Capacity: 1.22 < Min 50: NOT Passed
+2026-02-05 18:11:47,314 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 18:11:47,316 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 18:11:57,318 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:11:57,320 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:11:57,323 - INFO - Check Entry Condition
+2026-02-05 18:12:01,280 - INFO - [TARGET] LONG TP Set: 2109.76
+2026-02-05 18:12:01,281 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-05 18:12:01,281 - INFO - Entry-3:Remaining Capacity: 1.22 < Min 50: NOT Passed
+2026-02-05 18:12:01,283 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 18:12:01,284 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 18:12:08,732 - INFO - [TARGET] LONG TP Set: 2109.76
+2026-02-05 18:12:08,733 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-05 18:12:11,285 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:12:11,286 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:12:11,287 - INFO - Check Entry Condition
+2026-02-05 18:12:11,288 - INFO - Entry-3:Remaining Capacity: 1.22 < Min 50: NOT Passed
+2026-02-05 18:12:11,289 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 18:12:11,290 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 18:12:17,299 - INFO - [TARGET] LONG TP Set: 2109.76
+2026-02-05 18:12:17,299 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-05 18:12:21,293 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:12:21,298 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:12:21,305 - INFO - Check Entry Condition
+2026-02-05 18:12:21,308 - INFO - Entry-3:Remaining Capacity: 1.22 < Min 50: NOT Passed
+2026-02-05 18:12:21,312 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 18:12:21,314 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 18:12:21,627 - INFO - ============================================================
+2026-02-05 18:12:21,628 - INFO - [DONE] Close Position: LONG ETH-USDT-SWAP | Reason: Exchange Hit (TP/SL/Manual)
+2026-02-05 18:12:21,629 - INFO - ============================================================
+2026-02-05 18:12:31,319 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:12:31,321 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:12:31,324 - INFO - Check Entry Condition
+2026-02-05 18:12:31,329 - INFO - Entry-1:LONG Market 2102.50, Safety:3000, Passed
+2026-02-05 18:12:31,330 - INFO - Entry-3:Remaining: 700.00 > Target 3500: Passed
+2026-02-05 18:12:31,333 - INFO - Entry-4:Remaining: 700.00 > Min 50: Passed
+2026-02-05 18:12:31,334 - INFO - Place Order Batch 5
+2026-02-05 18:12:31,336 - INFO - Batch5-1:M:2102.50|En:2100.50|Tp:2105.50|SL:0.00|3500|Long|Cross
+2026-02-05 18:12:32,935 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-05 18:12:42,937 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:12:42,938 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:12:42,940 - INFO - Check Entry Condition
+2026-02-05 18:12:42,943 - INFO - Entry-3:Remaining Capacity: 0.53 < Min 50: NOT Passed
+2026-02-05 18:12:42,946 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 18:12:42,949 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 18:12:52,953 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:12:52,954 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:12:52,955 - INFO - Check Entry Condition
+2026-02-05 18:12:52,956 - INFO - Entry-3:Remaining Capacity: 0.53 < Min 50: NOT Passed
+2026-02-05 18:12:52,956 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 18:12:52,957 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 18:12:58,738 - INFO - [TARGET] LONG TP Set: 2105.50
+2026-02-05 18:12:58,763 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-05 18:13:02,959 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:13:02,961 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:13:02,965 - INFO - Check Entry Condition
+2026-02-05 18:13:02,966 - INFO - Entry-3:Remaining Capacity: 0.53 < Min 50: NOT Passed
+2026-02-05 18:13:02,968 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 18:13:02,969 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 18:13:08,592 - INFO - [TARGET] LONG TP Set: 2105.50
+2026-02-05 18:13:08,593 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-05 18:13:10,021 - WARNING - [AUTO-ADD] Gap Triggered: Diff 6.23 >= 5.0. Current Avg: 2100.50
+2026-02-05 18:13:10,024 - WARNING - === AUTO-ADD TRIGGERED (Step 1) ===
+2026-02-05 18:13:10,028 - INFO - 1. Gap Check: Market 2094.27 vs AvgEntry 2100.50 | Gap 6.23 > Threshold 5.0
+2026-02-05 18:13:10,030 - INFO - 2. Sizing: Current Size $697.58 x 30.0% = $209.27
+2026-02-05 18:13:10,034 - WARNING - [AUTO-ADD] Triggering Gap Add (Step 1). Gap: 6.23 > 5.0. Cost: $10.46 (Notional: $209.27, Qty: 1)
+2026-02-05 18:13:10,036 - INFO - Placing Market Buy order for 1.00 ETH-USDT-SWAP at None
+2026-02-05 18:13:11,645 - INFO - [OK] Order placed: OrderID=3281931863375630336
+2026-02-05 18:13:11,647 - INFO - [OK] Auto-Add Step 1 Executed. Order: 3281931863375630336
+2026-02-05 18:13:12,971 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:13:12,980 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:13:12,983 - INFO - Check Entry Condition
+2026-02-05 18:13:16,658 - INFO - === AUTO-ADD STEP 2 (CLOSE) ===
+2026-02-05 18:13:16,661 - INFO - Logic used: Profit Multiplier (1.5x Fees)
+2026-02-05 18:13:16,665 - INFO - New Avg Entry: 2099.249376443418 -> Setting Limit Exit at 2099.4690
+2026-02-05 18:13:16,670 - INFO - Placing Limit Sell order for 4.33 ETH-USDT-SWAP at 2099.4690050684308
+2026-02-05 18:13:17,899 - INFO - [TARGET] LONG TP Set: 2104.25
+2026-02-05 18:13:17,902 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-05 18:13:17,904 - INFO - Entry-3:Remaining Capacity: 0.53 < Min 50: NOT Passed
+2026-02-05 18:13:17,911 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 18:13:17,914 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 18:13:18,438 - INFO - [OK] Order placed: OrderID=3281932090203590656
+2026-02-05 18:13:27,833 - INFO - [TARGET] LONG TP Set: 2104.25
+2026-02-05 18:13:27,836 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-05 18:13:27,917 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:13:27,918 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:13:27,919 - INFO - Check Entry Condition
+2026-02-05 18:13:27,920 - INFO - Entry-3:Remaining Capacity: -208.97 < Min 50: NOT Passed
+2026-02-05 18:13:27,920 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 18:13:27,921 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 18:13:37,212 - INFO - [TARGET] LONG TP Set: 2104.25
+2026-02-05 18:13:37,213 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-05 18:13:37,923 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:13:37,925 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:13:37,926 - INFO - Check Entry Condition
+2026-02-05 18:13:37,927 - INFO - Entry-3:Remaining Capacity: -208.97 < Min 50: NOT Passed
+2026-02-05 18:13:37,928 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 18:13:37,929 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 18:13:46,034 - INFO - [TARGET] LONG TP Set: 2104.25
+2026-02-05 18:13:46,035 - INFO - Successfully modified TP/SL for 1 sides.
+2026-02-05 18:13:47,931 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:13:47,933 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 18:13:47,934 - INFO - Check Entry Condition
+2026-02-05 18:13:47,934 - INFO - Entry-3:Remaining Capacity: -208.97 < Min 50: NOT Passed
+2026-02-05 18:13:47,935 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 18:13:47,938 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 18:17:47,968 - INFO - Logger initialized. Writing to debug.log
+2026-02-05 18:17:47,973 - INFO - Bot starting background monitoring...
+2026-02-05 18:17:51,204 - INFO - 127.0.0.1 - - [05/Feb/2026 18:17:51] "GET / HTTP/1.1" 200 -
+2026-02-05 18:17:51,350 - INFO - 127.0.0.1 - - [05/Feb/2026 18:17:51] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-02-05 18:17:51,370 - INFO - 127.0.0.1 - - [05/Feb/2026 18:17:51] "[36mGET /static/js/app.js HTTP/1.1[0m" 304 -
+2026-02-05 18:17:51,588 - INFO - OKX server time synchronized. Offset: -177ms
+2026-02-05 18:17:51,690 - INFO - 127.0.0.1 - - [05/Feb/2026 18:17:51] "GET /socket.io/?EIO=4&transport=polling&t=PmkpskM HTTP/1.1" 200 -
+2026-02-05 18:17:51,695 - INFO - 127.0.0.1 - - [05/Feb/2026 18:17:51] "GET /api/config HTTP/1.1" 200 -
+2026-02-05 18:17:51,985 - INFO - Client connected: None
+2026-02-05 18:17:51,989 - INFO - 127.0.0.1 - - [05/Feb/2026 18:17:51] "POST /socket.io/?EIO=4&transport=polling&t=PmkpspK&sid=VRnPMTijIOQTNBtWAAAC HTTP/1.1" 200 -
+2026-02-05 18:17:52,020 - INFO - 127.0.0.1 - - [05/Feb/2026 18:17:52] "GET /socket.io/?EIO=4&transport=polling&t=PmkpspN&sid=VRnPMTijIOQTNBtWAAAC HTTP/1.1" 200 -
+2026-02-05 18:17:52,265 - INFO - 127.0.0.1 - - [05/Feb/2026 18:17:52] "GET /socket.io/?EIO=4&transport=polling&t=PmkpsuP&sid=VRnPMTijIOQTNBtWAAAC HTTP/1.1" 200 -
+2026-02-05 18:17:53,521 - INFO - Bot initialized. Starting live connection threads...
+2026-02-05 18:17:53,524 - INFO - OKX BOT STARTING
+2026-02-05 18:17:53,532 - INFO - 127.0.0.1 - - [05/Feb/2026 18:17:53] "POST /socket.io/?EIO=4&transport=polling&t=PmkprrX&sid=9MQV1jYD5Wv95Uc9AAAA HTTP/1.1" 200 -
+2026-02-05 18:17:55,146 - INFO - Websocket connected
+2026-02-05 18:17:55,147 - INFO - OKX WebSocket connection opened.
+2026-02-05 18:17:57,218 - INFO - Bot startup sequence complete.
+2026-02-05 18:17:59,104 - WARNING - [AUTO-ADD] Gap Triggered: Diff 55.98 >= 5.0. Current Avg: 2099.25
+2026-02-05 18:17:59,108 - WARNING - === AUTO-ADD TRIGGERED (Step 1) ===
+2026-02-05 18:17:59,110 - INFO - 1. Gap Check: Market 2043.27 vs AvgEntry 2099.25 | Gap 55.98 > Threshold 5.0
+2026-02-05 18:17:59,111 - INFO - 2. Sizing: Current Size $883.68 x 30.0% = $265.10
+2026-02-05 18:17:59,112 - WARNING - [AUTO-ADD] Triggering Gap Add (Step 1). Gap: 55.98 > 5.0. Cost: $13.26 (Notional: $265.10, Qty: 1)
+2026-02-05 18:17:59,113 - INFO - Placing Market Buy order for 1.00 ETH-USDT-SWAP at None
+2026-02-05 18:17:59,294 - INFO - 127.0.0.1 - - [05/Feb/2026 18:17:59] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 18:18:00,983 - INFO - [OK] Order placed: OrderID=3281941571914321920
+2026-02-05 18:18:00,985 - INFO - [OK] Auto-Add Step 1 Executed. Order: 3281941571914321920
+2026-02-05 18:18:02,362 - INFO - Initial account balance fetched.
+2026-02-05 18:18:04,468 - INFO - 127.0.0.1 - - [05/Feb/2026 18:18:04] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 18:18:05,877 - INFO - === AUTO-ADD STEP 2 (CLOSE) ===
+2026-02-05 18:18:05,878 - INFO - Logic used: Profit Multiplier (1.5x Fees)
+2026-02-05 18:18:05,878 - INFO - New Avg Entry: 2088.746679174484 -> Setting Limit Exit at 2088.9608
+2026-02-05 18:18:05,879 - INFO - Placing Limit Sell order for 5.33 ETH-USDT-SWAP at 2088.9607667328087
+2026-02-05 18:18:07,449 - INFO - [OK] Order placed: OrderID=3281941789145714688
+2026-02-05 18:18:18,072 - WARNING - [AUTO-ADD] Gap Triggered: Diff 7.58 >= 5.0. Current Avg: 2043.27
+2026-02-05 18:18:18,074 - WARNING - === AUTO-ADD TRIGGERED (Step 2) ===
+2026-02-05 18:18:18,077 - INFO - 1. Gap Check: Market 2035.69 vs AvgEntry 2088.75 | Gap 53.06 > Threshold 5.0
+2026-02-05 18:18:18,080 - INFO - 2. Sizing: Current Size $1084.04 x 30.0% = $325.21
+2026-02-05 18:18:18,082 - WARNING - [AUTO-ADD] Triggering Gap Add (Step 2). Gap: 53.06 > 5.0. Cost: $16.26 (Notional: $325.21, Qty: 1)
+2026-02-05 18:18:18,083 - INFO - Placing Market Buy order for 1.00 ETH-USDT-SWAP at None
+2026-02-05 18:18:19,526 - INFO - [OK] Order placed: OrderID=3281942193979936768
+2026-02-05 18:18:19,528 - INFO - [OK] Auto-Add Step 2 Executed. Order: 3281942193979936768
+2026-02-05 18:18:23,976 - INFO - === AUTO-ADD STEP 2 (CLOSE) ===
+2026-02-05 18:18:23,977 - INFO - Logic used: Profit Multiplier (1.5x Fees)
+2026-02-05 18:18:23,979 - INFO - New Avg Entry: 2080.5592101105844 -> Setting Limit Exit at 2080.7727
+2026-02-05 18:18:23,981 - INFO - Placing Limit Sell order for 6.33 ETH-USDT-SWAP at 2080.7727223083994
+2026-02-05 18:18:25,548 - INFO - [OK] Order placed: OrderID=3281942396917141504
+2026-02-05 18:18:34,385 - INFO - Client disconnected
+2026-02-05 18:19:01,242 - WARNING - [AUTO-ADD] Gap Triggered: Diff 6.23 >= 5.0. Current Avg: 2035.69
+2026-02-05 18:19:01,244 - WARNING - === AUTO-ADD TRIGGERED (Step 3) ===
+2026-02-05 18:19:01,247 - INFO - 1. Gap Check: Market 2029.46 vs AvgEntry 2080.56 | Gap 51.10 > Threshold 5.0
+2026-02-05 18:19:01,248 - INFO - 2. Sizing: Current Size $1284.84 x 30.0% = $385.45
+2026-02-05 18:19:01,250 - WARNING - [AUTO-ADD] SKIPPED: Required Margin $19.27 > Budget $5.48
+2026-02-05 18:34:41,210 - INFO - Logger initialized. Writing to debug.log
+2026-02-05 18:34:41,212 - INFO - Bot starting background monitoring...
+2026-02-05 18:34:41,289 - INFO - 127.0.0.1 - - [05/Feb/2026 18:34:41] "GET /socket.io/?EIO=4&transport=polling&t=PmktjDH&sid=f-5ZuPNvsinVKZI_AAAA HTTP/1.1" 200 -
+2026-02-05 18:34:41,310 - INFO - 127.0.0.1 - - [05/Feb/2026 18:34:41] "GET /socket.io/?EIO=4&transport=polling&t=PmktjII&sid=f-5ZuPNvsinVKZI_AAAA HTTP/1.1" 200 -
+2026-02-05 18:34:46,693 - INFO - OKX server time synchronized. Offset: -279ms
+2026-02-05 18:34:49,645 - INFO - Bot initialized. Starting live connection threads...
+2026-02-05 18:34:49,648 - INFO - OKX BOT STARTING
+2026-02-05 18:34:49,652 - INFO - 127.0.0.1 - - [05/Feb/2026 18:34:49] "POST /socket.io/?EIO=4&transport=polling&t=PmktjDE&sid=f-5ZuPNvsinVKZI_AAAA HTTP/1.1" 200 -
+2026-02-05 18:34:51,245 - INFO - Websocket connected
+2026-02-05 18:34:51,248 - INFO - OKX WebSocket connection opened.
+2026-02-05 18:34:52,205 - WARNING - [AUTO-ADD] Gap Triggered: Diff 97.97 >= 5.0. Current Avg: 2080.56
+2026-02-05 18:34:52,211 - WARNING - === AUTO-ADD TRIGGERED (Step 1) ===
+2026-02-05 18:34:52,216 - INFO - 1. Gap Check: Market 1982.59 vs AvgEntry 2080.56 | Gap 97.97 > Threshold 5.0
+2026-02-05 18:34:52,220 - INFO - 2. Sizing: Current Size $1252.75 x 30.0% = $375.83
+2026-02-05 18:34:52,223 - WARNING - [AUTO-ADD] Triggering Gap Add (Step 1). Gap: 97.97 > 5.0. Cost: $18.79 (Notional: $375.83, Qty: 1)
+2026-02-05 18:34:52,227 - INFO - Placing Market Buy order for 1.00 ETH-USDT-SWAP at None
+2026-02-05 18:34:54,383 - INFO - Bot startup sequence complete.
+2026-02-05 18:34:54,845 - INFO - [OK] Order placed: OrderID=3281975592719372288
+2026-02-05 18:34:54,847 - INFO - [OK] Auto-Add Step 1 Executed. Order: 3281975592719372288
+2026-02-05 18:34:55,852 - INFO - 127.0.0.1 - - [05/Feb/2026 18:34:55] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 18:35:01,826 - INFO - === AUTO-ADD STEP 2 (CLOSE) ===
+2026-02-05 18:35:01,828 - INFO - Logic used: Profit Multiplier (1.5x Fees)
+2026-02-05 18:35:01,829 - INFO - New Avg Entry: 2067.2755525238745 -> Setting Limit Exit at 2067.4832
+2026-02-05 18:35:01,831 - INFO - Placing Limit Sell order for 7.33 ETH-USDT-SWAP at 2067.4831612663693
+2026-02-05 18:35:02,441 - INFO - Initial account balance fetched.
+2026-02-05 18:35:04,455 - INFO - [OK] Order placed: OrderID=3281975920948826112
+2026-02-05 18:35:05,153 - INFO - 127.0.0.1 - - [05/Feb/2026 18:35:05] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 20:21:44,008 - INFO - Logger initialized. Writing to debug.log
+2026-02-05 20:21:44,012 - INFO - Bot starting background monitoring...
+2026-02-05 20:21:44,074 - INFO - Client connected: None
+2026-02-05 20:21:44,077 - INFO - 127.0.0.1 - - [05/Feb/2026 20:21:44] "POST /socket.io/?EIO=4&transport=polling&t=PmlGDHP&sid=RPJMXQVV9lfzSiJiAAAA HTTP/1.1" 200 -
+2026-02-05 20:21:44,085 - INFO - 127.0.0.1 - - [05/Feb/2026 20:21:44] "GET /socket.io/?EIO=4&transport=polling&t=PmlGDHS&sid=RPJMXQVV9lfzSiJiAAAA HTTP/1.1" 200 -
+2026-02-05 20:21:44,176 - INFO - 127.0.0.1 - - [05/Feb/2026 20:21:44] "GET /socket.io/?EIO=4&transport=polling&t=PmlGDMi&sid=RPJMXQVV9lfzSiJiAAAA HTTP/1.1" 200 -
+2026-02-05 20:21:56,223 - INFO - OKX server time synchronized. Offset: -2110ms
+2026-02-05 20:22:00,497 - INFO - Bot initialized. Starting live connection threads...
+2026-02-05 20:22:00,502 - INFO - OKX BOT STARTING
+2026-02-05 20:22:06,435 - INFO - Websocket connected
+2026-02-05 20:22:06,437 - INFO - OKX WebSocket connection opened.
+2026-02-05 20:22:14,794 - INFO - Bot startup sequence complete.
+2026-02-05 20:22:16,600 - INFO - 127.0.0.1 - - [05/Feb/2026 20:22:16] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 20:22:22,279 - INFO - 127.0.0.1 - - [05/Feb/2026 20:22:22] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 20:22:24,054 - INFO - Initial account balance fetched.
+2026-02-05 20:22:35,231 - INFO - Bot starting trading logic...
+2026-02-05 20:22:35,239 - INFO - Session trade metrics reset.
+2026-02-05 20:22:47,463 - INFO - OKX server time synchronized. Offset: 116ms
+2026-02-05 20:22:49,140 - INFO - 127.0.0.1 - - [05/Feb/2026 20:22:49] "GET /api/status HTTP/1.1" 200 -
+2026-02-05 20:22:58,100 - INFO - [OK] Leverage set to 20x for ETH-USDT-SWAP (net)
+2026-02-05 20:22:58,102 - INFO - Checking for and closing any existing open positions...
+2026-02-05 20:23:01,632 - INFO - No open OKX positions found to close.
+2026-02-05 20:23:02,097 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 20:23:02,102 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 20:23:02,118 - INFO - Check Entry Condition
+2026-02-05 20:23:02,126 - INFO - Entry-1:LONG Market 2161.03, Safety:3000, Passed
+2026-02-05 20:23:02,129 - INFO - Entry-3:Remaining: 700.00 > Target 3500: Passed
+2026-02-05 20:23:02,132 - INFO - Entry-4:Remaining: 700.00 > Min 50: Passed
+2026-02-05 20:23:02,133 - INFO - Place Order Batch 1
+2026-02-05 20:23:02,135 - INFO - Batch1-1:M:2161.03|En:2159.03|Tp:2164.03|SL:0.00|3500|Long|Cross
+2026-02-05 20:23:07,342 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-05 20:23:17,355 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 20:23:17,366 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 20:23:17,381 - INFO - Check Entry Condition
+2026-02-05 20:23:17,394 - INFO - Entry-1:LONG Market 2160.64, Safety:3000, Passed
+2026-02-05 20:23:17,398 - INFO - Entry-3:Remaining: 700.00 > Target 3500: Passed
+2026-02-05 20:23:17,403 - INFO - Entry-4:Remaining: 700.00 > Min 50: Passed
+2026-02-05 20:23:17,410 - INFO - Place Order Batch 2
+2026-02-05 20:23:17,413 - INFO - Batch2-1:M:2160.64|En:2158.64|Tp:2163.64|SL:0.00|3500|Long|Cross
+2026-02-05 20:23:20,995 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-05 20:23:30,999 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 20:23:31,008 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 20:23:31,011 - INFO - Check Entry Condition
+2026-02-05 20:23:31,014 - INFO - Entry-3:Remaining Capacity: 0.47 < Min 50: NOT Passed
+2026-02-05 20:23:31,017 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 20:23:31,018 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 20:23:41,019 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 20:23:41,022 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 20:23:41,025 - INFO - Check Entry Condition
+2026-02-05 20:23:41,026 - INFO - Entry-3:Remaining Capacity: -698.93 < Min 50: NOT Passed
+2026-02-05 20:23:41,028 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 20:23:41,029 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 20:23:51,045 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 20:23:51,090 - INFO - ------------------------------------------------------------------------------------------
+2026-02-05 20:23:51,107 - INFO - Check Entry Condition
+2026-02-05 20:23:51,150 - INFO - Entry-3:Remaining Capacity: -698.93 < Min 50: NOT Passed
+2026-02-05 20:23:51,191 - INFO - Stop Orders (No passing signals in this cycle)
+2026-02-05 20:23:51,195 - INFO - Wait 10 seconds before meta-loop restart
+2026-02-05 20:23:57,407 - INFO - Bot trading logic paused. Background monitoring remains active.

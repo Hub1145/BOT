@@ -252,6 +252,8 @@ class TradingBotEngine:
         self.tp_hit_lock = threading.Lock()
         self.bot_startup_complete = False
         self._should_update_tpsl = False
+        self.last_emit_time = 0.0 # Throttling for real-time WS updates
+
 
         self.ws_subscriptions_ready = threading.Event()
         self.pending_subscriptions = set()
@@ -926,6 +928,33 @@ class TradingBotEngine:
                     self.latest_trade_price = safe_float(data[0].get('last'))
                     self.last_price_update_time = time.time()
                     # No need to update historical data store from tickers channel
+
+                # ---------------------------------------------------------
+                # REAL-TIME UI UPDATES (TRANSITIONAL)
+                # ---------------------------------------------------------
+                # Triggered on every price tick to keep the dashboard responsive
+                if self.is_running and self.latest_trade_price:
+                    now = time.time()
+                    # Throttle emissions to max 2 per second to prevent UI flooding
+                    if now - self.last_emit_time >= 0.5:
+                        self.last_emit_time = now
+                        
+                        # Trigger lightweight local calculations and emit if in position
+                        in_pos_long = self.in_position.get('long', False)
+                        in_pos_short = self.in_position.get('short', False)
+                        
+                        if in_pos_long or in_pos_short:
+                            # We can't do full account info refresh here (too many API calls),
+                            # but we CAN emit current local estimates of PnL and Need Add.
+                            # Local PnL calculation is already performed in _fetch_and_emit_account_info,
+                            # so we can just re-emit the latest state with the fresh price.
+                            # For absolute precision, we wait for the next polling sync.
+                            # But here we at least trigger the frontend to refresh its values.
+                            # To be safe, we just tell the poller to run one tick early if possible,
+                            # or just emit the existing latest_trade_price.
+                            pass # For now, increasing polling to 3s is safer, but we can emit a price ping.
+                            self.emit('price_update', {'price': self.latest_trade_price, 'symbol': self.config['symbol']})
+                # ---------------------------------------------------------
 
         except json.JSONDecodeError:
             self.log(f"DEBUG: Non-JSON WebSocket message received: {message[:500]}", level="debug")
@@ -1839,9 +1868,10 @@ class TradingBotEngine:
         is_integer_qty = PRODUCT_INFO.get('lotSz', '1') == '1' and '.' not in PRODUCT_INFO.get('lotSz', '1')
         
         if is_integer_qty:
-            qty_str = str(int(qty_contracts))
+            qty_str = str(max(1, int(qty_contracts)))
         else:
-            qty_str = f"{qty_contracts:.{qty_precision}f}"
+            min_sz = safe_float(PRODUCT_INFO.get('minSz', 0.001))
+            qty_str = f"{max(min_sz, qty_contracts):.{qty_precision}f}"
             
         self.log(f"[AUTO-ADD] Triggering Gap Add (Step {step_count}). Gap: {current_gap:.2f} > {gap_threshold}. Cost: ${margin_cost:.2f} (Notional: ${add_notional:.2f}, Qty: {qty_str})", level="warning")
         
@@ -2608,8 +2638,8 @@ class TradingBotEngine:
                          except:
                              pass
                 
-                # 3. Lower Frequency: Account Info & Emitting (every ~10s)
-                if now - last_account_sync >= 10:
+                # 3. Lower Frequency: Account Info & Emitting (every ~3s)
+                if now - last_account_sync >= 3:
                     self._fetch_and_emit_account_info()
                     last_account_sync = now
                     
@@ -2787,29 +2817,36 @@ class TradingBotEngine:
                 fills = response.get('data', [])
                 
                 # Fetch only fills from current session for 'self.net_profit' (Auto-Exit trigger)
-                start_time_limit = self.bot_start_time
+                # Loosen by 5 seconds to capture trades closed right at bot start/restart
+                start_time_limit = self.bot_start_time - 5000
 
                 # Reset persistent trade analytics before re-calculating from the limit window (Simple approach)
                 # Note: In a production bot, we'd append new fills to a database.
                 # Here we strictly scan the last 100 fills to determine Win/Loss/Net for the symbol.
                 temp_total_profit = 0.0
                 temp_total_loss = 0.0
+                fill_count = 0
                 
                 for fill in fills:
                      fill_ts = int(fill.get('ts', 0))
                      if fill_ts >= start_time_limit:
+                         fill_count += 1
                          pnl = safe_float(fill.get('pnl', 0))
                          fee = safe_float(fill.get('fee', 0))
                          fill_net = pnl + fee
                          session_pnl += fill_net
 
-                         if fill_net > 0:
-                             temp_total_profit += fill_net
-                         else:
-                             temp_total_loss += abs(fill_net)
-
-
+                         # Realized Analytics: Only count fills where a position was actually reduced or closed (pnl != 0)
+                         # This prevents entry fees from showing up as "Trade Loss" before any trades are closed.
+                         if pnl != 0:
+                             if fill_net > 0:
+                                 temp_total_profit += fill_net
+                             else:
+                                 temp_total_loss += abs(fill_net)
                 
+                if fill_count > 0:
+                    self.log(f"DEBUG: Processed {fill_count} session fills. Temp Net: {temp_total_profit - temp_total_loss:.2f}", level="debug")
+
                 self.total_trade_profit = temp_total_profit
                 self.total_trade_loss = temp_total_loss
                 self.net_trade_profit = temp_total_profit - temp_total_loss
@@ -3062,9 +3099,30 @@ class TradingBotEngine:
                                 self._okx_adjust_margin(self.config['symbol'], raw_side, add_amt)
                         # ---------------------------------------------------------
             
-            # Reset sides that were not found
+            # Reset sides that were not found (Position Closed)
             for s in ['long', 'short']:
                 if s not in found_sides:
+                    if self.in_position[s]:
+                        # Transition from True -> False detected
+                        close_reason = "Exchange Hit (TP/SL/Manual)"
+                        if self.authoritative_exit_in_progress:
+                            close_reason = "Authoritative Exit (Bot Target/Emergency)"
+                        else:
+                            # Try to detect if it was TP or SL specifically
+                            # We compare latest_trade_price to last known TP/SL
+                            mkt = self.latest_trade_price
+                            tp = self.current_take_profit[s]
+                            sl = self.current_stop_loss[s]
+                            
+                            if tp > 0 and abs(mkt - tp) / tp < 0.001: # Within 0.1%
+                                close_reason = "Exchange Hit (Take Profit)"
+                            elif sl > 0 and abs(mkt - sl) / sl < 0.001: # Within 0.1%
+                                close_reason = "Exchange Hit (Stop Loss)"
+                        
+                        self.log("=" * 60, level="info")
+                        self.log(f"[DONE] Close Position: {s.upper()} {self.config['symbol']} | Reason: {close_reason}", level="info")
+                        self.log("=" * 60, level="info")
+                        
                     self.in_position[s] = False
                     self.position_entry_price[s] = 0.0
                     self.position_qty[s] = 0.0
@@ -3132,13 +3190,16 @@ class TradingBotEngine:
         okx_pos_notional = 0.0 # Clean position size (without pending checks)
         total_unrealized_pnl = 0.0
         active_positions_count = 0
+        current_side = 'none' # Initialize for scope safety
+        current_avg = 0.0     # Initialize for scope safety
         
         # Always fetch Unrealized PnL for visibility, regardless of session state
         if response_positions and response_positions.get('code') == '0':
             positions_data = response_positions.get('data', [])
             for pos in positions_data:
                 if pos.get('instId') == self.config['symbol'] and safe_float(pos.get('pos')) != 0:
-                    pos_notional = abs(safe_float(pos.get('pos'))) * safe_float(pos.get('avgPx')) * contract_size
+                    current_mkt_price = self.latest_trade_price if self.latest_trade_price else safe_float(pos.get('avgPx'))
+                    pos_notional = abs(safe_float(pos.get('pos'))) * current_mkt_price * contract_size
                     
                     # 1. CAPITAL ISOLATION: Only count positions towards 'Used' if bot is running
                     if self.is_running:
@@ -3167,16 +3228,27 @@ class TradingBotEngine:
         # Reset if no active positions
         if active_positions_count == 0:
             self.cumulative_margin_used = 0.0
-            self.total_capital_2nd = self.total_equity
-            self.auto_add_step_count = 0 # Reset step count
+            # Reset Total Capital 2nd to initial equity if provided, or current equity
+            self.total_capital_2nd = self.initial_total_capital if self.initial_total_capital > 0 else self.total_equity
+            self.auto_add_step_count = 0 
+            self.last_add_price = 0.0
         else:
-            # Capital 2nd = Total Equity - Cumulative Add Margin
-            # Note: We rely on total_equity being accurate from OKX. 
-            # If OKX already deducts margin from equity, we might double count if not careful.
-            # Client said: "Total Capital 2nd will be total Capital amount minus the total order amounts of adding position"
-            # We assume 'total_equity' is the LIVE equity. 
-            # So Capital 2nd is a "Working Capital" view.
-            self.total_capital_2nd = max(0.0, self.total_equity - self.cumulative_margin_used)
+            # Sync last_add_price to current avg entry if not set or if changed
+            with self.position_lock:
+                current_side = 'long' if self.in_position['long'] else 'short'
+                current_avg = self.position_entry_price.get(current_side, 0.0)
+                if self.last_add_price == 0:
+                    self.last_add_price = current_avg
+
+            # Diagnostic Log: Active Martingale Settings
+            if self.monitoring_tick % 6 == 0: # Every ~minute
+                self.log(f"[DIAGNOSTIC] Martingale Active | Side: {current_side} | Avg: {current_avg:.2f} | LastAdd: {self.last_add_price:.2f}", level="debug")
+                self.log(f"[DIAGNOSTIC] Config | Gap: {self.config.get('add_pos_gap_threshold')} | Size%: {self.config.get('add_pos_size_pct')}% | MaxLoops: {self.config.get('add_pos_max_count')}", level="debug")
+
+            # Capital 2nd = Initial Session Capital - Total Margin Spent on Adds
+            # This represents "How much of my initial money is left for other things"
+            base_capital = self.initial_total_capital if self.initial_total_capital > 0 else self.total_equity
+            self.total_capital_2nd = max(0.0, base_capital - self.cumulative_margin_used)
 
         # 3. GLOBAL AUTO-EXIT: Check if the enabled profit target is met across all positions
         # Auto-Exit Check moved to after Used Amount calculation
@@ -3352,8 +3424,14 @@ class TradingBotEngine:
                           price_diff = current_price - self.last_add_price
                           
                       if price_diff >= gap_threshold:
-                          self.log(f"Gap Triggered: Diff {price_diff:.2f} >= {gap_threshold}. Initiating Auto-Add...", level="info")
-                          self._check_auto_add_position_step(current_price, current_side, remaining_amount_notional)
+                          self.log(f"[AUTO-ADD] Gap Triggered: Diff {price_diff:.2f} >= {gap_threshold}. Current Avg: {self.last_add_price:.2f}", level="warning")
+                          # Crucially update last_add_price to current price to prevent immediate re-trigger 
+                          # while waiting for the exchange to update average price.
+                          self.last_add_price = current_price 
+                          
+                          # Pass UNLEVERAGED budget
+                          remaining_margin_budget = max_amount_margin - self.cumulative_margin_used
+                          self._check_auto_add_position_step(current_price, current_side, remaining_margin_budget)
 
         # Explicit Auto-Exit for Mode 2 (Target PnL Reached)
         if self.config.get('use_add_pos_profit_target', False) and okx_pos_notional > 0:
@@ -3575,7 +3653,7 @@ class TradingBotEngine:
                             else:
                                 new_tp = avg_px - safe_float(tp_price_offset)
                         else:
-                            self.log(f"Batch Sync: TP offset is null or 0 for {side_key.upper()}. Skipping TP calc.", level="info")
+                            self.log(f"Batch Sync: TP offset is null or 0 for {side_key.upper()}. Skipping TP calc.", level="debug")
 
                         if sl_price_offset and safe_float(sl_price_offset) > 0:
                             if side_key == 'long':
@@ -3583,9 +3661,9 @@ class TradingBotEngine:
                             else:
                                 new_sl = avg_px + safe_float(sl_price_offset)
                         else:
-                            self.log(f"Batch Sync: SL offset is null or 0 for {side_key.upper()}. Skipping SL calc.", level="info")
+                            self.log(f"Batch Sync: SL offset is null or 0 for {side_key.upper()}. Skipping SL calc.", level="debug")
 
-                        self.log(f"Syncing TP/SL for {side_key.upper()} position. Avg Price: {avg_px:.{price_precision}f}", level="info")
+                        self.log(f"Syncing TP/SL for {side_key.upper()} position. Avg Price: {avg_px:.{price_precision}f}", level="debug")
 
 
 
@@ -3747,7 +3825,7 @@ class TradingBotEngine:
 
         # 1. Update internal config object
         self.config = new_config
-        self.log("Applying live configuration updates...", level="info")
+        self.log("Applying live configuration updates (including new Auto-Add parameters)...", level="info")
 
         # 2. Handle Leverage Change
         if new_lev != old_lev:

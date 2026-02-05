@@ -227,8 +227,10 @@
                             class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2 border-bottom border-secondary pb-2">
                             <div class="d-flex align-items-center gap-2">
                                 <div class="form-check form-switch m-0">
-                                    <input class="form-check-input" type="checkbox" id="useAddPosAboveZero">
-                                    <label class="form-check-label small fw-bold text-light" for="useAddPosAboveZero">
+                                    <input class="form-check-input dashboard-sync" type="checkbox"
+                                        id="useAddPosAboveZeroMain" data-sync-id="useAddPosAboveZero">
+                                    <label class="form-check-label small fw-bold text-light"
+                                        for="useAddPosAboveZeroMain">
                                         To make PnL always above 0
                                     </label>
                                 </div>
@@ -246,9 +248,10 @@
                             class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2 border-bottom border-secondary pb-2">
                             <div class="d-flex align-items-center gap-2">
                                 <div class="form-check form-switch m-0">
-                                    <input class="form-check-input" type="checkbox" id="useAddPosProfitTarget">
+                                    <input class="form-check-input dashboard-sync" type="checkbox"
+                                        id="useAddPosProfitTargetMain" data-sync-id="useAddPosProfitTarget">
                                     <label class="form-check-label small fw-bold text-light"
-                                        for="useAddPosProfitTarget">
+                                        for="useAddPosProfitTargetMain">
                                         To reach Profit Target & Close
                                     </label>
                                 </div>
@@ -261,23 +264,54 @@
                             </div>
                         </div>
 
-                        <!-- Settings Row -->
-                        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                        <!-- Settings Row 1 (Recovery & Multiplier) -->
+                        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
                             <div class="d-flex align-items-center gap-2">
                                 <span class="text-secondary small text-uppercase fw-bold"
                                     style="font-size: 0.65rem;">Recovery %</span>
-                                <input type="number" class="form-control form-control-sm" id="addPosRecoveryPercent"
+                                <input type="number" class="form-control form-control-sm dashboard-sync"
+                                    id="addPosRecoveryPercentMain" data-sync-id="addPosRecoveryPercent"
                                     style="width: 55px; font-size: 0.7rem; background: #1a1a2e; color: #fff; border: 1px solid #444;"
-                                    step="0.1" min="0.1" value="0.6">
+                                    step="0.1" min="0.1">
                             </div>
                             <div class="d-flex align-items-center gap-2">
                                 <span class="text-secondary small text-uppercase fw-bold"
                                     style="font-size: 0.65rem;">Profit Multiplier</span>
-                                <input type="number" class="form-control form-control-sm" id="addPosProfitMultiplier"
+                                <input type="number" class="form-control form-control-sm dashboard-sync"
+                                    id="addPosProfitMultiplierMain" data-sync-id="addPosProfitMultiplier"
                                     style="width: 55px; font-size: 0.7rem; background: #1a1a2e; color: #fff; border: 1px solid #444;"
-                                    step="0.1" min="0" value="1.5">
+                                    step="0.1" min="0">
                                 <span class="text-secondary small text-uppercase fw-bold" style="font-size: 0.65rem;">x
                                     Fee</span>
+                            </div>
+                        </div>
+
+                        <!-- Settings Row 2 (Size % & Max Loops) -->
+                        <div
+                            class="d-flex align-items-center justify-content-between flex-wrap gap-2 mt-2 pt-2 border-top border-secondary border-opacity-25">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="text-info small text-uppercase fw-bold" style="font-size: 0.65rem;">Size
+                                    %</span>
+                                <input type="number" class="form-control form-control-sm dashboard-sync"
+                                    id="addPosSizePctMain" data-sync-id="addPosSizePct"
+                                    style="width: 55px; font-size: 0.7rem; background: #1a1a2e; color: #fff; border: 1px solid #444;"
+                                    step="1" min="1">
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="text-info small text-uppercase fw-bold" style="font-size: 0.65rem;">Max
+                                    Loops</span>
+                                <input type="number" class="form-control form-control-sm dashboard-sync"
+                                    id="addPosMaxCountMain" data-sync-id="addPosMaxCount"
+                                    style="width: 55px; font-size: 0.7rem; background: #1a1a2e; color: #fff; border: 1px solid #444;"
+                                    step="1" min="1">
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="text-secondary small text-uppercase fw-bold"
+                                    style="font-size: 0.65rem;">Gap ($)</span>
+                                <input type="number" class="form-control form-control-sm dashboard-sync"
+                                    id="addPosGapThresholdMain" data-sync-id="addPosGapThreshold"
+                                    style="width: 55px; font-size: 0.7rem; background: #1a1a2e; color: #fff; border: 1px solid #444;"
+                                    step="0.1" min="0">
                             </div>
                         </div>
                     </div>
@@ -786,6 +820,12 @@
                                     <h6 class="fw-bold mb-2 small text-primary">Target Settings</h6>
 
                                     <div class="mb-3 form-check">
+                                        <input type="checkbox" class="form-check-input" id="useAddPosAboveZero">
+                                        <label class="form-check-label" for="useAddPosAboveZero">Enable PnL > 0
+                                            Maintenance</label>
+                                    </div>
+
+                                    <div class="mb-3 form-check">
                                         <input type="checkbox" class="form-check-input" id="useAddPosProfitTarget">
                                         <label class="form-check-label" for="useAddPosProfitTarget">Enable Profit Target
                                             Logic</label>
@@ -819,7 +859,7 @@
 
                                     <div class="mb-3">
                                         <label class="form-label">Recovery Percent (%)</label>
-                                        <input type="number" class="form-control" id="addPosRecoveryPercent" step="1">
+                                        <input type="number" class="form-control" id="addPosRecoveryPercent" step="0.1">
                                     </div>
                                 </div>
                             </div>

@@ -70,6 +70,7 @@ def update_config():
             'use_auto_margin', 'auto_margin_offset',
             'use_size_auto_cal', 'size_auto_cal_times', 'use_size_auto_cal_loss', 'size_auto_cal_loss_times',
             'use_add_pos_auto_cal', 'add_pos_recovery_percent', 'add_pos_profit_multiplier',
+            'add_pos_gap_threshold', 'add_pos_size_pct', 'add_pos_max_count', 'add_pos_step2_offset',
             'use_add_pos_above_zero', 'use_add_pos_profit_target'
         ]
 
@@ -269,7 +270,11 @@ def get_status():
                 'price': bot_engine.position_entry_price.get('short', 0.0)
             }
         },
-        'primary_in_position': any(bot_engine.in_position.values())
+        'primary_in_position': any(bot_engine.in_position.values()),
+        'total_capital_2nd': bot_engine.total_capital_2nd,
+        'size_amount': bot_engine.used_amount_notional,
+        'need_add_usdt': bot_engine.config.get('need_add_usdt', 0.0), # Temporary placeholder if not sync'd
+        'need_add_above_zero': 0.0 # Will be updated by engine broadcast
     })
  
 @socketio.on('connect')
@@ -327,7 +332,9 @@ def handle_connect(sid):
             'total_trades': len(bot_engine.open_trades),
             'net_trade_profit': bot_engine.net_trade_profit,
             'total_trade_profit': bot_engine.total_trade_profit,
-            'total_trade_loss': bot_engine.total_trade_loss
+            'total_trade_loss': bot_engine.total_trade_loss,
+            'total_capital_2nd': bot_engine.total_capital_2nd,
+            'size_amount': used_amount_notional # Use latest known
         }, room=sid)
         
         emit('trades_update', {'trades': bot_engine.open_trades}, room=sid)
@@ -434,4 +441,4 @@ def handle_emergency_sl(data=None):
 
 
 if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0', port=5000, debug=False, use_reloader=False, log_output=True, allow_unsafe_werkzeug=True)
+    socketio.run(app, host='0.0.0.0', port=5000, debug=False, use_reloader=False, log_output=True)

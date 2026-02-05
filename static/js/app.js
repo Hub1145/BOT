@@ -190,9 +190,21 @@ function setupEventListeners() {
 
     document.getElementById('tradeFeePercentage').addEventListener('change', saveLiveConfigs);
 
-    // Refresh Fees Button
-    document.getElementById('refreshFeesBtn').addEventListener('click', () => {
-        loadStatus();
+    // Sync Dashboard Card with Modal Inputs
+    document.querySelectorAll('.dashboard-sync').forEach(el => {
+        el.addEventListener('change', (e) => {
+            const syncId = e.target.dataset.syncId;
+            const modalInput = document.getElementById(syncId);
+            if (modalInput) {
+                if (e.target.type === 'checkbox') {
+                    modalInput.checked = e.target.checked;
+                } else {
+                    modalInput.value = e.target.value;
+                }
+                // Trigger change on modal input to invoke saveLiveConfigs
+                modalInput.dispatchEvent(new Event('change'));
+            }
+        });
     });
 
     document.getElementById('testApiKeyBtn').addEventListener('click', testApiKey);
@@ -559,13 +571,13 @@ function updatePositionDisplay(positionData) {
                     <span class="badge bg-${pos.side === 'LONG' ? 'success' : 'danger'}">Active</span>
                 </div>
                 <div class="row g-0">
-                    <div class="col-6 small text-muted">Entry Price:</div>
+                    <div class="col-6 small text-white-50">Entry Price:</div>
                     <div class="col-6 small text-end">${Number(pos.price || 0).toFixed(4)}</div>
-                    <div class="col-6 small text-muted">Quantity:</div>
+                    <div class="col-6 small text-white-50">Quantity:</div>
                     <div class="col-6 small text-end">${Number(pos.qty || 0).toFixed(4)}</div>
-                    <div class="col-6 small text-muted">Current TP:</div>
+                    <div class="col-6 small text-white-50">Current TP:</div>
                     <div class="col-6 small text-end text-success">${Number(pos.tp || (positionData && positionData.current_take_profit) || 0).toFixed(4)}</div>
-                    <div class="col-6 small text-muted">Current SL:</div>
+                    <div class="col-6 small text-white-50">Current SL:</div>
                     <div class="col-6 small text-end text-danger">${Number(pos.sl || (positionData && positionData.current_stop_loss) || 0).toFixed(4)}</div>
                 </div>
             </div>
@@ -934,50 +946,62 @@ async function loadConfig() {
 
         const elAboveZero = document.getElementById('useAddPosAboveZero');
         if (elAboveZero) elAboveZero.checked = currentConfig.use_add_pos_above_zero || false;
+        const elAboveZeroMain = document.getElementById('useAddPosAboveZeroMain');
+        if (elAboveZeroMain) elAboveZeroMain.checked = currentConfig.use_add_pos_above_zero || false;
 
         const elProfitTarget = document.getElementById('useAddPosProfitTarget');
         if (elProfitTarget) elProfitTarget.checked = currentConfig.use_add_pos_profit_target || currentConfig.use_add_pos_auto_cal || false;
+        const elProfitTargetMain = document.getElementById('useAddPosProfitTargetMain');
+        if (elProfitTargetMain) elProfitTargetMain.checked = currentConfig.use_add_pos_profit_target || currentConfig.use_add_pos_auto_cal || false;
 
         const elAddPosRecovery = document.getElementById('addPosRecoveryPercent');
         if (elAddPosRecovery) elAddPosRecovery.value = addPosRecovery;
+        const elAddPosRecoveryMain = document.getElementById('addPosRecoveryPercentMain');
+        if (elAddPosRecoveryMain) elAddPosRecoveryMain.value = addPosRecovery;
 
         const addPosProfitMult = currentConfig.add_pos_profit_multiplier !== undefined ? currentConfig.add_pos_profit_multiplier : 1.5;
         const elAddPosProfitMult = document.getElementById('addPosProfitMultiplier');
         if (elAddPosProfitMult) elAddPosProfitMult.value = addPosProfitMult;
+        const elAddPosProfitMultMain = document.getElementById('addPosProfitMultiplierMain');
+        if (elAddPosProfitMultMain) elAddPosProfitMultMain.value = addPosProfitMult;
 
         const addPosGap = currentConfig.add_pos_gap_threshold !== undefined ? currentConfig.add_pos_gap_threshold : 5.0;
         const elAddPosGap = document.getElementById('addPosGapThreshold');
         if (elAddPosGap) elAddPosGap.value = addPosGap;
+        const elAddPosGapMain = document.getElementById('addPosGapThresholdMain');
+        if (elAddPosGapMain) elAddPosGapMain.value = addPosGap;
 
         const step2Offset = currentConfig.add_pos_step2_offset !== undefined ? currentConfig.add_pos_step2_offset : 0.0;
         const elStep2Offset = document.getElementById('addPosStep2Offset');
         if (elStep2Offset) elStep2Offset.value = step2Offset;
 
-        const useScaling = currentConfig.add_pos_count_scaling !== undefined ? currentConfig.add_pos_count_scaling : true;
-        const elUseScaling = document.getElementById('addPosCountScaling');
-        if (elUseScaling) elUseScaling.checked = useScaling;
+        // New Percentage Based Martingale Fields
+        const addPosSizePct = currentConfig.add_pos_size_pct !== undefined ? currentConfig.add_pos_size_pct : 30.0;
+        const elSizePct = document.getElementById('addPosSizePct');
+        if (elSizePct) elSizePct.value = addPosSizePct;
+        const elSizePctMain = document.getElementById('addPosSizePctMain');
+        if (elSizePctMain) elSizePctMain.value = addPosSizePct;
+
+        const addPosMaxCount = currentConfig.add_pos_max_count !== undefined ? currentConfig.add_pos_max_count : 10;
+        const elMaxCount = document.getElementById('addPosMaxCount');
+        if (elMaxCount) elMaxCount.value = addPosMaxCount;
+        const elMaxCountMain = document.getElementById('addPosMaxCountMain');
+        if (elMaxCountMain) elMaxCountMain.value = addPosMaxCount;
 
         // Add live listeners if not already added
-        const l1 = document.getElementById('useAddPosAboveZero');
-        if (l1 && !l1.dataset.listener) {
-            l1.addEventListener('change', saveLiveConfigs);
-            l1.dataset.listener = 'true';
-        }
-        const l1b = document.getElementById('useAddPosProfitTarget');
-        if (l1b && !l1b.dataset.listener) {
-            l1b.addEventListener('change', saveLiveConfigs);
-            l1b.dataset.listener = 'true';
-        }
-        const l2 = document.getElementById('addPosRecoveryPercent');
-        if (l2 && !l2.dataset.listener) {
-            l2.addEventListener('change', saveLiveConfigs);
-            l2.dataset.listener = 'true';
-        }
-        const l3 = document.getElementById('addPosProfitMultiplier');
-        if (l3 && !l3.dataset.listener) {
-            l3.addEventListener('change', saveLiveConfigs);
-            l3.dataset.listener = 'true';
-        }
+        const fieldsToWatch = [
+            'useAddPosAboveZero', 'useAddPosProfitTarget', 'addPosRecoveryPercent',
+            'addPosProfitMultiplier', 'addPosGapThreshold', 'addPosSizePct', 'addPosMaxCount'
+        ];
+
+        fieldsToWatch.forEach(fieldId => {
+            // Find both modal and main dashboard inputs (id might be same or specialized)
+            const input = document.getElementById(fieldId.replace(/_([a-z])/g, (g) => g[1].toUpperCase())); // camelCase
+            if (input && !input.dataset.listener) {
+                input.addEventListener('change', saveLiveConfigs);
+                input.dataset.listener = 'true';
+            }
+        });
 
         // Legacy fallback
         if (currentConfig.use_pnl_auto_cancel !== undefined && currentConfig.use_pnl_auto_manual === undefined) {
@@ -1076,6 +1100,22 @@ function loadConfigToModal() {
     const autCancelThreshold = document.getElementById('pnlAutoCancelThresholdModal');
     if (autCancelCheck) autCancelCheck.checked = currentConfig.use_pnl_auto_manual || false;
     if (autCancelThreshold) autCancelThreshold.value = currentConfig.pnl_auto_manual_threshold || 100.0;
+
+    // Populate Add Pos fields in modal explicitly if not handled by sync
+    const elRec = document.getElementById('addPosRecoveryPercent');
+    if (elRec) elRec.value = currentConfig.add_pos_recovery_percent || 0.6;
+
+    const elGap = document.getElementById('addPosGapThreshold');
+    if (elGap) elGap.value = currentConfig.add_pos_gap_threshold || 5.0;
+
+    const elProt = document.getElementById('addPosProfitMultiplier');
+    if (elProt) elProt.value = currentConfig.add_pos_profit_multiplier || 1.5;
+
+    const elSize = document.getElementById('addPosSizePct');
+    if (elSize) elSize.value = currentConfig.add_pos_size_pct || 30.0;
+
+    const elMax = document.getElementById('addPosMaxCount');
+    if (elMax) elMax.value = currentConfig.add_pos_max_count || 10;
 }
 
 // Helper to keep dashboard and modal in sync - Removed old PnL sync listeners as modal update is pending
@@ -1222,7 +1262,11 @@ async function saveLiveConfigs() {
         use_add_pos_above_zero: document.getElementById('useAddPosAboveZero').checked,
         use_add_pos_profit_target: document.getElementById('useAddPosProfitTarget').checked,
         add_pos_recovery_percent: parseFloat(document.getElementById('addPosRecoveryPercent').value),
-        add_pos_profit_multiplier: parseFloat(document.getElementById('addPosProfitMultiplier').value)
+        add_pos_profit_multiplier: parseFloat(document.getElementById('addPosProfitMultiplier').value),
+        add_pos_gap_threshold: parseFloat(document.getElementById('addPosGapThreshold').value),
+        add_pos_size_pct: parseFloat(document.getElementById('addPosSizePct').value),
+        add_pos_max_count: parseInt(document.getElementById('addPosMaxCount').value),
+        add_pos_step2_offset: parseFloat(document.getElementById('addPosStep2Offset').value)
     };
 
     try {
@@ -1256,9 +1300,14 @@ async function saveLiveConfigs() {
             currentConfig.auto_margin_offset = liveConfig.auto_margin_offset;
 
             // Update Add Pos in memory
-            currentConfig.use_add_pos_auto_cal = liveConfig.use_add_pos_auto_cal;
+            currentConfig.use_add_pos_above_zero = liveConfig.use_add_pos_above_zero;
+            currentConfig.use_add_pos_profit_target = liveConfig.use_add_pos_profit_target;
             currentConfig.add_pos_recovery_percent = liveConfig.add_pos_recovery_percent;
             currentConfig.add_pos_profit_multiplier = liveConfig.add_pos_profit_multiplier;
+            currentConfig.add_pos_gap_threshold = liveConfig.add_pos_gap_threshold;
+            currentConfig.add_pos_size_pct = liveConfig.add_pos_size_pct;
+            currentConfig.add_pos_max_count = liveConfig.add_pos_max_count;
+            currentConfig.add_pos_step2_offset = liveConfig.add_pos_step2_offset;
         } else {
             // Revert UI on error (e.g. bot running error)
             document.getElementById('usePnlAutoManual').checked = currentConfig.use_pnl_auto_manual;
