@@ -274,7 +274,11 @@ def get_status():
         'total_capital_2nd': bot_engine.total_capital_2nd,
         'size_amount': bot_engine.used_amount_notional,
         'need_add_usdt': bot_engine.config.get('need_add_usdt', 0.0), # Temporary placeholder if not sync'd
-        'need_add_above_zero': 0.0 # Will be updated by engine broadcast
+        'need_add_above_zero': 0.0, # Will be updated by engine broadcast
+        # Realized profit tracking
+        'net_trade_profit': getattr(bot_engine, 'net_trade_profit', 0.0),
+        'total_trade_profit': getattr(bot_engine, 'total_trade_profit', 0.0),
+        'total_trade_loss': getattr(bot_engine, 'total_trade_loss', 0.0)
     })
  
 @socketio.on('connect')
@@ -292,50 +296,30 @@ def handle_connect(sid):
 
     if bot_engine:
         emit('bot_status', {'running': bot_engine.is_running}, room=sid)
-        # Emit current account info
-        with bot_engine.account_info_lock:
-            total_balance = bot_engine.account_balance
-            available_balance = bot_engine.available_balance
+        if bot_engine:
+            # Trigger a sync to ensure metrics are fresh
+            bot_engine.fetch_account_data_sync()
             
-            # Safety Clamp: max_allowed_used must be capped by total_equity
-            max_allowed_margin = bot_engine.config['max_allowed_used']
-            if bot_engine.total_equity > 0 and max_allowed_margin > bot_engine.total_equity:
-                max_allowed_margin = bot_engine.total_equity
-
-            rate_divisor = bot_engine.config['rate_divisor']
-            leverage = float(bot_engine.config.get('leverage', 1)) 
-            if leverage <= 0: leverage = 1
-            
-            # Max Amount Display -> Max Allowed (Unleveraged) / Divisor
-            max_amount_display = max_allowed_margin / rate_divisor
-
-            # Remaining Logic: (Max Amount * Leverage) - Used Notional
-            # Max Amount is the display value (max_allowed / divisor)
-            max_notional_capacity = max_amount_display * leverage
-            
-            # Use the used_amount_notional tracked by bot_engine which sums up positions
-            used_amount_notional = 0.0
-            with bot_engine.position_lock:
-                 used_amount_notional = bot_engine.used_amount_notional
-
-            remaining_amount_notional = max_notional_capacity - used_amount_notional
-
-        emit('account_update', {
-            'total_capital': bot_engine.total_equity or total_balance,
-            'max_allowed_used_display': max_allowed_margin, # Unleveraged
-            'max_amount_display': max_amount_display,       # Unleveraged
-            'used_amount': used_amount_notional,            # Leveraged
-            'remaining_amount': remaining_amount_notional,  # Leveraged
-            'total_balance': total_balance,
-            'available_balance': available_balance,
-            'net_profit': bot_engine.net_profit,
-            'total_trades': len(bot_engine.open_trades),
-            'net_trade_profit': bot_engine.net_trade_profit,
-            'total_trade_profit': bot_engine.total_trade_profit,
-            'total_trade_loss': bot_engine.total_trade_loss,
-            'total_capital_2nd': bot_engine.total_capital_2nd,
-            'size_amount': used_amount_notional # Use latest known
-        }, room=sid)
+            payload = {
+                'total_capital': bot_engine.total_equity,
+                'total_capital_2nd': bot_engine.total_capital_2nd,
+                'max_allowed_used_display': bot_engine.max_allowed_display,
+                'max_amount_display': bot_engine.max_amount_display,
+                'used_amount': bot_engine.used_amount_notional,
+                'size_amount': getattr(bot_engine, 'cached_pos_notional', 0.0),
+                'trade_fees': bot_engine.trade_fees,
+                'used_fees': getattr(bot_engine, 'used_fees', 0.0),
+                'size_fees': getattr(bot_engine, 'size_fees', 0.0),
+                'remaining_amount': bot_engine.remaining_amount_notional,
+                'total_balance': bot_engine.account_balance,
+                'available_balance': bot_engine.available_balance,
+                'net_profit': bot_engine.net_profit,
+                'total_trades': len(bot_engine.open_trades) + bot_engine.total_trades_count,
+                'net_trade_profit': bot_engine.net_trade_profit,
+                'total_trade_profit': bot_engine.total_trade_profit,
+                'total_trade_loss': bot_engine.total_trade_loss
+            }
+            emit('account_update', payload, room=sid)
         
         emit('trades_update', {'trades': bot_engine.open_trades}, room=sid)
         # Emit current position data
@@ -441,4 +425,4 @@ def handle_emergency_sl(data=None):
 
 
 if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0', port=5000, debug=False, use_reloader=False, log_output=True, allow_unsafe_werkzeug=True)
+    socketio.run(app, host='0.0.0.0', port=5000, debug=False, use_reloader=False, log_output=True)

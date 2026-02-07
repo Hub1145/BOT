@@ -459,29 +459,22 @@ function updateAccountMetrics(data) {
         updateDailyReport(data.daily_reports);
     }
 
-    // Calculate fee breakdown based on user's formula
-    const feeInput = document.getElementById('tradeFeePercentage');
-    const feeRate = feeInput ? parseFloat(feeInput.value) : (currentConfig?.trade_fee_percentage || 0.07);
-    const usedAmount = data.used_amount || 0;
-    const sizeAmount = data.size_amount || 0; // New distinct Position Size
-    const remainingAmount = data.remaining_amount || 0;
+    // Use Backend-provided fee metrics (Centralized Logic)
+    const tradeFees = data.trade_fees || 0;
+    const usedFee = data.used_fees || 0;
+    const remainingFee = (data.remaining_amount || 0) * ((currentConfig?.trade_fee_percentage || 0.07) / 100); // Remaining is still estimate
+    const sizeFee = data.size_fees || 0;
+    const feeRate = (currentConfig?.trade_fee_percentage || 0.07);
 
-    const usedFee = (usedAmount * feeRate) / 100;
-    const sizeFee = (sizeAmount * feeRate) / 100; // Correct Size Fee
-    const remainingFee = (remainingAmount * feeRate) / 100;
-    const totalFee = usedFee + remainingFee;
-
-    document.getElementById('tradeFees').textContent = `$${Number(totalFee).toFixed(2)}`;
+    document.getElementById('tradeFees').textContent = `$${Number(tradeFees).toFixed(2)}`;
     document.getElementById('usedFee').textContent = `$${Number(usedFee).toFixed(2)}`;
     document.getElementById('remainingFee').textContent = `$${Number(remainingFee).toFixed(2)}`;
     document.getElementById('feeRateDisplay').textContent = `${Number(feeRate).toFixed(3)}%`;
-    // Size Amount Display (Updated to use actual Size Amount)
-    document.getElementById('sizeAmountDisplay').textContent = `$${Number(sizeAmount).toFixed(2)}`;
-    // New Size Fee Display
+    document.getElementById('sizeAmountDisplay').textContent = `$${Number(data.size_amount || 0).toFixed(2)}`;
     document.getElementById('sizeFeeDisplay').textContent = `$${Number(sizeFee).toFixed(2)}`;
 
     lastUsedFee = usedFee;
-    lastSizeFee = sizeFee; // Track for Auto-Cal Size updates
+    lastSizeFee = sizeFee;
 
     // UI Color Feedback for Need Add
     const needAddTgt = data.need_add_usdt || 0;
