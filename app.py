@@ -237,7 +237,7 @@ def get_status():
 
     # Calculate trades and fees for emission
     total_active_trades_count = bot_engine.total_trades_count + len(bot_engine.open_trades)
-    trade_fee_pct = bot_engine.config.get('trade_fee_percentage', 0.07)
+    trade_fee_pct = bot_engine.config.get('trade_fee_percentage', 0.08)
     trade_fees = bot_engine.used_amount_notional * (trade_fee_pct / 100.0)
 
     return jsonify({
@@ -425,4 +425,10 @@ def handle_emergency_sl(data=None):
 
 
 if __name__ == '__main__':
+    # Initialize and start in passive monitoring mode on startup
+    # This allows Auto-Cal features to run even before user clicks "Start"
+    if not bot_engine:
+        bot_engine = TradingBotEngine(config_file, emit_to_client)
+        bot_engine.start(passive_monitoring=True)
+        
     socketio.run(app, host='0.0.0.0', port=5000, debug=False, use_reloader=False, log_output=True)

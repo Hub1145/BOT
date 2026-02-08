@@ -149,13 +149,16 @@ class TradingBotEngine:
         console_handler.setLevel(logging.INFO) # Console gets INFO and higher
         root_logger.addHandler(console_handler)
 
-        # FileHandler for debug.log
-        file_handler = logging.FileHandler('debug.log', encoding='utf-8')
-        file_formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-        file_handler.setFormatter(file_formatter)
-        file_handler.setLevel(numeric_level) # File level matches config level
-        root_logger.addHandler(file_handler)
-        logging.info('Logger initialized. Writing to debug.log')
+        # FileHandler for debug.log - ONLY if log_level is set to DEBUG
+        if self.config.get('log_level', 'info').lower() == 'debug':
+            file_handler = logging.FileHandler('debug.log', encoding='utf-8')
+            file_formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+            file_handler.setFormatter(file_formatter)
+            file_handler.setLevel(numeric_level) # File level matches config level
+            root_logger.addHandler(file_handler)
+            logging.info('Logger initialized. Writing to debug.log')
+        else:
+            logging.info('Logger initialized. Console output active, file logging suppressed.')
 
         self._apply_api_credentials()
 
@@ -308,18 +311,17 @@ class TradingBotEngine:
         # Emit to the frontend
         self.emit('console_log', log_entry)
         
-        # Write to file ONLY if log_level is "debug" as per user request
-        if configured_level_str == 'debug':
-            if level == 'info':
-                logging.info(message)
-            elif level == 'warning':
-                logging.warning(message)
-            elif level == 'error':
-                logging.error(message)
-            elif level == 'debug':
-                logging.debug(message)
-            elif level == 'critical':
-                logging.critical(message)
+        # Write to standard logger (Console/File handling now managed at root level)
+        if level == 'info':
+            logging.info(message)
+        elif level == 'warning':
+            logging.warning(message)
+        elif level == 'error':
+            logging.error(message)
+        elif level == 'debug':
+            logging.debug(message)
+        elif level == 'critical':
+            logging.critical(message)
     
     def check_credentials(self):
         """Verifies if the current API credentials are valid and configured."""
@@ -2005,7 +2007,7 @@ class TradingBotEngine:
                             tp_price = avg_px - step2_offset
                         else:
                             profit_mult = self.config.get('add_pos_profit_multiplier', 1.5)
-                            trade_fee_pct = self.config.get('trade_fee_percentage', 0.07)
+                            trade_fee_pct = self.config.get('trade_fee_percentage', 0.08)
                             size_notional = safe_float(target_pos.get('notionalUsd'))
                             target_profit = (size_notional * (trade_fee_pct/100.0)) * profit_mult
                             
@@ -2013,32 +2015,36 @@ class TradingBotEngine:
                             delta = target_profit / (pos_contracts * 1.0)
                             tp_price = avg_px - delta # Lower for short
 
-                    # Sanity check
-                    if tp_price > 0:
-                        self.log(f"=== AUTO-ADD STEP 2 (CLOSE) ===", level="info")
-                        if safe_float(self.config.get('add_pos_step2_offset', 0.0)) > 0:
-                             self.log(f"Logic used: Fixed Offset (${safe_float(self.config.get('add_pos_step2_offset', 0.0))})", level="info")
-                        else:
-                             self.log(f"Logic used: Profit Multiplier ({self.config.get('add_pos_profit_multiplier', 1.5)}x Fees)", level="info")
-                        
-                        self.log(f"New Avg Entry: {avg_px} -> Setting Limit Exit at {tp_price:.4f}", level="info")
-                        
-                        # Place Limit Close
-                        close_side = "Sell" if side == 'long' else "Buy"
-                        qty = abs(safe_float(target_pos.get('pos')))
-                        
-                        # Reduce Only to strictly close
-                        self._okx_place_order(
-                            self.config['symbol'],
-                            close_side,
-                            qty,
-                            price=tp_price,
-                            order_type="Limit",
-                            reduce_only=True,
-                            verbose=True
-                        )
+                # Sanity check
+                if tp_price > 0:
+                    self.log(f"=== AUTO-ADD STEP 2 (CLOSE) ===", level="info")
+                    if safe_float(self.config.get('add_pos_step2_offset', 0.0)) > 0:
+                         self.log(f"Logic used: Fixed Offset (${safe_float(self.config.get('add_pos_step2_offset', 0.0))})", level="info")
                     else:
-                         self.log(f"Auto-Add Check Calculated TP Price Invalid: {tp_price}", level="error")
+                         self.log(f"Logic used: Profit Multiplier ({self.config.get('add_pos_profit_multiplier', 1.5)}x Fees)", level="info")
+                    
+                    self.log(f"New Avg Entry: {avg_px} -> Setting Limit Exit at {tp_price:.4f}", level="info")
+                    
+                    # Sync internal state so closure detection knows this is a Mode 2 exit
+                    with self.position_lock:
+                        self.current_take_profit[side] = tp_price
+
+                    # Place Limit Close
+                    close_side = "Sell" if side == 'long' else "Buy"
+                    qty = abs(safe_float(target_pos.get('pos')))
+                    
+                    # Reduce Only to strictly close
+                    self._okx_place_order(
+                        self.config['symbol'],
+                        close_side,
+                        qty,
+                        price=tp_price,
+                        order_type="Limit",
+                        reduce_only=True,
+                        verbose=True
+                    )
+                else:
+                     self.log(f"Auto-Add Check Calculated TP Price Invalid: {tp_price}", level="error")
 
         except Exception as e:
             self.log(f"Error in _update_exit_orders: {e}", level="error")
@@ -3134,8 +3140,13 @@ class TradingBotEngine:
                             mkt = self.latest_trade_price
                             tp = self.current_take_profit[s]
                             sl = self.current_stop_loss[s]
-                            if tp > 0 and abs(mkt - tp) / tp < 0.001: close_reason = "Exchange Hit (Take Profit)"
-                            elif sl > 0 and abs(mkt - sl) / sl < 0.001: close_reason = "Exchange Hit (Stop Loss)"
+                            if tp > 0 and abs(mkt - tp) / tp < 0.001: 
+                                if self.config.get('use_add_pos_profit_target', False):
+                                    close_reason = "Mode 2 Profit Target Reached (Auto-Add Step 2)"
+                                else:
+                                    close_reason = "Exchange Hit (Take Profit)"
+                            elif sl > 0 and abs(mkt - sl) / sl < 0.001: 
+                                close_reason = "Exchange Hit (Stop Loss)"
                         
                         self.log("=" * 60, level="info")
                         self.log(f"[DONE] Close Position: {s.upper()} {self.config['symbol']} | Reason: {close_reason}", level="info")
@@ -3236,13 +3247,13 @@ class TradingBotEngine:
         leverage = float(self.config.get('leverage', 1))
         if leverage <= 0: leverage = 1
         
-        remaining_amount_notional = (max_amount_margin * leverage) - used_amount_notional
+        remaining_amount_notional = max(0.0, (max_amount_margin * leverage) - used_amount_notional)
         
         with self.position_lock:
             self.used_amount_notional = used_amount_notional
 
         # Net Profit & Fee Calculation (CENTRALIZED)
-        trade_fee_pct = self.config.get('trade_fee_percentage', 0.07) / 100.0
+        trade_fee_pct = self.config.get('trade_fee_percentage', 0.08) / 100.0
         
         # 1. Size-Based Fees (Active Position only)
         self.size_fees = okx_pos_notional * trade_fee_pct
@@ -3340,24 +3351,21 @@ class TradingBotEngine:
         # ---------------------------------------------------------
         # AUTO-EXIT LOGIC (Multiple Modes)
         # ---------------------------------------------------------
-        # PRIORITY: Mode 2 (Profit Target) takes precedence over all other modes
-        # If Mode 2 is enabled, skip all other auto-exit checks to prevent conflicts
+        # All modes now operate independently based on their enabled status.
         # ---------------------------------------------------------
         auto_exit_triggered = False
         exit_reason = ""
-        
-        # Skip all other auto-exit modes if Mode 2 is active
-        mode_2_active = self.config.get('use_add_pos_profit_target', False)
+        current_size_fee = okx_pos_notional * trade_fee_pct if okx_pos_notional > 0 else 0.0
 
-        # Check Auto-Manual Profit (only if Mode 2 not active)
-        if not mode_2_active and self.config.get('use_pnl_auto_manual', False):
+        # Check Auto-Manual Profit
+        if self.config.get('use_pnl_auto_manual', False):
              manual_threshold = self.config.get('pnl_auto_manual_threshold', 100.0)
              if self.net_profit >= manual_threshold:
                  auto_exit_triggered = True
                  exit_reason = f"Auto-Manual Profit Target: ${self.net_profit:.2f} >= ${manual_threshold:.2f}"
 
-        # Check Auto-Cal Profit (only if Mode 2 not active)
-        if not mode_2_active and self.config.get('use_pnl_auto_cal', False) and not auto_exit_triggered and okx_pos_notional > 0:
+        # Check Auto-Cal Profit
+        if not auto_exit_triggered and self.config.get('use_pnl_auto_cal', False) and okx_pos_notional > 0:
             cal_times = self.config.get('pnl_auto_cal_times', 4)
             current_size_fee = okx_pos_notional * trade_fee_pct
             cal_threshold = cal_times * current_size_fee
@@ -3365,8 +3373,8 @@ class TradingBotEngine:
                 auto_exit_triggered = True
                 exit_reason = f"Auto-Cal Profit Target: ${self.net_profit:.2f} >= ${cal_threshold:.2f} ({cal_times}x Fee)"
 
-        # Check Auto-Cal Loss (only if Mode 2 not active)
-        if not mode_2_active and self.config.get('use_pnl_auto_cal_loss', False) and not auto_exit_triggered and okx_pos_notional > 0:
+        # Check Auto-Cal Loss (Close All)
+        if not auto_exit_triggered and self.config.get('use_pnl_auto_cal_loss', False) and okx_pos_notional > 0:
             loss_times = self.config.get('pnl_auto_cal_loss_times', 1.5)
             current_size_fee = okx_pos_notional * trade_fee_pct
             loss_threshold = -(current_size_fee * loss_times)
@@ -3374,8 +3382,8 @@ class TradingBotEngine:
                 auto_exit_triggered = True
                 exit_reason = f"Auto-Cal Loss Target: ${self.net_profit:.2f} <= ${loss_threshold:.2f} ({loss_times}x Fee)"
 
-        # Check Auto-Cal Size (Profit) (only if Mode 2 not active)
-        if not mode_2_active and self.config.get('use_size_auto_cal', False) and not auto_exit_triggered and okx_pos_notional > 0:
+        # Check Auto-Cal Size (Profit)
+        if not auto_exit_triggered and self.config.get('use_size_auto_cal', False) and okx_pos_notional > 0:
             size_times = self.config.get('size_auto_cal_times', 2.0)
             current_size_fee = okx_pos_notional * trade_fee_pct
             size_target = current_size_fee * size_times
@@ -3383,8 +3391,8 @@ class TradingBotEngine:
                 auto_exit_triggered = True
                 exit_reason = f"Auto-Cal Size Target: ${self.net_profit:.2f} >= ${size_target:.2f} ({size_times}x Size Fee)"
 
-        # Check Auto-Cal Size (Loss) (only if Mode 2 not active)
-        if not mode_2_active and self.config.get('use_size_auto_cal_loss', False) and not auto_exit_triggered and okx_pos_notional > 0:
+        # Check Auto-Cal Size (Loss)
+        if not auto_exit_triggered and self.config.get('use_size_auto_cal_loss', False) and okx_pos_notional > 0:
             size_loss_times = self.config.get('size_auto_cal_loss_times', 1.5)
             current_size_fee = okx_pos_notional * trade_fee_pct
             size_loss_threshold = -(current_size_fee * size_loss_times)
@@ -3392,71 +3400,41 @@ class TradingBotEngine:
                 auto_exit_triggered = True
                 exit_reason = f"Auto-Cal Size Loss Target: ${self.net_profit:.2f} <= ${size_loss_threshold:.2f} ({size_loss_times}x Size Fee)"
 
-        # Execute General Auto-Exit
-        if auto_exit_triggered:
-             with self.exit_lock:
-                 if not self.authoritative_exit_in_progress:
-                     self.log(f"[TARGET] AUTHORITATIVE AUTO-EXIT TRIGGERED: {exit_reason}", level="WARNING")
-                     threading.Thread(target=self._execute_trade_exit, args=(exit_reason,), daemon=True).start()
-
-        # ============================================================
-        # MODE 2: Profit Target Exit (User's "Example 2")
-        # ============================================================
-        # User Requirement: Exit when Unrealized PnL >= (Size × Fee% × Multiplier)
-        # CRITICAL: NEVER exit at loss, only at profit target
-        # ============================================================
-        if self.config.get('use_add_pos_profit_target', False) and okx_pos_notional > 0:
-            # Check for conflicting auto-exit modes
-            conflicting_modes = []
-            if self.config.get('use_pnl_auto_cal_loss'): conflicting_modes.append('Auto-Cal Loss')
-            if self.config.get('use_size_auto_cal_loss'): conflicting_modes.append('Size Loss')
-            if self.config.get('use_pnl_auto_manual'): conflicting_modes.append('Auto-Manual')
-            if self.config.get('use_pnl_auto_cal'): conflicting_modes.append('Auto-Cal Profit')
-            
-            if conflicting_modes and self.monitoring_tick % 20 == 0:
-                self.log(f"⚠️ Mode 2 Active: Conflicting exit modes enabled: {', '.join(conflicting_modes)}. These may cause premature exits.", level="warning")
-            
-            # Get configuration
+        # MODE 2: Profit Target Exit (Unrealized PnL >= Size × Fee% × Multiplier)
+        if not auto_exit_triggered and self.config.get('use_add_pos_profit_target', False) and okx_pos_notional > 0:
             profit_mult = self.config.get('add_pos_profit_multiplier', 1.5)
-            
-            # Calculate size fee: Size × Fee% (already in decimal)
-            # trade_fee_pct is already 0.0008 for 0.08% (converted at line 3245)
-            # Example: $3499 × 0.0008 = $2.80
-            current_size_fee = okx_pos_notional * trade_fee_pct
-            
-            # Target = Size Fee × Multiplier
-            # Example: $2.80 × 1.5 = $4.20
+            # current_size_fee calculated above in line 3373
             target_pnl = current_size_fee * profit_mult
             
             # Detailed logging every few ticks for debugging
             if self.monitoring_tick % 5 == 0:
-                self.log(f"[Mode 2 Check] Size: ${okx_pos_notional:.2f} | Fee%: {trade_fee_pct}% | Size Fee: ${current_size_fee:.4f} | Target: ${target_pnl:.4f} | Unrealized PnL: ${total_unrealized_pnl:.4f} | Net: ${self.net_profit:.4f}", level="debug")
+                self.log(f"[Mode 2 Check] Size: ${okx_pos_notional:.2f} | Fee%: {trade_fee_pct}% | Fee: ${current_size_fee:.4f} | Target: ${target_pnl:.4f} | Unrealized PnL: ${total_unrealized_pnl:.4f}", level="debug")
             
             # SAFETY CHECK: Only exit if PnL is POSITIVE and >= target
-            # This prevents ANY loss exits
             if total_unrealized_pnl > 0 and total_unrealized_pnl >= target_pnl:
-                exit_reason = f"Mode 2 Profit Target: Unrealized ${total_unrealized_pnl:.2f} >= ${target_pnl:.2f} ({profit_mult}x of ${current_size_fee:.2f} size fee)"
-                self.log(f"[Mode 2 TRIGGER] Size: ${okx_pos_notional:.2f} | Fee%: {trade_fee_pct}% | Fee: ${current_size_fee:.4f} | Target: ${target_pnl:.4f} | Unrealized: ${total_unrealized_pnl:.4f}", level="WARNING")
-                with self.exit_lock:
-                    if not self.authoritative_exit_in_progress:
-                        self.log(f"[TARGET] {exit_reason}. Auto-Closing Position...", level="WARNING")
-                        threading.Thread(target=self._execute_trade_exit, args=(exit_reason,), daemon=True).start()
+                auto_exit_triggered = True
+                exit_reason = f"Mode 2 Profit Target: Unrealized ${total_unrealized_pnl:.2f} >= ${target_pnl:.2f} ({profit_mult}x Fee)"
 
-        # ============================================================
         # MODE 1: Break-Even Exit (PnL Above Zero)
-        # ============================================================
-        # Only runs if Mode 2 is NOT enabled (Mode 2 takes priority)
-        # ============================================================
-        elif self.config.get('use_add_pos_above_zero', False) and okx_pos_notional > 0:
-             current_size_fee = okx_pos_notional * trade_fee_pct
+        if not auto_exit_triggered and self.config.get('use_add_pos_above_zero', False) and okx_pos_notional > 0:
+             # current_size_fee calculated above in line 3373
              near_zero_threshold = max(1.0, current_size_fee * 0.1)
-             
              if self.net_profit >= -near_zero_threshold:
-                 exit_reason = f"Mode 1 PnL Above Zero: ${self.net_profit:.2f} ≈ $0 (threshold: ${near_zero_threshold:.2f})"
-                 with self.exit_lock:
-                     if not self.authoritative_exit_in_progress:
-                         self.log(f"Mode 1 Check {exit_reason}. Auto-Closing Position...", level="WARNING")
-                         threading.Thread(target=self._execute_trade_exit, args=(exit_reason,), daemon=True).start()
+                 auto_exit_triggered = True
+                 exit_reason = f"Mode 1 PnL Above Zero: Net ${self.net_profit:.2f} ≈ $0"
+
+        # ---------------------------------------------------------
+        # Execute Authoritative Auto-Exit
+        # ---------------------------------------------------------
+        if auto_exit_triggered:
+             with self.exit_lock:
+                 if not self.authoritative_exit_in_progress:
+                     self.log(f"[TARGET] AUTHORITATIVE AUTO-EXIT TRIGGERED: {exit_reason}", level="WARNING")
+                     # Special logging for Mode 2 if it was the reason
+                     if "Mode 2" in exit_reason:
+                         self.log(f"[Mode 2 TRIGGER] Size: ${okx_pos_notional:.2f} | Target: ${target_pnl:.4f} | Unrealized: ${total_unrealized_pnl:.4f}", level="WARNING")
+                     
+                     threading.Thread(target=self._execute_trade_exit, args=(exit_reason,), daemon=True).start()
 
         # Need Add Calculation - Moved to _sync_account_data
         # self._calculate_need_add_metrics(okx_pos_notional)
@@ -3465,7 +3443,7 @@ class TradingBotEngine:
         self.max_allowed_display = max_allowed_display
         self.max_amount_display = max_amount_display
         self.remaining_amount_notional = remaining_amount_notional
-        self.trade_fees = okx_pos_notional * (trade_fee_pct / 100.0) # Approx based on total size
+        self.trade_fees = okx_pos_notional * trade_fee_pct # Corrected: trade_fee_pct already decimal
 
     def _calculate_need_add_metrics(self, okx_pos_notional):
         """Helper to calculate Need Add values."""
@@ -3485,38 +3463,53 @@ class TradingBotEngine:
                         pos_side = 'short'
                 
                 if avg_entry > 0:
+                    # Fallback chain: WS Price -> Cached Detail Price -> Entry (as last resort to avoid 0)
                     current_price = self.latest_trade_price
+                    if not current_price or current_price <= 0:
+                        # Try to get from cached position details if available
+                        details = self.position_details.get(pos_side, {})
+                        current_price = safe_float(details.get('lastPx'))
+                        if not current_price or current_price <= 0:
+                             current_price = avg_entry # Fallback to entry so denom calculation doesn't crash but metrics stay near 0
+
                     if current_price and current_price > 0:
-                         # ... (Existing Calculation Logic - Copied) ...
                          recovery_pct = self.config.get('add_pos_recovery_percent', 0.6) / 100.0
-                         target_price_be = 0.0
-                         if pos_side == 'long':
-                             target_price_be = current_price * (1 + recovery_pct)
-                             if target_price_be < avg_entry:
+                         
+                         # Sensitivity Fix: Always show if price is against us
+                         is_against = (pos_side == 'long' and current_price < avg_entry) or \
+                                      (pos_side == 'short' and current_price > avg_entry)
+                         
+                         if is_against:
+                             target_price_be = 0.0
+                             if pos_side == 'long':
+                                 target_price_be = current_price * (1 + recovery_pct)
+                                 # Limit target to entry price if it would overshoot (stays sensitive)
+                                 target_price_be = min(target_price_be, avg_entry - 0.00000001)
+                                 
                                  denom = target_price_be - current_price
                                  if denom > 0:
                                      self.need_add_usdt_above_zero = okx_pos_notional * (avg_entry - target_price_be) / denom
-                         else: # Short
-                             target_price_be = current_price * (1 - recovery_pct)
-                             if target_price_be > avg_entry:
+                             else: # Short
+                                 target_price_be = current_price * (1 - recovery_pct)
+                                 # Limit target to entry price if it would overshoot
+                                 target_price_be = max(target_price_be, avg_entry + 0.00000001)
+                                 
                                  denom = current_price - target_price_be
                                  if denom > 0:
                                       self.need_add_usdt_above_zero = okx_pos_notional * (target_price_be - avg_entry) / denom
-                         
-                         profit_mult = self.config.get('add_pos_profit_multiplier', 1.5)
-                         fee_rate = self.config.get('trade_fee_percentage', 0.07) / 100.0
-                         needed_gain_pct = fee_rate * profit_mult
-                         target_avg_for_profit = 0.0
-                         
-                         if pos_side == 'long':
-                             target_avg_for_profit = target_price_be / (1 + needed_gain_pct)
-                             if target_avg_for_profit < avg_entry:
+                             
+                             # Mode 2: Profit Target
+                             profit_mult = self.config.get('add_pos_profit_multiplier', 1.5)
+                             trade_fee_pct = self.config.get('trade_fee_percentage', 0.08) / 100.0
+                             needed_gain_pct = trade_fee_pct * profit_mult
+                             
+                             if pos_side == 'long':
+                                 target_avg_for_profit = target_price_be / (1 + needed_gain_pct)
                                  denom_profit = target_avg_for_profit - current_price
                                  if denom_profit > 0:
                                      self.need_add_usdt_profit_target = okx_pos_notional * (avg_entry - target_avg_for_profit) / denom_profit
-                         else: # Short
-                             target_avg_for_profit = target_price_be / (1 - needed_gain_pct)
-                             if target_avg_for_profit > avg_entry:
+                             else: # Short
+                                 target_avg_for_profit = target_price_be / (1 - needed_gain_pct)
                                  denom_profit = current_price - target_avg_for_profit
                                  if denom_profit > 0:
                                      self.need_add_usdt_profit_target = okx_pos_notional * (target_avg_for_profit - avg_entry) / denom_profit
@@ -3536,9 +3529,12 @@ class TradingBotEngine:
 
         # Emit 'account_update' with calculated targets for real-time sync
         # Calculate current auto-exit targets based on position size
-        trade_fee_pct = self.config.get('trade_fee_percentage', 0.08)
+        # Standardize fee multiplier (0.08 / 100 = 0.0008)
+        trade_fee_pct_raw = self.config.get('trade_fee_percentage', 0.08)
+        trade_fee_dec = trade_fee_pct_raw / 100.0
+        
         okx_pos_notional = getattr(self, 'cached_pos_notional', 0.0)
-        current_size_fee = okx_pos_notional * trade_fee_pct if okx_pos_notional > 0 else 0.0
+        current_size_fee = okx_pos_notional * trade_fee_dec if okx_pos_notional > 0 else 0.0
         
         self.emit('account_update', {
             'total_trades': getattr(self, 'cached_active_positions_count', 0) + self.total_trades_count,

@@ -397,7 +397,18 @@ function updateAccountMetrics(data) {
     document.getElementById('maxAllowedUsedDisplay').textContent = `$${data.max_allowed_used_display !== undefined ? Number(data.max_allowed_used_display).toFixed(2) : '0.00'}`;
     document.getElementById('maxAmountDisplay').textContent = `$${data.max_amount_display !== undefined ? Number(data.max_amount_display).toFixed(2) : '0.00'}`;
     document.getElementById('usedAmount').textContent = `$${data.used_amount !== undefined ? Number(data.used_amount).toFixed(2) : '0.00'}`;
-    document.getElementById('remainingAmount').textContent = `$${data.remaining_amount !== undefined ? Number(data.remaining_amount).toFixed(2) : '0.00'}`;
+    const remaining = data.remaining_amount !== undefined ? Number(data.remaining_amount) : 0.00;
+    const minOrder = currentConfig?.min_order_amount || 0;
+    const remainingEl = document.getElementById('remainingAmount');
+    if (remaining < minOrder && minOrder > 0) {
+        remainingEl.textContent = 'No remaining balance for trade';
+        remainingEl.classList.add('text-danger', 'small');
+        remainingEl.style.fontSize = '0.75rem';
+    } else {
+        remainingEl.textContent = `$${remaining.toFixed(2)}`;
+        remainingEl.classList.remove('text-danger', 'small');
+        remainingEl.style.fontSize = '';
+    }
     document.getElementById('needAddProfitTargetDisplay').textContent = `$${data.need_add_usdt !== undefined ? Number(data.need_add_usdt).toFixed(2) : '0.00'}`;
     document.getElementById('needAddAboveZeroDisplay').textContent = `$${data.need_add_above_zero !== undefined ? Number(data.need_add_above_zero).toFixed(2) : '0.00'}`;
     document.getElementById('balance').textContent = `$${data.total_balance !== undefined ? Number(data.total_balance).toFixed(2) : '0.00'}`;
