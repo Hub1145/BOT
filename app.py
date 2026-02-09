@@ -1,18 +1,24 @@
-from flask import Flask, render_template, request, jsonify, send_file
+from flask import Flask, render_template, request, jsonify, send_file, session, redirect, url_for
 from flask_socketio import SocketIO, emit
+from functools import wraps
 import json
 import logging
 import os
+import threading
 from bot_engine import TradingBotEngine
 
 logging.basicConfig(
-    level=logging.DEBUG, # Changed to DEBUG for more verbose logging
-    format='%(asctime)s - %(levelname)s - %(message)s'
+    level=logging.DEBUG
 )
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SESSION_SECRET', 'dev-secret-key-change-in-production')
-socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading')
+socketio = SocketIO(app, 
+                   cors_allowed_origins="*", 
+                   async_mode='threading',
+                   max_http_buffer_size=10000000, # 10MB to handle large daily_reports/trades payload
+                   ping_timeout=60, 
+                   ping_interval=25)
 
 config_file = 'config.json'
 bot_engine = None
@@ -33,16 +39,52 @@ def favicon():
     return app.send_static_file('favicon.ico')
 
 
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        config = load_config()
+        # If no credentials set, allow entry (to avoid lockouts)
+        if not config.get('dashboard_username') or not config.get('dashboard_password'):
+            return f(*args, **kwargs)
+        
+        if not session.get('logged_in'):
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    config = load_config()
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        
+        if username == config.get('dashboard_username') and password == config.get('dashboard_password'):
+            session['logged_in'] = True
+            return redirect(url_for('index'))
+        else:
+            return "Invalid credentials", 401
+            
+    return render_template('login.html')
+
+@app.route('/logout')
+def logout():
+    session.pop('logged_in', None)
+    return redirect(url_for('login'))
+
 @app.route('/')
+@login_required
 def index():
     return render_template('dashboard.html')
 
 @app.route('/api/config', methods=['GET'])
+@login_required
 def get_config():
     config = load_config()
     return jsonify(config)
 
 @app.route('/api/config', methods=['POST'])
+@login_required
 def update_config():
     global bot_engine
 
@@ -71,7 +113,8 @@ def update_config():
             'use_size_auto_cal', 'size_auto_cal_times', 'use_size_auto_cal_loss', 'size_auto_cal_loss_times',
             'use_add_pos_auto_cal', 'add_pos_recovery_percent', 'add_pos_profit_multiplier',
             'add_pos_gap_threshold', 'add_pos_size_pct', 'add_pos_max_count', 'add_pos_step2_offset',
-            'use_add_pos_above_zero', 'use_add_pos_profit_target'
+            'use_add_pos_above_zero', 'use_add_pos_profit_target',
+            'dashboard_username', 'dashboard_password', 'add_pos_gap_threshold_2', 'add_pos_size_pct_2'
         ]
 
         # Update current_config with only allowed and present keys from new_config
@@ -121,7 +164,6 @@ def update_config():
                 if not valid:
                     emit_to_client('error', {'message': f'API Credentials Error: {msg}'})
             
-            import threading
             threading.Thread(target=background_init, daemon=True).start()
             
             final_msg = 'Configuration updated successfully'
@@ -136,6 +178,7 @@ def update_config():
         return jsonify({'success': False, 'message': str(e)}), 500
 
 @app.route('/api/shutdown', methods=['POST'])
+@login_required
 def shutdown():
     global bot_engine
     if bot_engine:
@@ -153,28 +196,33 @@ def shutdown():
     return jsonify({'success': True, 'message': 'Server shutting down...'})
 
 @app.route('/api/download_logs')
+@login_required
 def download_logs():
     try:
-        log_file = 'debug.log'
+        log_file = 'info.log'
         if not os.path.exists(log_file):
-             return jsonify({'error': 'Log file not found'}), 404
+             # Fallback to debug.log if info.log not yet created
+             log_file = 'debug.log'
+             if not os.path.exists(log_file):
+                 return jsonify({'error': 'Log file not found'}), 404
         
         # Flush handlers to ensure latest logs are written
         for handler in logging.getLogger().handlers:
-            if isinstance(handler, logging.FileHandler): # Only flush file handlers
+            if hasattr(handler, 'flush'):
                 handler.flush()
             
         return send_file(
             log_file,
             mimetype='text/plain',
             as_attachment=True,
-            download_name='bot_log.log'
+            download_name='bot_info.log'
         )
     except Exception as e:
         logging.error(f'Error downloading logs: {str(e)}', exc_info=True)
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/test_api_key', methods=['POST'])
+@login_required
 def test_api_key_route():
     try:
         data = request.json
@@ -217,6 +265,7 @@ def test_api_key_route():
 
 
 @app.route('/api/status', methods=['GET'])
+@login_required
 def get_status():
     global bot_engine
     if not bot_engine:
@@ -237,8 +286,14 @@ def get_status():
 
     # Calculate trades and fees for emission
     total_active_trades_count = bot_engine.total_trades_count + len(bot_engine.open_trades)
-    trade_fee_pct = bot_engine.config.get('trade_fee_percentage', 0.08)
-    trade_fees = bot_engine.used_amount_notional * (trade_fee_pct / 100.0)
+    # Calculate trades and fees for emission
+    total_active_trades_count = bot_engine.total_trades_count + len(bot_engine.open_trades)
+    # trade_fees is already calculated in bot_engine, use it directly to ensure consistency
+    
+    # helper for targets
+    trade_fee_pct = bot_engine.config.get('trade_fee_percentage', 0.08) / 100.0
+    okx_pos_notional = getattr(bot_engine, 'cached_pos_notional', 0.0)
+    current_size_fee = okx_pos_notional * trade_fee_pct if okx_pos_notional > 0 else 0.0
 
     return jsonify({
         'running': bot_engine.is_running,
@@ -246,7 +301,8 @@ def get_status():
         'open_trades': bot_engine.open_trades,
         'net_profit': bot_engine.net_profit,
         'total_trades': total_active_trades_count,
-        'trade_fees': bot_engine.trade_fees,
+        'total_trades': total_active_trades_count,
+        'trade_fees': getattr(bot_engine, 'trade_fees', 0.0),
         'total_capital': bot_engine.total_equity,
         'used_amount': bot_engine.used_amount_notional,
         'remaining_amount': bot_engine.remaining_amount_notional,
@@ -273,18 +329,31 @@ def get_status():
         'primary_in_position': any(bot_engine.in_position.values()),
         'total_capital_2nd': bot_engine.total_capital_2nd,
         'size_amount': bot_engine.used_amount_notional,
-        'need_add_usdt': bot_engine.config.get('need_add_usdt', 0.0), # Temporary placeholder if not sync'd
-        'need_add_above_zero': 0.0, # Will be updated by engine broadcast
+        'need_add_usdt': getattr(bot_engine, 'need_add_usdt_profit_target', 0.0),
+        'need_add_above_zero': getattr(bot_engine, 'need_add_usdt_above_zero', 0.0),
         # Realized profit tracking
         'net_trade_profit': getattr(bot_engine, 'net_trade_profit', 0.0),
         'total_trade_profit': getattr(bot_engine, 'total_trade_profit', 0.0),
-        'total_trade_loss': getattr(bot_engine, 'total_trade_loss', 0.0)
+        'total_trade_profit': getattr(bot_engine, 'total_trade_profit', 0.0),
+        'total_trade_loss': getattr(bot_engine, 'total_trade_loss', 0.0),
+        
+        # Real-time calculated targets (Match socket 'account_update')
+        'auto_cal_profit_target': bot_engine.config.get('pnl_auto_cal_times', 4) * current_size_fee,
+        'auto_cal_loss_target': -bot_engine.config.get('pnl_auto_cal_loss_times', 1.5) * current_size_fee,
+        'size_profit_target': bot_engine.config.get('size_auto_cal_times', 2.0) * current_size_fee,
+        'size_loss_target': -bot_engine.config.get('size_auto_cal_loss_times', 1.5) * current_size_fee,
+        'mode_2_profit_target': bot_engine.config.get('add_pos_profit_multiplier', 1.5) * current_size_fee
     })
  
 @socketio.on('connect')
-def handle_connect(sid):
+def handle_connect(auth=None): # changed sid to auth/none as sid is in request.sid
     global bot_engine
+    sid = getattr(request, 'sid', None)
     logging.info(f'Client connected: {sid}')
+    
+    if not sid:
+        return False # Reject connection if no sid found
+
     emit('connection_status', {'connected': True}, room=sid)
  
     if not bot_engine:
@@ -296,10 +365,13 @@ def handle_connect(sid):
 
     if bot_engine:
         emit('bot_status', {'running': bot_engine.is_running}, room=sid)
-        if bot_engine:
-            # Trigger a sync to ensure metrics are fresh
+        
+        # Trigger a sync to ensure metrics are fresh for this client
+        # Use a thread so we don't block the connection handshake
+        def initial_sync():
             bot_engine.fetch_account_data_sync()
             
+            # Emit fresh data once fetched
             payload = {
                 'total_capital': bot_engine.total_equity,
                 'total_capital_2nd': bot_engine.total_capital_2nd,
@@ -319,20 +391,20 @@ def handle_connect(sid):
                 'total_trade_profit': bot_engine.total_trade_profit,
                 'total_trade_loss': bot_engine.total_trade_loss
             }
-            emit('account_update', payload, room=sid)
-        
-        emit('trades_update', {'trades': bot_engine.open_trades}, room=sid)
-        # Emit current position data
-        emit('position_update', {
-            'in_position': bot_engine.in_position,
-            'position_entry_price': bot_engine.position_entry_price,
-            'position_qty': bot_engine.position_qty,
-            'current_take_profit': bot_engine.current_take_profit,
-            'current_stop_loss': bot_engine.current_stop_loss
-        }, room=sid)
- 
-        for log in list(bot_engine.console_logs):
-            emit('console_log', log, room=sid)
+            socketio.emit('account_update', payload, room=sid)
+            socketio.emit('trades_update', {'trades': bot_engine.open_trades}, room=sid)
+            socketio.emit('position_update', {
+                'in_position': bot_engine.in_position,
+                'position_entry_price': bot_engine.position_entry_price,
+                'position_qty': bot_engine.position_qty,
+                'current_take_profit': bot_engine.current_take_profit,
+                'current_stop_loss': bot_engine.current_stop_loss
+            }, room=sid)
+            
+            for log in list(bot_engine.console_logs):
+                socketio.emit('console_log', log, room=sid)
+
+        threading.Thread(target=initial_sync, daemon=True).start()
 
 @socketio.on('disconnect')
 def handle_disconnect():
@@ -431,4 +503,4 @@ if __name__ == '__main__':
         bot_engine = TradingBotEngine(config_file, emit_to_client)
         bot_engine.start(passive_monitoring=True)
         
-    socketio.run(app, host='0.0.0.0', port=5000, debug=False, use_reloader=False, log_output=True)
+    socketio.run(app, host='0.0.0.0', port=5000, debug=False, use_reloader=False, log_output=True, allow_unsafe_werkzeug=True)

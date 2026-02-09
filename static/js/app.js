@@ -358,159 +358,199 @@ function setupSocketListeners() {
 }
 
 function updateBotStatus(running) {
-    // If we are currently transitioning (Starting/Stopping), don't let 
-    // early status polls from background threads flicker the UI back.
-    // Only accept the update if it matches the EXPECTED transition outcome.
     if (isTransitioning) {
         if (running === isBotRunning) {
-            // This is likely an old state being echoed back (e.g. from a poll while it was starting)
-            // Keep the "Starting..." or "Stopping..." UI visible.
             return;
         }
-        // If we get here, the state has actually CHANGED as requested (e.g. false -> true)
         isTransitioning = false;
     }
 
     isBotRunning = running;
-    const statusBadge = document.getElementById('botStatus');
+    const statusBadge = document.getElementById('botStatusBadge') || document.getElementById('botStatus');
     const startStopBtn = document.getElementById('startStopBtn');
 
-    if (running) {
-        statusBadge.textContent = 'Running';
-        statusBadge.className = 'badge status-badge running';
-        startStopBtn.className = 'btn btn-danger w-100';
-        // Rebuild content: Icon + Text
-        startStopBtn.innerHTML = '<i class="bi bi-stop-fill"></i> <span id="btnText">Stop</span>';
-    } else {
-        statusBadge.textContent = 'Stopped';
-        statusBadge.className = 'badge status-badge stopped';
-        startStopBtn.className = 'btn btn-success w-100';
-        // Rebuild content: Icon + Text
-        startStopBtn.innerHTML = '<i class="bi bi-play-fill"></i> <span id="btnText">Start</span>';
+    if (statusBadge) {
+        if (running) {
+            statusBadge.textContent = 'Running';
+            statusBadge.className = 'badge status-badge running';
+        } else {
+            statusBadge.textContent = 'Stopped';
+            statusBadge.className = 'badge status-badge stopped';
+        }
     }
-    startStopBtn.disabled = false; // Re-enable the button
+
+    if (startStopBtn) {
+        if (running) {
+            startStopBtn.className = 'btn btn-danger w-100';
+            startStopBtn.innerHTML = '<i class="bi bi-stop-fill"></i> <span id="btnText">Stop</span>';
+        } else {
+            startStopBtn.className = 'btn btn-success w-100';
+            startStopBtn.innerHTML = '<i class="bi bi-play-fill"></i> <span id="btnText">Start</span>';
+        }
+        startStopBtn.disabled = false;
+    }
 }
 
 function updateAccountMetrics(data) {
-    document.getElementById('totalCapital').textContent = `$${data.total_capital !== undefined ? Number(data.total_capital).toFixed(2) : '0.00'}`;
-    document.getElementById('totalCapital2nd').textContent = `$${data.total_capital_2_nd !== undefined ? Number(data.total_capital_2_nd).toFixed(2) : (data.total_capital_2nd !== undefined ? Number(data.total_capital_2nd).toFixed(2) : '0.00')}`;
-    document.getElementById('maxAllowedUsedDisplay').textContent = `$${data.max_allowed_used_display !== undefined ? Number(data.max_allowed_used_display).toFixed(2) : '0.00'}`;
-    document.getElementById('maxAmountDisplay').textContent = `$${data.max_amount_display !== undefined ? Number(data.max_amount_display).toFixed(2) : '0.00'}`;
-    document.getElementById('usedAmount').textContent = `$${data.used_amount !== undefined ? Number(data.used_amount).toFixed(2) : '0.00'}`;
-    const remaining = data.remaining_amount !== undefined ? Number(data.remaining_amount) : 0.00;
-    const minOrder = currentConfig?.min_order_amount || 0;
-    const remainingEl = document.getElementById('remainingAmount');
-    if (remaining < minOrder && minOrder > 0) {
-        remainingEl.textContent = 'No remaining balance for trade';
-        remainingEl.classList.add('text-danger', 'small');
-        remainingEl.style.fontSize = '0.75rem';
-    } else {
-        remainingEl.textContent = `$${remaining.toFixed(2)}`;
-        remainingEl.classList.remove('text-danger', 'small');
-        remainingEl.style.fontSize = '';
-    }
-    document.getElementById('needAddProfitTargetDisplay').textContent = `$${data.need_add_usdt !== undefined ? Number(data.need_add_usdt).toFixed(2) : '0.00'}`;
-    document.getElementById('needAddAboveZeroDisplay').textContent = `$${data.need_add_above_zero !== undefined ? Number(data.need_add_above_zero).toFixed(2) : '0.00'}`;
-    document.getElementById('balance').textContent = `$${data.total_balance !== undefined ? Number(data.total_balance).toFixed(2) : '0.00'}`;
+    if (!data) return;
 
-    // Update Auto-Cal Add Header based on position side
-    const headerEl = document.getElementById('autoAddPosHeader');
-    if (headerEl) {
-        let side = '';
-        if (data.positions && data.positions.short && data.positions.short.in) {
-            side = 'Short';
-        } else if (data.positions && data.positions.long && data.positions.long.in) {
-            side = 'Long';
-        } else if (data.in_position && typeof data.in_position === 'object') {
-            // Fallback to in_position dict if positions not formatted
-            if (data.in_position.short) side = 'Short';
-            else if (data.in_position.long) side = 'Long';
-        }
+    try {
+        const elTotalCapital = document.getElementById('totalCapital');
+        if (elTotalCapital) elTotalCapital.textContent = `$${data.total_capital !== undefined ? Number(data.total_capital).toFixed(2) : '0.00'}`;
 
-        if (side) {
-            headerEl.textContent = `Auto-Cal Add ${side} Position`;
-        } else {
-            // Fallback to configured direction if no active position
-            // Use currentConfig (global) or check if it's in data? Usually data doesn't include config.
-            const configDirection = currentConfig?.direction;
-            if (configDirection === 'short') {
-                headerEl.textContent = 'Auto-Cal Add Short Position';
-            } else if (configDirection === 'long') {
-                headerEl.textContent = 'Auto-Cal Add Long Position';
+        const elTotalCapital2nd = document.getElementById('totalCapital2nd');
+        if (elTotalCapital2nd) elTotalCapital2nd.textContent = `$${data.total_capital_2_nd !== undefined ? Number(data.total_capital_2_nd).toFixed(2) : (data.total_capital_2nd !== undefined ? Number(data.total_capital_2nd).toFixed(2) : '0.00')}`;
+
+        const elMaxAllowedUsedDisplay = document.getElementById('maxAllowedUsedDisplay');
+        if (elMaxAllowedUsedDisplay) elMaxAllowedUsedDisplay.textContent = `$${data.max_allowed_used_display !== undefined ? Number(data.max_allowed_used_display).toFixed(2) : '0.00'}`;
+
+        const elMaxAmountDisplay = document.getElementById('maxAmountDisplay');
+        if (elMaxAmountDisplay) elMaxAmountDisplay.textContent = `$${data.max_amount_display !== undefined ? Number(data.max_amount_display).toFixed(2) : '0.00'}`;
+
+        const elUsedAmount = document.getElementById('usedAmount');
+        if (elUsedAmount) elUsedAmount.textContent = `$${data.used_amount !== undefined ? Number(data.used_amount).toFixed(2) : '0.00'}`;
+
+        const remaining = data.remaining_amount !== undefined ? Number(data.remaining_amount) : 0.00;
+        const minOrder = currentConfig?.min_order_amount || 0;
+        const remainingEl = document.getElementById('remainingAmount');
+        if (remainingEl) {
+            if (remaining < minOrder && minOrder > 0) {
+                remainingEl.textContent = 'No remaining balance for trade';
+                remainingEl.classList.add('text-danger', 'small');
+                remainingEl.style.fontSize = '0.75rem';
             } else {
-                headerEl.textContent = 'Auto-Cal Add Position';
+                remainingEl.textContent = `$${remaining.toFixed(2)}`;
+                remainingEl.classList.remove('text-danger', 'small');
+                remainingEl.style.fontSize = '';
             }
         }
+
+        const elNeedAddProfitTargetDisplay = document.getElementById('needAddProfitTargetDisplay');
+        if (elNeedAddProfitTargetDisplay) elNeedAddProfitTargetDisplay.textContent = `$${data.need_add_usdt !== undefined ? Number(data.need_add_usdt).toFixed(2) : '0.00'}`;
+
+        const elNeedAddAboveZeroDisplay = document.getElementById('needAddAboveZeroDisplay');
+        if (elNeedAddAboveZeroDisplay) elNeedAddAboveZeroDisplay.textContent = `$${data.need_add_above_zero !== undefined ? Number(data.need_add_above_zero).toFixed(2) : '0.00'}`;
+
+        const elBalance = document.getElementById('balance');
+        if (elBalance) elBalance.textContent = `$${data.total_balance !== undefined ? Number(data.total_balance).toFixed(2) : '0.00'}`;
+
+        const headerEl = document.getElementById('autoAddPosHeader');
+        if (headerEl) {
+            let side = '';
+            if (data.positions && data.positions.short && data.positions.short.in) {
+                side = 'Short';
+            } else if (data.positions && data.positions.long && data.positions.long.in) {
+                side = 'Long';
+            } else if (data.in_position && typeof data.in_position === 'object') {
+                if (data.in_position.short) side = 'Short';
+                else if (data.in_position.long) side = 'Long';
+            }
+
+            if (side) {
+                headerEl.textContent = `Auto-Cal Add ${side} Position`;
+            } else {
+                const configDirection = currentConfig?.direction;
+                if (configDirection === 'short') {
+                    headerEl.textContent = 'Auto-Cal Add Short Position';
+                } else if (configDirection === 'long') {
+                    headerEl.textContent = 'Auto-Cal Add Long Position';
+                } else {
+                    headerEl.textContent = 'Auto-Cal Add Position';
+                }
+            }
+        }
+
+        const netProfitElement = document.getElementById('netProfit');
+        if (netProfitElement) {
+            const netProfitValue = data.net_profit !== undefined ? Number(data.net_profit) : 0.00;
+            netProfitElement.textContent = `$${netProfitValue.toFixed(2)}`;
+            if (netProfitValue > 0) {
+                netProfitElement.classList.remove('text-danger');
+                netProfitElement.classList.add('text-success');
+            } else if (netProfitValue < 0) {
+                netProfitElement.classList.remove('text-success');
+                netProfitElement.classList.add('text-danger');
+            } else {
+                netProfitElement.classList.remove('text-success', 'text-danger');
+            }
+        }
+
+        // Advanced Profit Analytics (Guarded)
+        const elTotalTradeProfit = document.getElementById('totalTradeProfit');
+        if (elTotalTradeProfit) elTotalTradeProfit.textContent = `$${(data.total_trade_profit || 0).toFixed(2)}`;
+
+        const elTotalTradeLoss = document.getElementById('totalTradeLoss');
+        if (elTotalTradeLoss) elTotalTradeLoss.textContent = `$${(data.total_trade_loss || 0).toFixed(2)}`;
+
+        const elNetTradeProfit = document.getElementById('netTradeProfit');
+        if (elNetTradeProfit) elNetTradeProfit.textContent = `$${(data.net_trade_profit || 0).toFixed(2)}`;
+
+        const elTotalTrades = document.getElementById('totalTrades');
+        if (elTotalTrades) elTotalTrades.textContent = data.total_trades !== undefined ? data.total_trades : '0';
+
+        // Update daily report if present
+        if (data.daily_reports) {
+            updateDailyReport(data.daily_reports);
+        }
+        // Use Backend-provided fee metrics (Centralized Logic)
+        const tradeFees = data.trade_fees || 0;
+        const usedFee = data.used_fees || 0;
+        const remainingFee = (data.remaining_amount || 0) * ((currentConfig?.trade_fee_percentage || 0.07) / 100); // Remaining is still estimate
+        const sizeFee = data.size_fees || 0;
+        const feeRate = (currentConfig?.trade_fee_percentage || 0.07);
+
+        const elTradeFees = document.getElementById('tradeFees');
+        if (elTradeFees) elTradeFees.textContent = `$${Number(tradeFees).toFixed(2)}`;
+
+        const elUsedFee = document.getElementById('usedFee');
+        if (elUsedFee) elUsedFee.textContent = `$${Number(usedFee).toFixed(2)}`;
+
+        const elRemainingFee = document.getElementById('remainingFee');
+        if (elRemainingFee) elRemainingFee.textContent = `$${Number(remainingFee).toFixed(2)}`;
+
+        const elFeeRateDisplay = document.getElementById('feeRateDisplay');
+        if (elFeeRateDisplay) elFeeRateDisplay.textContent = `${Number(feeRate).toFixed(3)}%`;
+
+        const elSizeAmountDisplay = document.getElementById('sizeAmountDisplay');
+        if (elSizeAmountDisplay) elSizeAmountDisplay.textContent = `$${Number(data.size_amount || 0).toFixed(2)}`;
+
+        const elSizeFeeDisplay = document.getElementById('sizeFeeDisplay');
+        if (elSizeFeeDisplay) elSizeFeeDisplay.textContent = `$${Number(sizeFee).toFixed(2)}`;
+
+        lastUsedFee = usedFee;
+        lastSizeFee = sizeFee;
+
+        // UI Color Feedback for Need Add
+        const needAddTgt = data.need_add_usdt || 0;
+        const needAddAboveZero = data.need_add_above_zero || 0;
+
+        const tgtEl = document.getElementById('needAddProfitTargetDisplay');
+        const zeroEl = document.getElementById('needAddAboveZeroDisplay');
+
+        if (tgtEl) {
+            if (needAddTgt > 0) {
+                if (tgtEl.parentElement) tgtEl.parentElement.classList.add('bg-warning-subtle');
+                tgtEl.classList.add('text-warning');
+            } else {
+                if (tgtEl.parentElement) tgtEl.parentElement.classList.remove('bg-warning-subtle');
+                tgtEl.classList.remove('text-warning');
+            }
+        }
+
+        if (zeroEl) {
+            if (needAddAboveZero > 0) {
+                if (zeroEl.parentElement) zeroEl.parentElement.classList.add('bg-warning-subtle');
+                zeroEl.classList.add('text-warning');
+            } else {
+                if (zeroEl.parentElement) zeroEl.parentElement.classList.remove('bg-warning-subtle');
+                zeroEl.classList.remove('text-warning');
+            }
+        }
+
+        updateAutoCalDisplay();
+    } catch (e) {
+        console.error("Error in updateAccountMetrics:", e);
     }
-
-    const netProfitElement = document.getElementById('netProfit');
-    const netProfitValue = data.net_profit !== undefined ? Number(data.net_profit) : 0.00;
-    netProfitElement.textContent = `$${netProfitValue.toFixed(2)}`;
-
-    // Color coding for Net Profit
-    if (netProfitValue > 0) {
-        netProfitElement.classList.remove('text-danger');
-        netProfitElement.classList.add('text-success');
-    } else if (netProfitValue < 0) {
-        netProfitElement.classList.remove('text-success');
-        netProfitElement.classList.add('text-danger');
-    } else {
-        netProfitElement.classList.remove('text-success', 'text-danger');
-    }
-
-    // New Advanced Profit Analytics
-    document.getElementById('totalTradeProfit').textContent = `$${(data.total_trade_profit || 0).toFixed(2)}`;
-    document.getElementById('totalTradeLoss').textContent = `$${(data.total_trade_loss || 0).toFixed(2)}`;
-    document.getElementById('netTradeProfit').textContent = `$${(data.net_trade_profit || 0).toFixed(2)}`;
-
-    document.getElementById('totalTrades').textContent = data.total_trades !== undefined ? data.total_trades : '0';
-
-    // Update daily report if present
-    if (data.daily_reports) {
-        updateDailyReport(data.daily_reports);
-    }
-
-    // Use Backend-provided fee metrics (Centralized Logic)
-    const tradeFees = data.trade_fees || 0;
-    const usedFee = data.used_fees || 0;
-    const remainingFee = (data.remaining_amount || 0) * ((currentConfig?.trade_fee_percentage || 0.07) / 100); // Remaining is still estimate
-    const sizeFee = data.size_fees || 0;
-    const feeRate = (currentConfig?.trade_fee_percentage || 0.07);
-
-    document.getElementById('tradeFees').textContent = `$${Number(tradeFees).toFixed(2)}`;
-    document.getElementById('usedFee').textContent = `$${Number(usedFee).toFixed(2)}`;
-    document.getElementById('remainingFee').textContent = `$${Number(remainingFee).toFixed(2)}`;
-    document.getElementById('feeRateDisplay').textContent = `${Number(feeRate).toFixed(3)}%`;
-    document.getElementById('sizeAmountDisplay').textContent = `$${Number(data.size_amount || 0).toFixed(2)}`;
-    document.getElementById('sizeFeeDisplay').textContent = `$${Number(sizeFee).toFixed(2)}`;
-
-    lastUsedFee = usedFee;
-    lastSizeFee = sizeFee;
-
-    // UI Color Feedback for Need Add
-    const needAddTgt = data.need_add_usdt || 0;
-    const needAddAboveZero = data.need_add_above_zero || 0;
-
-    const tgtEl = document.getElementById('needAddProfitTargetDisplay');
-    const zeroEl = document.getElementById('needAddAboveZeroDisplay');
-
-    if (needAddTgt > 0) {
-        tgtEl.parentElement.classList.add('bg-warning-subtle');
-        tgtEl.classList.add('text-warning');
-    } else {
-        tgtEl.parentElement.classList.remove('bg-warning-subtle');
-        tgtEl.classList.remove('text-warning');
-    }
-
-    if (needAddAboveZero > 0) {
-        zeroEl.parentElement.classList.add('bg-warning-subtle');
-        zeroEl.classList.add('text-warning');
-    } else {
-        zeroEl.parentElement.classList.remove('bg-warning-subtle');
-        zeroEl.classList.remove('text-warning');
-    }
-
-    updateAutoCalDisplay();
 }
 
 function updateDailyReport(reports) {
@@ -799,10 +839,18 @@ function updateParametersDisplay() {
                <span class="param-label">Min Chg High/Close:</span>
                <span class="param-value">${currentConfig.min_chg_high_close}</span>
            </div>
-           <div class="param-item">
-               <span class="param-label">Max Chg High/Close:</span>
-               <span class="param-value">${currentConfig.max_chg_high_close}</span>
-           </div>
+            <div class="param-item">
+                <span class="param-label">Max Chg High/Close:</span>
+                <span class="param-value">${currentConfig.max_chg_high_close}</span>
+            </div>
+            <div class="param-item pb-1 border-bottom border-secondary border-opacity-25 mb-1">
+                <span class="param-label text-info">Secondary Gap:</span>
+                <span class="param-value">${currentConfig.add_pos_gap_threshold_2 || currentConfig.add_pos_gap_threshold || '5.0'}</span>
+            </div>
+            <div class="param-item">
+                <span class="param-label text-info">Secondary Size %:</span>
+                <span class="param-value">${currentConfig.add_pos_size_pct_2 || currentConfig.add_pos_size_pct || '30'}%</span>
+            </div>
        `;
         paramsContainer.innerHTML = configHtml;
     } else {
@@ -1023,18 +1071,47 @@ async function loadConfig() {
         const elMaxCountMain = document.getElementById('addPosMaxCountMain');
         if (elMaxCountMain) elMaxCountMain.value = addPosMaxCount;
 
+        // Sequential Offsets (Step 2+)
+        const gap2 = currentConfig.add_pos_gap_threshold_2 !== undefined ? currentConfig.add_pos_gap_threshold_2 : addPosGap;
+        const elGap2 = document.getElementById('addPosGapThreshold2');
+        if (elGap2) elGap2.value = gap2;
+        const elGap2Main = document.getElementById('addPosGapThreshold2Main');
+        if (elGap2Main) elGap2Main.value = gap2;
+
+        const sizePct2 = currentConfig.add_pos_size_pct_2 !== undefined ? currentConfig.add_pos_size_pct_2 : addPosSizePct;
+        const elSizePct2 = document.getElementById('addPosSizePct2');
+        if (elSizePct2) elSizePct2.value = sizePct2;
+        const elSizePct2Main = document.getElementById('addPosSizePct2Main');
+        if (elSizePct2Main) elSizePct2Main.value = sizePct2;
+
+        // Dashboard Security
+        const elDashUser = document.getElementById('dashboardUsername');
+        if (elDashUser) elDashUser.value = currentConfig.dashboard_username || '';
+        const elDashPass = document.getElementById('dashboardPassword');
+        if (elDashPass) elDashPass.value = currentConfig.dashboard_password || '';
+
         // Add live listeners if not already added
         const fieldsToWatch = [
             'useAddPosAboveZero', 'useAddPosProfitTarget', 'addPosRecoveryPercent',
-            'addPosProfitMultiplier', 'addPosGapThreshold', 'addPosSizePct', 'addPosMaxCount'
+            'addPosProfitMultiplier', 'addPosGapThreshold', 'addPosSizePct', 'addPosMaxCount',
+            'addPosGapThreshold2', 'addPosSizePct2'
         ];
 
         fieldsToWatch.forEach(fieldId => {
-            // Find both modal and main dashboard inputs (id might be same or specialized)
-            const input = document.getElementById(fieldId.replace(/_([a-z])/g, (g) => g[1].toUpperCase())); // camelCase
+            const camelCaseId = fieldId.replace(/_([a-z])/g, (g) => g[1].toUpperCase());
+
+            // Check base ID (modal)
+            const input = document.getElementById(camelCaseId);
             if (input && !input.dataset.listener) {
                 input.addEventListener('change', saveLiveConfigs);
                 input.dataset.listener = 'true';
+            }
+
+            // Check Main ID (dashboard)
+            const inputMain = document.getElementById(camelCaseId + 'Main');
+            if (inputMain && !inputMain.dataset.listener) {
+                inputMain.addEventListener('change', saveLiveConfigs);
+                inputMain.dataset.listener = 'true';
             }
         });
 
@@ -1061,11 +1138,11 @@ async function loadStatus() {
         const response = await fetch('/api/status');
         const status = await response.json();
 
-        updateBotStatus(status.running);
-        updateAccountMetrics(status);
-        updateOpenTrades(status.open_trades);
-        updatePositionDisplay(status);
-        updateParametersDisplay(); // Call the new function to populate parameters tab
+        try { updateBotStatus(status.running); } catch (e) { console.error("Error updating bot status:", e); }
+        try { updateAccountMetrics(status); } catch (e) { console.error("Error updating account metrics:", e); }
+        try { updateOpenTrades(status.open_trades); } catch (e) { console.error("Error updating open trades:", e); }
+        try { updatePositionDisplay(status); } catch (e) { console.error("Error updating position display:", e); }
+        try { updateParametersDisplay(); } catch (e) { console.error("Error updating parameters display:", e); }
     } catch (error) {
         console.error('Error loading status:', error);
     }
@@ -1151,6 +1228,18 @@ function loadConfigToModal() {
 
     const elMax = document.getElementById('addPosMaxCount');
     if (elMax) elMax.value = currentConfig.add_pos_max_count || 10;
+
+    const elGap2 = document.getElementById('addPosGapThreshold2');
+    if (elGap2) elGap2.value = currentConfig.add_pos_gap_threshold_2 || currentConfig.add_pos_gap_threshold || 5.0;
+
+    const elSize2 = document.getElementById('addPosSizePct2');
+    if (elSize2) elSize2.value = currentConfig.add_pos_size_pct_2 || currentConfig.add_pos_size_pct || 30.0;
+
+    const elDashUser = document.getElementById('dashboardUsername');
+    if (elDashUser) elDashUser.value = currentConfig.dashboard_username || '';
+
+    const elDashPass = document.getElementById('dashboardPassword');
+    if (elDashPass) elDashPass.value = currentConfig.dashboard_password || '';
 }
 
 // Helper to keep dashboard and modal in sync - Removed old PnL sync listeners as modal update is pending
@@ -1217,6 +1306,10 @@ async function saveConfig() {
         add_pos_size_pct: parseFloat(document.getElementById('addPosSizePct').value),
         add_pos_max_count: parseInt(document.getElementById('addPosMaxCount').value),
         add_pos_recovery_percent: parseFloat(document.getElementById('addPosRecoveryPercent').value),
+        add_pos_gap_threshold_2: parseFloat(document.getElementById('addPosGapThreshold2').value),
+        add_pos_size_pct_2: parseFloat(document.getElementById('addPosSizePct2').value),
+        dashboard_username: document.getElementById('dashboardUsername').value,
+        dashboard_password: document.getElementById('dashboardPassword').value,
         use_add_pos_profit_target: document.getElementById('useAddPosProfitTarget').checked,
 
         candlestick_timeframe: document.getElementById('candlestickTimeframe').value,
@@ -1301,7 +1394,9 @@ async function saveLiveConfigs() {
         add_pos_gap_threshold: parseFloat(document.getElementById('addPosGapThreshold').value),
         add_pos_size_pct: parseFloat(document.getElementById('addPosSizePct').value),
         add_pos_max_count: parseInt(document.getElementById('addPosMaxCount').value),
-        add_pos_step2_offset: parseFloat(document.getElementById('addPosStep2Offset').value)
+        add_pos_step2_offset: parseFloat(document.getElementById('addPosStep2Offset').value),
+        add_pos_gap_threshold_2: parseFloat(document.getElementById('addPosGapThreshold2').value),
+        add_pos_size_pct_2: parseFloat(document.getElementById('addPosSizePct2').value)
     };
 
     try {
@@ -1343,6 +1438,8 @@ async function saveLiveConfigs() {
             currentConfig.add_pos_size_pct = liveConfig.add_pos_size_pct;
             currentConfig.add_pos_max_count = liveConfig.add_pos_max_count;
             currentConfig.add_pos_step2_offset = liveConfig.add_pos_step2_offset;
+            currentConfig.add_pos_gap_threshold_2 = liveConfig.add_pos_gap_threshold_2;
+            currentConfig.add_pos_size_pct_2 = liveConfig.add_pos_size_pct_2;
         } else {
             // Revert UI on error (e.g. bot running error)
             document.getElementById('usePnlAutoManual').checked = currentConfig.use_pnl_auto_manual;

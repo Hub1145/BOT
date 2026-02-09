@@ -15,6 +15,7 @@ import hmac
 import base64
 import math
 import _thread
+from logging.handlers import RotatingFileHandler
 
 # OKX API configuration defaults (now managed per instance)
 OKX_REST_API_BASE_URL = "https://www.okx.com"
@@ -142,28 +143,40 @@ class TradingBotEngine:
         for handler in root_logger.handlers[:]: # Iterate over a slice to safely modify list
             root_logger.removeHandler(handler)
         
-        # StreamHandler for console output (INFO and higher)
+        # Phase 0: Console Output (INFO and higher)
         console_handler = logging.StreamHandler()
         console_formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
         console_handler.setFormatter(console_formatter)
-        console_handler.setLevel(logging.INFO) # Console gets INFO and higher
+        console_handler.setLevel(logging.INFO)
         root_logger.addHandler(console_handler)
 
-        # FileHandler for debug.log - ONLY if log_level is set to DEBUG
+        # Phase 1: Standard info.log (Capped at 5MB, Always active)
+        info_handler = RotatingFileHandler('info.log', maxBytes=5*1024*1024, backupCount=1, encoding='utf-8')
+        info_formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+        info_handler.setFormatter(info_formatter)
+        info_handler.setLevel(logging.INFO)
+        root_logger.addHandler(info_handler)
+
+        # Phase 2: Detailed debug.log (Capped at 5MB, Only if log_level is DEBUG)
         if self.config.get('log_level', 'info').lower() == 'debug':
-            file_handler = logging.FileHandler('debug.log', encoding='utf-8')
-            file_formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-            file_handler.setFormatter(file_formatter)
-            file_handler.setLevel(numeric_level) # File level matches config level
-            root_logger.addHandler(file_handler)
-            logging.info('Logger initialized. Writing to debug.log')
+            debug_handler = RotatingFileHandler('debug.log', maxBytes=5*1024*1024, backupCount=1, encoding='utf-8')
+            debug_formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+            debug_handler.setFormatter(debug_formatter)
+            debug_handler.setLevel(logging.DEBUG)
+            root_logger.addHandler(debug_handler)
+            logging.info('Dual logging active: info.log and debug.log initialized.')
         else:
-            logging.info('Logger initialized. Console output active, file logging suppressed.')
+            logging.info('Standard logging active: info.log initialized. (debug.log suppressed)')
 
         self._apply_api_credentials()
-
-        self.ws = None
-        self.ws_thread = None
+        
+        # Dual WebSocket Support
+        self.ws_public = None
+        self.ws_private = None
+        
+        self.ws_public_thread = None
+        self.ws_private_thread = None
+        
         self.is_running = False
         self.stop_event = threading.Event()
         self.bot_start_time = int(time.time() * 1000) # Track start time in ms
@@ -191,6 +204,11 @@ class TradingBotEngine:
         self.max_amount_display = 0.0
         self.remaining_amount_notional = 0.0
         self.trade_fees = 0.0
+        self.total_realized_fees = 0.0 # [NEW] Authoritative sum from fills history
+        
+        # Audit Fix: Thread safety for batch operations (TP/SL Sync)
+        self.batch_update_lock = threading.Lock()
+        self.batch_update_in_progress = False
         
         # New State Variables for Client Logic
         self.total_capital_2nd = 0.0
@@ -213,6 +231,7 @@ class TradingBotEngine:
         self.batch_counter = 0 # Track batches for logging
         self.monitoring_tick = 0 # Track monitoring cycles
         self.used_amount_notional = 0.0
+        self.session_bot_used_notional = 0.0 # [NEW] Tracks bot-only volume for current session
         self.position_lock = threading.Lock()
         self.pending_entry_ids = [] # List to track multiple pending entry orders
         self.pending_entry_order_id = None # Kept for backward compatibility/single tracking if needed
@@ -225,9 +244,14 @@ class TradingBotEngine:
         self.entry_order_sl_lock = threading.Lock()
         self.tp_hit_triggered = False
         self.tp_hit_lock = threading.Lock()
+        
+        # Cooldown management
+        self.last_close_time = {'long': 0.0, 'short': 0.0}
+        self.monitoring_tick = 0
         self.bot_startup_complete = False
         self._should_update_tpsl = False
         self.last_emit_time = 0.0 # Throttling for real-time WS updates
+        self.last_account_sync_time = 0 # Track last WS account update
 
 
         self.ws_subscriptions_ready = threading.Event()
@@ -265,6 +289,7 @@ class TradingBotEngine:
         self.net_trade_profit = 0.0
         self.daily_reports = []
         self._load_analytics()
+        # self._load_position_state() # REMOVED: Live Data Only
 
         # Concurrency Guards for Authoritative Exit
         self.exit_lock = threading.Lock()
@@ -450,12 +475,17 @@ class TradingBotEngine:
         self.bot_start_time = int(time.time() * 1000) # Reset session start time
 
         # Check if threads are already running
-        if getattr(self, 'ws_thread', None) and self.ws_thread.is_alive():
+        public_alive = getattr(self, 'ws_public_thread', None) and self.ws_public_thread.is_alive()
+        private_alive = getattr(self, 'ws_private_thread', None) and self.ws_private_thread.is_alive()
+        main_alive = getattr(self, 'ws_thread', None) and self.ws_thread.is_alive()
+
+        if public_alive or private_alive or main_alive:
             # If the symbol has changed, we need to restart the WebSocket
-            if self.ws and getattr(self, 'subscribed_symbol', None) != self.config.get('symbol'):
-                 self.log(f"Symbol changed to {self.config.get('symbol')}, restarting WebSocket...", level="info")
+            if getattr(self, 'subscribed_symbol', None) != self.config.get('symbol'):
+                 self.log(f"Symbol changed to {self.config.get('symbol')}, restarting WebSockets...", level="info")
                  try:
-                     self.ws.close()
+                     if self.ws_public: self.ws_public.close()
+                     if self.ws_private: self.ws_private.close()
                  except:
                      pass
             else:
@@ -488,11 +518,11 @@ class TradingBotEngine:
         """Truly stops all threads and connections."""
         self.is_running = False
         self.stop_event.set()
-        if self.ws:
-            try:
-                self.ws.close()
-            except:
-                pass
+        try:
+            if self.ws_public: self.ws_public.close()
+            if self.ws_private: self.ws_private.close()
+        except:
+            pass
         self.log('Bot fully shut down.', 'info')
     
     def _load_config(self):
@@ -722,7 +752,7 @@ class TradingBotEngine:
             all_data = []
             max_candles_limit = 100
 
-            current_before_ms = end_ts_ms
+            current_cursor_ms = end_ts_ms
 
             self.log(f"Fetching historical data for {symbol} ({timeframe})", level="debug")
 
@@ -731,7 +761,7 @@ class TradingBotEngine:
                     "instId": symbol,
                     "bar": okx_timeframe,
                     "limit": str(max_candles_limit),
-                    "before": str(current_before_ms)
+                    "after": str(current_cursor_ms + 1)
                 }
 
                 response = self._okx_request("GET", path, params=params)
@@ -758,7 +788,7 @@ class TradingBotEngine:
                         all_data.extend(parsed_klines)
                         
                         oldest_ts = int(rows[-1][0])
-                        current_before_ms = oldest_ts
+                        current_cursor_ms = oldest_ts
 
                         if oldest_ts <= start_ts_ms or len(rows) < max_candles_limit:
                             break 
@@ -899,12 +929,16 @@ class TradingBotEngine:
             self.log(f"Exception in _okx_set_position_mode: {e}", level="error")
             return False
 
-    def _get_ws_url(self):
+    def _get_ws_url(self, type='public'):
         # Dynamic URL: Production vs Demo
+        base_url = "wss://ws.okx.com:8443"
         if self.config.get('use_testnet'):
-            self.log("Using OKX Demo WebSocket (wspap.okx.com)", level="debug")
-            return "wss://wspap.okx.com:8443/ws/v5/public"
-        return "wss://ws.okx.com:8443/ws/v5/public"
+            base_url = "wss://wspap.okx.com:8443"
+            self.log(f"Using OKX Demo WebSocket ({base_url}) - {type.capitalize()}", level="debug")
+        
+        if type == 'private':
+            return f"{base_url}/ws/v5/private"
+        return f"{base_url}/ws/v5/public"
 
     def _on_websocket_message(self, ws_app, message):
         # Removed raw message logging to reduce clutter
@@ -912,18 +946,36 @@ class TradingBotEngine:
             msg = json.loads(message)
             # self.log(f"DEBUG: _on_websocket_message received parsed message: {msg}", level="debug")
 
-            # Handle event messages (subscribe)
+            # Identify which WS this is
+            ws_type = 'private' if ws_app == self.ws_private else 'public'
+
+            # Handle event messages (subscribe, login, error)
             if 'event' in msg:
-                if msg['event'] == 'subscribe':
+                event_type = msg.get('event')
+                if event_type == 'subscribe':
                     arg = msg.get('arg', {})
-                    channel_id = f"{arg.get('channel')}:{arg.get('instId')}"
-                    self.log(f"Subscription confirmed for {channel_id}", level="debug")
+                    channel = arg.get('channel')
+                    inst_id = arg.get('instId', 'N/A')
+                    channel_id = f"{channel}:{inst_id}"
+                    self.log(f"Subscription confirmed ({ws_type}): {channel_id}", level="debug")
                     self.confirmed_subscriptions.add(channel_id)
                     if self.pending_subscriptions == self.confirmed_subscriptions:
                         self.log("All WebSocket subscriptions are ready.", level="debug")
+                        # Note: We might want a dual-ready check, but for now this is fine.
                         self.ws_subscriptions_ready.set()
-                else: # Log other event messages
-                    self.log(f"Received non-subscribe event message: {msg}", level="warning")
+                elif event_type == 'login':
+                     if msg.get('code') == '0':
+                         self.log("WebSocket Login Successful.", level="info")
+                         self._on_login_success(ws_app)
+                     else:
+                         self.log(f"WebSocket Login Failed ({ws_type}): {msg}", level="error")
+                elif event_type == 'error':
+                    # Log error but don't necessarily crash
+                    self.log(f"WebSocket Error Event ({ws_type}): {msg}", level="error")
+                else: 
+                    # Filter out noisy 'channel-conn-count' messages
+                    if event_type != 'channel-conn-count':
+                        self.log(f"Received non-subscribe event ({ws_type}): {msg}", level="debug")
                 # Do NOT return here, allow further processing if it's a data message that also has an event.
             
             if 'data' in msg:
@@ -943,6 +995,25 @@ class TradingBotEngine:
                     self.last_price_update_time = time.time()
                     # No need to update historical data store from tickers channel
 
+                elif channel == 'positions' and data:
+                    self._process_position_push(data)
+
+                elif channel == 'account' and data:
+                    # Update Balance & Equity in real-time
+                    with self.account_info_lock:
+                        acc_data = data[0]
+                        self.total_equity = safe_float(acc_data.get('totalEq'))
+                        # OKX 'account' push contains a list of details for each currency
+                        details = acc_data.get('details', [])
+                        for det in details:
+                            if det.get('ccy') == 'USDT':
+                                self.account_balance = safe_float(det.get('bal'))
+                                self.available_balance = safe_float(det.get('availBal'))
+                                # Update timestamp to skip REST sync if WS is active
+                                self.last_account_sync_time = time.time()
+                                self.log(f"WS Balance Updated | Equity: ${self.total_equity:.2f} | Balance: ${self.account_balance:.2f}", level="debug")
+                                break
+
                 # ---------------------------------------------------------
                 # REAL-TIME UI UPDATES (TRANSITIONAL)
                 # ---------------------------------------------------------
@@ -950,9 +1021,11 @@ class TradingBotEngine:
                 if self.latest_trade_price:
                     now = time.time()
                     # Throttle emissions to max 2 per second to prevent UI flooding
-                    if now - self.last_emit_time >= 0.5:
+                    # However, if we just got a position update, emit immediately?
+                    # Let's keep the throttle but maybe force emit on position change in _process_position_push
+                    if now - getattr(self, 'last_emit_time', 0) >= 0.5:
                         self.last_emit_time = now
-                        self.emit('price_update', {'price': self.latest_trade_price, 'symbol': self.config['symbol']})
+                        self.safe_emit('price_update', {'price': self.latest_trade_price, 'symbol': self.config['symbol']})
                 # ---------------------------------------------------------
 
         except json.JSONDecodeError:
@@ -960,13 +1033,68 @@ class TradingBotEngine:
         except Exception as e:
             self.log(f"Exception in on_websocket_message: {e}", level="error")
 
-    def _on_websocket_open(self, ws_app):
-        self.log("OKX WebSocket connection opened.", level="info")
-        # For public endpoints, authentication is not required, directly send subscriptions
-        self._send_websocket_subscriptions()
-        # The _send_websocket_subscriptions method will populate self.pending_subscriptions
+    def _on_websocket_open(self, ws_app, type):
+        self.log(f"OKX WebSocket connection opened ({type}).", level="info")
+        if type == 'public':
+            self._send_websocket_subscriptions(ws_app)
+        else:
+            self._send_login_request(ws_app)
 
-    def _send_websocket_subscriptions(self):
+    def _on_websocket_error(self, ws_app, error):
+        ws_type = 'private' if ws_app == self.ws_private else 'public'
+        self.log(f"WebSocket Error ({ws_type}): {error}", level="error")
+
+    def _on_websocket_close(self, ws_app, close_status_code, close_msg):
+        # Determine type from instance comparison or just log context-free
+        ws_type = 'private' if ws_app == self.ws_private else 'public'
+        self.log(f"OKX WebSocket connection closed ({ws_type}). Code: {close_status_code}, Msg: {close_msg}", level="info")
+        if ws_type == 'public': self.ws_public = None
+        else: self.ws_private = None
+
+    def _send_login_request(self, ws_app):
+        try:
+             timestamp = str(time.time())
+             # Use the global generate_okx_signature helper
+             # FIX: Use correct attribute names self.okx_api_secret etc.
+             sign = generate_okx_signature(self.okx_api_secret, timestamp, 'GET', '/users/self/verify', '')
+             
+             login_payload = {
+                 "op": "login",
+                 "args": [
+                     {
+                         "apiKey": self.okx_api_key,
+                         "passphrase": self.okx_passphrase,
+                         "timestamp": timestamp,
+                         "sign": sign
+                     }
+                 ]
+             }
+             ws_app.send(json.dumps(login_payload))
+             self.log("Sent WebSocket Login Request (Private).", level="debug")
+        except Exception as e:
+             self.log(f"Error sending login request: {e}", level="error")
+
+    def _on_login_success(self, ws_app):
+        # Subscribe to private channels (positions)
+        self.log("Subscribing to private channels...", level="info")
+        channels = [
+            {"channel": "positions", "instType": "SWAP", "instId": self.config['symbol']},
+            {"channel": "account", "ccys": ["USDT"]}, # Live balance and equity updates
+            # Add 'orders' channel later if needed for real-time order updates
+        ]
+        
+        subscription_payload = {
+            "op": "subscribe",
+            "args": channels
+        }
+        ws_app.send(json.dumps(subscription_payload))
+        self.log(f"Sent private subscription request for {len(channels)} channels.", level="debug")
+        
+        # Add to pending subscriptions so readiness check waits for them too
+        new_subs = {f"{arg.get('channel')}:{arg.get('instId', 'N/A')}" for arg in channels}
+        self.pending_subscriptions.update(new_subs)
+
+    def _send_websocket_subscriptions(self, ws_app):
         self.subscribed_symbol = self.config['symbol']
         channels = [
             {"channel": "trades", "instId": self.subscribed_symbol},
@@ -980,10 +1108,122 @@ class TradingBotEngine:
             "args": channels
         }
         self.log(f"WS Sending public subscription request: {json.dumps(subscription_payload)}", level="debug")
-        self.ws.send(json.dumps(subscription_payload))
+        ws_app.send(json.dumps(subscription_payload))
         self.log(f"WS Sent public subscription request for {len(channels)} channels.", level="debug")
+        
         # Populate pending_subscriptions with the channels we just sent
-        self.pending_subscriptions = {f"{arg['channel']}:{arg['instId']}" for arg in channels}
+        new_pending = {f"{arg.get('channel')}:{arg.get('instId', 'N/A')}" for arg in channels}
+        self.pending_subscriptions.update(new_pending)
+
+    def _process_position_push(self, positions_data):
+        """
+        Updates internal position state from WebSocket 'positions' channel data.
+        This provides Real-Time PnL and Status updates as requested.
+        """
+        try:
+             with self.position_lock:
+                 contract_size = self.product_info.get('contractSize', 1.0)
+                 prev_qtys = {k: v for k, v in self.position_qty.items()}
+                 
+                 for pos in positions_data:
+                     # Filter by symbol
+                     if pos.get('instId') != self.config['symbol']:
+                         continue
+
+                     # Identify side
+                     raw_side = pos.get('posSide', 'net')
+                     side_key = 'long'
+                     if raw_side == 'short': side_key = 'short'
+                     elif raw_side == 'net':
+                         side_key = self.config.get('direction', 'long')
+                         if side_key == 'both': side_key = 'long'
+                     
+                     # Calculate Size
+                     try:
+                         pos_sz_raw = safe_float(pos.get('pos'))
+                     except:
+                         pos_sz_raw = 0.0
+                     
+                     new_qty = pos_sz_raw * contract_size
+                     
+                     # Check for update
+                     if abs(new_qty - prev_qtys.get(side_key, 0.0)) > 0.000001:
+                         self.log(f"WS Position update [{side_key.upper()}]: {prev_qtys.get(side_key, 0.0)} -> {new_qty}. (Live)", level="debug")
+                         
+                         # Detect Closure (Qty became 0)
+                         if new_qty == 0 and abs(prev_qtys.get(side_key, 0.0)) > 0:
+                             close_reason = "Exchange Update (Closed)"
+                             if self.authoritative_exit_in_progress:
+                                 close_reason = "Authoritative Exit"
+                             else:
+                                 # Try to infer reason
+                                 mkt = self.latest_trade_price or safe_float(pos.get('avgPx'))
+                                 tp = self.current_take_profit.get(side_key, 0)
+                                 sl = self.current_stop_loss.get(side_key, 0)
+                                 if tp > 0 and mkt > 0 and abs(mkt - tp) / tp < 0.005: 
+                                     close_reason = "Exchange Hit (Take Profit)"
+                                 elif sl > 0 and mkt > 0 and abs(mkt - sl) / sl < 0.005:
+                                     close_reason = "Exchange Hit (Stop Loss)"
+                             
+                             self.log("=" * 60, level="info")
+                             self.log(f"[DONE] Close Position (WS): {side_key.upper()} | Reason: {close_reason}", level="info")
+                             self.log("=" * 60, level="info")
+                             self.last_close_time[side_key] = time.time()
+                             
+                             # [SESSION TRACKING] Reset bot-initiated volume on closure
+                             # We reset used notional so the next entry starts fresh at $0.00.
+                             with self.position_lock:
+                                 self.log(f"Session Tracking: Position closed. Resetting Bot Used Notional ($0.00).", level="info")
+                                 self.session_bot_used_notional = 0.0
+                     
+                     # Update State for this specific position
+                     self.in_position[side_key] = (abs(new_qty) > 0)
+                     self.position_entry_price[side_key] = safe_float(pos.get('avgPx'))
+                     self.position_qty[side_key] = new_qty
+                     self.position_liq[side_key] = safe_float(pos.get('liqp', '0'))
+                     
+                     # Merge with existing details or overwrite
+                     self.position_details[side_key] = pos
+                     
+                     # Update last_add_price if manually added
+                     if self.last_add_price == 0 and abs(new_qty) > 0:
+                         self.last_add_price = safe_float(pos.get('avgPx'))
+                     
+                 # ---------------------------------------------------------
+                 # RECALCULATE AGGREGATE METRICS FROM STATE
+                 # ---------------------------------------------------------
+                 # Iterate over ALL known positions to get the total PnL/Size.
+                 # This ensures that if we get a partial update, we still sum up correctly.
+                 
+                 rec_unrealized_pnl = 0.0
+                 rec_pos_notional = 0.0
+                 rec_active_count = 0
+                 
+                 for s_key in ['long', 'short']:
+                     if s_key in self.position_details:
+                         p_det = self.position_details[s_key]
+                         
+                         sz_raw = safe_float(p_det.get('pos', 0))
+                         if abs(sz_raw) > 0:
+                             rec_active_count += 1
+                             rec_unrealized_pnl += safe_float(p_det.get('upl', 0))
+                             
+                             # Calculate Notional
+                             avg_px = safe_float(p_det.get('avgPx'))
+                             price_to_use = self.latest_trade_price if self.latest_trade_price else avg_px
+                             rec_pos_notional += abs(sz_raw) * price_to_use * contract_size
+                 
+                 # UPDATE CACHED METRICS
+                 self.cached_unrealized_pnl = rec_unrealized_pnl
+                 self.cached_pos_notional = rec_pos_notional
+                 self.cached_active_positions_count = rec_active_count
+                 # self.cached_used_notional = rec_pos_notional # REMOVED: Managed by session tracking now
+
+                 # Force immediate UI emit to show the new PnL
+                 self._emit_socket_updates()
+
+        except Exception as e:
+             self.log(f"Error processing WS position push: {e}", level="error")
 
     def _on_websocket_error(self, ws_app, error):
         self.log(f"OKX WebSocket error: {error}", level="error")
@@ -993,28 +1233,21 @@ class TradingBotEngine:
         # No longer spawning a new thread here. 
         # The reconnection is now handled by the loop in _initialize_websocket_and_start_main_loop.
 
-    def connect(self): # This method will be called from start()
-        ws_url = self._get_ws_url()
-        try:
-            self.ws = websocket.WebSocketApp(
-                ws_url,
-                on_open=self._on_websocket_open,
-                on_message=self._on_websocket_message,
-                on_error=self._on_websocket_error,
-                on_close=self._on_websocket_close
-            )
-            self.emit('bot_status', {'running': True})
-            self.ws.run_forever()
-        except Exception as e:
-            self.log(f"Exception initializing WebSocket: {e}", level="error")
-
-
     def _fetch_initial_historical_data(self, symbol, timeframe, start_date_str, end_date_str):
         with self.data_lock:
             try:
-                start_dt = datetime.strptime(start_date_str, '%Y-%m-%d').replace(tzinfo=timezone.utc)
+                # Flexible parsing for Date or DateTime
+                def parse_dt(dt_str):
+                    for fmt in ('%Y-%m-%d %H:%M:%S', '%Y-%m-%d'):
+                        try:
+                            return datetime.strptime(dt_str, fmt).replace(tzinfo=timezone.utc)
+                        except ValueError:
+                            continue
+                    raise ValueError(f"Time format not supported: {dt_str}")
+
+                start_dt = parse_dt(start_date_str)
                 start_ts_ms = int(start_dt.timestamp() * 1000)
-                end_dt = datetime.strptime(end_date_str, '%Y-%m-%d').replace(tzinfo=timezone.utc)
+                end_dt = parse_dt(end_date_str)
                 end_ts_ms = int(end_dt.timestamp() * 1000)
 
                 raw_data = self._fetch_historical_data_okx(symbol, timeframe, start_ts_ms, end_ts_ms)
@@ -1123,6 +1356,15 @@ class TradingBotEngine:
                 if order_data and order_data[0].get('ordId'):
                     if verbose:
                         self.log(f"[OK] Order placed: OrderID={order_data[0]['ordId']}", level="info")
+                    
+                    # [SESSION TRACKING] Increment bot-initiated volume
+                    est_px = price if (price and price > 0) else self.latest_trade_price
+                    if est_px and est_px > 0:
+                        contract_size = self.product_info.get('contractSize', 1.0)
+                        order_notional = qty * est_px * contract_size
+                        with self.position_lock:
+                            self.session_bot_used_notional += order_notional
+                            self.log(f"Session Tracking: Added ${order_notional:.2f} to Bot Used Notional. Total: ${self.session_bot_used_notional:.2f}", level="debug")
                     
                     # Trigger immediate account refresh for UI responsiveness
                     def _update_after_reconnect():
@@ -1380,12 +1622,6 @@ class TradingBotEngine:
             self.log(f"Exception in _handle_eod_exit (OKX): {e} (continuing)", level="error")
             self._cancel_all_exit_orders_and_reset("EOD Exit - forced")
 
-    def _handle_order_update(self, orders_data):
-        with self.position_lock:
-            current_pending_id = self.pending_entry_order_id
-            is_in_pos = self.in_position
-            active_exit_orders = dict(self.position_exit_orders)
-            tracked_qty = self.position_qty
 
     def _handle_order_update(self, orders_data):
         with self.position_lock:
@@ -1403,19 +1639,33 @@ class TradingBotEngine:
             status = order.get('state')
             symbol = order.get('instId')
             pos_side = order.get('posSide', 'net')
+            order_side = order.get('side', '').lower()
             
-            # Map side for processing
-            side_key = 'long'
-            if pos_side == 'short': side_key = 'short'
-            elif pos_side == 'net':
-                # Map net based on order contents or current config if ambiguous
-                side_key = self.config.get('direction', 'long')
-                if side_key == 'both': side_key = 'long'
-
             if symbol != self.config['symbol']: continue
 
+            # Map side for processing - More robust for net mode
+            side_key = None
+            if pos_side == 'long': 
+                side_key = 'long'
+            elif pos_side == 'short': 
+                side_key = 'short'
+            else: # net mode
+                # Try to determine side from ID mapping instead of config default
+                if order_id == active_exit_ids['long'].get('sl') or order_id == active_exit_ids['long'].get('tp'):
+                    side_key = 'long'
+                elif order_id == active_exit_ids['short'].get('sl') or order_id == active_exit_ids['short'].get('tp'):
+                    side_key = 'short'
+                else:
+                    # For entries or if not matched yet, fallback to config but check order side
+                    config_dir = self.config.get('direction', 'long')
+                    if config_dir != 'both':
+                        side_key = config_dir
+                    else:
+                        # Ambiguous 'both' + 'net' - check if order ID is in pending entries for specific logic
+                        side_key = 'long' # Default fallback
+
             # 1. SL HIT
-            if order_id == active_exit_ids[side_key].get('sl') and status in ['filled', 'partially_filled']:
+            if side_key and order_id == active_exit_ids[side_key].get('sl') and status in ['filled', 'partially_filled']:
                 with self.sl_hit_lock:
                     if not self.sl_hit_triggered:
                         self.sl_hit_triggered = True
@@ -1424,6 +1674,14 @@ class TradingBotEngine:
 
             # 2. ENTRY FILLED
             if order_id in pending_entry_ids:
+                # If we are in 'both' + 'net', we should try to figure out which entry was filled
+                # The pending_entry_order_details should have the side info
+                entry_side = 'long'
+                with self.position_lock:
+                    if order_id in self.pending_entry_order_details:
+                        detail_side = self.pending_entry_order_details[order_id].get('side', '').lower()
+                        entry_side = 'long' if detail_side == 'buy' else 'short'
+
                 cum_qty = safe_float(order.get('accFillSz', 0))
                 with self.position_lock:
                     if order_id in self.pending_entry_order_details:
@@ -1431,7 +1689,7 @@ class TradingBotEngine:
                         self.pending_entry_order_details[order_id]['cum_qty'] = cum_qty
 
                 if status in ['filled', 'partially_filled'] or cum_qty > 0:
-                    self.log(f"🎉 ENTRY FILLED [{side_key.upper()}]: {cum_qty} {self.config['symbol']}", level="info")
+                    self.log(f"🎉 ENTRY FILLED [{entry_side.upper()}]: {cum_qty} {self.config['symbol']}", level="info")
                     if status == 'filled':
                         threading.Timer(2.0, lambda oid=order_id: self._confirm_and_set_active_position(oid)).start()
                     else:
@@ -1442,7 +1700,7 @@ class TradingBotEngine:
                     return
 
             # 3. TP HIT
-            if order_id == active_exit_ids[side_key].get('tp') and status in ['filled', 'partially_filled']:
+            if side_key and order_id == active_exit_ids[side_key].get('tp') and status in ['filled', 'partially_filled']:
                 with self.tp_hit_lock:
                     if not self.tp_hit_triggered:
                         self.tp_hit_triggered = True
@@ -1752,7 +2010,7 @@ class TradingBotEngine:
                             if exit_order and exit_order.get('ordId'):
                                 self.log(f"[OK] Position closed. Order ID: {exit_order.get('ordId')}", level="info")
                                 self.log(f"[DONE] Close Position (Auth): {pos_side_raw.upper()} {target_symbol} | Reason: {reason}", level="info")
-                                self.log(f"[PROFIT] Realized PnL: ${unrealized_pnl:.2f} | Session Total: ${self.net_trade_profit:.2f}", level="info")
+                                self.log(f"[PROFIT] Snapshot PnL (Pre-Close): ${unrealized_pnl:.2f} | Note: Actual PnL will update from fills shortly.", level="info")
                             else:
                                 self.log(f"⚠️ Market exit for {pos_side_raw.upper()} failed or rejected.", level="warning")
 
@@ -1776,6 +2034,10 @@ class TradingBotEngine:
             with self.exit_lock:
                 self.authoritative_exit_in_progress = False
             self.log("=== EMERGENCY EXIT COMPLETE === Account cleared for symbol.", level="info")
+            
+            # Immediately reconcile PnL from fills to capture actual fees/slippage
+            time.sleep(1) # Wait for fills to index
+            self._calculate_net_profit_from_fills()
 
     def _check_auto_add_position_step(self, current_price, current_side, remaining_budget):
         # Log condition check (User Request)
@@ -1799,7 +2061,13 @@ class TradingBotEngine:
         
         if avg_entry <= 0: return # No position to add to
 
-        # 2. Check Gap (Strict Loss Condition for Averaging Down)
+        gap_threshold = self.config.get('add_pos_gap_threshold', 5.0)
+        size_pct = self.config.get('add_pos_size_pct', 30.0) / 100.0
+        
+        # Sequential Offset Logic (Step 2+): Apply custom offsets from the second add onwards
+        if self.auto_add_step_count >= 1:
+            gap_threshold = self.config.get('add_pos_gap_threshold_2', gap_threshold)
+            size_pct = self.config.get('add_pos_size_pct_2', self.config.get('add_pos_size_pct', 30.0)) / 100.0
         # User Requirement: "For short: When PnL is loss... if market > entry gap 5... add orders"
         # This means we ONLY trigger if price moves AGAINST the position.
 
@@ -1840,10 +2108,11 @@ class TradingBotEngine:
                     current_total_notional = self.okx_position_notional.get('short', 0)
             
             if current_total_notional > 0:
+                # Audit Fix: Use round-trip fees for threshold calculation
                 current_size_fee = current_total_notional * (trade_fee_pct / 100.0)
-                near_zero_threshold = max(1.0, current_size_fee * 0.1)
+                near_zero_threshold = max(1.0, (current_size_fee * 2.0) * 0.1)
                 
-                # If PnL is already near zero, don't add more
+                # If PnL is already near zero (accounting for both fees), don't add more
                 if self.net_profit >= -near_zero_threshold:
                     self.log(f"Mode 1 Check PnL near zero (${self.net_profit:.2f}). No more adding needed.", level="info")
                     return
@@ -1855,8 +2124,7 @@ class TradingBotEngine:
              return
 
         # 5. Calculate Add Amount (Percentage of Current Size)
-        # Requirement: "Order amount is the Newest Size Amount 30%"
-        size_pct = self.config.get('add_pos_size_pct', 30.0) / 100.0
+        # Sizing already calculated above in sequential logic
         
         # We need CURRENT TOTAL SIZE (Notional)
         current_total_notional = 0.0
@@ -1994,7 +2262,10 @@ class TradingBotEngine:
                             profit_mult = self.config.get('add_pos_profit_multiplier', 1.5)
                             trade_fee_pct = self.config.get('trade_fee_percentage', 0.07)
                             size_notional = safe_float(target_pos.get('notionalUsd'))
-                            target_profit = (size_notional * (trade_fee_pct/100.0)) * profit_mult
+                            
+                            # FIX: Multiplying fee pct by 2.0 to cover both OPEN and CLOSE fees.
+                            # target_profit = (size_notional * (double_fees/100.0)) * profit_mult
+                            target_profit = (size_notional * (trade_fee_pct * 2.0 / 100.0)) * profit_mult
                             
                             pos_contracts = safe_float(target_pos.get('pos'))
                             delta = target_profit / (pos_contracts * 1.0) # Approx
@@ -2009,7 +2280,9 @@ class TradingBotEngine:
                             profit_mult = self.config.get('add_pos_profit_multiplier', 1.5)
                             trade_fee_pct = self.config.get('trade_fee_percentage', 0.08)
                             size_notional = safe_float(target_pos.get('notionalUsd'))
-                            target_profit = (size_notional * (trade_fee_pct/100.0)) * profit_mult
+                            
+                            # FIX: Multiplying fee pct by 2.0 to cover both OPEN and CLOSE fees.
+                            target_profit = (size_notional * (trade_fee_pct * 2.0 / 100.0)) * profit_mult
                             
                             pos_contracts = abs(safe_float(target_pos.get('pos')))
                             delta = target_profit / (pos_contracts * 1.0)
@@ -2272,7 +2545,8 @@ class TradingBotEngine:
             remaining_notional = max_notional_capacity - self.used_amount_notional
             
             if remaining_notional < min_notional_per_order:
-                self.log(f"{log_prefix}Entry-3:Remaining Capacity: {remaining_notional:.2f} < Min {min_notional_per_order}: NOT Passed", level="info")
+                display_remaining = max(0.0, remaining_notional)
+                self.log(f"{log_prefix}Entry-3:Remaining Capacity: ${display_remaining:.2f} (Actual: {remaining_notional:.2f}) < Min ${min_notional_per_order}: NOT Passed. (Check 'Max Allowed Used' vs 'Total Capital')", level="info")
                 return []
 
         target_amount = self.config.get('target_order_amount', 100)
@@ -2293,6 +2567,21 @@ class TradingBotEngine:
             directions_to_eval = ['long', 'short']
         else:
             directions_to_eval = [direction_mode]
+
+        # 0. Cooldown Check
+        cooldown_sec = self.config.get('reentry_cooldown_seconds', 60)
+        now = time.time()
+        filtered_directions = []
+        for d in directions_to_eval:
+            last_close = self.last_close_time.get(d, 0)
+            if now - last_close < cooldown_sec:
+                 self.log(f"{log_prefix}Entry-0: {d.upper()} in cooldown ({int(cooldown_sec - (now - last_close))}s remaining). SKIPPED.", level="info")
+                 continue
+            filtered_directions.append(d)
+        
+        directions_to_eval = filtered_directions
+        if not directions_to_eval:
+             return []
 
         # Shared Candlestick check (if enabled)
         candlestick_passed = True
@@ -2332,7 +2621,12 @@ class TradingBotEngine:
              return []
 
         # Check explicit target/min logs for the first valid one to keep user dashboard tidy
-        self.log(f"{log_prefix}Entry-3:Remaining: {remaining_notional:.2f} > Target {target_amount}: Passed", level="info")
+        # Correct Log: Only log "Passed" if it actually PASSED.
+        if remaining_notional >= target_amount:
+            self.log(f"{log_prefix}Entry-3:Remaining: {remaining_notional:.2f} >= Target {target_amount}: Passed", level="info")
+        else:
+            self.log(f"{log_prefix}Entry-3:Remaining: {remaining_notional:.2f} < Target {target_amount}: NOT Passed", level="info")
+            return []
         self.log(f"{log_prefix}Entry-4:Remaining: {remaining_notional:.2f} > Min {min_notional_per_order}: Passed", level="info")
 
         return valid_entries
@@ -2561,6 +2855,14 @@ class TradingBotEngine:
                              self.pending_entry_ids.remove(order_id)
                         if order_id in self.pending_entry_order_details:
                              del self.pending_entry_order_details[order_id]
+                else:
+                    # Robustness: If regular cancel failed, retry as Algo (standard for 19-digit IDs)
+                    if self._okx_cancel_algo_order(self.config['symbol'], order_id):
+                        with self.position_lock:
+                            if order_id in self.pending_entry_ids:
+                                 self.pending_entry_ids.remove(order_id)
+                            if order_id in self.pending_entry_order_details:
+                                 del self.pending_entry_order_details[order_id]
                 continue
 
             # 2. TP Check (Missed Opportunity)
@@ -2651,6 +2953,7 @@ class TradingBotEngine:
         # High-reliability background management
         self.log("Unified management thread started.", level="debug")
         last_account_sync = 0
+        last_fills_sync = 0
         while not self.stop_event.is_set():
             now = time.time()
             try:
@@ -2670,11 +2973,8 @@ class TradingBotEngine:
                      # Reset update time to avoid spamming reconnects
                      self.last_price_update_time = now 
                      # Trigger reconnect by closing the current WebSocket
-                     if self.ws:
-                         try:
-                             self.ws.close()
-                         except:
-                             pass
+                     # We close BOTH to ensure any sync state is flushed and re-synced correctly.
+                     self._close_websockets()
                 
                 # 3. Lower Frequency: Account Info & Emitting (every ~3s)
                 # 3. Lower Frequency: Account Info & Emitting (every ~3s)
@@ -2684,6 +2984,12 @@ class TradingBotEngine:
                     self._execute_position_management()
                     self._emit_socket_updates()
                     last_account_sync = now
+
+                # 4. Low Frequency: Reconcile PnL from Fills (every ~60s)
+                # This ensures "Net Trade Profit" includes actual fees as observed/requested by user.
+                if now - last_fills_sync >= 60:
+                    self._calculate_net_profit_from_fills()
+                    last_fills_sync = now
                     
             except Exception as e:
                 self.log(f"Error in unified mgmt loop: {e}", level="debug")
@@ -2697,8 +3003,10 @@ class TradingBotEngine:
 
             while not self.stop_event.is_set():
                 # Reconnection Trigger: Exit if WS is closed/changing
-                if not self.ws or not getattr(self.ws, 'sock', None) or not self.ws.sock.connected:
-                     self.log("WebSocket connection lost or closed. Exiting trading loop for reconnect.", level="debug")
+                # Reconnection Trigger: Exit if EITHER WS is closed/changing
+                if not self.ws_public or not getattr(self.ws_public, 'sock', None) or not getattr(self.ws_public.sock, 'connected', False) or \
+                   not self.ws_private or not getattr(self.ws_private, 'sock', None) or not getattr(self.ws_private.sock, 'connected', False):
+                     self.log("WebSocket connection(s) lost or closed. Exiting trading loop for reconnect.", level="debug")
                      return
 
                 if not self.is_running:
@@ -2747,64 +3055,67 @@ class TradingBotEngine:
         except Exception as e:
             self.log(f"CRITICAL ERROR in _main_trading_logic: {e}", level="error")
 
-    def _initialize_websocket(self):
-        ws_url = self._get_ws_url()
+    def _initialize_websocket(self, type='public'):
+        ws_url = self._get_ws_url(type)
         try:
-            self.ws = websocket.WebSocketApp(
+            ws = websocket.WebSocketApp(
                 ws_url,
-                on_open=self._on_websocket_open,
+                on_open=lambda w: self._on_websocket_open(w, type),
                 on_message=self._on_websocket_message,
                 on_error=self._on_websocket_error,
                 on_close=self._on_websocket_close
             )
-            return self.ws
+            return ws
         except Exception as e:
-            self.log(f"Exception initializing WebSocket: {e}", level="error")
+            self.log(f"Exception initializing WebSocket ({type}): {e}", level="error")
             return None
 
     def _initialize_websocket_and_start_main_loop(self):
-        self.log("OKX BOT STARTING", level="info")
+        self.log("OKX BOT STARTING (Dual WebSocket)", level="info")
         try:
-            # Reconnection Loop for the WebSocket
             while not self.stop_event.is_set():
                 try:
-                    self.ws_client = self._initialize_websocket()
-                    if self.ws_client is None:
-                        self.log("Failed to initialize WebSocket. Retrying in 10s...", level="error")
-                        time.sleep(10)
-                        continue
+                    # 1. Initialize Public WS
+                    if not self.ws_public:
+                        self.ws_public = self._initialize_websocket('public')
+                        self.ws_public_thread = threading.Thread(target=self.ws_public.run_forever, daemon=True)
+                        self.ws_public_thread.start()
+                        self.log("Public WebSocket initiated.", level="info")
 
-                    # For public WebSocket, no authentication is needed. Subscriptions are sent directly on_open.
-                    self.log("Connecting to public market data...", level="debug")
-                    
-                    # Start the WebSocket in a separate thread (this runs the run_forever block)
-                    ws_watch_thread = threading.Thread(target=self.ws_client.run_forever, daemon=True)
-                    ws_watch_thread.start()
-                    self.log("WebSocket connection initiated.", level="debug")
+                    # 2. Initialize Private WS
+                    if not self.ws_private:
+                        self.ws_private = self._initialize_websocket('private')
+                        self.ws_private_thread = threading.Thread(target=self.ws_private.run_forever, daemon=True)
+                        self.ws_private_thread.start()
+                        self.log("Private WebSocket initiated.", level="info")
 
-                    self.log("Syncing with market data...", level="debug")
-                    if not self.ws_subscriptions_ready.wait(timeout=20): # Longer timeout for subscriptions
-                        self.log("WebSocket subscriptions not ready within timeout. Reconnecting...", level="error")
-                        try: self.ws_client.close()
-                        except: pass
+                    # Wait for subscriptions
+                    self.log("Syncing with market data and account...", level="debug")
+                    if not self.ws_subscriptions_ready.wait(timeout=30):
+                        self.log("WebSocket subscriptions timed out. Retrying...", level="error")
+                        self._close_websockets()
                         time.sleep(5)
                         continue
 
-                    # Fetch historical data for the selected timeframe - Fetch 300 candles for indicator safety
+                    # Bot logic remains same...
+                    # Fetch historical data...
                     timeframe = self.config.get('candlestick_timeframe', '1m')
                     interval_sec = self.intervals.get(timeframe, 60)
                     start_dt = datetime.now(timezone.utc) - timedelta(seconds=interval_sec * 300)
                     end_dt = datetime.now(timezone.utc)
-                    self._fetch_initial_historical_data(self.config['symbol'], timeframe, start_dt.strftime('%Y-%m-%d'), end_dt.strftime('%Y-%m-%d'))
+                    start_ts_ms = int(start_dt.timestamp() * 1000)
+                    end_ts_ms = int(end_dt.timestamp() * 1000)
+                    
+                    # Call definition updated to support MS timestamps directly or we update method to handle it
+                    # For now, let's keep the date strings but fix the 'today' issue by ensuring end_dt is inclusive.
+                    self._fetch_initial_historical_data(self.config['symbol'], timeframe, start_dt.strftime('%Y-%m-%d %H:%M:%S'), end_dt.strftime('%Y-%m-%d %H:%M:%S'))
                     
                     self.bot_startup_complete = True
                     self.log("Bot startup sequence complete.", level="info")
 
-                    # Perform initial account fetch
                     self._periodic_account_info_update(initial_fetch=True)
-                    self.log("Initial account balance fetched.", level="info")
+                    self._calculate_net_profit_from_fills()
         
-                    # Start background managers if not already running
                     if not getattr(self, 'account_info_updater_thread', None) or not self.account_info_updater_thread.is_alive():
                         self.account_info_updater_thread = threading.Thread(target=self._periodic_account_info_update, args=(False,), daemon=True)
                         self.account_info_updater_thread.start()
@@ -2813,32 +3124,32 @@ class TradingBotEngine:
                         self.mgmt_thread = threading.Thread(target=self._unified_management_loop, daemon=True)
                         self.mgmt_thread.start()
 
-                    # Start trading logic
-                    # This method now needs to respond to stop_event and WS closure
                     self._main_trading_logic()
                     
-                    # If _main_trading_logic returns, check if we need to reconnect or stop
-                    if self.stop_event.is_set():
-                        break
-                    
-                    self.log("Main trading logic returned. Reconnecting WebSocket in 5s...", level="info")
+                    if self.stop_event.is_set(): break
+                    self.log("Main trading logic returned. Reconnecting in 5s...", level="info")
+                    self._close_websockets()
                     time.sleep(5)
 
                 except Exception as loop_e:
-                    self.log(f"Error in WebSocket Reconnect Loop: {loop_e}", level="error")
+                    self.log(f"Error in Connection Loop: {loop_e}", level="error")
+                    self._close_websockets()
                     time.sleep(5)
 
         except Exception as e:
-            self.log(f"CRITICAL ERROR in _initialize_websocket_and_start_main_loop: {e}", level="error")
+            self.log(f"CRITICAL ERROR: {e}", level="error")
         finally:
             self.stop_event.set()
-            self.log("Shutting down...", level="info")
-            if self.ws:
-                try:
-                    self.ws.close()
-                except Exception:
-                    pass
+            self._close_websockets()
             self.log("OKX BOT SHUTDOWN COMPLETE", level="info")
+
+    def _close_websockets(self):
+        for ws in [self.ws_public, self.ws_private]:
+            if ws:
+                try: ws.close()
+                except: pass
+        self.ws_public = None
+        self.ws_private = None
  
     def _calculate_net_profit_from_fills(self):
         # Fetch recent fills to calculate actual PnL
@@ -2858,15 +3169,16 @@ class TradingBotEngine:
             if response and response.get('code') == '0':
                 fills = response.get('data', [])
                 
-                # Fetch only fills from current session for 'self.net_profit' (Auto-Exit trigger)
-                # Loosen by 5 seconds to capture trades closed right at bot start/restart
-                start_time_limit = self.bot_start_time - 5000
+                # [USER REQUEST] "remove handling position using state alway use live data"
+                # We calculate PnL from the last 100 fills provided by the exchange, regardless of start time.
+                # This ensures the metric IS live data and persists across restarts.
+                start_time_limit = 0 
 
                 # Reset persistent trade analytics before re-calculating from the limit window (Simple approach)
-                # Note: In a production bot, we'd append new fills to a database.
-                # Here we strictly scan the last 100 fills to determine Win/Loss/Net for the symbol.
+                # Note: This makes "Session PnL" effectively "Recent History PnL" (last 100 trades).
                 temp_total_profit = 0.0
                 temp_total_loss = 0.0
+                temp_actual_fees = 0.0
                 fill_count = 0
                 
                 for fill in fills:
@@ -2877,6 +3189,9 @@ class TradingBotEngine:
                          fee = safe_float(fill.get('fee', 0))
                          fill_net = pnl + fee
                          session_pnl += fill_net
+                         
+                         # Accumulate actual fees for ALL trades (Entry + Exit)
+                         temp_actual_fees += abs(fee)
 
                          # Realized Analytics: Only count fills where a position was actually reduced or closed (pnl != 0)
                          # This prevents entry fees from showing up as "Trade Loss" before any trades are closed.
@@ -2887,14 +3202,95 @@ class TradingBotEngine:
                                  temp_total_loss += abs(fill_net)
                 
                 if fill_count > 0:
-                    self.log(f"DEBUG: Processed {fill_count} session fills. Temp Net: {temp_total_profit - temp_total_loss:.2f}", level="debug")
+                    self.log(f"Synced PnL from Last {fill_count} Fills (Live History): Net ${temp_total_profit - temp_total_loss:.2f} | Fees: ${temp_actual_fees:.4f}", level="debug")
 
                 self.total_trade_profit = temp_total_profit
                 self.total_trade_loss = temp_total_loss
                 self.net_trade_profit = temp_total_profit - temp_total_loss
-                # self.net_profit = session_pnl # REMOVED: User wants Net Profit to be UPL for open positions only
+                self.total_realized_fees = temp_actual_fees
                 
                 self._save_analytics()
+                
+                # ---------------------------------------------------------
+                # LIVE STATE RECONSTRUCTION (User Request)
+                # ---------------------------------------------------------
+                # Reconstruct 'Step Count' and 'Last Add Price' directly from recent fills
+                # to avoid relying on stale disk state.
+                
+                # 1. Determine current active side (if any)
+                current_side = None
+                with self.position_lock:
+                    if self.in_position['long']: current_side = 'long'
+                    elif self.in_position['short']: current_side = 'short'
+                
+                rec_step_count = 0
+                rec_last_add = 0.0
+                
+                if current_side:
+                    # Filter fills for current side (Buy=Long, Sell=Short)
+                    target_side_str = 'buy' if current_side == 'long' else 'sell'
+                    
+                    # Sort fills by time DESC (Newest First)
+                    # OKX fills are usually returned newest first, but ensure it.
+                    sorted_fills = sorted(fills, key=lambda x: int(x.get('ts', 0)), reverse=True)
+                    
+                    found_fills_count = 0
+                    
+                    for fill in sorted_fills:
+                        f_side = fill.get('side').lower()
+                        f_pnl = safe_float(fill.get('pnl', 0))
+                        f_sz = safe_float(fill.get('sz', 0))
+                        
+                        if f_side == target_side_str:
+                            # It's an Entry/Add or a Close/Reduce?
+                            # OKX 'side' is the direction of the trade relative to the BOOK.
+                            # For Long: Buy is Entry, Sell is Exit.
+                            # For Short: Sell is Entry, Buy is Exit.
+                            
+                            # But wait, 'pnl' field usually indicates if it closed a position?
+                            # If pnl != 0, it was a closing trade.
+                            # If pnl == 0, it was an opening trade.
+                            
+                            if f_pnl == 0:
+                                # This is an ADD/ENTRY
+                                # Capture the price of the NEWEST entry (last add).
+                                # Only set if currently 0 (meaning we haven't found the newest valid one yet)
+                                if rec_last_add == 0.0:
+                                    # Try multiple possible price fields for robustness (Prioritize fillPx as authoritative)
+                                    raw_px = fill.get('fillPx') or fill.get('px') or fill.get('avgPx')
+                                    rec_last_add = safe_float(raw_px)
+                                    if rec_last_add > 0:
+                                        self.log(f"DEBUG: Found First Add Fill. raw: {fill} | px: {raw_px} | rec_last_add: {rec_last_add}", level="debug")
+
+                                found_fills_count += 1
+                                rec_step_count = found_fills_count # Update step count as we find valid adds
+                            else:
+                                # This is a Reduce/Close. The contiguous block of "Adds" ends here.
+                                # (Or technically, started after this reduce).
+                                break
+                        else:
+                            # Opposite side trade (e.g. Sell for Long)
+                            # This breaks the contiguous Add chain.
+                            break
+                    
+                    if found_fills_count > 0:
+                        rec_step_count = found_fills_count - 1
+                        self.log(f"Live State Reconstructed: Step {rec_step_count} | Last Add: {rec_last_add}", level="debug")
+                        
+                        # Apply to State
+                        self.auto_add_step_count = rec_step_count
+                        self.last_add_price = rec_last_add
+                    else:
+                        # Position exists but no recent fills found?
+                        # Maybe legacy position. Default to Step 0.
+                        self.log("Live State: Position active but no recent entry fills found. Defaulting to Step 0.", level="warning")
+                        self.auto_add_step_count = 0
+                        self.last_add_price = self.latest_trade_price or 0.0 # Safety fallback
+                else:
+                    # No position active -> Reset state
+                    self.auto_add_step_count = 0
+                    self.last_add_price = 0.0
+
             return session_pnl
 
         except Exception as e:
@@ -2949,6 +3345,9 @@ class TradingBotEngine:
         self.log(f"📅 Daily Report Saved for {today_str}: Capital ${self.total_equity:.2f}, Net Profit ${self.net_trade_profit:.2f}", level="info")
         self._save_analytics()
 
+    # Removed _save_position_state and _load_position_state to enforce Live Data Only logic.
+
+
     def _periodic_account_info_update(self, initial_fetch=False):
         if initial_fetch:
             # Perform a single fetch and return
@@ -2958,20 +3357,41 @@ class TradingBotEngine:
 
         while not self.stop_event.is_set():
             try:
-                # Regular sync (dashboard heartbeat)
-                # If bot is NOT running, just sync + emit
-                # If bot IS running, the main loop handles it, but this thread 
-                # might be redundant? No, _unified_management_loop only runs when self.is_running?
-                # Actually, _unified_management_loop is started in start_bot().
-                # _periodic_account_info_update is started in __init__ (daemon)?
-                # Let's check where this is called. 
-                # Assuming this is the dashboard updater when bot is stopped.
-                self._sync_account_data()
-                self._emit_socket_updates()
+                # Audit Fix: Yield to the management loop if the bot is running
+                # to avoid redundant sync calls and emission spam.
+                if not self.is_running:
+                    self._sync_account_data()
+                    self._emit_socket_updates()
+                else:
+                    # Management loop is already syncing; just sleep
+                    pass
             except Exception as e:
                 self.log(f"Error in periodic account info update: {e}", level="error")
             finally:
                 time.sleep(self.config.get('account_update_interval_seconds', 10))
+
+    def safe_emit(self, event, data, throttle_seconds=0):
+        """
+        Sends data to the frontend via Socket.IO with optional throttling.
+        Ensures the payload is JSON serializable and catches emission errors.
+        """
+        now = time.time()
+        
+        # Throttling logic (optional per event)
+        if throttle_seconds > 0:
+            last_time = getattr(self, f'_last_emit_{event}', 0.0)
+            if now - last_time < throttle_seconds:
+                return
+            setattr(self, f'_last_emit_{event}', now)
+
+        try:
+            # Force serializability check / cleanup
+            # We can use a custom approach or just trust the standard emit
+            # if we ensure objects like datetime are strings.
+            self.emit(event, data)
+        except Exception as e:
+            # self.log(f"Socket.IO Emit Error ({event}): {e}", level="debug")
+            pass
 
     def _sync_account_data(self):
         """
@@ -2981,29 +3401,34 @@ class TradingBotEngine:
         """
         self.monitoring_tick += 1
         
-        # 1. Fetch account balance
-        path_balance = "/api/v5/account/balance"
-        params_balance = {"ccy": "USDT"} 
-        response_balance = self._okx_request("GET", path_balance, params=params_balance)
+        # 1. Fetch account balance (Skip if WebSocket is providing fresh data)
+        ws_freshness_threshold = 30 # seconds
+        is_ws_fresh = (time.time() - getattr(self, 'last_account_sync_time', 0)) < ws_freshness_threshold
+        
+        response_balance = None
+        if not is_ws_fresh:
+            path_balance = "/api/v5/account/balance"
+            params_balance = {"ccy": "USDT"} 
+            response_balance = self._okx_request("GET", path_balance, params=params_balance)
+        # else:
+            # self.log(f"Skipping REST balance sync (WS fresh: {int(time.time() - self.last_account_sync_time)}s ago)", level="debug")
 
-        with self.account_info_lock:
-            found_total_eq = 0.0
-            found_avail_bal = 0.0
-            found_bal = 0.0
-            if response_balance and response_balance.get('code') == '0':
+        if response_balance and response_balance.get('code') == '0':
+            with self.account_info_lock:
                 data = response_balance.get('data', [])
                 if data and len(data) > 0:
                     account_details = data[0]
-                    found_total_eq = safe_float(account_details.get('totalEq', '0'))
+                    self.total_equity = safe_float(account_details.get('totalEq', '0'))
                     for detail in account_details.get('details', []):
                         if detail.get('ccy') == 'USDT':
-                            found_bal = safe_float(detail.get('bal', '0'))
-                            found_avail_bal = safe_float(detail.get('availBal', '0'))
+                            self.account_balance = safe_float(detail.get('availBal', '0'))
+                            self.available_balance = safe_float(detail.get('availBal', '0'))
+                            self.log(f"REST Balance Sync | Equity: ${self.total_equity:.2f} | Avail: ${self.account_balance:.2f}", level="debug")
                             break
-            
-            self.account_balance = found_avail_bal 
-            self.available_balance = found_avail_bal
-            self.total_equity = found_total_eq
+                else:
+                    self.log("REST Balance Sync | Success but no data found.", level="debug")
+        elif response_balance:
+            self.log(f"REST Balance Sync | API Error: {response_balance.get('msg')} (Code: {response_balance.get('code')})", level="error")
 
         # 2. Fetch open orders (pending orders)
         path_pending_orders = "/api/v5/trade/orders-pending"
@@ -3064,133 +3489,32 @@ class TradingBotEngine:
                     'time_left': time_left
                 })
         
+        with self.position_lock:
+            for s_key in ['long', 'short']:
+                if self.in_position[s_key]:
+                    formatted_open_trades.append({
+                        'type': s_key.capitalize(),
+                        'id': f"POS-{s_key.upper()}",
+                        'entry_spot_price': self.position_entry_price[s_key],
+                        'stake': abs(self.position_qty[s_key]) * self.position_entry_price[s_key],
+                        'tp_price': self.current_take_profit.get(s_key),
+                        'sl_price': self.current_stop_loss.get(s_key),
+                        'status': 'FILLED',
+                        'instId': self.config['symbol'],
+                        'time_left': None
+                    })
+
         with self.trade_data_lock:
             self.open_trades = formatted_open_trades
             
-        # 3. Fetch open positions
-        path_positions = "/api/v5/account/positions"
-        params_positions = {"instType": "SWAP", "instId": self.config['symbol']}
-        response_positions = self._okx_request("GET", path_positions, params=params_positions)
+        # 3. Fetch open positions (POLLING REMOVED - User Request: Pure WS)
+        # WS now handles self.position_details, self.in_position, self.cached_* metrics
+        # via _process_position_push and _on_websocket_message.
+        # This prevents "flickering" from stale REST data.
+        
+        # We assume self.cached_pos_notional is kept up to date by WS.
+        pass
 
-        # Temp variables for caching
-        temp_active_count = 0
-        temp_pos_notional = 0.0
-        temp_unrealized_pnl = 0.0
-        temp_used_notional = 0.0
-
-        with self.position_lock:
-            prev_qtys = {k: v for k, v in self.position_qty.items()}
-            found_sides = set()
-            contract_size = self.product_info.get('contractSize', 1.0)
-
-            if response_positions and response_positions.get('code') == '0':
-                positions_data = response_positions.get('data', [])
-                
-                for pos in positions_data:
-                    # Filter by symbol and non-zero size
-                    if pos.get('instId') == self.config['symbol'] and safe_float(pos.get('pos')) != 0:
-                        
-                        # --- Metric Calculation (Moved from Logic Loop) ---
-                        current_mkt_price = self.latest_trade_price if self.latest_trade_price else safe_float(pos.get('avgPx'))
-                        pos_sz_notional = abs(safe_float(pos.get('pos'))) * current_mkt_price * contract_size
-                        
-                        # Only count towards 'Used' if bot running, but always count for Size/PnL
-                        if self.is_running:
-                            temp_used_notional += pos_sz_notional
-                        
-                        temp_pos_notional += pos_sz_notional
-                        temp_unrealized_pnl += safe_float(pos.get('upl', '0'))
-                        temp_active_count += 1
-                        # --------------------------------------------------
-
-                        raw_side = pos.get('posSide', 'net')
-                        side_key = 'long'
-                        if raw_side == 'short': side_key = 'short'
-                        elif raw_side == 'net':
-                            side_key = self.config.get('direction', 'long')
-                            if side_key == 'both': side_key = 'long'
-
-                        found_sides.add(side_key)
-                        new_qty = safe_float(pos.get('pos')) * contract_size
-                        
-                        if abs(new_qty - prev_qtys.get(side_key, 0.0)) > 0.000001:
-                            self.log(f"Position update [{side_key.upper()}]: {prev_qtys.get(side_key, 0.0)} -> {new_qty}. Syncing TP/SL...", level="debug")
-                            self._should_update_tpsl = True
-                            if abs(new_qty) > abs(prev_qtys.get(side_key, 0.0)):
-                                self.total_trades_count += 1
-                        
-                        if self.current_take_profit[side_key] == 0 or self.current_stop_loss[side_key] == 0:
-                             self._should_update_tpsl = True
-
-                        self.in_position[side_key] = True
-                        self.position_entry_price[side_key] = safe_float(pos.get('avgPx'))
-                        self.position_qty[side_key] = new_qty
-                        self.position_liq[side_key] = safe_float(pos.get('liqp', '0'))
-                        self.position_details[side_key] = pos 
-            
-            # Close detection logic
-            for s in ['long', 'short']:
-                if s not in found_sides:
-                    if self.in_position[s]: # Only run if we thought we were in position
-                        # ... (Existing Close Logic) ...
-                        close_reason = "Exchange Hit (TP/SL/Manual)"
-                        if self.authoritative_exit_in_progress:
-                            close_reason = "Authoritative Exit (Bot Target/Emergency)"
-                        else:
-                            mkt = self.latest_trade_price
-                            tp = self.current_take_profit[s]
-                            sl = self.current_stop_loss[s]
-                            if tp > 0 and abs(mkt - tp) / tp < 0.001: 
-                                if self.config.get('use_add_pos_profit_target', False):
-                                    close_reason = "Mode 2 Profit Target Reached (Auto-Add Step 2)"
-                                else:
-                                    close_reason = "Exchange Hit (Take Profit)"
-                            elif sl > 0 and abs(mkt - sl) / sl < 0.001: 
-                                close_reason = "Exchange Hit (Stop Loss)"
-                        
-                        self.log("=" * 60, level="info")
-                        self.log(f"[DONE] Close Position: {s.upper()} {self.config['symbol']} | Reason: {close_reason}", level="info")
-                        self.log("=" * 60, level="info")
-                        
-                    self.in_position[s] = False
-                    self.position_entry_price[s] = 0.0
-                    self.position_qty[s] = 0.0
-                    self.position_liq[s] = 0.0
-                    self.position_details[s] = {}
-                    self.current_take_profit[s] = 0.0
-                    self.current_stop_loss[s] = 0.0
-            
-            # Emit combined position update
-            display_side = 'long' if self.in_position['long'] else ('short' if self.in_position['short'] else 'long')
-            self.emit('position_update', {
-                'in_position': self.in_position[display_side],
-                'position_entry_price': self.position_entry_price[display_side],
-                'position_qty': self.position_qty[display_side],
-                'current_take_profit': self.current_take_profit[display_side],
-                'current_stop_loss': self.current_stop_loss[display_side],
-                'positions': {
-                    'long': {
-                        'in': self.in_position['long'],
-                        'qty': self.position_qty['long'],
-                        'price': self.position_entry_price['long'],
-                        'liq': self.position_liq['long'],
-                        'sl': self.current_stop_loss['long']
-                    },
-                    'short': {
-                        'in': self.in_position['short'],
-                        'qty': self.position_qty['short'],
-                        'price': self.position_entry_price['short'],
-                        'liq': self.position_liq['short'],
-                        'sl': self.current_stop_loss['short']
-                    }
-                }
-            })
-
-            # Store cached metrics
-            self.cached_active_positions_count = temp_active_count
-            self.cached_pos_notional = temp_pos_notional
-            self.cached_unrealized_pnl = temp_unrealized_pnl
-            self.cached_used_notional = temp_used_notional # Before adding pending orders
 
         # Sync pending_entry_ids
         active_okx_ids = [t['id'] for t in formatted_open_trades]
@@ -3216,6 +3540,71 @@ class TradingBotEngine:
         # Calculate Need Add metrics (Viz) - Moved here to ensure update during UI-only loops
         self._calculate_need_add_metrics(getattr(self, 'cached_pos_notional', 0.0))
 
+    def _check_auto_add_position_step(self, current_price, current_side, remaining_margin_budget):
+        """
+        Executes an Auto-Add order with Step 2+ logic.
+        """
+        # 1. Check Max Count
+        max_count = self.config.get('add_pos_max_count', 3)
+        if self.auto_add_step_count >= max_count:
+            # self.log(f"Auto-Add: Max count reached ({self.auto_add_step_count}/{max_count}). Skipping.", level="debug")
+            return
+
+        # 2. Determine Size % based on Step
+        # Step 0 (First Add, displayed as Step 2 in UI logic usually) -> Use 'add_pos_size_pct'
+        # Step 1+ (Second Add+) -> Use 'add_pos_size_pct_2'
+        size_pct = 0.0
+        if self.auto_add_step_count == 0:
+            size_pct = self.config.get('add_pos_size_pct', 100.0)
+        else:
+            size_pct = self.config.get('add_pos_size_pct_2', 30.0)
+
+        okx_pos_notional = getattr(self, 'cached_pos_notional', 0.0)
+        if okx_pos_notional <= 0: return
+
+        # Amount to add = Position Size * (Pct / 100)
+        amount_to_add_usdt = okx_pos_notional * (size_pct / 100.0)
+
+        # 4. Safety Check against Budget
+        # Logic: We use Total Capital 2nd as the budget.
+        if amount_to_add_usdt > remaining_margin_budget:
+             self.log(f"Auto-Add: Insufficient Capital 2nd. Needed {amount_to_add_usdt:.2f}, Has {remaining_margin_budget:.2f}. Capping.", level="warning")
+             amount_to_add_usdt = remaining_margin_budget
+        
+        if amount_to_add_usdt < 2.0: # Min order size safety (loose check, exchange strict check happens later)
+             # self.log(f"Auto-Add: Amount {amount_to_add_usdt:.2f} too small. Skipping.", level="debug")
+             return
+
+        # 5. Execute Order (Market)
+        contract_size = self.product_info.get('contractSize', 1.0)
+        if current_price <= 0: return
+        qty_contracts = amount_to_add_usdt / current_price / contract_size
+        
+        lot_size = safe_float(self.product_info.get('qtyStepSize', 1.0))
+        qty_contracts = math.floor(qty_contracts / lot_size) * lot_size
+        
+        if qty_contracts <= 0: return
+
+        self.log(f"AUTO-ADD EXECUTING: Step {self.auto_add_step_count + 1} | Size: {size_pct}% (${amount_to_add_usdt:.2f}) | Price: {current_price}", level="WARNING")
+        
+        order_side = "Buy" if current_side == 'long' else "Sell"
+        res = self._okx_place_order(
+            self.config['symbol'], 
+            order_side, 
+            qty_contracts, 
+            order_type="Market", 
+            reduce_only=False,
+            verbose=True
+        )
+
+        if res and res.get('ordId'):
+            self.auto_add_step_count += 1
+            self.cumulative_margin_used += amount_to_add_usdt
+            self._save_position_state()
+            self.log(f"Auto-Add Order Placed. New Step Count: {self.auto_add_step_count}", level="info")
+        else:
+            self.log("Auto-Add Order Failed.", level="error")
+
     def _execute_position_management(self):
         """
         Phase 2 of Unified Loop: Trading Logic & Metrics.
@@ -3223,7 +3612,8 @@ class TradingBotEngine:
         CONTAINS CRITICAL FIX FOR AUTO-ADD GATING.
         """
         # Recover metrics from Sync Phase
-        used_amount_notional = getattr(self, 'cached_used_notional', 0.0)
+        # Bot-initiated volume for current session
+        used_amount_notional = self.session_bot_used_notional
         okx_pos_notional = getattr(self, 'cached_pos_notional', 0.0)
         total_unrealized_pnl = getattr(self, 'cached_unrealized_pnl', 0.0)
         active_positions_count = getattr(self, 'cached_active_positions_count', 0)
@@ -3241,13 +3631,13 @@ class TradingBotEngine:
             
         rate_divisor = self.config['rate_divisor']
         max_amount_margin = max_allowed_margin / rate_divisor
-        max_allowed_display = max_allowed_margin
-        max_amount_display = max_amount_margin
+        self.max_allowed_display = max_allowed_margin
+        self.max_amount_display = max_amount_margin
         
         leverage = float(self.config.get('leverage', 1))
         if leverage <= 0: leverage = 1
         
-        remaining_amount_notional = max(0.0, (max_amount_margin * leverage) - used_amount_notional)
+        self.remaining_amount_notional = max(0.0, (max_amount_margin * leverage) - used_amount_notional)
         
         with self.position_lock:
             self.used_amount_notional = used_amount_notional
@@ -3266,7 +3656,8 @@ class TradingBotEngine:
         self.trade_fees = self.used_fees
         
         # Real-time Net Profit (Floating)
-        self.net_profit = total_unrealized_pnl - self.size_fees
+        # Audit Fix: Subtract round-trip fees (2.0x) to show TRUE net profit
+        self.net_profit = total_unrealized_pnl - (self.size_fees * 2.0)
 
         # Total Capital 2nd Logic
         if active_positions_count == 0:
@@ -3275,6 +3666,7 @@ class TradingBotEngine:
             self.cumulative_margin_used = 0.0
             self.auto_add_step_count = 0 
             self.last_add_price = 0.0
+            # self._save_position_state() # REMOVED: Live Data Only
         else:
             # Sync last_add_price
             with self.position_lock:
@@ -3334,18 +3726,25 @@ class TradingBotEngine:
                          self.last_add_price = self.position_entry_price[current_side]
 
                      if current_price:
-                          gap_threshold = self.config.get('add_pos_gap_threshold', 5.0)
-                          price_diff = 0.0
-                          if current_side == 'long':
-                              price_diff = self.last_add_price - current_price
-                          else:
-                              price_diff = current_price - self.last_add_price
-                              
-                          if price_diff >= gap_threshold:
-                              self.log(f"Auto-Add Check: Gap Triggered: Diff {price_diff:.2f} >= {gap_threshold}. Current Avg: {self.last_add_price:.2f}", level="warning")
-                              self.last_add_price = current_price 
-                              remaining_margin_budget = self.total_capital_2nd
-                              self._check_auto_add_position_step(current_price, current_side, remaining_margin_budget)
+                           # Step 2+ Gap Logic
+                           current_step = getattr(self, 'auto_add_step_count', 0)
+                           gap_threshold = 0.0
+                           if current_step == 0:
+                               gap_threshold = self.config.get('add_pos_gap_threshold', 5.0)
+                           else:
+                               gap_threshold = self.config.get('add_pos_gap_threshold_2', 5.0)
+
+                           price_diff = 0.0
+                           if current_side == 'long':
+                               price_diff = self.last_add_price - current_price
+                           else:
+                               price_diff = current_price - self.last_add_price
+                               
+                           if price_diff >= gap_threshold:
+                               self.log(f"Auto-Add Check (Step {current_step+1}): Gap Triggered: Diff {price_diff:.2f} >= {gap_threshold}. Current Avg: {self.last_add_price:.2f}", level="warning")
+                               self.last_add_price = current_price 
+                               remaining_margin_budget = self.total_capital_2nd
+                               self._check_auto_add_position_step(current_price, current_side, remaining_margin_budget)
 
         # ---------------------------------------------------------
         # ---------------------------------------------------------
@@ -3368,60 +3767,65 @@ class TradingBotEngine:
         if not auto_exit_triggered and self.config.get('use_pnl_auto_cal', False) and okx_pos_notional > 0:
             cal_times = self.config.get('pnl_auto_cal_times', 4)
             current_size_fee = okx_pos_notional * trade_fee_pct
-            cal_threshold = cal_times * current_size_fee
+            # Audit Fix: Use round-trip fees (2.0)
+            cal_threshold = cal_times * (current_size_fee * 2.0)
             if self.net_profit >= cal_threshold:
                 auto_exit_triggered = True
-                exit_reason = f"Auto-Cal Profit Target: ${self.net_profit:.2f} >= ${cal_threshold:.2f} ({cal_times}x Fee)"
+                exit_reason = f"Auto-Cal Profit Target: ${self.net_profit:.2f} >= ${cal_threshold:.2f} ({cal_times}x Round-Trip Fee)"
 
         # Check Auto-Cal Loss (Close All)
         if not auto_exit_triggered and self.config.get('use_pnl_auto_cal_loss', False) and okx_pos_notional > 0:
             loss_times = self.config.get('pnl_auto_cal_loss_times', 1.5)
             current_size_fee = okx_pos_notional * trade_fee_pct
-            loss_threshold = -(current_size_fee * loss_times)
+            # Audit Fix: Use round-trip fees (2.0)
+            loss_threshold = -((current_size_fee * 2.0) * loss_times)
             if self.net_profit <= loss_threshold:
                 auto_exit_triggered = True
-                exit_reason = f"Auto-Cal Loss Target: ${self.net_profit:.2f} <= ${loss_threshold:.2f} ({loss_times}x Fee)"
+                exit_reason = f"Auto-Cal Loss Target: ${self.net_profit:.2f} <= ${loss_threshold:.2f} ({loss_times}x Round-Trip Fee)"
 
         # Check Auto-Cal Size (Profit)
         if not auto_exit_triggered and self.config.get('use_size_auto_cal', False) and okx_pos_notional > 0:
             size_times = self.config.get('size_auto_cal_times', 2.0)
             current_size_fee = okx_pos_notional * trade_fee_pct
-            size_target = current_size_fee * size_times
+            # Audit Fix: Use round-trip fees (2.0)
+            size_target = (current_size_fee * 2.0) * size_times
             if self.net_profit >= size_target:
                 auto_exit_triggered = True
-                exit_reason = f"Auto-Cal Size Target: ${self.net_profit:.2f} >= ${size_target:.2f} ({size_times}x Size Fee)"
+                exit_reason = f"Auto-Cal Size Target: ${self.net_profit:.2f} >= ${size_target:.2f} ({size_times}x Round-Trip Size Fee)"
 
         # Check Auto-Cal Size (Loss)
         if not auto_exit_triggered and self.config.get('use_size_auto_cal_loss', False) and okx_pos_notional > 0:
             size_loss_times = self.config.get('size_auto_cal_loss_times', 1.5)
             current_size_fee = okx_pos_notional * trade_fee_pct
-            size_loss_threshold = -(current_size_fee * size_loss_times)
+            # Audit Fix: Use round-trip fees (2.0)
+            size_loss_threshold = -((current_size_fee * 2.0) * size_loss_times)
             if self.net_profit <= size_loss_threshold:
                 auto_exit_triggered = True
-                exit_reason = f"Auto-Cal Size Loss Target: ${self.net_profit:.2f} <= ${size_loss_threshold:.2f} ({size_loss_times}x Size Fee)"
+                exit_reason = f"Auto-Cal Size Loss Target: ${self.net_profit:.2f} <= ${size_loss_threshold:.2f} ({size_loss_times}x Round-Trip Size Fee)"
 
         # MODE 2: Profit Target Exit (Unrealized PnL >= Size × Fee% × Multiplier)
         if not auto_exit_triggered and self.config.get('use_add_pos_profit_target', False) and okx_pos_notional > 0:
             profit_mult = self.config.get('add_pos_profit_multiplier', 1.5)
             # current_size_fee calculated above in line 3373
-            target_pnl = current_size_fee * profit_mult
+            # FIX: Use round-trip fees (2.0) to match the Limit Exit logic in _update_exit_orders
+            target_pnl = (current_size_fee * 2.0) * profit_mult
             
             # Detailed logging every few ticks for debugging
             if self.monitoring_tick % 5 == 0:
-                self.log(f"[Mode 2 Check] Size: ${okx_pos_notional:.2f} | Fee%: {trade_fee_pct}% | Fee: ${current_size_fee:.4f} | Target: ${target_pnl:.4f} | Unrealized PnL: ${total_unrealized_pnl:.4f}", level="debug")
+                self.log(f"[Mode 2 Check] Size: ${okx_pos_notional:.2f} | Fee%: {trade_fee_pct * 100:.3f}% | Round-Trip Fee: ${current_size_fee * 2.0:.4f} | Target: ${target_pnl:.4f} | Unrealized PnL: ${total_unrealized_pnl:.4f}", level="debug")
             
             # SAFETY CHECK: Only exit if PnL is POSITIVE and >= target
             if total_unrealized_pnl > 0 and total_unrealized_pnl >= target_pnl:
                 auto_exit_triggered = True
-                exit_reason = f"Mode 2 Profit Target: Unrealized ${total_unrealized_pnl:.2f} >= ${target_pnl:.2f} ({profit_mult}x Fee)"
+                exit_reason = f"Mode 2 Profit Target: Unrealized ${total_unrealized_pnl:.2f} >= ${target_pnl:.2f} ({profit_mult}x Round-Trip Fee)"
 
         # MODE 1: Break-Even Exit (PnL Above Zero)
         if not auto_exit_triggered and self.config.get('use_add_pos_above_zero', False) and okx_pos_notional > 0:
-             # current_size_fee calculated above in line 3373
-             near_zero_threshold = max(1.0, current_size_fee * 0.1)
+             # Audit Fix: Use round-trip fees (2.0) for threshold
+             near_zero_threshold = max(1.0, (current_size_fee * 2.0) * 0.1)
              if self.net_profit >= -near_zero_threshold:
                  auto_exit_triggered = True
-                 exit_reason = f"Mode 1 PnL Above Zero: Net ${self.net_profit:.2f} ≈ $0"
+                 exit_reason = f"Mode 1 PnL Above Zero: Net ${self.net_profit:.2f} ≈ $0 (Fee Adjusted)"
 
         # ---------------------------------------------------------
         # Execute Authoritative Auto-Exit
@@ -3440,9 +3844,7 @@ class TradingBotEngine:
         # self._calculate_need_add_metrics(okx_pos_notional)
 
         # Store metrics for Emitter
-        self.max_allowed_display = max_allowed_display
-        self.max_amount_display = max_amount_display
-        self.remaining_amount_notional = remaining_amount_notional
+        # Note: self.max_allowed_display, self.max_amount_display, self.remaining_amount_notional are already set at the top of this function
         self.trade_fees = okx_pos_notional * trade_fee_pct # Corrected: trade_fee_pct already decimal
 
     def _calculate_need_add_metrics(self, okx_pos_notional):
@@ -3525,7 +3927,36 @@ class TradingBotEngine:
         with self.trade_data_lock:
             current_trades = self.open_trades
             
-        self.emit('trades_update', {'trades': current_trades})
+        self.safe_emit('trades_update', {'trades': current_trades})
+
+        # Emit 'position_update' for the central Position tab
+        with self.position_lock:
+            positions_info = {
+                'long': {
+                    'in': self.in_position.get('long', False),
+                    'price': self.position_entry_price.get('long', 0.0),
+                    'qty': self.position_qty.get('long', 0.0),
+                    'tp': self.current_take_profit.get('long', 0.0),
+                    'sl': self.current_stop_loss.get('long', 0.0),
+                    'liq': self.position_liq.get('long', 0.0),
+                    'upl': safe_float(self.position_details.get('long', {}).get('upl', 0.0))
+                },
+                'short': {
+                    'in': self.in_position.get('short', False),
+                    'price': self.position_entry_price.get('short', 0.0),
+                    'qty': self.position_qty.get('short', 0.0),
+                    'tp': self.current_take_profit.get('short', 0.0),
+                    'sl': self.current_stop_loss.get('short', 0.0),
+                    'liq': self.position_liq.get('short', 0.0),
+                    'upl': safe_float(self.position_details.get('short', {}).get('upl', 0.0))
+                }
+            }
+        
+        self.safe_emit('position_update', {
+            'positions': positions_info,
+            'current_take_profit': self.current_take_profit,
+            'current_stop_loss': self.current_stop_loss
+        })
 
         # Emit 'account_update' with calculated targets for real-time sync
         # Calculate current auto-exit targets based on position size
@@ -3536,19 +3967,22 @@ class TradingBotEngine:
         okx_pos_notional = getattr(self, 'cached_pos_notional', 0.0)
         current_size_fee = okx_pos_notional * trade_fee_dec if okx_pos_notional > 0 else 0.0
         
-        self.emit('account_update', {
+        self.safe_emit('account_update', {
             'total_trades': getattr(self, 'cached_active_positions_count', 0) + self.total_trades_count,
             'total_capital': self.total_equity, 
             'total_capital_2nd': getattr(self, 'total_capital_2nd', self.total_equity),
+            'total_balance': self.account_balance,
             'max_allowed_used_display': getattr(self, 'max_allowed_display', 0.0), 
             'max_amount_display': getattr(self, 'max_amount_display', 0.0),
             'used_amount': getattr(self, 'used_amount_notional', 0.0), 
+            'remaining_amount': getattr(self, 'remaining_amount_notional', 0.0),
             'size_amount': okx_pos_notional,
-            'trade_fees': getattr(self, 'trade_fees', 0.0),
-            'remaining_amount': getattr(self, 'remaining_amount_notional', 0.0), 
-            'total_balance': self.account_balance,
             'available_balance': self.available_balance,
-            'net_profit': getattr(self, 'net_profit', 0.0),
+            'trade_fees': getattr(self, 'total_realized_fees', 0.0),
+            # [USER FIX] map 'net_profit' to Gross Unrealized PnL to match Exchange Dashboard
+            'net_profit': getattr(self, 'cached_unrealized_pnl', 0.0),
+            # Send internal fee-adjusted metric as separate key if needed later
+            'net_profit_inclusive': getattr(self, 'net_profit', 0.0),
             'total_trade_profit': self.total_trade_profit,
             'total_trade_loss': self.total_trade_loss,
             'net_trade_profit': self.net_trade_profit,
@@ -3698,6 +4132,13 @@ class TradingBotEngine:
             self.okx_simulated_trading_header = original_okx_simulated_trading_header
 
     def batch_modify_tpsl(self):
+        # Audit Fix: Prevent concurrent batch updates to save rate limits
+        with self.batch_update_lock:
+            if self.batch_update_in_progress:
+                self.log("Batch TP/SL update already in progress. Skipping.", level="debug")
+                return
+            self.batch_update_in_progress = True
+
         self.log("Initiating batch TP/SL modification...", level="debug")
         try:
             latest_data = self._get_latest_data_and_indicators()
@@ -3852,6 +4293,9 @@ class TradingBotEngine:
         except Exception as e:
             self.log(f"Exception in batch_modify_tpsl: {e}", level="error")
             self.emit('error', {'message': f'Failed to batch modify TP/SL: {str(e)}'})
+        finally:
+            with self.batch_update_lock:
+                self.batch_update_in_progress = False
         self.log("Batch TP/SL modification complete.", level="debug")
 
 
@@ -3964,9 +4408,8 @@ class TradingBotEngine:
                 # Update subscription target
                 self.subscribed_instrument = new_symbol
                 
-                # Stop WebSocket to clear old subscriptions
-                if self.ws:
-                    self.ws.close()
+                # Stop WebSockets to clear old subscriptions
+                self._close_websockets()
                 
                 # Fetch new product info
                 if self._fetch_product_info(new_symbol):
