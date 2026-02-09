@@ -714,329 +714,337 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-
-                    <div class="accordion-item">
-                        <h2 class="accordion-header">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                data-bs-target="#strategyParameters">
-                                Strategy Parameters
-                            </button>
-                        </h2>
-                        <div id="strategyParameters" class="accordion-collapse collapse"
-                            data-bs-parent="#configAccordion">
-                            <div class="accordion-body">
-                                <div class="mb-3">
-                                    <label class="form-label" for="okxPosMode">Account Mode</label>
-                                    <select class="form-select" id="okxPosMode">
-                                        <option value="net_mode">One-Way Mode (Net)</option>
-                                        <option value="long_short_mode">Hedge Mode (Long/Short)</option>
-                                    </select>
-                                    <div class="form-text text-warning small">Note: Switching mode requires no open
-                                        positions.</div>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label" for="shortSafetyLinePrice">Short Safety Line Price</label>
-                                    <input type="number" class="form-control" id="shortSafetyLinePrice" step="0.01">
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label" for="longSafetyLinePrice">Long Safety Line Price</label>
-                                    <input type="number" class="form-control" id="longSafetyLinePrice" step="0.01">
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label" for="maxAllowedUsed">Max Allowed Used (USDT)</label>
-                                    <input type="number" class="form-control" id="maxAllowedUsed" min="1">
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Entry Price Offset</label>
-                                    <input type="number" class="form-control" id="entryPriceOffset" step="0.01">
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Batch Offset</label>
-                                    <input type="number" class="form-control" id="batchOffset" step="0.01">
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">TP Price Offset</label>
-                                    <input type="number" class="form-control" id="tpPriceOffset" step="0.01">
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">SL Price Offset</label>
-                                    <input type="number" class="form-control" id="slPriceOffset" step="0.01">
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label" for="loopTimeSeconds">Loop Time (seconds)</label>
-                                    <input type="number" class="form-control" id="loopTimeSeconds" min="1">
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Rate Divisor</label>
-                                    <input type="number" class="form-control" id="rateDivisor" min="1">
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Batch Size Per Loop</label>
-                                    <input type="number" class="form-control" id="batchSizePerLoop" min="1">
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Direction</label>
-                                    <select class="form-select" id="direction">
-                                        <option value="short">Short</option>
-                                        <option value="long">Long</option>
-                                        <option value="both">Both</option>
-                                    </select>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Mode</label>
-                                    <select class="form-select" id="mode">
-                                        <option value="cross">Cross</option>
-                                        <option value="isolated">Isolated</option>
-                                    </select>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Target Order Amount</label>
-                                    <input type="number" class="form-control" id="targetOrderAmount" step="0.001"
-                                        min="0">
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">TP Close Amount (%)</label>
-                                    <input type="number" class="form-control" id="tpAmount" step="0.01" min="0">
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">SL Close Amount (%)</label>
-                                    <input type="number" class="form-control" id="slAmount" step="0.01" min="0">
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Trigger Price</label>
-                                    <select class="form-select" id="triggerPrice">
-                                        <option value="last">Last</option>
-                                        <option value="market">Market</option>
-                                    </select>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label" for="tpMode">TP Mode</label>
-                                    <select class="form-select" id="tpMode">
-                                        <option value="limit">TP Limit</option>
-                                        <option value="market">TP Market</option>
-                                    </select>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label" for="tpType">TP Type</label>
-                                    <select class="form-select" id="tpType">
-                                        <option value="oco">OCO TP/SL</option>
-                                        <option value="split">Split TP/SL</option>
-                                    </select>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label" for="minOrderAmount">Min Order Amount</label>
-                                    <input type="number" class="form-control" id="minOrderAmount" step="0.001">
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label" for="cancelUnfilledSeconds">Cancel Unfilled Order
-                                        (seconds)</label>
-                                    <input type="number" class="form-control" id="cancelUnfilledSeconds" min="1">
-                                </div>
-                                <hr>
-                                <div class="mb-3 form-check">
-                                    <input type="checkbox" class="form-check-input" id="usePnlAutoCancelModal">
-                                    <label class="form-check-label text-warning fw-bold"
-                                        for="usePnlAutoCancelModal">Auto-Exit on Profit</label>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label" for="pnlAutoCancelThresholdModal">Target Profit
-                                        ($)</label>
-                                    <input type="number" class="form-control" id="pnlAutoCancelThresholdModal"
-                                        step="0.01">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="accordion-item">
-                        <h2 class="accordion-header">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                data-bs-target="#autoAddStrategy">
-                                Auto-Cal Add Position Strategy (Gap & Martingale)
-                            </button>
-                        </h2>
-                        <div id="autoAddStrategy" class="accordion-collapse collapse" data-bs-parent="#configAccordion">
-                            <div class="accordion-body">
-                                <div class="alert alert-info py-2 small">
-                                    Logic: <strong>Gap Trigger</strong> uses Market Orders to balance PnL near 0.
-                                </div>
-
-                                <h6 class="fw-bold mb-2 small text-primary">Gap Trigger (Step 1: Market)</h6>
-                                <div class="mb-3">
-                                    <label class="form-label" for="addPosGapThreshold">Gap Threshold ($)</label>
-                                    <input type="number" class="form-control" id="addPosGapThreshold" step="0.1"
-                                        placeholder="e.g. 5.0">
-                                    <div class="form-text">Triggers Market Add when Price moves X away from last
-                                        entry.</div>
-                                </div>
-
-                                <hr class="my-2">
-                                <h6 class="fw-bold mb-2 small text-primary">Target Settings</h6>
-
-                                <div class="mb-3 form-check">
-                                    <input type="checkbox" class="form-check-input" id="useAddPosAboveZero">
-                                    <label class="form-check-label" for="useAddPosAboveZero">Enable PnL > 0
-                                        Maintenance</label>
-                                </div>
-
-                                <div class="mb-3 form-check">
-                                    <input type="checkbox" class="form-check-input" id="useAddPosProfitTarget">
-                                    <label class="form-check-label" for="useAddPosProfitTarget">Enable Profit Target
-                                        Logic</label>
-                                </div>
-
-                                <div class="mb-3">
-                                    <label class="form-label" for="addPosProfitMultiplier">Profit Multiplier (x
-                                        Fee)</label>
-                                    <input type="number" class="form-control" id="addPosProfitMultiplier" step="0.1">
-                                </div>
-
-                                <div class="mb-3">
-                                    <label class="form-label" for="addPosSizePct">Auto-Add Size Percentage (%)</label>
-                                    <input type="number" class="form-control" id="addPosSizePct" step="1"
-                                        placeholder="e.g. 30">
-                                    <div class="form-text">Add Amount = Current Size * Percentage.</div>
-                                </div>
-
-                                <div class="mb-3">
-                                    <label class="form-label" for="addPosMaxCount">Max Auto-Add Loops</label>
-                                    <input type="number" class="form-control" id="addPosMaxCount" step="1"
-                                        placeholder="e.g. 10">
-                                </div>
-
-                                <h6 class="fw-bold mb-2 small text-info border-top pt-2">Sequential Offsets (Step 2+)
-                                </h6>
-                                <div class="mb-3">
-                                    <label class="form-label" for="addPosGapThreshold2">Secondary Gap Threshold
-                                        ($)</label>
-                                    <input type="number" class="form-control" id="addPosGapThreshold2" step="0.1"
-                                        placeholder="Used from 2nd addition onwards">
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label" for="addPosSizePct2">Secondary Size Percentage (%)</label>
-                                    <input type="number" class="form-control" id="addPosSizePct2" step="1"
-                                        placeholder="Used from 2nd addition onwards">
-                                </div>
-
-                                <div class="mb-3">
-                                    <label class="form-label" for="addPosStep2Offset">Step 2 Exit Offset ($)</label>
-                                    <input type="number" class="form-control" id="addPosStep2Offset" step="0.1"
-                                        placeholder="Optional: Overrides Multiplier">
-                                    <div class="form-text">Fixed distance from Avg Entry to place Limit Exit.</div>
-                                </div>
-
-                                <div class="mb-3">
-                                    <label class="form-label" for="addPosRecoveryPercent">Recovery Percent (%)</label>
-                                    <input type="number" class="form-control" id="addPosRecoveryPercent" step="0.1">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="accordion-item">
-                        <h2 class="accordion-header">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                data-bs-target="#candlestickConditions">
-                                Candlestick Entry Conditions
-                            </button>
-                        </h2>
-                        <div id="candlestickConditions" class="accordion-collapse collapse"
-                            data-bs-parent="#configAccordion">
-                            <div class="accordion-body">
-                                <div class="mb-3 form-check">
-                                    <input type="checkbox" class="form-check-input" id="useCandlestickConditions">
-                                    <label class="form-check-label" for="useCandlestickConditions">Use Candlestick
-                                        Conditions</label>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label" for="candlestickTimeframe">Timeframe</label>
-                                    <select class="form-select" id="candlestickTimeframe">
-                                        <option value="1m">1 Minute</option>
-                                        <option value="3m">3 Minutes</option>
-                                        <option value="5m">5 Minutes</option>
-                                        <option value="15m">15 Minutes</option>
-                                        <option value="30m">30 Minutes</option>
-                                        <option value="1h">1 Hour</option>
-                                        <option value="4h">4 Hours</option>
-                                        <option value="1d">1 Day</option>
-                                    </select>
-                                </div>
-                                <!-- Chg between Open and Close -->
-                                <div class="mb-3">
-                                    <div class="form-check mb-2">
-                                        <input type="checkbox" class="form-check-input" id="useChgOpenClose">
-                                        <label class="form-check-label" for="useChgOpenClose">Chg between Open and
-                                            Close</label>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#strategyParameters">
+                                    Strategy Parameters
+                                </button>
+                            </h2>
+                            <div id="strategyParameters" class="accordion-collapse collapse"
+                                data-bs-parent="#configAccordion">
+                                <div class="accordion-body">
+                                    <div class="mb-3">
+                                        <label class="form-label" for="okxPosMode">Account Mode</label>
+                                        <select class="form-select" id="okxPosMode">
+                                            <option value="net_mode">One-Way Mode (Net)</option>
+                                            <option value="long_short_mode">Hedge Mode (Long/Short)</option>
+                                        </select>
+                                        <div class="form-text text-warning small">Note: Switching mode requires no open
+                                            positions.</div>
                                     </div>
-                                    <div class="input-group">
-                                        <label class="input-group-text" for="minChgOpenClose">Min Chg</label>
-                                        <input type="number" class="form-control" id="minChgOpenClose" step="0.01">
-                                        <label class="input-group-text" for="maxChgOpenClose">Max Chg</label>
-                                        <input type="number" class="form-control" id="maxChgOpenClose" step="0.01">
+                                    <div class="mb-3">
+                                        <label class="form-label" for="shortSafetyLinePrice">Short Safety Line
+                                            Price</label>
+                                        <input type="number" class="form-control" id="shortSafetyLinePrice" step="0.01">
                                     </div>
-                                </div>
-                                <!-- Chg between High and Low -->
-                                <div class="mb-3">
-                                    <div class="form-check mb-2">
-                                        <input type="checkbox" class="form-check-input" id="useChgHighLow">
-                                        <label class="form-check-label" for="useChgHighLow">Chg between High and
-                                            Low</label>
+                                    <div class="mb-3">
+                                        <label class="form-label" for="longSafetyLinePrice">Long Safety Line
+                                            Price</label>
+                                        <input type="number" class="form-control" id="longSafetyLinePrice" step="0.01">
                                     </div>
-                                    <div class="input-group">
-                                        <label class="input-group-text" for="minChgHighLow">Min Chg</label>
-                                        <input type="number" class="form-control" id="minChgHighLow" step="0.01">
-                                        <label class="input-group-text" for="maxChgHighLow">Max Chg</label>
-                                        <input type="number" class="form-control" id="maxChgHighLow" step="0.01">
+                                    <div class="mb-3">
+                                        <label class="form-label" for="maxAllowedUsed">Max Allowed Used (USDT)</label>
+                                        <input type="number" class="form-control" id="maxAllowedUsed" min="1">
                                     </div>
-                                </div>
-                                <!-- Chg between High and Close -->
-                                <div class="mb-3">
-                                    <div class="form-check mb-2">
-                                        <input type="checkbox" class="form-check-input" id="useChgHighClose">
-                                        <label class="form-check-label" for="useChgHighClose">Chg between High and
-                                            Close</label>
+                                    <div class="mb-3">
+                                        <label class="form-label">Entry Price Offset</label>
+                                        <input type="number" class="form-control" id="entryPriceOffset" step="0.01">
                                     </div>
-                                    <div class="input-group">
-                                        <label class="input-group-text" for="minChgHighClose">Min Chg</label>
-                                        <input type="number" class="form-control" id="minChgHighClose" step="0.01">
-                                        <label class="input-group-text" for="maxChgHighClose">Max Chg</label>
-                                        <input type="number" class="form-control" id="maxChgHighClose" step="0.01">
+                                    <div class="mb-3">
+                                        <label class="form-label">Batch Offset</label>
+                                        <input type="number" class="form-control" id="batchOffset" step="0.01">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">TP Price Offset</label>
+                                        <input type="number" class="form-control" id="tpPriceOffset" step="0.01">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">SL Price Offset</label>
+                                        <input type="number" class="form-control" id="slPriceOffset" step="0.01">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label" for="loopTimeSeconds">Loop Time (seconds)</label>
+                                        <input type="number" class="form-control" id="loopTimeSeconds" min="1">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Rate Divisor</label>
+                                        <input type="number" class="form-control" id="rateDivisor" min="1">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Batch Size Per Loop</label>
+                                        <input type="number" class="form-control" id="batchSizePerLoop" min="1">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Direction</label>
+                                        <select class="form-select" id="direction">
+                                            <option value="short">Short</option>
+                                            <option value="long">Long</option>
+                                            <option value="both">Both</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Mode</label>
+                                        <select class="form-select" id="mode">
+                                            <option value="cross">Cross</option>
+                                            <option value="isolated">Isolated</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Target Order Amount</label>
+                                        <input type="number" class="form-control" id="targetOrderAmount" step="0.001"
+                                            min="0">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">TP Close Amount (%)</label>
+                                        <input type="number" class="form-control" id="tpAmount" step="0.01" min="0">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">SL Close Amount (%)</label>
+                                        <input type="number" class="form-control" id="slAmount" step="0.01" min="0">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Trigger Price</label>
+                                        <select class="form-select" id="triggerPrice">
+                                            <option value="last">Last</option>
+                                            <option value="market">Market</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label" for="tpMode">TP Mode</label>
+                                        <select class="form-select" id="tpMode">
+                                            <option value="limit">TP Limit</option>
+                                            <option value="market">TP Market</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label" for="tpType">TP Type</label>
+                                        <select class="form-select" id="tpType">
+                                            <option value="oco">OCO TP/SL</option>
+                                            <option value="split">Split TP/SL</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label" for="minOrderAmount">Min Order Amount</label>
+                                        <input type="number" class="form-control" id="minOrderAmount" step="0.001">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label" for="cancelUnfilledSeconds">Cancel Unfilled Order
+                                            (seconds)</label>
+                                        <input type="number" class="form-control" id="cancelUnfilledSeconds" min="1">
+                                    </div>
+                                    <hr>
+                                    <div class="mb-3 form-check">
+                                        <input type="checkbox" class="form-check-input" id="usePnlAutoCancelModal">
+                                        <label class="form-check-label text-warning fw-bold"
+                                            for="usePnlAutoCancelModal">Auto-Exit on Profit</label>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label" for="pnlAutoCancelThresholdModal">Target Profit
+                                            ($)</label>
+                                        <input type="number" class="form-control" id="pnlAutoCancelThresholdModal"
+                                            step="0.01">
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="accordion-item">
-                        <h2 class="accordion-header">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                data-bs-target="#cancelConditions">
-                                Cancel Conditions
-                            </button>
-                        </h2>
-                        <div id="cancelConditions" class="accordion-collapse collapse"
-                            data-bs-parent="#configAccordion">
-                            <div class="accordion-body">
-                                <div class="mb-3 form-check">
-                                    <input type="checkbox" class="form-check-input" id="cancelOnEntryPriceBelowMarket">
-                                    <label class="form-check-label" for="cancelOnEntryPriceBelowMarket">Short:
-                                        Cancel if Entry price is below market price</label>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#autoAddStrategy">
+                                    Auto-Cal Add Position Strategy (Gap & Martingale)
+                                </button>
+                            </h2>
+                            <div id="autoAddStrategy" class="accordion-collapse collapse"
+                                data-bs-parent="#configAccordion">
+                                <div class="accordion-body">
+                                    <div class="alert alert-info py-2 small">
+                                        Logic: <strong>Gap Trigger</strong> uses Market Orders to balance PnL near 0.
+                                    </div>
+
+                                    <h6 class="fw-bold mb-2 small text-primary">Gap Trigger (Step 1: Market)</h6>
+                                    <div class="mb-3">
+                                        <label class="form-label" for="addPosGapThreshold">Gap Threshold ($)</label>
+                                        <input type="number" class="form-control" id="addPosGapThreshold" step="0.1"
+                                            placeholder="e.g. 5.0">
+                                        <div class="form-text">Triggers Market Add when Price moves X away from last
+                                            entry.</div>
+                                    </div>
+
+                                    <hr class="my-2">
+                                    <h6 class="fw-bold mb-2 small text-primary">Target Settings</h6>
+
+                                    <div class="mb-3 form-check">
+                                        <input type="checkbox" class="form-check-input" id="useAddPosAboveZero">
+                                        <label class="form-check-label" for="useAddPosAboveZero">Enable PnL > 0
+                                            Maintenance</label>
+                                    </div>
+
+                                    <div class="mb-3 form-check">
+                                        <input type="checkbox" class="form-check-input" id="useAddPosProfitTarget">
+                                        <label class="form-check-label" for="useAddPosProfitTarget">Enable Profit Target
+                                            Logic</label>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label" for="addPosProfitMultiplier">Profit Multiplier (x
+                                            Fee)</label>
+                                        <input type="number" class="form-control" id="addPosProfitMultiplier"
+                                            step="0.1">
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label" for="addPosSizePct">Auto-Add Size Percentage
+                                            (%)</label>
+                                        <input type="number" class="form-control" id="addPosSizePct" step="1"
+                                            placeholder="e.g. 30">
+                                        <div class="form-text">Add Amount = Current Size * Percentage.</div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label" for="addPosMaxCount">Max Auto-Add Loops</label>
+                                        <input type="number" class="form-control" id="addPosMaxCount" step="1"
+                                            placeholder="e.g. 10">
+                                    </div>
+
+                                    <h6 class="fw-bold mb-2 small text-info border-top pt-2">Sequential Offsets (Step
+                                        2+)
+                                    </h6>
+                                    <div class="mb-3">
+                                        <label class="form-label" for="addPosGapThreshold2">Secondary Gap Threshold
+                                            ($)</label>
+                                        <input type="number" class="form-control" id="addPosGapThreshold2" step="0.1"
+                                            placeholder="Used from 2nd addition onwards">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label" for="addPosSizePct2">Secondary Size Percentage
+                                            (%)</label>
+                                        <input type="number" class="form-control" id="addPosSizePct2" step="1"
+                                            placeholder="Used from 2nd addition onwards">
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label" for="addPosStep2Offset">Step 2 Exit Offset ($)</label>
+                                        <input type="number" class="form-control" id="addPosStep2Offset" step="0.1"
+                                            placeholder="Optional: Overrides Multiplier">
+                                        <div class="form-text">Fixed distance from Avg Entry to place Limit Exit.</div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label" for="addPosRecoveryPercent">Recovery Percent
+                                            (%)</label>
+                                        <input type="number" class="form-control" id="addPosRecoveryPercent" step="0.1">
+                                    </div>
                                 </div>
-                                <div class="mb-3 form-check">
-                                    <input type="checkbox" class="form-check-input" id="cancelOnEntryPriceAboveMarket">
-                                    <label class="form-check-label" for="cancelOnEntryPriceAboveMarket">Long: Cancel
-                                        if Entry price is above market price</label>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#candlestickConditions">
+                                    Candlestick Entry Conditions
+                                </button>
+                            </h2>
+                            <div id="candlestickConditions" class="accordion-collapse collapse"
+                                data-bs-parent="#configAccordion">
+                                <div class="accordion-body">
+                                    <div class="mb-3 form-check">
+                                        <input type="checkbox" class="form-check-input" id="useCandlestickConditions">
+                                        <label class="form-check-label" for="useCandlestickConditions">Use Candlestick
+                                            Conditions</label>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label" for="candlestickTimeframe">Timeframe</label>
+                                        <select class="form-select" id="candlestickTimeframe">
+                                            <option value="1m">1 Minute</option>
+                                            <option value="3m">3 Minutes</option>
+                                            <option value="5m">5 Minutes</option>
+                                            <option value="15m">15 Minutes</option>
+                                            <option value="30m">30 Minutes</option>
+                                            <option value="1h">1 Hour</option>
+                                            <option value="4h">4 Hours</option>
+                                            <option value="1d">1 Day</option>
+                                        </select>
+                                    </div>
+                                    <!-- Chg between Open and Close -->
+                                    <div class="mb-3">
+                                        <div class="form-check mb-2">
+                                            <input type="checkbox" class="form-check-input" id="useChgOpenClose">
+                                            <label class="form-check-label" for="useChgOpenClose">Chg between Open and
+                                                Close</label>
+                                        </div>
+                                        <div class="input-group">
+                                            <label class="input-group-text" for="minChgOpenClose">Min Chg</label>
+                                            <input type="number" class="form-control" id="minChgOpenClose" step="0.01">
+                                            <label class="input-group-text" for="maxChgOpenClose">Max Chg</label>
+                                            <input type="number" class="form-control" id="maxChgOpenClose" step="0.01">
+                                        </div>
+                                    </div>
+                                    <!-- Chg between High and Low -->
+                                    <div class="mb-3">
+                                        <div class="form-check mb-2">
+                                            <input type="checkbox" class="form-check-input" id="useChgHighLow">
+                                            <label class="form-check-label" for="useChgHighLow">Chg between High and
+                                                Low</label>
+                                        </div>
+                                        <div class="input-group">
+                                            <label class="input-group-text" for="minChgHighLow">Min Chg</label>
+                                            <input type="number" class="form-control" id="minChgHighLow" step="0.01">
+                                            <label class="input-group-text" for="maxChgHighLow">Max Chg</label>
+                                            <input type="number" class="form-control" id="maxChgHighLow" step="0.01">
+                                        </div>
+                                    </div>
+                                    <!-- Chg between High and Close -->
+                                    <div class="mb-3">
+                                        <div class="form-check mb-2">
+                                            <input type="checkbox" class="form-check-input" id="useChgHighClose">
+                                            <label class="form-check-label" for="useChgHighClose">Chg between High and
+                                                Close</label>
+                                        </div>
+                                        <div class="input-group">
+                                            <label class="input-group-text" for="minChgHighClose">Min Chg</label>
+                                            <input type="number" class="form-control" id="minChgHighClose" step="0.01">
+                                            <label class="input-group-text" for="maxChgHighClose">Max Chg</label>
+                                            <input type="number" class="form-control" id="maxChgHighClose" step="0.01">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#cancelConditions">
+                                    Cancel Conditions
+                                </button>
+                            </h2>
+                            <div id="cancelConditions" class="accordion-collapse collapse"
+                                data-bs-parent="#configAccordion">
+                                <div class="accordion-body">
+                                    <div class="mb-3 form-check">
+                                        <input type="checkbox" class="form-check-input"
+                                            id="cancelOnEntryPriceBelowMarket">
+                                        <label class="form-check-label" for="cancelOnEntryPriceBelowMarket">Short:
+                                            Cancel if Entry price is below market price</label>
+                                    </div>
+                                    <div class="mb-3 form-check">
+                                        <input type="checkbox" class="form-check-input"
+                                            id="cancelOnEntryPriceAboveMarket">
+                                        <label class="form-check-label" for="cancelOnEntryPriceAboveMarket">Long: Cancel
+                                            if Entry price is above market price</label>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" id="saveConfigBtn">Save Changes</button>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="saveConfigBtn">Save Changes</button>
+                </div>
             </div>
         </div>
-    </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

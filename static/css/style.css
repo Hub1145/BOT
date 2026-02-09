@@ -447,6 +447,50 @@ body {
     color: var(--text-secondary) !important;
 }
 
+/* Modal Styling */
+.modal-content {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+}
+
+.modal-header {
+    background-color: var(--bg-tertiary);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.modal-title {
+    color: var(--text-primary);
+}
+
+.modal-body {
+    color: var(--text-primary);
+}
+
+.modal-footer {
+    background-color: var(--bg-tertiary);
+    border-top: 1px solid var(--border-color);
+}
+
+.accordion-item {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+}
+
+.accordion-button {
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.accordion-button:not(.collapsed) {
+    background-color: var(--bg-secondary);
+    color: var(--info-color);
+}
+
+.accordion-body {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
 /* Responsive Overrides */
 @media (max-width: 576px) {
     .navbar-brand {
@@ -496,5 +540,127 @@ body {
     .nav-tabs .nav-link {
         padding: 0.5rem 0.75rem;
         font-size: 0.85rem;
+    }
+
+    /* Configuration Modal Mobile Fixes */
+    .modal-dialog {
+        margin: 0.5rem;
+        max-width: calc(100% - 1rem);
+        min-height: calc(100% - 1rem);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-content {
+        width: 100%;
+        height: auto;
+        max-height: 95vh;
+        display: flex;
+        flex-direction: column;
+        border-radius: 1rem;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-header {
+        padding: 1rem 1.25rem;
+        flex-shrink: 0;
+        border-bottom: 1px solid var(--border-color);
+        background-color: var(--bg-tertiary);
+    }
+
+    .modal-header .modal-title {
+        font-size: 1.2rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+    }
+
+    .modal-body {
+        padding: 1rem;
+        overflow-y: auto;
+        flex: 1 1 auto;
+        -webkit-overflow-scrolling: touch;
+        background-color: var(--bg-secondary);
+        display: block;
+        /* Ensure no flexbox squashing of direct children */
+    }
+
+    .modal-footer {
+        padding: 1rem;
+        flex-shrink: 0;
+        background-color: var(--bg-tertiary);
+        border-top: 1px solid var(--border-color);
+        display: flex;
+        gap: 0.75rem;
+        justify-content: flex-end;
+        width: 100%;
+    }
+
+    .modal-footer .btn {
+        flex: 1;
+        max-width: none;
+        /* Allow buttons to expand on mobile */
+        min-height: 48px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        border-radius: 0.75rem;
+        transition: all 0.2s ease;
+    }
+
+    .accordion-item {
+        margin-bottom: 0.75rem;
+        border-radius: 0.75rem !important;
+        overflow: hidden;
+        border: 1px solid var(--border-color);
+    }
+
+    .accordion-button {
+        padding: 1rem;
+        font-size: 0.95rem;
+        font-weight: 600;
+        min-height: 56px;
+        /* Prevent squashing */
+    }
+
+    .accordion-body {
+        padding: 0.75rem 1rem;
+    }
+
+    .form-label {
+        font-size: 0.85rem;
+        margin-bottom: 0.25rem;
+        color: var(--text-secondary);
+    }
+
+    .form-control,
+    .form-select {
+        font-size: 1rem;
+        /* Prevent auto-zoom on iOS */
+        padding: 0.5rem 0.75rem;
+        background-color: var(--bg-tertiary);
+        border: 1px solid var(--border-color);
+        color: var(--text-primary);
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        background-color: var(--bg-tertiary);
+        border-color: var(--info-color);
+        box-shadow: 0 0 0 0.2rem rgba(13, 202, 240, 0.25);
+    }
+
+    .input-group-text {
+        font-size: 0.75rem;
+        padding: 0.4rem 0.6rem;
+        background-color: var(--bg-tertiary);
+        border: 1px solid var(--border-color);
+        color: var(--text-secondary);
+    }
+
+    .alert {
+        padding: 0.75rem;
+        font-size: 0.85rem;
+        border-radius: 0.5rem;
     }
 }
