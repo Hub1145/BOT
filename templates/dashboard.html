@@ -29,9 +29,6 @@
                 <button class="btn btn-secondary" id="configBtn">
                     <i class="bi bi-gear-fill"></i> Config
                 </button>
-                <a href="/logout" class="btn btn-outline-danger btn-sm">
-                    <i class="bi bi-box-arrow-right"></i> Logout
-                </a>
             </div>
         </div>
     </nav>
@@ -66,9 +63,8 @@
                                 </div>
                             </div>
                             <div class="d-flex align-items-center gap-2">
-                                <label class="text-secondary small text-uppercase fw-bold"
-                                    for="pnlAutoManualThreshold">Target Manual Profit
-                                    ($)</label>
+                                <span class="text-secondary small text-uppercase fw-bold">Target Manual Profit
+                                    ($)</span>
                                 <input type="number" class="form-control form-control-sm" id="pnlAutoManualThreshold"
                                     style="width: 80px;" step="0.01">
                             </div>
@@ -83,12 +79,10 @@
                                 </div>
                             </div>
                             <div class="d-flex align-items-center gap-2">
-                                <label class="text-secondary small text-uppercase fw-bold"
-                                    for="pnlAutoCalDisplay">Target Auto Profit ($)</label>
+                                <span class="text-secondary small text-uppercase fw-bold">Target Auto Profit ($)</span>
                                 <input type="number" class="form-control form-control-sm" id="pnlAutoCalDisplay"
                                     style="width: 80px;" readonly placeholder="Auto">
-                                <label class="text-secondary small text-uppercase fw-bold ms-2"
-                                    for="pnlAutoCalTimes">Times</label>
+                                <span class="text-secondary small text-uppercase fw-bold ms-2">Times</span>
                                 <input type="number" class="form-control form-control-sm" id="pnlAutoCalTimes"
                                     style="width: 60px;" step="0.1" min="0.1">
                             </div>
@@ -105,13 +99,11 @@
                                 </div>
                             </div>
                             <div class="d-flex align-items-center gap-2">
-                                <label class="text-secondary small text-uppercase fw-bold"
-                                    for="pnlAutoCalLossDisplay">Target Auto Loss / Cancel
-                                    ($)</label>
+                                <span class="text-secondary small text-uppercase fw-bold">Target Auto Loss / Cancel
+                                    ($)</span>
                                 <input type="number" class="form-control form-control-sm" id="pnlAutoCalLossDisplay"
                                     style="width: 80px;" readonly placeholder="Auto">
-                                <label class="text-secondary small text-uppercase fw-bold ms-2"
-                                    for="pnlAutoCalLossTimes">Times</label>
+                                <span class="text-secondary small text-uppercase fw-bold ms-2">Times</span>
                                 <input type="number" class="form-control form-control-sm" id="pnlAutoCalLossTimes"
                                     style="width: 60px;" step="0.1" min="0.1">
                             </div>
@@ -128,12 +120,10 @@
                                 </div>
                             </div>
                             <div class="d-flex align-items-center gap-2">
-                                <label class="text-secondary small text-uppercase fw-bold"
-                                    for="sizeAutoCalDisplay">Target Size Profit ($)</label>
+                                <span class="text-secondary small text-uppercase fw-bold">Target Size Profit ($)</span>
                                 <input type="number" class="form-control form-control-sm" id="sizeAutoCalDisplay"
                                     style="width: 80px;" readonly placeholder="Auto">
-                                <label class="text-secondary small text-uppercase fw-bold ms-2"
-                                    for="sizeAutoCalTimes">Times</label>
+                                <span class="text-secondary small text-uppercase fw-bold ms-2">Times</span>
                                 <input type="number" class="form-control form-control-sm" id="sizeAutoCalTimes"
                                     style="width: 60px;" step="0.1" min="0.1">
                             </div>
@@ -150,12 +140,10 @@
                                 </div>
                             </div>
                             <div class="d-flex align-items-center gap-2">
-                                <label class="text-secondary small text-uppercase fw-bold"
-                                    for="sizeAutoCalLossDisplay">Target Size Loss ($)</label>
+                                <span class="text-secondary small text-uppercase fw-bold">Target Size Loss ($)</span>
                                 <input type="number" class="form-control form-control-sm" id="sizeAutoCalLossDisplay"
                                     style="width: 80px;" readonly placeholder="Auto">
-                                <label class="text-secondary small text-uppercase fw-bold ms-2"
-                                    for="sizeAutoCalLossTimes">Times</label>
+                                <span class="text-secondary small text-uppercase fw-bold ms-2">Times</span>
                                 <input type="number" class="form-control form-control-sm" id="sizeAutoCalLossTimes"
                                     style="width: 60px;" step="0.1" min="0.1">
                             </div>
@@ -190,9 +178,9 @@
                             </div>
                             <div class="d-flex flex-column align-items-end gap-2">
                                 <div class="d-flex align-items-center gap-1">
-                                    <label class="text-secondary small text-uppercase fw-bold"
-                                        style="font-size: 0.7rem;" for="tradeFeePercentage">Fee
-                                        %</label>
+                                    <span class="text-secondary small text-uppercase fw-bold"
+                                        style="font-size: 0.7rem;">Fee
+                                        %</span>
                                     <input type="number" class="form-control form-control-sm" id="tradeFeePercentage"
                                         style="width: 60px; font-size: 0.75rem;" step="0.001">
                                 </div>
@@ -215,8 +203,8 @@
                                 </div>
                             </div>
                             <div class="d-flex align-items-center gap-2">
-                                <label class="text-secondary small text-uppercase fw-bold" style="font-size: 0.7rem;"
-                                    for="autoMarginOffset">Offset ($)</label>
+                                <span class="text-secondary small text-uppercase fw-bold"
+                                    style="font-size: 0.7rem;">Offset ($)</span>
                                 <input type="number" class="form-control form-control-sm" id="autoMarginOffset"
                                     style="width: 70px; font-size: 0.75rem;" step="1" min="1">
                                 <span class="text-secondary small text-uppercase fw-bold ms-2"
@@ -280,16 +268,16 @@
                         <!-- Settings Row 1 (Recovery & Multiplier) -->
                         <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
                             <div class="d-flex align-items-center gap-2">
-                                <label class="text-secondary small text-uppercase fw-bold" style="font-size: 0.65rem;"
-                                    for="addPosRecoveryPercentMain">Recovery %</label>
+                                <span class="text-secondary small text-uppercase fw-bold"
+                                    style="font-size: 0.65rem;">Recovery %</span>
                                 <input type="number" class="form-control form-control-sm dashboard-sync"
                                     id="addPosRecoveryPercentMain" data-sync-id="addPosRecoveryPercent"
                                     style="width: 55px; font-size: 0.7rem; background: #1a1a2e; color: #fff; border: 1px solid #444;"
                                     step="0.1" min="0.1">
                             </div>
                             <div class="d-flex align-items-center gap-2">
-                                <label class="text-secondary small text-uppercase fw-bold" style="font-size: 0.65rem;"
-                                    for="addPosProfitMultiplierMain">Profit Multiplier</label>
+                                <span class="text-secondary small text-uppercase fw-bold"
+                                    style="font-size: 0.65rem;">Profit Multiplier</span>
                                 <input type="number" class="form-control form-control-sm dashboard-sync"
                                     id="addPosProfitMultiplierMain" data-sync-id="addPosProfitMultiplier"
                                     style="width: 55px; font-size: 0.7rem; background: #1a1a2e; color: #fff; border: 1px solid #444;"
@@ -303,55 +291,28 @@
                         <div
                             class="d-flex align-items-center justify-content-between flex-wrap gap-2 mt-2 pt-2 border-top border-secondary border-opacity-25">
                             <div class="d-flex align-items-center gap-2">
-                                <label class="text-info small text-uppercase fw-bold" style="font-size: 0.65rem;"
-                                    for="addPosSizePctMain">Size
-                                    %</label>
+                                <span class="text-info small text-uppercase fw-bold" style="font-size: 0.65rem;">Size
+                                    %</span>
                                 <input type="number" class="form-control form-control-sm dashboard-sync"
                                     id="addPosSizePctMain" data-sync-id="addPosSizePct"
                                     style="width: 55px; font-size: 0.7rem; background: #1a1a2e; color: #fff; border: 1px solid #444;"
                                     step="1" min="1">
                             </div>
                             <div class="d-flex align-items-center gap-2">
-                                <label class="text-info small text-uppercase fw-bold" style="font-size: 0.65rem;"
-                                    for="addPosMaxCountMain">Max
-                                    Loops</label>
+                                <span class="text-info small text-uppercase fw-bold" style="font-size: 0.65rem;">Max
+                                    Loops</span>
                                 <input type="number" class="form-control form-control-sm dashboard-sync"
                                     id="addPosMaxCountMain" data-sync-id="addPosMaxCount"
                                     style="width: 55px; font-size: 0.7rem; background: #1a1a2e; color: #fff; border: 1px solid #444;"
                                     step="1" min="1">
                             </div>
                             <div class="d-flex align-items-center gap-2">
-                                <label class="text-secondary small text-uppercase fw-bold" style="font-size: 0.65rem;"
-                                    for="addPosGapThresholdMain">Gap ($)</label>
+                                <span class="text-secondary small text-uppercase fw-bold"
+                                    style="font-size: 0.65rem;">Gap ($)</span>
                                 <input type="number" class="form-control form-control-sm dashboard-sync"
                                     id="addPosGapThresholdMain" data-sync-id="addPosGapThreshold"
                                     style="width: 55px; font-size: 0.7rem; background: #1a1a2e; color: #fff; border: 1px solid #444;"
                                     step="0.1" min="0">
-                            </div>
-                        </div>
-
-                        <!-- Sequential Offsets Row (Step 2+) -->
-                        <div
-                            class="d-flex align-items-center justify-content-between flex-wrap gap-2 mt-2 pt-2 border-top border-info border-opacity-25">
-                            <div class="d-flex align-items-center gap-2">
-                                <label class="text-info small text-uppercase fw-bold" style="font-size: 0.65rem;"
-                                    for="addPosGapThreshold2Main">Step 2+
-                                    Gap</label>
-                                <input type="number" class="form-control form-control-sm dashboard-sync"
-                                    id="addPosGapThreshold2Main" data-sync-id="addPosGapThreshold2"
-                                    style="width: 55px; font-size: 0.7rem; background: #1a1a2e; color: #fff; border: 1px solid #444;"
-                                    step="0.1" min="0">
-                            </div>
-                            <div class="d-flex align-items-center gap-2">
-                                <label class="text-info small text-uppercase fw-bold" style="font-size: 0.65rem;"
-                                    for="addPosSizePct2Main">Step 2+
-                                    Size %</label>
-                                <input type="number" class="form-control form-control-sm dashboard-sync"
-                                    id="addPosSizePct2Main" data-sync-id="addPosSizePct2"
-                                    style="width: 55px; font-size: 0.7rem; background: #1a1a2e; color: #fff; border: 1px solid #444;"
-                                    step="1" min="1">
-                            </div>
-                            <div class="small text-info opacity-75" style="font-size: 0.6rem;">(Sequential Offsets)
                             </div>
                         </div>
                     </div>
@@ -606,16 +567,16 @@
                                     <div class="ms-3 mb-4">
                                         <h6 class="small fw-bold text-info">User Live API (Real Money)</h6>
                                         <div class="mb-2">
-                                            <label class="form-label small mb-1" for="okxApiKey">Key</label>
+                                            <label class="form-label small mb-1">Key</label>
                                             <input type="text" class="form-control form-control-sm" id="okxApiKey">
                                         </div>
                                         <div class="mb-2">
-                                            <label class="form-label small mb-1" for="okxApiSecret">Secret</label>
+                                            <label class="form-label small mb-1">Secret</label>
                                             <input type="password" class="form-control form-control-sm"
                                                 id="okxApiSecret">
                                         </div>
                                         <div class="mb-2">
-                                            <label class="form-label small mb-1" for="okxPassphrase">Passphrase</label>
+                                            <label class="form-label small mb-1">Passphrase</label>
                                             <input type="password" class="form-control form-control-sm"
                                                 id="okxPassphrase">
                                         </div>
@@ -692,28 +653,17 @@
                                     </button>
                                     <hr>
                                     <div class="mb-3">
-                                        <label class="form-label" for="symbol">Symbol</label>
+                                        <label class="form-label">Symbol</label>
                                         <input type="text" class="form-control" id="symbol">
                                     </div>
                                     <div class="mb-3">
-                                        <label class="form-label" for="leverage">Leverage</label>
+                                        <label class="form-label">Leverage</label>
                                         <input type="number" class="form-control" id="leverage" min="1">
-                                    </div>
-                                    <hr>
-                                    <h6 class="fw-bold mb-3 text-warning">Dashboard Security</h6>
-                                    <div class="mb-3">
-                                        <label class="form-label" for="dashboardUsername">Dashboard Username</label>
-                                        <input type="text" class="form-control" id="dashboardUsername"
-                                            placeholder="e.g. admin">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label" for="dashboardPassword">Dashboard Password</label>
-                                        <input type="password" class="form-control" id="dashboardPassword"
-                                            placeholder="e.g. admin">
                                     </div>
                                 </div>
                             </div>
                         </div>
+
                         <div class="accordion-item">
                             <h2 class="accordion-header">
                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
@@ -725,7 +675,7 @@
                                 data-bs-parent="#configAccordion">
                                 <div class="accordion-body">
                                     <div class="mb-3">
-                                        <label class="form-label" for="okxPosMode">Account Mode</label>
+                                        <label class="form-label">Account Mode</label>
                                         <select class="form-select" id="okxPosMode">
                                             <option value="net_mode">One-Way Mode (Net)</option>
                                             <option value="long_short_mode">Hedge Mode (Long/Short)</option>
@@ -734,17 +684,15 @@
                                             positions.</div>
                                     </div>
                                     <div class="mb-3">
-                                        <label class="form-label" for="shortSafetyLinePrice">Short Safety Line
-                                            Price</label>
+                                        <label class="form-label">Short Safety Line Price</label>
                                         <input type="number" class="form-control" id="shortSafetyLinePrice" step="0.01">
                                     </div>
                                     <div class="mb-3">
-                                        <label class="form-label" for="longSafetyLinePrice">Long Safety Line
-                                            Price</label>
+                                        <label class="form-label">Long Safety Line Price</label>
                                         <input type="number" class="form-control" id="longSafetyLinePrice" step="0.01">
                                     </div>
                                     <div class="mb-3">
-                                        <label class="form-label" for="maxAllowedUsed">Max Allowed Used (USDT)</label>
+                                        <label class="form-label">Max Allowed Used (USDT)</label>
                                         <input type="number" class="form-control" id="maxAllowedUsed" min="1">
                                     </div>
                                     <div class="mb-3">
@@ -764,7 +712,7 @@
                                         <input type="number" class="form-control" id="slPriceOffset" step="0.01">
                                     </div>
                                     <div class="mb-3">
-                                        <label class="form-label" for="loopTimeSeconds">Loop Time (seconds)</label>
+                                        <label class="form-label">Loop Time (seconds)</label>
                                         <input type="number" class="form-control" id="loopTimeSeconds" min="1">
                                     </div>
                                     <div class="mb-3">
@@ -811,37 +759,35 @@
                                         </select>
                                     </div>
                                     <div class="mb-3">
-                                        <label class="form-label" for="tpMode">TP Mode</label>
+                                        <label class="form-label">TP Mode</label>
                                         <select class="form-select" id="tpMode">
                                             <option value="limit">TP Limit</option>
                                             <option value="market">TP Market</option>
                                         </select>
                                     </div>
                                     <div class="mb-3">
-                                        <label class="form-label" for="tpType">TP Type</label>
+                                        <label class="form-label">TP Type</label>
                                         <select class="form-select" id="tpType">
                                             <option value="oco">OCO TP/SL</option>
                                             <option value="split">Split TP/SL</option>
                                         </select>
                                     </div>
                                     <div class="mb-3">
-                                        <label class="form-label" for="minOrderAmount">Min Order Amount</label>
+                                        <label class="form-label">Min Order Amount</label>
                                         <input type="number" class="form-control" id="minOrderAmount" step="0.001">
                                     </div>
                                     <div class="mb-3">
-                                        <label class="form-label" for="cancelUnfilledSeconds">Cancel Unfilled Order
-                                            (seconds)</label>
+                                        <label class="form-label">Cancel Unfilled Order (seconds)</label>
                                         <input type="number" class="form-control" id="cancelUnfilledSeconds" min="1">
                                     </div>
                                     <hr>
                                     <div class="mb-3 form-check">
                                         <input type="checkbox" class="form-check-input" id="usePnlAutoCancelModal">
-                                        <label class="form-check-label text-warning fw-bold"
-                                            for="usePnlAutoCancelModal">Auto-Exit on Profit</label>
+                                        <label class="form-check-label"
+                                            for="usePnlAutoCancelModal text-warning fw-bold">Auto-Exit on Profit</label>
                                     </div>
                                     <div class="mb-3">
-                                        <label class="form-label" for="pnlAutoCancelThresholdModal">Target Profit
-                                            ($)</label>
+                                        <label class="form-label">Target Profit ($)</label>
                                         <input type="number" class="form-control" id="pnlAutoCancelThresholdModal"
                                             step="0.01">
                                     </div>
@@ -864,7 +810,7 @@
 
                                     <h6 class="fw-bold mb-2 small text-primary">Gap Trigger (Step 1: Market)</h6>
                                     <div class="mb-3">
-                                        <label class="form-label" for="addPosGapThreshold">Gap Threshold ($)</label>
+                                        <label class="form-label">Gap Threshold ($)</label>
                                         <input type="number" class="form-control" id="addPosGapThreshold" step="0.1"
                                             placeholder="e.g. 5.0">
                                         <div class="form-text">Triggers Market Add when Price moves X away from last
@@ -887,52 +833,33 @@
                                     </div>
 
                                     <div class="mb-3">
-                                        <label class="form-label" for="addPosProfitMultiplier">Profit Multiplier (x
-                                            Fee)</label>
+                                        <label class="form-label">Profit Multiplier (x Fee)</label>
                                         <input type="number" class="form-control" id="addPosProfitMultiplier"
                                             step="0.1">
                                     </div>
 
                                     <div class="mb-3">
-                                        <label class="form-label" for="addPosSizePct">Auto-Add Size Percentage
-                                            (%)</label>
+                                        <label class="form-label">Auto-Add Size Percentage (%)</label>
                                         <input type="number" class="form-control" id="addPosSizePct" step="1"
                                             placeholder="e.g. 30">
                                         <div class="form-text">Add Amount = Current Size * Percentage.</div>
                                     </div>
 
                                     <div class="mb-3">
-                                        <label class="form-label" for="addPosMaxCount">Max Auto-Add Loops</label>
+                                        <label class="form-label">Max Auto-Add Loops</label>
                                         <input type="number" class="form-control" id="addPosMaxCount" step="1"
                                             placeholder="e.g. 10">
                                     </div>
 
-                                    <h6 class="fw-bold mb-2 small text-info border-top pt-2">Sequential Offsets (Step
-                                        2+)
-                                    </h6>
                                     <div class="mb-3">
-                                        <label class="form-label" for="addPosGapThreshold2">Secondary Gap Threshold
-                                            ($)</label>
-                                        <input type="number" class="form-control" id="addPosGapThreshold2" step="0.1"
-                                            placeholder="Used from 2nd addition onwards">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label" for="addPosSizePct2">Secondary Size Percentage
-                                            (%)</label>
-                                        <input type="number" class="form-control" id="addPosSizePct2" step="1"
-                                            placeholder="Used from 2nd addition onwards">
-                                    </div>
-
-                                    <div class="mb-3">
-                                        <label class="form-label" for="addPosStep2Offset">Step 2 Exit Offset ($)</label>
+                                        <label class="form-label">Step 2 Exit Offset ($)</label>
                                         <input type="number" class="form-control" id="addPosStep2Offset" step="0.1"
                                             placeholder="Optional: Overrides Multiplier">
                                         <div class="form-text">Fixed distance from Avg Entry to place Limit Exit.</div>
                                     </div>
 
                                     <div class="mb-3">
-                                        <label class="form-label" for="addPosRecoveryPercent">Recovery Percent
-                                            (%)</label>
+                                        <label class="form-label">Recovery Percent (%)</label>
                                         <input type="number" class="form-control" id="addPosRecoveryPercent" step="0.1">
                                     </div>
                                 </div>
@@ -955,7 +882,7 @@
                                             Conditions</label>
                                     </div>
                                     <div class="mb-3">
-                                        <label class="form-label" for="candlestickTimeframe">Timeframe</label>
+                                        <label class="form-label">Timeframe</label>
                                         <select class="form-select" id="candlestickTimeframe">
                                             <option value="1m">1 Minute</option>
                                             <option value="3m">3 Minutes</option>
@@ -975,9 +902,9 @@
                                                 Close</label>
                                         </div>
                                         <div class="input-group">
-                                            <label class="input-group-text" for="minChgOpenClose">Min Chg</label>
+                                            <span class="input-group-text">Min Chg</span>
                                             <input type="number" class="form-control" id="minChgOpenClose" step="0.01">
-                                            <label class="input-group-text" for="maxChgOpenClose">Max Chg</label>
+                                            <span class="input-group-text">Max Chg</span>
                                             <input type="number" class="form-control" id="maxChgOpenClose" step="0.01">
                                         </div>
                                     </div>
@@ -989,9 +916,9 @@
                                                 Low</label>
                                         </div>
                                         <div class="input-group">
-                                            <label class="input-group-text" for="minChgHighLow">Min Chg</label>
+                                            <span class="input-group-text">Min Chg</span>
                                             <input type="number" class="form-control" id="minChgHighLow" step="0.01">
-                                            <label class="input-group-text" for="maxChgHighLow">Max Chg</label>
+                                            <span class="input-group-text">Max Chg</span>
                                             <input type="number" class="form-control" id="maxChgHighLow" step="0.01">
                                         </div>
                                     </div>
@@ -1003,9 +930,9 @@
                                                 Close</label>
                                         </div>
                                         <div class="input-group">
-                                            <label class="input-group-text" for="minChgHighClose">Min Chg</label>
+                                            <span class="input-group-text">Min Chg</span>
                                             <input type="number" class="form-control" id="minChgHighClose" step="0.01">
-                                            <label class="input-group-text" for="maxChgHighClose">Max Chg</label>
+                                            <span class="input-group-text">Max Chg</span>
                                             <input type="number" class="form-control" id="maxChgHighClose" step="0.01">
                                         </div>
                                     </div>

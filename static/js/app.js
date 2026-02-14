@@ -358,199 +358,159 @@ function setupSocketListeners() {
 }
 
 function updateBotStatus(running) {
+    // If we are currently transitioning (Starting/Stopping), don't let 
+    // early status polls from background threads flicker the UI back.
+    // Only accept the update if it matches the EXPECTED transition outcome.
     if (isTransitioning) {
         if (running === isBotRunning) {
+            // This is likely an old state being echoed back (e.g. from a poll while it was starting)
+            // Keep the "Starting..." or "Stopping..." UI visible.
             return;
         }
+        // If we get here, the state has actually CHANGED as requested (e.g. false -> true)
         isTransitioning = false;
     }
 
     isBotRunning = running;
-    const statusBadge = document.getElementById('botStatusBadge') || document.getElementById('botStatus');
+    const statusBadge = document.getElementById('botStatus');
     const startStopBtn = document.getElementById('startStopBtn');
 
-    if (statusBadge) {
-        if (running) {
-            statusBadge.textContent = 'Running';
-            statusBadge.className = 'badge status-badge running';
-        } else {
-            statusBadge.textContent = 'Stopped';
-            statusBadge.className = 'badge status-badge stopped';
-        }
+    if (running) {
+        statusBadge.textContent = 'Running';
+        statusBadge.className = 'badge status-badge running';
+        startStopBtn.className = 'btn btn-danger w-100';
+        // Rebuild content: Icon + Text
+        startStopBtn.innerHTML = '<i class="bi bi-stop-fill"></i> <span id="btnText">Stop</span>';
+    } else {
+        statusBadge.textContent = 'Stopped';
+        statusBadge.className = 'badge status-badge stopped';
+        startStopBtn.className = 'btn btn-success w-100';
+        // Rebuild content: Icon + Text
+        startStopBtn.innerHTML = '<i class="bi bi-play-fill"></i> <span id="btnText">Start</span>';
     }
-
-    if (startStopBtn) {
-        if (running) {
-            startStopBtn.className = 'btn btn-danger w-100';
-            startStopBtn.innerHTML = '<i class="bi bi-stop-fill"></i> <span id="btnText">Stop</span>';
-        } else {
-            startStopBtn.className = 'btn btn-success w-100';
-            startStopBtn.innerHTML = '<i class="bi bi-play-fill"></i> <span id="btnText">Start</span>';
-        }
-        startStopBtn.disabled = false;
-    }
+    startStopBtn.disabled = false; // Re-enable the button
 }
 
 function updateAccountMetrics(data) {
-    if (!data) return;
-
-    try {
-        const elTotalCapital = document.getElementById('totalCapital');
-        if (elTotalCapital) elTotalCapital.textContent = `$${data.total_capital !== undefined ? Number(data.total_capital).toFixed(2) : '0.00'}`;
-
-        const elTotalCapital2nd = document.getElementById('totalCapital2nd');
-        if (elTotalCapital2nd) elTotalCapital2nd.textContent = `$${data.total_capital_2_nd !== undefined ? Number(data.total_capital_2_nd).toFixed(2) : (data.total_capital_2nd !== undefined ? Number(data.total_capital_2nd).toFixed(2) : '0.00')}`;
-
-        const elMaxAllowedUsedDisplay = document.getElementById('maxAllowedUsedDisplay');
-        if (elMaxAllowedUsedDisplay) elMaxAllowedUsedDisplay.textContent = `$${data.max_allowed_used_display !== undefined ? Number(data.max_allowed_used_display).toFixed(2) : '0.00'}`;
-
-        const elMaxAmountDisplay = document.getElementById('maxAmountDisplay');
-        if (elMaxAmountDisplay) elMaxAmountDisplay.textContent = `$${data.max_amount_display !== undefined ? Number(data.max_amount_display).toFixed(2) : '0.00'}`;
-
-        const elUsedAmount = document.getElementById('usedAmount');
-        if (elUsedAmount) elUsedAmount.textContent = `$${data.used_amount !== undefined ? Number(data.used_amount).toFixed(2) : '0.00'}`;
-
-        const remaining = data.remaining_amount !== undefined ? Number(data.remaining_amount) : 0.00;
-        const minOrder = currentConfig?.min_order_amount || 0;
-        const remainingEl = document.getElementById('remainingAmount');
-        if (remainingEl) {
-            if (remaining < minOrder && minOrder > 0) {
-                remainingEl.textContent = 'No remaining balance for trade';
-                remainingEl.classList.add('text-danger', 'small');
-                remainingEl.style.fontSize = '0.75rem';
-            } else {
-                remainingEl.textContent = `$${remaining.toFixed(2)}`;
-                remainingEl.classList.remove('text-danger', 'small');
-                remainingEl.style.fontSize = '';
-            }
-        }
-
-        const elNeedAddProfitTargetDisplay = document.getElementById('needAddProfitTargetDisplay');
-        if (elNeedAddProfitTargetDisplay) elNeedAddProfitTargetDisplay.textContent = `$${data.need_add_usdt !== undefined ? Number(data.need_add_usdt).toFixed(2) : '0.00'}`;
-
-        const elNeedAddAboveZeroDisplay = document.getElementById('needAddAboveZeroDisplay');
-        if (elNeedAddAboveZeroDisplay) elNeedAddAboveZeroDisplay.textContent = `$${data.need_add_above_zero !== undefined ? Number(data.need_add_above_zero).toFixed(2) : '0.00'}`;
-
-        const elBalance = document.getElementById('balance');
-        if (elBalance) elBalance.textContent = `$${data.total_balance !== undefined ? Number(data.total_balance).toFixed(2) : '0.00'}`;
-
-        const headerEl = document.getElementById('autoAddPosHeader');
-        if (headerEl) {
-            let side = '';
-            if (data.positions && data.positions.short && data.positions.short.in) {
-                side = 'Short';
-            } else if (data.positions && data.positions.long && data.positions.long.in) {
-                side = 'Long';
-            } else if (data.in_position && typeof data.in_position === 'object') {
-                if (data.in_position.short) side = 'Short';
-                else if (data.in_position.long) side = 'Long';
-            }
-
-            if (side) {
-                headerEl.textContent = `Auto-Cal Add ${side} Position`;
-            } else {
-                const configDirection = currentConfig?.direction;
-                if (configDirection === 'short') {
-                    headerEl.textContent = 'Auto-Cal Add Short Position';
-                } else if (configDirection === 'long') {
-                    headerEl.textContent = 'Auto-Cal Add Long Position';
-                } else {
-                    headerEl.textContent = 'Auto-Cal Add Position';
-                }
-            }
-        }
-
-        const netProfitElement = document.getElementById('netProfit');
-        if (netProfitElement) {
-            const netProfitValue = data.net_profit !== undefined ? Number(data.net_profit) : 0.00;
-            netProfitElement.textContent = `$${netProfitValue.toFixed(2)}`;
-            if (netProfitValue > 0) {
-                netProfitElement.classList.remove('text-danger');
-                netProfitElement.classList.add('text-success');
-            } else if (netProfitValue < 0) {
-                netProfitElement.classList.remove('text-success');
-                netProfitElement.classList.add('text-danger');
-            } else {
-                netProfitElement.classList.remove('text-success', 'text-danger');
-            }
-        }
-
-        // Advanced Profit Analytics (Guarded)
-        const elTotalTradeProfit = document.getElementById('totalTradeProfit');
-        if (elTotalTradeProfit) elTotalTradeProfit.textContent = `$${(data.total_trade_profit || 0).toFixed(2)}`;
-
-        const elTotalTradeLoss = document.getElementById('totalTradeLoss');
-        if (elTotalTradeLoss) elTotalTradeLoss.textContent = `$${(data.total_trade_loss || 0).toFixed(2)}`;
-
-        const elNetTradeProfit = document.getElementById('netTradeProfit');
-        if (elNetTradeProfit) elNetTradeProfit.textContent = `$${(data.net_trade_profit || 0).toFixed(2)}`;
-
-        const elTotalTrades = document.getElementById('totalTrades');
-        if (elTotalTrades) elTotalTrades.textContent = data.total_trades !== undefined ? data.total_trades : '0';
-
-        // Update daily report if present
-        if (data.daily_reports) {
-            updateDailyReport(data.daily_reports);
-        }
-        // Use Backend-provided fee metrics (Centralized Logic)
-        const tradeFees = data.trade_fees || 0;
-        const usedFee = data.used_fees || 0;
-        const remainingFee = (data.remaining_amount || 0) * ((currentConfig?.trade_fee_percentage || 0.07) / 100); // Remaining is still estimate
-        const sizeFee = data.size_fees || 0;
-        const feeRate = (currentConfig?.trade_fee_percentage || 0.07);
-
-        const elTradeFees = document.getElementById('tradeFees');
-        if (elTradeFees) elTradeFees.textContent = `$${Number(tradeFees).toFixed(2)}`;
-
-        const elUsedFee = document.getElementById('usedFee');
-        if (elUsedFee) elUsedFee.textContent = `$${Number(usedFee).toFixed(2)}`;
-
-        const elRemainingFee = document.getElementById('remainingFee');
-        if (elRemainingFee) elRemainingFee.textContent = `$${Number(remainingFee).toFixed(2)}`;
-
-        const elFeeRateDisplay = document.getElementById('feeRateDisplay');
-        if (elFeeRateDisplay) elFeeRateDisplay.textContent = `${Number(feeRate).toFixed(3)}%`;
-
-        const elSizeAmountDisplay = document.getElementById('sizeAmountDisplay');
-        if (elSizeAmountDisplay) elSizeAmountDisplay.textContent = `$${Number(data.size_amount || 0).toFixed(2)}`;
-
-        const elSizeFeeDisplay = document.getElementById('sizeFeeDisplay');
-        if (elSizeFeeDisplay) elSizeFeeDisplay.textContent = `$${Number(sizeFee).toFixed(2)}`;
-
-        lastUsedFee = usedFee;
-        lastSizeFee = sizeFee;
-
-        // UI Color Feedback for Need Add
-        const needAddTgt = data.need_add_usdt || 0;
-        const needAddAboveZero = data.need_add_above_zero || 0;
-
-        const tgtEl = document.getElementById('needAddProfitTargetDisplay');
-        const zeroEl = document.getElementById('needAddAboveZeroDisplay');
-
-        if (tgtEl) {
-            if (needAddTgt > 0) {
-                if (tgtEl.parentElement) tgtEl.parentElement.classList.add('bg-warning-subtle');
-                tgtEl.classList.add('text-warning');
-            } else {
-                if (tgtEl.parentElement) tgtEl.parentElement.classList.remove('bg-warning-subtle');
-                tgtEl.classList.remove('text-warning');
-            }
-        }
-
-        if (zeroEl) {
-            if (needAddAboveZero > 0) {
-                if (zeroEl.parentElement) zeroEl.parentElement.classList.add('bg-warning-subtle');
-                zeroEl.classList.add('text-warning');
-            } else {
-                if (zeroEl.parentElement) zeroEl.parentElement.classList.remove('bg-warning-subtle');
-                zeroEl.classList.remove('text-warning');
-            }
-        }
-
-        updateAutoCalDisplay();
-    } catch (e) {
-        console.error("Error in updateAccountMetrics:", e);
+    document.getElementById('totalCapital').textContent = `$${data.total_capital !== undefined ? Number(data.total_capital).toFixed(2) : '0.00'}`;
+    document.getElementById('totalCapital2nd').textContent = `$${data.total_capital_2_nd !== undefined ? Number(data.total_capital_2_nd).toFixed(2) : (data.total_capital_2nd !== undefined ? Number(data.total_capital_2nd).toFixed(2) : '0.00')}`;
+    document.getElementById('maxAllowedUsedDisplay').textContent = `$${data.max_allowed_used_display !== undefined ? Number(data.max_allowed_used_display).toFixed(2) : '0.00'}`;
+    document.getElementById('maxAmountDisplay').textContent = `$${data.max_amount_display !== undefined ? Number(data.max_amount_display).toFixed(2) : '0.00'}`;
+    document.getElementById('usedAmount').textContent = `$${data.used_amount !== undefined ? Number(data.used_amount).toFixed(2) : '0.00'}`;
+    const remaining = data.remaining_amount !== undefined ? Number(data.remaining_amount) : 0.00;
+    const minOrder = currentConfig?.min_order_amount || 0;
+    const remainingEl = document.getElementById('remainingAmount');
+    if (remaining < minOrder && minOrder > 0) {
+        remainingEl.textContent = 'No remaining balance for trade';
+        remainingEl.classList.add('text-danger', 'small');
+        remainingEl.style.fontSize = '0.75rem';
+    } else {
+        remainingEl.textContent = `$${remaining.toFixed(2)}`;
+        remainingEl.classList.remove('text-danger', 'small');
+        remainingEl.style.fontSize = '';
     }
+    document.getElementById('needAddProfitTargetDisplay').textContent = `$${data.need_add_usdt !== undefined ? Number(data.need_add_usdt).toFixed(2) : '0.00'}`;
+    document.getElementById('needAddAboveZeroDisplay').textContent = `$${data.need_add_above_zero !== undefined ? Number(data.need_add_above_zero).toFixed(2) : '0.00'}`;
+    document.getElementById('balance').textContent = `$${data.total_balance !== undefined ? Number(data.total_balance).toFixed(2) : '0.00'}`;
+
+    // Update Auto-Cal Add Header based on position side
+    const headerEl = document.getElementById('autoAddPosHeader');
+    if (headerEl) {
+        let side = '';
+        if (data.positions && data.positions.short && data.positions.short.in) {
+            side = 'Short';
+        } else if (data.positions && data.positions.long && data.positions.long.in) {
+            side = 'Long';
+        } else if (data.in_position && typeof data.in_position === 'object') {
+            // Fallback to in_position dict if positions not formatted
+            if (data.in_position.short) side = 'Short';
+            else if (data.in_position.long) side = 'Long';
+        }
+
+        if (side) {
+            headerEl.textContent = `Auto-Cal Add ${side} Position`;
+        } else {
+            // Fallback to configured direction if no active position
+            // Use currentConfig (global) or check if it's in data? Usually data doesn't include config.
+            const configDirection = currentConfig?.direction;
+            if (configDirection === 'short') {
+                headerEl.textContent = 'Auto-Cal Add Short Position';
+            } else if (configDirection === 'long') {
+                headerEl.textContent = 'Auto-Cal Add Long Position';
+            } else {
+                headerEl.textContent = 'Auto-Cal Add Position';
+            }
+        }
+    }
+
+    const netProfitElement = document.getElementById('netProfit');
+    const netProfitValue = data.net_profit !== undefined ? Number(data.net_profit) : 0.00;
+    netProfitElement.textContent = `$${netProfitValue.toFixed(2)}`;
+
+    // Color coding for Net Profit
+    if (netProfitValue > 0) {
+        netProfitElement.classList.remove('text-danger');
+        netProfitElement.classList.add('text-success');
+    } else if (netProfitValue < 0) {
+        netProfitElement.classList.remove('text-success');
+        netProfitElement.classList.add('text-danger');
+    } else {
+        netProfitElement.classList.remove('text-success', 'text-danger');
+    }
+
+    // New Advanced Profit Analytics
+    document.getElementById('totalTradeProfit').textContent = `$${(data.total_trade_profit || 0).toFixed(2)}`;
+    document.getElementById('totalTradeLoss').textContent = `$${(data.total_trade_loss || 0).toFixed(2)}`;
+    document.getElementById('netTradeProfit').textContent = `$${(data.net_trade_profit || 0).toFixed(2)}`;
+
+    document.getElementById('totalTrades').textContent = data.total_trades !== undefined ? data.total_trades : '0';
+
+    // Update daily report if present
+    if (data.daily_reports) {
+        updateDailyReport(data.daily_reports);
+    }
+
+    // Use Backend-provided fee metrics (Centralized Logic)
+    const tradeFees = data.trade_fees || 0;
+    const usedFee = data.used_fees || 0;
+    const remainingFee = (data.remaining_amount || 0) * ((currentConfig?.trade_fee_percentage || 0.07) / 100); // Remaining is still estimate
+    const sizeFee = data.size_fees || 0;
+    const feeRate = (currentConfig?.trade_fee_percentage || 0.07);
+
+    document.getElementById('tradeFees').textContent = `$${Number(tradeFees).toFixed(2)}`;
+    document.getElementById('usedFee').textContent = `$${Number(usedFee).toFixed(2)}`;
+    document.getElementById('remainingFee').textContent = `$${Number(remainingFee).toFixed(2)}`;
+    document.getElementById('feeRateDisplay').textContent = `${Number(feeRate).toFixed(3)}%`;
+    document.getElementById('sizeAmountDisplay').textContent = `$${Number(data.size_amount || 0).toFixed(2)}`;
+    document.getElementById('sizeFeeDisplay').textContent = `$${Number(sizeFee).toFixed(2)}`;
+
+    lastUsedFee = usedFee;
+    lastSizeFee = sizeFee;
+
+    // UI Color Feedback for Need Add
+    const needAddTgt = data.need_add_usdt || 0;
+    const needAddAboveZero = data.need_add_above_zero || 0;
+
+    const tgtEl = document.getElementById('needAddProfitTargetDisplay');
+    const zeroEl = document.getElementById('needAddAboveZeroDisplay');
+
+    if (needAddTgt > 0) {
+        tgtEl.parentElement.classList.add('bg-warning-subtle');
+        tgtEl.classList.add('text-warning');
+    } else {
+        tgtEl.parentElement.classList.remove('bg-warning-subtle');
+        tgtEl.classList.remove('text-warning');
+    }
+
+    if (needAddAboveZero > 0) {
+        zeroEl.parentElement.classList.add('bg-warning-subtle');
+        zeroEl.classList.add('text-warning');
+    } else {
+        zeroEl.parentElement.classList.remove('bg-warning-subtle');
+        zeroEl.classList.remove('text-warning');
+    }
+
+    updateAutoCalDisplay();
 }
 
 function updateDailyReport(reports) {
@@ -839,18 +799,10 @@ function updateParametersDisplay() {
                <span class="param-label">Min Chg High/Close:</span>
                <span class="param-value">${currentConfig.min_chg_high_close}</span>
            </div>
-            <div class="param-item">
-                <span class="param-label">Max Chg High/Close:</span>
-                <span class="param-value">${currentConfig.max_chg_high_close}</span>
-            </div>
-            <div class="param-item pb-1 border-bottom border-secondary border-opacity-25 mb-1">
-                <span class="param-label text-info">Secondary Gap:</span>
-                <span class="param-value">${currentConfig.add_pos_gap_threshold_2 || currentConfig.add_pos_gap_threshold || '5.0'}</span>
-            </div>
-            <div class="param-item">
-                <span class="param-label text-info">Secondary Size %:</span>
-                <span class="param-value">${currentConfig.add_pos_size_pct_2 || currentConfig.add_pos_size_pct || '30'}%</span>
-            </div>
+           <div class="param-item">
+               <span class="param-label">Max Chg High/Close:</span>
+               <span class="param-value">${currentConfig.max_chg_high_close}</span>
+           </div>
        `;
         paramsContainer.innerHTML = configHtml;
     } else {
@@ -1071,47 +1023,18 @@ async function loadConfig() {
         const elMaxCountMain = document.getElementById('addPosMaxCountMain');
         if (elMaxCountMain) elMaxCountMain.value = addPosMaxCount;
 
-        // Sequential Offsets (Step 2+)
-        const gap2 = currentConfig.add_pos_gap_threshold_2 !== undefined ? currentConfig.add_pos_gap_threshold_2 : addPosGap;
-        const elGap2 = document.getElementById('addPosGapThreshold2');
-        if (elGap2) elGap2.value = gap2;
-        const elGap2Main = document.getElementById('addPosGapThreshold2Main');
-        if (elGap2Main) elGap2Main.value = gap2;
-
-        const sizePct2 = currentConfig.add_pos_size_pct_2 !== undefined ? currentConfig.add_pos_size_pct_2 : addPosSizePct;
-        const elSizePct2 = document.getElementById('addPosSizePct2');
-        if (elSizePct2) elSizePct2.value = sizePct2;
-        const elSizePct2Main = document.getElementById('addPosSizePct2Main');
-        if (elSizePct2Main) elSizePct2Main.value = sizePct2;
-
-        // Dashboard Security
-        const elDashUser = document.getElementById('dashboardUsername');
-        if (elDashUser) elDashUser.value = currentConfig.dashboard_username || '';
-        const elDashPass = document.getElementById('dashboardPassword');
-        if (elDashPass) elDashPass.value = currentConfig.dashboard_password || '';
-
         // Add live listeners if not already added
         const fieldsToWatch = [
             'useAddPosAboveZero', 'useAddPosProfitTarget', 'addPosRecoveryPercent',
-            'addPosProfitMultiplier', 'addPosGapThreshold', 'addPosSizePct', 'addPosMaxCount',
-            'addPosGapThreshold2', 'addPosSizePct2'
+            'addPosProfitMultiplier', 'addPosGapThreshold', 'addPosSizePct', 'addPosMaxCount'
         ];
 
         fieldsToWatch.forEach(fieldId => {
-            const camelCaseId = fieldId.replace(/_([a-z])/g, (g) => g[1].toUpperCase());
-
-            // Check base ID (modal)
-            const input = document.getElementById(camelCaseId);
+            // Find both modal and main dashboard inputs (id might be same or specialized)
+            const input = document.getElementById(fieldId.replace(/_([a-z])/g, (g) => g[1].toUpperCase())); // camelCase
             if (input && !input.dataset.listener) {
                 input.addEventListener('change', saveLiveConfigs);
                 input.dataset.listener = 'true';
-            }
-
-            // Check Main ID (dashboard)
-            const inputMain = document.getElementById(camelCaseId + 'Main');
-            if (inputMain && !inputMain.dataset.listener) {
-                inputMain.addEventListener('change', saveLiveConfigs);
-                inputMain.dataset.listener = 'true';
             }
         });
 
@@ -1138,11 +1061,11 @@ async function loadStatus() {
         const response = await fetch('/api/status');
         const status = await response.json();
 
-        try { updateBotStatus(status.running); } catch (e) { console.error("Error updating bot status:", e); }
-        try { updateAccountMetrics(status); } catch (e) { console.error("Error updating account metrics:", e); }
-        try { updateOpenTrades(status.open_trades); } catch (e) { console.error("Error updating open trades:", e); }
-        try { updatePositionDisplay(status); } catch (e) { console.error("Error updating position display:", e); }
-        try { updateParametersDisplay(); } catch (e) { console.error("Error updating parameters display:", e); }
+        updateBotStatus(status.running);
+        updateAccountMetrics(status);
+        updateOpenTrades(status.open_trades);
+        updatePositionDisplay(status);
+        updateParametersDisplay(); // Call the new function to populate parameters tab
     } catch (error) {
         console.error('Error loading status:', error);
     }
@@ -1151,184 +1074,156 @@ async function loadStatus() {
 function loadConfigToModal() {
     if (!currentConfig) return;
 
-    const setVal = (id, val) => {
-        const el = document.getElementById(id);
-        if (el) el.value = val === undefined || val === null ? '' : val;
-    };
-    const setChecked = (id, val) => {
-        const el = document.getElementById(id);
-        if (el) el.checked = !!val;
-    };
+    document.getElementById('okxApiKey').value = currentConfig.okx_api_key;
+    document.getElementById('okxApiSecret').value = currentConfig.okx_api_secret;
+    document.getElementById('okxPassphrase').value = currentConfig.okx_passphrase;
+    document.getElementById('okxDemoApiKey').value = currentConfig.okx_demo_api_key;
+    document.getElementById('okxDemoApiSecret').value = currentConfig.okx_demo_api_secret;
+    document.getElementById('okxDemoApiPassphrase').value = currentConfig.okx_demo_api_passphrase;
+    document.getElementById('devApiKey').value = currentConfig.dev_api_key;
+    document.getElementById('devApiSecret').value = currentConfig.dev_api_secret;
+    document.getElementById('devPassphrase').value = currentConfig.dev_passphrase;
+    document.getElementById('devDemoApiKey').value = currentConfig.dev_demo_api_key;
+    document.getElementById('devDemoApiSecret').value = currentConfig.dev_demo_api_secret;
+    document.getElementById('devDemoApiPassphrase').value = currentConfig.dev_demo_api_passphrase;
+    document.getElementById('useTestnet').checked = currentConfig.use_testnet;
+    document.getElementById('useDeveloperApi').checked = currentConfig.use_developer_api;
+    document.getElementById('symbol').value = currentConfig.symbol;
+    document.getElementById('shortSafetyLinePrice').value = currentConfig.short_safety_line_price;
+    document.getElementById('longSafetyLinePrice').value = currentConfig.long_safety_line_price;
+    document.getElementById('leverage').value = currentConfig.leverage;
+    document.getElementById('maxAllowedUsed').value = currentConfig.max_allowed_used;
+    document.getElementById('entryPriceOffset').value = currentConfig.entry_price_offset;
+    document.getElementById('batchOffset').value = currentConfig.batch_offset;
+    document.getElementById('tpPriceOffset').value = currentConfig.tp_price_offset;
+    document.getElementById('slPriceOffset').value = currentConfig.sl_price_offset;
+    document.getElementById('loopTimeSeconds').value = currentConfig.loop_time_seconds;
+    document.getElementById('rateDivisor').value = currentConfig.rate_divisor;
+    document.getElementById('batchSizePerLoop').value = currentConfig.batch_size_per_loop;
+    document.getElementById('minOrderAmount').value = currentConfig.min_order_amount;
+    document.getElementById('targetOrderAmount').value = currentConfig.target_order_amount;
+    document.getElementById('cancelUnfilledSeconds').value = currentConfig.cancel_unfilled_seconds;
+    document.getElementById('cancelOnEntryPriceBelowMarket').checked = currentConfig.cancel_on_entry_price_below_market;
+    document.getElementById('cancelOnEntryPriceAboveMarket').checked = currentConfig.cancel_on_entry_price_above_market;
+    document.getElementById('tradeFeePercentage').value = currentConfig.trade_fee_percentage || 0.07;
 
-    setVal('okxApiKey', currentConfig.okx_api_key);
-    setVal('okxApiSecret', currentConfig.okx_api_secret);
-    setVal('okxPassphrase', currentConfig.okx_passphrase);
-    setVal('okxDemoApiKey', currentConfig.okx_demo_api_key);
-    setVal('okxDemoApiSecret', currentConfig.okx_demo_api_secret);
-    setVal('okxDemoApiPassphrase', currentConfig.okx_demo_api_passphrase);
-    setVal('devApiKey', currentConfig.dev_api_key);
-    setVal('devApiSecret', currentConfig.dev_api_secret);
-    setVal('devPassphrase', currentConfig.dev_passphrase);
-    setVal('devDemoApiKey', currentConfig.dev_demo_api_key);
-    setVal('devDemoApiSecret', currentConfig.dev_demo_api_secret);
-    setVal('devDemoApiPassphrase', currentConfig.dev_demo_api_passphrase);
-    setChecked('useDeveloperApi', currentConfig.use_developer_api);
-    setChecked('useTestnet', currentConfig.use_testnet);
-    setVal('symbol', currentConfig.symbol);
-    setVal('shortSafetyLinePrice', currentConfig.short_safety_line_price);
-    setVal('longSafetyLinePrice', currentConfig.long_safety_line_price);
-    setVal('leverage', currentConfig.leverage);
-    setVal('maxAllowedUsed', currentConfig.max_allowed_used);
-    setVal('entryPriceOffset', currentConfig.entry_price_offset);
-    setVal('batchOffset', currentConfig.batch_offset);
-    setVal('tpPriceOffset', currentConfig.tp_price_offset);
-    setVal('slPriceOffset', currentConfig.sl_price_offset);
-    setVal('loopTimeSeconds', currentConfig.loop_time_seconds);
-    setVal('rateDivisor', currentConfig.rate_divisor);
-    setVal('batchSizePerLoop', currentConfig.batch_size_per_loop);
-    setVal('minOrderAmount', currentConfig.min_order_amount);
-    setVal('targetOrderAmount', currentConfig.target_order_amount);
-    setVal('cancelUnfilledSeconds', currentConfig.cancel_unfilled_seconds);
-    setChecked('cancelOnEntryPriceBelowMarket', currentConfig.cancel_on_entry_price_below_market);
-    setChecked('cancelOnEntryPriceAboveMarket', currentConfig.cancel_on_entry_price_above_market);
-    setVal('tradeFeePercentage', currentConfig.trade_fee_percentage || 0.07);
+    // New fields
+    document.getElementById('direction').value = currentConfig.direction;
+    document.getElementById('mode').value = currentConfig.mode;
+    document.getElementById('tpAmount').value = currentConfig.tp_amount;
+    document.getElementById('slAmount').value = currentConfig.sl_amount;
+    document.getElementById('triggerPrice').value = currentConfig.trigger_price;
+    document.getElementById('tpMode').value = currentConfig.tp_mode;
+    document.getElementById('tpType').value = currentConfig.tp_type;
+    document.getElementById('useCandlestickConditions').checked = currentConfig.use_candlestick_conditions;
 
-    setVal('direction', currentConfig.direction);
-    setVal('mode', currentConfig.mode);
-    setVal('tpAmount', currentConfig.tp_amount);
-    setVal('slAmount', currentConfig.sl_amount);
-    setVal('triggerPrice', currentConfig.trigger_price);
-    setVal('tpMode', currentConfig.tp_mode);
-    setVal('tpType', currentConfig.tp_type);
-    setChecked('useCandlestickConditions', currentConfig.use_candlestick_conditions);
+    // Candlestick conditions
+    document.getElementById('useChgOpenClose').checked = currentConfig.use_chg_open_close;
+    document.getElementById('minChgOpenClose').value = currentConfig.min_chg_open_close;
+    document.getElementById('maxChgOpenClose').value = currentConfig.max_chg_open_close;
+    document.getElementById('useChgHighLow').checked = currentConfig.use_chg_high_low;
+    document.getElementById('minChgHighLow').value = currentConfig.min_chg_high_low;
+    document.getElementById('maxChgHighLow').value = currentConfig.max_chg_high_low;
+    document.getElementById('useChgHighClose').checked = currentConfig.use_chg_high_close;
+    document.getElementById('minChgHighClose').value = currentConfig.min_chg_high_close;
+    document.getElementById('maxChgHighClose').value = currentConfig.max_chg_high_close;
+    document.getElementById('candlestickTimeframe').value = currentConfig.candlestick_timeframe;
+    document.getElementById('okxPosMode').value = currentConfig.okx_pos_mode || 'net_mode';
 
-    setChecked('useChgOpenClose', currentConfig.use_chg_open_close);
-    setVal('minChgOpenClose', currentConfig.min_chg_open_close);
-    setVal('maxChgOpenClose', currentConfig.max_chg_open_close);
-    setChecked('useChgHighLow', currentConfig.use_chg_high_low);
-    setVal('minChgHighLow', currentConfig.min_chg_high_low);
-    setVal('maxChgHighLow', currentConfig.max_chg_high_low);
-    setChecked('useChgHighClose', currentConfig.use_chg_high_close);
-    setVal('minChgHighClose', currentConfig.min_chg_high_close);
-    setVal('maxChgHighClose', currentConfig.max_chg_high_close);
-    setVal('candlestickTimeframe', currentConfig.candlestick_timeframe);
-    setVal('okxPosMode', currentConfig.okx_pos_mode || 'net_mode');
+    // PnL Auto-Cancel (Modal Sync -> Maps to Auto-Manual Profit)
+    const autCancelCheck = document.getElementById('usePnlAutoCancelModal');
+    const autCancelThreshold = document.getElementById('pnlAutoCancelThresholdModal');
+    if (autCancelCheck) autCancelCheck.checked = currentConfig.use_pnl_auto_manual || false;
+    if (autCancelThreshold) autCancelThreshold.value = currentConfig.pnl_auto_manual_threshold || 100.0;
 
-    setChecked('usePnlAutoCancelModal', currentConfig.use_pnl_auto_manual);
-    setVal('pnlAutoCancelThresholdModal', currentConfig.pnl_auto_manual_threshold || 100.0);
+    // Populate Add Pos fields in modal explicitly if not handled by sync
+    const elRec = document.getElementById('addPosRecoveryPercent');
+    if (elRec) elRec.value = currentConfig.add_pos_recovery_percent || 0.6;
 
-    setVal('addPosRecoveryPercent', currentConfig.add_pos_recovery_percent || 0.6);
-    setVal('addPosGapThreshold', currentConfig.add_pos_gap_threshold || 5.0);
-    setVal('addPosProfitMultiplier', currentConfig.add_pos_profit_multiplier || 1.5);
-    setVal('addPosSizePct', currentConfig.add_pos_size_pct || 30.0);
-    setVal('addPosMaxCount', currentConfig.add_pos_max_count || 10);
-    setVal('addPosGapThreshold2', currentConfig.add_pos_gap_threshold_2 || currentConfig.add_pos_gap_threshold || 5.0);
-    setVal('addPosSizePct2', currentConfig.add_pos_size_pct_2 || currentConfig.add_pos_size_pct || 30.0);
-    setVal('dashboardUsername', currentConfig.dashboard_username || '');
-    setVal('dashboardPassword', currentConfig.dashboard_password || '');
+    const elGap = document.getElementById('addPosGapThreshold');
+    if (elGap) elGap.value = currentConfig.add_pos_gap_threshold || 5.0;
+
+    const elProt = document.getElementById('addPosProfitMultiplier');
+    if (elProt) elProt.value = currentConfig.add_pos_profit_multiplier || 1.5;
+
+    const elSize = document.getElementById('addPosSizePct');
+    if (elSize) elSize.value = currentConfig.add_pos_size_pct || 30.0;
+
+    const elMax = document.getElementById('addPosMaxCount');
+    if (elMax) elMax.value = currentConfig.add_pos_max_count || 10;
 }
 
 // Helper to keep dashboard and modal in sync - Removed old PnL sync listeners as modal update is pending
 // TODO: Update modal with new fields if needed.
 
 async function saveConfig() {
-    const getValue = (id, defaultValue = '') => {
-        const el = document.getElementById(id);
-        if (!el) {
-            console.warn(`Element with ID "${id}" not found in DOM.`);
-            return defaultValue;
-        }
-        return el.value;
-    };
-
-    const getFloat = (id, defaultValue = 0) => {
-        const val = getValue(id);
-        const parsed = parseFloat(val);
-        return isNaN(parsed) ? defaultValue : parsed;
-    };
-
-    const getInt = (id, defaultValue = 0) => {
-        const val = getValue(id);
-        const parsed = parseInt(val);
-        return isNaN(parsed) ? defaultValue : parsed;
-    };
-
-    const getChecked = (id, defaultValue = false) => {
-        const el = document.getElementById(id);
-        if (!el) {
-            console.warn(`Element with ID "${id}" not found in DOM.`);
-            return defaultValue;
-        }
-        return el.checked;
-    };
-
     const newConfig = {
-        okx_api_key: getValue('okxApiKey'),
-        okx_api_secret: getValue('okxApiSecret'),
-        okx_passphrase: getValue('okxPassphrase'),
-        okx_demo_api_key: getValue('okxDemoApiKey'),
-        okx_demo_api_secret: getValue('okxDemoApiSecret'),
-        okx_demo_api_passphrase: getValue('okxDemoApiPassphrase'),
-        dev_api_key: getValue('devApiKey'),
-        dev_api_secret: getValue('devApiSecret'),
-        dev_passphrase: getValue('devPassphrase'),
-        dev_demo_api_key: getValue('devDemoApiKey'),
-        dev_demo_api_secret: getValue('devDemoApiSecret'),
-        dev_demo_api_passphrase: getValue('devDemoApiPassphrase'),
-        use_developer_api: getChecked('useDeveloperApi'),
-        use_testnet: getChecked('useTestnet'),
-        symbol: getValue('symbol'),
-        short_safety_line_price: getFloat('shortSafetyLinePrice'),
-        long_safety_line_price: getFloat('longSafetyLinePrice'),
-        leverage: getInt('leverage'),
-        max_allowed_used: getFloat('maxAllowedUsed'),
-        entry_price_offset: getFloat('entryPriceOffset'),
-        batch_offset: getFloat('batchOffset'),
-        tp_price_offset: getFloat('tpPriceOffset'),
-        sl_price_offset: getFloat('slPriceOffset'),
-        loop_time_seconds: getInt('loopTimeSeconds'),
-        rate_divisor: getInt('rateDivisor'),
-        batch_size_per_loop: getInt('batchSizePerLoop'),
-        min_order_amount: getFloat('minOrderAmount'),
-        target_order_amount: getFloat('targetOrderAmount'),
-        cancel_unfilled_seconds: getInt('cancelUnfilledSeconds'),
-        cancel_on_entry_price_below_market: getChecked('cancelOnEntryPriceBelowMarket'),
-        cancel_on_entry_price_above_market: getChecked('cancelOnEntryPriceAboveMarket'),
-        trade_fee_percentage: getFloat('tradeFeePercentage'),
+        okx_api_key: document.getElementById('okxApiKey').value,
+        okx_api_secret: document.getElementById('okxApiSecret').value,
+        okx_passphrase: document.getElementById('okxPassphrase').value,
+        okx_demo_api_key: document.getElementById('okxDemoApiKey').value,
+        okx_demo_api_secret: document.getElementById('okxDemoApiSecret').value,
+        okx_demo_api_passphrase: document.getElementById('okxDemoApiPassphrase').value,
+        dev_api_key: document.getElementById('devApiKey').value,
+        dev_api_secret: document.getElementById('devApiSecret').value,
+        dev_passphrase: document.getElementById('devPassphrase').value,
+        dev_demo_api_key: document.getElementById('devDemoApiKey').value,
+        dev_demo_api_secret: document.getElementById('devDemoApiSecret').value,
+        dev_demo_api_passphrase: document.getElementById('devDemoApiPassphrase').value,
+        use_developer_api: document.getElementById('useDeveloperApi').checked,
+        use_testnet: document.getElementById('useTestnet').checked,
+        symbol: document.getElementById('symbol').value,
+        short_safety_line_price: parseFloat(document.getElementById('shortSafetyLinePrice').value),
+        long_safety_line_price: parseFloat(document.getElementById('longSafetyLinePrice').value),
+        leverage: parseInt(document.getElementById('leverage').value),
+        max_allowed_used: parseFloat(document.getElementById('maxAllowedUsed').value),
+        entry_price_offset: parseFloat(document.getElementById('entryPriceOffset').value),
+        batch_offset: parseFloat(document.getElementById('batchOffset').value),
+        tp_price_offset: parseFloat(document.getElementById('tpPriceOffset').value),
+        sl_price_offset: parseFloat(document.getElementById('slPriceOffset').value),
+        loop_time_seconds: parseInt(document.getElementById('loopTimeSeconds').value),
+        rate_divisor: parseInt(document.getElementById('rateDivisor').value),
+        batch_size_per_loop: parseInt(document.getElementById('batchSizePerLoop').value),
+        min_order_amount: parseFloat(document.getElementById('minOrderAmount').value),
+        target_order_amount: parseFloat(document.getElementById('targetOrderAmount').value),
+        cancel_unfilled_seconds: parseInt(document.getElementById('cancelUnfilledSeconds').value),
+        cancel_on_entry_price_below_market: document.getElementById('cancelOnEntryPriceBelowMarket').checked,
+        cancel_on_entry_price_above_market: document.getElementById('cancelOnEntryPriceAboveMarket').checked,
+        trade_fee_percentage: parseFloat(document.getElementById('tradeFeePercentage').value),
 
-        direction: getValue('direction'),
-        mode: getValue('mode'),
-        tp_amount: getFloat('tpAmount'),
-        sl_amount: getFloat('slAmount'),
-        trigger_price: getValue('triggerPrice'),
-        tp_mode: getValue('tpMode'),
-        tp_type: getValue('tpType'),
-        use_candlestick_conditions: getChecked('useCandlestickConditions'),
+        // New fields
+        direction: document.getElementById('direction').value,
+        mode: document.getElementById('mode').value,
+        tp_amount: parseFloat(document.getElementById('tpAmount').value),
+        sl_amount: parseFloat(document.getElementById('slAmount').value),
+        trigger_price: document.getElementById('triggerPrice').value,
+        tp_mode: document.getElementById('tpMode').value,
+        tp_type: document.getElementById('tpType').value,
+        use_candlestick_conditions: document.getElementById('useCandlestickConditions').checked,
 
-        use_chg_open_close: getChecked('useChgOpenClose'),
-        min_chg_open_close: getFloat('minChgOpenClose'),
-        max_chg_open_close: getFloat('maxChgOpenClose'),
-        use_chg_high_low: getChecked('useChgHighLow'),
-        min_chg_high_low: getFloat('minChgHighLow'),
-        max_chg_high_low: getFloat('maxChgHighLow'),
-        use_chg_high_close: getChecked('useChgHighClose'),
-        min_chg_high_close: getFloat('minChgHighClose'),
-        max_chg_high_close: getFloat('maxChgHighClose'),
-        add_pos_gap_threshold: getFloat('addPosGapThreshold'),
-        add_pos_profit_multiplier: getFloat('addPosProfitMultiplier'),
-        add_pos_step2_offset: getFloat('addPosStep2Offset'),
-        add_pos_size_pct: getFloat('addPosSizePct'),
-        add_pos_max_count: getInt('addPosMaxCount'),
-        add_pos_recovery_percent: getFloat('addPosRecoveryPercent'),
-        add_pos_gap_threshold_2: getFloat('addPosGapThreshold2'),
-        add_pos_size_pct_2: getFloat('addPosSizePct2'),
-        dashboard_username: getValue('dashboardUsername'),
-        dashboard_password: getValue('dashboardPassword'),
-        use_add_pos_profit_target: getChecked('useAddPosProfitTarget'),
+        // Candlestick conditions
+        use_chg_open_close: document.getElementById('useChgOpenClose').checked,
+        min_chg_open_close: parseFloat(document.getElementById('minChgOpenClose').value),
+        max_chg_open_close: parseFloat(document.getElementById('maxChgOpenClose').value),
+        use_chg_high_low: document.getElementById('useChgHighLow').checked,
+        min_chg_high_low: parseFloat(document.getElementById('minChgHighLow').value),
+        max_chg_high_low: parseFloat(document.getElementById('maxChgHighLow').value),
+        use_chg_high_close: document.getElementById('useChgHighClose').checked,
+        min_chg_high_close: parseFloat(document.getElementById('minChgHighClose').value),
+        max_chg_high_close: parseFloat(document.getElementById('maxChgHighClose').value),
+        add_pos_gap_threshold: parseFloat(document.getElementById('addPosGapThreshold').value),
+        add_pos_profit_multiplier: parseFloat(document.getElementById('addPosProfitMultiplier').value),
+        add_pos_step2_offset: parseFloat(document.getElementById('addPosStep2Offset').value),
+        add_pos_size_pct: parseFloat(document.getElementById('addPosSizePct').value),
+        add_pos_max_count: parseInt(document.getElementById('addPosMaxCount').value),
+        add_pos_recovery_percent: parseFloat(document.getElementById('addPosRecoveryPercent').value),
+        use_add_pos_profit_target: document.getElementById('useAddPosProfitTarget').checked,
 
-        candlestick_timeframe: getValue('candlestickTimeframe'),
-        okx_pos_mode: getValue('okxPosMode'),
+        candlestick_timeframe: document.getElementById('candlestickTimeframe').value,
+        okx_pos_mode: document.getElementById('okxPosMode').value,
 
+        // PnL Auto-Cancel (New Dual Mode - Unified with Modal)
+        // If modal inputs exist, use them. Otherwise use dashboard/current config.
         use_pnl_auto_manual: document.getElementById('usePnlAutoCancelModal') ? document.getElementById('usePnlAutoCancelModal').checked : (document.getElementById('usePnlAutoManual') ? document.getElementById('usePnlAutoManual').checked : currentConfig.use_pnl_auto_manual),
         pnl_auto_manual_threshold: document.getElementById('pnlAutoCancelThresholdModal') ? parseFloat(document.getElementById('pnlAutoCancelThresholdModal').value) : (document.getElementById('pnlAutoManualThreshold') ? parseFloat(document.getElementById('pnlAutoManualThreshold').value) : currentConfig.pnl_auto_manual_threshold),
         use_pnl_auto_cal: document.getElementById('usePnlAutoCal') ? document.getElementById('usePnlAutoCal').checked : (currentConfig.use_pnl_auto_cal || false),
@@ -1336,17 +1231,18 @@ async function saveConfig() {
         use_pnl_auto_cal_loss: document.getElementById('usePnlAutoCalLoss') ? document.getElementById('usePnlAutoCalLoss').checked : (currentConfig.use_pnl_auto_cal_loss || false),
         pnl_auto_cal_loss_times: document.getElementById('pnlAutoCalLossTimes') ? parseFloat(document.getElementById('pnlAutoCalLossTimes').value) : (currentConfig.pnl_auto_cal_loss_times || 1.5),
 
+        // Auto-Cal Size (New)
         use_size_auto_cal: document.getElementById('useSizeAutoCal') ? document.getElementById('useSizeAutoCal').checked : (currentConfig.use_size_auto_cal || false),
         size_auto_cal_times: document.getElementById('sizeAutoCalTimes') ? parseFloat(document.getElementById('sizeAutoCalTimes').value) : (currentConfig.size_auto_cal_times || 2.0),
         use_size_auto_cal_loss: document.getElementById('useSizeAutoCalLoss') ? document.getElementById('useSizeAutoCalLoss').checked : (currentConfig.use_size_auto_cal_loss || false),
         size_auto_cal_loss_times: document.getElementById('sizeAutoCalLossTimes') ? parseFloat(document.getElementById('sizeAutoCalLossTimes').value) : (currentConfig.size_auto_cal_loss_times || 1.5),
 
+        // Auto-Cal Add Position (Split Mode)
         use_add_pos_above_zero: document.getElementById('useAddPosAboveZero') ? document.getElementById('useAddPosAboveZero').checked : (currentConfig.use_add_pos_above_zero || false),
-        add_pos_recovery_percent: getFloat('addPosRecoveryPercent'),
-        add_pos_profit_multiplier: getFloat('addPosProfitMultiplier')
+        use_add_pos_profit_target: document.getElementById('useAddPosProfitTarget') ? document.getElementById('useAddPosProfitTarget').checked : (currentConfig.use_add_pos_profit_target || false),
+        add_pos_recovery_percent: document.getElementById('addPosRecoveryPercent') ? parseFloat(document.getElementById('addPosRecoveryPercent').value) : (currentConfig.add_pos_recovery_percent || 0.6),
+        add_pos_profit_multiplier: document.getElementById('addPosProfitMultiplier') ? parseFloat(document.getElementById('addPosProfitMultiplier').value) : (currentConfig.add_pos_profit_multiplier || 1.5)
     };
-
-    console.log('Saving config:', newConfig);
 
     try {
         const response = await fetch('/api/config', {
@@ -1377,43 +1273,35 @@ async function saveConfig() {
 async function saveLiveConfigs() {
     if (!currentConfig) return;
 
-    const getVal = (id, def = '') => {
-        const el = document.getElementById(id);
-        return el ? el.value : (currentConfig[id] !== undefined ? currentConfig[id] : def);
-    };
-    const getChecked = (id, def = false) => {
-        const el = document.getElementById(id);
-        return el ? el.checked : (currentConfig[id] !== undefined ? currentConfig[id] : def);
-    };
-
     const liveConfig = {
-        use_pnl_auto_manual: getChecked('usePnlAutoManual'),
-        pnl_auto_manual_threshold: parseFloat(getVal('pnlAutoManualThreshold', 100)),
-        use_pnl_auto_cal: getChecked('usePnlAutoCal'),
-        pnl_auto_cal_times: parseFloat(getVal('pnlAutoCalTimes', 4.0)),
-        use_pnl_auto_cal_loss: getChecked('usePnlAutoCalLoss'),
-        pnl_auto_cal_loss_times: parseFloat(getVal('pnlAutoCalLossTimes', 1.5)),
+        use_pnl_auto_manual: document.getElementById('usePnlAutoManual').checked,
+        pnl_auto_manual_threshold: parseFloat(document.getElementById('pnlAutoManualThreshold').value),
+        use_pnl_auto_cal: document.getElementById('usePnlAutoCal').checked,
+        pnl_auto_cal_times: parseFloat(document.getElementById('pnlAutoCalTimes').value),
+        use_pnl_auto_cal_loss: document.getElementById('usePnlAutoCalLoss').checked,
+        pnl_auto_cal_loss_times: parseFloat(document.getElementById('pnlAutoCalLossTimes').value),
 
-        use_size_auto_cal: getChecked('useSizeAutoCal'),
-        size_auto_cal_times: parseFloat(getVal('sizeAutoCalTimes', 2.0)),
-        use_size_auto_cal_loss: getChecked('useSizeAutoCalLoss'),
-        size_auto_cal_loss_times: parseFloat(getVal('sizeAutoCalLossTimes', 1.5)),
+        // Auto-Cal Size (New)
+        use_size_auto_cal: document.getElementById('useSizeAutoCal').checked,
+        size_auto_cal_times: parseFloat(document.getElementById('sizeAutoCalTimes').value),
+        use_size_auto_cal_loss: document.getElementById('useSizeAutoCalLoss').checked,
+        size_auto_cal_loss_times: parseFloat(document.getElementById('sizeAutoCalLossTimes').value),
 
-        trade_fee_percentage: parseFloat(getVal('tradeFeePercentage', 0.07)),
+        trade_fee_percentage: parseFloat(document.getElementById('tradeFeePercentage').value),
 
-        use_auto_margin: getChecked('useAutoMargin'),
-        auto_margin_offset: parseFloat(getVal('autoMarginOffset', 10)),
+        // Auto-Add Margin
+        use_auto_margin: document.getElementById('useAutoMargin').checked,
+        auto_margin_offset: parseFloat(document.getElementById('autoMarginOffset').value),
 
-        use_add_pos_above_zero: getChecked('useAddPosAboveZeroMain'),
-        use_add_pos_profit_target: getChecked('useAddPosProfitTargetMain'),
-        add_pos_recovery_percent: parseFloat(getVal('addPosRecoveryPercentMain', 0.6)),
-        add_pos_profit_multiplier: parseFloat(getVal('addPosProfitMultiplierMain', 1.5)),
-        add_pos_gap_threshold: parseFloat(getVal('addPosGapThresholdMain', 5.0)),
-        add_pos_size_pct: parseFloat(getVal('addPosSizePctMain', 30.0)),
-        add_pos_max_count: parseInt(getVal('addPosMaxCountMain', 10)),
-        add_pos_step2_offset: parseFloat(getVal('addPosStep2OffsetMain', 0.0)), // Placeholder if missing
-        add_pos_gap_threshold_2: parseFloat(getVal('addPosGapThreshold2Main', 5.0)),
-        add_pos_size_pct_2: parseFloat(getVal('addPosSizePct2Main', 30.0))
+        // Auto-Cal Add Position (Split Mode)
+        use_add_pos_above_zero: document.getElementById('useAddPosAboveZero').checked,
+        use_add_pos_profit_target: document.getElementById('useAddPosProfitTarget').checked,
+        add_pos_recovery_percent: parseFloat(document.getElementById('addPosRecoveryPercent').value),
+        add_pos_profit_multiplier: parseFloat(document.getElementById('addPosProfitMultiplier').value),
+        add_pos_gap_threshold: parseFloat(document.getElementById('addPosGapThreshold').value),
+        add_pos_size_pct: parseFloat(document.getElementById('addPosSizePct').value),
+        add_pos_max_count: parseInt(document.getElementById('addPosMaxCount').value),
+        add_pos_step2_offset: parseFloat(document.getElementById('addPosStep2Offset').value)
     };
 
     try {
@@ -1455,8 +1343,6 @@ async function saveLiveConfigs() {
             currentConfig.add_pos_size_pct = liveConfig.add_pos_size_pct;
             currentConfig.add_pos_max_count = liveConfig.add_pos_max_count;
             currentConfig.add_pos_step2_offset = liveConfig.add_pos_step2_offset;
-            currentConfig.add_pos_gap_threshold_2 = liveConfig.add_pos_gap_threshold_2;
-            currentConfig.add_pos_size_pct_2 = liveConfig.add_pos_size_pct_2;
         } else {
             // Revert UI on error (e.g. bot running error)
             document.getElementById('usePnlAutoManual').checked = currentConfig.use_pnl_auto_manual;
