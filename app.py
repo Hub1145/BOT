@@ -52,26 +52,9 @@ def update_config():
 
         # Whitelist of all valid parameters
         allowed_params = [
-            'okx_api_key', 'okx_api_secret', 'okx_passphrase', 'okx_demo_api_key', 'okx_demo_api_secret', 'okx_demo_api_passphrase',
-            'dev_api_key', 'dev_api_secret', 'dev_passphrase', 'dev_demo_api_key', 'dev_demo_api_secret', 'dev_demo_api_passphrase',
-            'use_developer_api', 'use_testnet', 'symbol',
-            'short_safety_line_price', 'long_safety_line_price', 'leverage', 'max_allowed_used',
-            'entry_price_offset', 'batch_offset', 'tp_price_offset', 'sl_price_offset',
-            'loop_time_seconds', 'rate_divisor', 'batch_size_per_loop', 'min_order_amount',
-            'target_order_amount', 'cancel_unfilled_seconds', 'cancel_on_tp_price_below_market',
-            'cancel_on_entry_price_below_market', 'cancel_on_tp_price_above_market',
-            'cancel_on_entry_price_above_market', 'direction', 'mode', 'tp_amount', 'sl_amount',
-            'trigger_price', 'tp_mode', 'tp_type', 'use_chg_open_close', 'min_chg_open_close',
-            'max_chg_open_close', 'use_chg_high_low', 'min_chg_high_low', 'max_chg_high_low',
-            'use_chg_high_close', 'min_chg_high_close', 'max_chg_high_close', 'candlestick_timeframe',
-            'use_candlestick_conditions', 'log_level', 'use_pnl_auto_cancel', 'pnl_auto_cancel_threshold', 'okx_pos_mode', 'trade_fee_percentage',
-            'use_pnl_auto_manual', 'pnl_auto_manual_threshold', 'use_pnl_auto_cal', 'pnl_auto_cal_times',
-            'use_pnl_auto_cal_loss', 'pnl_auto_cal_loss_times',
-            'use_auto_margin', 'auto_margin_offset',
-            'use_size_auto_cal', 'size_auto_cal_times', 'use_size_auto_cal_loss', 'size_auto_cal_loss_times',
-            'use_add_pos_auto_cal', 'add_pos_recovery_percent', 'add_pos_profit_multiplier',
-            'add_pos_gap_threshold', 'add_pos_size_pct', 'add_pos_max_count', 'add_pos_step2_offset',
-            'use_add_pos_above_zero', 'use_add_pos_profit_target'
+            'deriv_api_token', 'deriv_app_id', 'symbols',
+            'use_fixed_balance', 'balance_value', 'max_daily_loss_pct',
+            'entry_type', 'log_level'
         ]
 
         # Update current_config with only allowed and present keys from new_config
@@ -178,41 +161,22 @@ def download_logs():
 def test_api_key_route():
     try:
         data = request.json
-        api_key = data.get('api_key')
-        api_secret = data.get('api_secret')
-        passphrase = data.get('passphrase')
-        use_testnet = data.get('use_testnet')
+        api_token = data.get('api_token')
 
-        if not all([api_key, api_secret, passphrase]):
-            return jsonify({'success': False, 'message': 'All API credentials (Key, Secret, Passphrase) are required.'}), 400
+        if not api_token:
+            return jsonify({'success': False, 'message': 'API Token is required.'}), 400
 
         # Temporarily create a bot_engine instance to test credentials
-        # This bypasses the global bot_engine state
         temp_bot_engine = TradingBotEngine(config_file, emit_to_client)
-        temp_bot_engine.config['okx_api_key'] = api_key
-        temp_bot_engine.config['okx_api_secret'] = api_secret
-        temp_bot_engine.config['okx_passphrase'] = passphrase
-        temp_bot_engine.config['okx_demo_api_key'] = api_key # Also set for demo if testnet is used
-        temp_bot_engine.config['okx_demo_api_secret'] = api_secret
-        temp_bot_engine.config['okx_demo_api_passphrase'] = passphrase
-        temp_bot_engine.config['use_testnet'] = use_testnet
+        temp_bot_engine.config['deriv_api_token'] = api_token
         
-        # Re-initialize global API credentials for the temp bot engine based on the provided data
-        if use_testnet:
-            temp_bot_engine.config['okx_api_key'] = temp_bot_engine.config['okx_demo_api_key']
-            temp_bot_engine.config['okx_api_secret'] = temp_bot_engine.config['okx_demo_api_secret']
-            temp_bot_engine.config['okx_passphrase'] = temp_bot_engine.config['okx_demo_api_passphrase']
-            temp_bot_engine.okx_simulated_trading_header = {'x-simulated-trading': '1'}
-        else:
-            temp_bot_engine.okx_simulated_trading_header = {}
-
         if temp_bot_engine.test_api_credentials():
-            return jsonify({'success': True, 'message': 'API credentials are valid.'})
+            return jsonify({'success': True, 'message': 'API token is valid.'})
         else:
-            return jsonify({'success': False, 'message': 'Invalid API credentials or connection error.'}), 401
+            return jsonify({'success': False, 'message': 'Invalid API token or connection error.'}), 401
 
     except Exception as e:
-        logging.error(f'Error testing API key: {str(e)}', exc_info=True)
+        logging.error(f'Error testing API token: {str(e)}', exc_info=True)
         return jsonify({'success': False, 'message': f'An unexpected error occurred: {str(e)}'}), 500
 
 
@@ -431,4 +395,4 @@ if __name__ == '__main__':
         bot_engine = TradingBotEngine(config_file, emit_to_client)
         bot_engine.start(passive_monitoring=True)
         
-    socketio.run(app, host='0.0.0.0', port=5000, debug=False, use_reloader=False, log_output=True)
+    socketio.run(app, host='0.0.0.0', port=5000, debug=False, use_reloader=False, log_output=True, allow_unsafe_werkzeug=True)
