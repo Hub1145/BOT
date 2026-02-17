@@ -351,7 +351,8 @@ class TradingBotEngine:
                     'id': cid, 'symbol': symbol, 'side': side,
                     'entry_price': contract.get('entry_tick'),
                     'pnl': contract.get('profit', 0),
-                    'stake': contract.get('buy_price', 0)
+                    'stake': contract.get('buy_price', 0),
+                    'expiry_time': contract.get('date_expiry')
                 }
 
             self._update_aggregated_positions()
@@ -381,7 +382,8 @@ class TradingBotEngine:
         for cid, c in self.contracts.items():
             self.open_trades.append({
                 'id': cid, 'type': c['side'].capitalize(), 'symbol': c['symbol'],
-                'entry_spot_price': c['entry_price'], 'stake': c['stake'], 'pnl': c['pnl']
+                'entry_spot_price': c['entry_price'], 'stake': c['stake'], 'pnl': c['pnl'],
+                'expiry_time': c['expiry_time']
             })
             floating_pnl += c['pnl']
             used_notional += c['stake']

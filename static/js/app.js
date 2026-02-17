@@ -3,11 +3,13 @@ const socket = io();
 let currentConfig = null;
 const configModal = new bootstrap.Modal(document.getElementById('configModal'));
 let isBotRunning = false;
+let activeTrades = [];
 
 document.addEventListener('DOMContentLoaded', () => {
     loadConfig();
     setupEventListeners();
     setupSocketListeners();
+    startCountdownTimer();
 });
 
 function setupEventListeners() {
@@ -97,6 +99,7 @@ function setupSocketListeners() {
     });
 
     socket.on('trades_update', (data) => {
+        activeTrades = data.trades;
         updateActiveTrades(data.trades);
     });
 
@@ -126,11 +129,34 @@ function updateActiveTrades(trades) {
                 <strong>${t.symbol} (${t.type})</strong>
                 <span class="${t.pnl >= 0 ? 'text-success' : 'text-danger'} font-weight-bold">$${t.pnl.toFixed(2)}</span>
             </div>
-            <div class="small text-muted">
-                ID: ${t.id} | Entry: ${t.entry_spot_price.toFixed(4)} | Stake: $${t.stake.toFixed(2)}
+            <div class="small text-muted d-flex justify-content-between">
+                <div>ID: ${t.id} | Entry: ${t.entry_spot_price.toFixed(4)} | Stake: $${t.stake.toFixed(2)}</div>
+                <div class="expiry-countdown text-warning" data-expiry="${t.expiry_time}">${formatCountdown(t.expiry_time)}</div>
             </div>
         </div>
     `).join('');
+}
+
+function startCountdownTimer() {
+    setInterval(() => {
+        document.querySelectorAll('.expiry-countdown').forEach(el => {
+            const expiry = parseInt(el.getAttribute('data-expiry'));
+            el.textContent = formatCountdown(expiry);
+        });
+    }, 1000);
+}
+
+function formatCountdown(expiryEpoch) {
+    if (!expiryEpoch) return "";
+    const now = Math.floor(Date.now() / 1000);
+    let diff = expiryEpoch - now;
+    if (diff <= 0) return "Expired";
+
+    const h = Math.floor(diff / 3600);
+    const m = Math.floor((diff % 3600) / 60);
+    const s = diff % 60;
+
+    return [h, m, s].map(v => v.toString().padStart(2, '0')).join(':');
 }
 
 async function loadConfig() {
