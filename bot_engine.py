@@ -5,8 +5,6 @@ import threading
 from datetime import datetime, timedelta, timezone
 from collections import deque
 import websocket
-import pandas as pd
-import numpy as np
 
 class TradingBotEngine:
     def __init__(self, config_path, emit_callback):
@@ -115,6 +113,12 @@ class TradingBotEngine:
 
         if msg_type == 'authorize':
             self.log("Authorization successful.")
+            auth_data = data.get('authorize', {})
+            self.account_balance = auth_data.get('balance', 0.0)
+            self.available_balance = self.account_balance
+            self.total_equity = self.account_balance
+            self._emit_updates()
+
             ws.send(json.dumps({"balance": 1, "subscribe": 1}))
             for symbol in self.config.get('symbols', []):
                 self._init_symbol_data(symbol)
@@ -222,6 +226,16 @@ class TradingBotEngine:
                 self._process_strategy(symbol, False)
 
     def _process_strategy(self, symbol, is_candle_close):
+        # Check Max Daily Loss
+        max_loss_pct = self.config.get('max_daily_loss_pct', 5)
+        if self.account_balance > 0:
+            current_loss_pct = (self.net_profit / self.account_balance) * 100
+            if current_loss_pct <= -max_loss_pct:
+                if self.is_running:
+                    self.log(f"Max daily loss reached ({current_loss_pct:.2f}%). Trading paused.", "warning")
+                    self.is_running = False
+                return
+
         sd = self.symbol_data[symbol]
         daily_open = sd['daily_open']
         current_15m = sd['current_15min_candle']
@@ -257,6 +271,9 @@ class TradingBotEngine:
             self._execute_trade(symbol, signal)
 
     def _execute_trade(self, symbol, side):
+        # side is 'buy' or 'sell' from strategy
+        internal_side = 'long' if side == 'buy' else 'short'
+
         # End of day calculation (UTC)
         now = datetime.now(timezone.utc)
         end_of_day = (now + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
@@ -269,7 +286,7 @@ class TradingBotEngine:
         existing_cid = None
         for cid, c in self.contracts.items():
             if c['symbol'] == symbol:
-                if c['side'] == side:
+                if c['side'] == internal_side:
                     self.log(f"Trade already exists for {symbol} in {side} direction.")
                     return
                 else:
@@ -429,8 +446,6 @@ class TradingBotEngine:
             self.ws.close()
         self.log("Bot engine shut down")
 
-    def _apply_api_credentials(self): pass
-
     def check_credentials(self):
         if not self.config.get('deriv_api_token'):
             return False, "API Token missing"
@@ -448,9 +463,37 @@ class TradingBotEngine:
         except: return False
 
     def apply_live_config_update(self, new_config):
+        old_symbols = set(self.config.get('symbols', []))
+        new_symbols = set(new_config.get('symbols', []))
+
+        old_token = self.config.get('deriv_api_token')
+        new_token = new_config.get('deriv_api_token')
+
         self.config = new_config
         self.log("Config applied live")
+
+        # If token changed, we need a full reconnect
+        if old_token != new_token:
+            self._apply_api_credentials()
+            return {"success": True}
+
+        # If only symbols changed and we are connected
+        if self.ws and self.ws.sock and self.ws.sock.connected:
+            added_symbols = new_symbols - old_symbols
+            for symbol in added_symbols:
+                self.log(f"Subscribing to new symbol: {symbol}")
+                self._init_symbol_data(symbol)
+                self.ws.send(json.dumps({"ticks": symbol, "subscribe": 1}))
+                self._fetch_history(self.ws, symbol, 900, 100)
+                self._fetch_history(self.ws, symbol, 86400, 1)
+
         return {"success": True}
+
+    def _apply_api_credentials(self):
+        self.log("Applying new API credentials, reconnecting...")
+        if self.ws:
+            self.ws.close()
+            # The run_forever loop in _run_ws will handle reconnection
 
     def fetch_account_data_sync(self):
         self._emit_updates()

@@ -75,15 +75,12 @@ def update_config():
             save_config(current_config)
 
             warning_msg = None
-            if bot_engine and bot_engine.is_running:
+            if bot_engine:
                 # Update the bot's internal config object and trigger dynamic updates
                 result = bot_engine.apply_live_config_update(current_config)
                 if result.get('warnings'):
                     warning_msg = " | ".join(result['warnings'])
                 bot_engine.log("Configuration updated live from dashboard.", level="info")
-            elif bot_engine:
-                 # If not running, just sync the config object
-                 bot_engine.config = current_config
 
             def background_init():
                 global bot_engine
