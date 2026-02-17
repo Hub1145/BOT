@@ -37,6 +37,8 @@ class TradingBotEngine:
         self.net_trade_profit = 0.0
         self.total_trade_profit = 0.0
         self.total_trade_loss = 0.0
+        self.daily_start_balance = 0.0
+        self.last_balance_reset_date = None
 
         # Positions and data
         self.open_trades = []
@@ -117,6 +119,13 @@ class TradingBotEngine:
             self.account_balance = auth_data.get('balance', 0.0)
             self.available_balance = self.account_balance
             self.total_equity = self.account_balance
+
+            # Initial daily start balance capture
+            if self.daily_start_balance == 0.0:
+                self.daily_start_balance = self.account_balance
+                self.last_balance_reset_date = datetime.now(timezone.utc).date()
+                self.log(f"Daily starting balance set: {self.daily_start_balance}")
+
             self._emit_updates()
 
             ws.send(json.dumps({"balance": 1, "subscribe": 1}))
@@ -194,8 +203,15 @@ class TradingBotEngine:
         symbol = tick['symbol']
         price = tick['quote']
         tick_time = datetime.fromtimestamp(tick['epoch'], tz=timezone.utc)
+        tick_date = tick_time.date()
 
         with self.data_lock:
+            # Check for new day to reset daily starting balance
+            if self.last_balance_reset_date is None or tick_date > self.last_balance_reset_date:
+                self.daily_start_balance = self.account_balance
+                self.last_balance_reset_date = tick_date
+                self.log(f"New day detected ({tick_date}). Daily starting balance reset to: {self.daily_start_balance}")
+
             if symbol not in self.symbol_data: return
             sd = self.symbol_data[symbol]
             sd['last_tick'] = price
@@ -229,13 +245,18 @@ class TradingBotEngine:
                 self._process_strategy(symbol, False)
 
     def _process_strategy(self, symbol, is_candle_close):
-        # Check Max Daily Loss
+        # Check Max Daily Loss relative to starting balance of the day
         max_loss_pct = self.config.get('max_daily_loss_pct', 5)
-        if self.account_balance > 0:
-            current_loss_pct = (self.net_profit / self.account_balance) * 100
+        if self.daily_start_balance > 0:
+            # Current Net Profit is total since start.
+            # We need daily pnl = (current_equity - daily_start_balance)
+            current_equity = self.account_balance + sum(c.get('pnl', 0) for c in self.contracts.values())
+            daily_pnl = current_equity - self.daily_start_balance
+            current_loss_pct = (daily_pnl / self.daily_start_balance) * 100
+
             if current_loss_pct <= -max_loss_pct:
                 if self.is_running:
-                    self.log(f"Max daily loss reached ({current_loss_pct:.2f}%). Trading paused.", "warning")
+                    self.log(f"Max daily loss reached ({current_loss_pct:.2f}% of starting balance). Trading paused.", "warning")
                     self.is_running = False
                 return
 
