@@ -54,7 +54,7 @@ def update_config():
         allowed_params = [
             'deriv_api_token', 'deriv_app_id', 'symbols',
             'use_fixed_balance', 'balance_value', 'max_daily_loss_pct',
-            'entry_type', 'log_level'
+            'entry_type', 'is_demo', 'log_level'
         ]
 
         # Update current_config with only allowed and present keys from new_config
@@ -246,8 +246,9 @@ def get_status():
     })
  
 @socketio.on('connect')
-def handle_connect(sid):
+def handle_connect(auth=None):
     global bot_engine
+    sid = request.sid
     logging.info(f'Client connected: {sid}')
     emit('connection_status', {'connected': True}, room=sid)
  
@@ -265,6 +266,7 @@ def handle_connect(sid):
             bot_engine.fetch_account_data_sync()
             
             payload = {
+                'is_demo': bot_engine.config.get('is_demo', True),
                 'total_capital': bot_engine.total_equity,
                 'total_capital_2nd': bot_engine.total_capital_2nd,
                 'max_allowed_used_display': bot_engine.max_allowed_display,

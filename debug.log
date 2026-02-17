@@ -1,0 +1,60 @@
+2026-02-17 11:43:01,793 - WARNING - Werkzeug appears to be used in a production deployment. Consider switching to a production web server instead.
+2026-02-17 11:43:01,801 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.0.2:5000
+2026-02-17 11:43:01,801 - INFO - [33mPress CTRL+C to quit[0m
+2026-02-17 11:43:02,042 - INFO - Websocket connected
+2026-02-17 11:43:28,437 - INFO - 127.0.0.1 - - [17/Feb/2026 11:43:28] "GET / HTTP/1.1" 200 -
+2026-02-17 11:43:28,499 - INFO - 127.0.0.1 - - [17/Feb/2026 11:43:28] "GET /static/js/app.js HTTP/1.1" 200 -
+2026-02-17 11:43:28,786 - INFO - 127.0.0.1 - - [17/Feb/2026 11:43:28] "GET /api/config HTTP/1.1" 200 -
+2026-02-17 11:43:28,789 - INFO - 127.0.0.1 - - [17/Feb/2026 11:43:28] "GET /socket.io/?EIO=4&transport=polling&t=PnhQPdm HTTP/1.1" 200 -
+2026-02-17 11:43:28,815 - INFO - Client connected: HkfzeNjf6Ehsbg6XAAAB
+2026-02-17 11:43:28,816 - INFO - 127.0.0.1 - - [17/Feb/2026 11:43:28] "POST /socket.io/?EIO=4&transport=polling&t=PnhQPeU&sid=9b9nDoWd5tSS3MmzAAAA HTTP/1.1" 200 -
+2026-02-17 11:43:28,823 - INFO - 127.0.0.1 - - [17/Feb/2026 11:43:28] "GET /socket.io/?EIO=4&transport=polling&t=PnhQPeb&sid=9b9nDoWd5tSS3MmzAAAA HTTP/1.1" 200 -
+2026-02-17 11:44:00,585 - INFO - Client disconnected
+2026-02-17 11:44:00,586 - INFO - 127.0.0.1 - - [17/Feb/2026 11:44:00] "GET /socket.io/?EIO=4&transport=websocket&sid=9b9nDoWd5tSS3MmzAAAA HTTP/1.1" 200 -
+2026-02-17 11:44:16,768 - INFO - 127.0.0.1 - - [17/Feb/2026 11:44:16] "GET / HTTP/1.1" 200 -
+2026-02-17 11:44:16,785 - INFO - 127.0.0.1 - - [17/Feb/2026 11:44:16] "GET /static/js/app.js HTTP/1.1" 200 -
+2026-02-17 11:44:16,918 - INFO - 127.0.0.1 - - [17/Feb/2026 11:44:16] "GET /socket.io/?EIO=4&transport=polling&t=PnhQbOC HTTP/1.1" 200 -
+2026-02-17 11:44:16,920 - INFO - 127.0.0.1 - - [17/Feb/2026 11:44:16] "GET /api/config HTTP/1.1" 200 -
+2026-02-17 11:44:16,927 - INFO - Client connected: KlgBgLVXtXrH0lOPAAAD
+2026-02-17 11:44:16,928 - INFO - 127.0.0.1 - - [17/Feb/2026 11:44:16] "POST /socket.io/?EIO=4&transport=polling&t=PnhQbOQ&sid=JjKsaaAsOJGgdf6MAAAC HTTP/1.1" 200 -
+2026-02-17 11:44:16,931 - INFO - 127.0.0.1 - - [17/Feb/2026 11:44:16] "GET /socket.io/?EIO=4&transport=polling&t=PnhQbOT&sid=JjKsaaAsOJGgdf6MAAAC HTTP/1.1" 200 -
+2026-02-17 11:44:16,940 - INFO - 127.0.0.1 - - [17/Feb/2026 11:44:16] "GET /socket.io/?EIO=4&transport=polling&t=PnhQbOe&sid=JjKsaaAsOJGgdf6MAAAC HTTP/1.1" 200 -
+2026-02-17 11:44:20,664 - INFO - Client disconnected
+2026-02-17 11:44:20,665 - INFO - 127.0.0.1 - - [17/Feb/2026 11:44:20] "GET /socket.io/?EIO=4&transport=websocket&sid=JjKsaaAsOJGgdf6MAAAC HTTP/1.1" 200 -
+2026-02-17 11:45:02,099 - ERROR - Connection to remote host was lost. - goodbye
+2026-02-17 11:45:07,376 - INFO - Websocket connected
+2026-02-17 11:45:23,550 - WARNING - Werkzeug appears to be used in a production deployment. Consider switching to a production web server instead.
+2026-02-17 11:45:23,554 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.0.2:5000
+2026-02-17 11:45:23,554 - INFO - [33mPress CTRL+C to quit[0m
+2026-02-17 11:45:23,793 - INFO - Websocket connected
+2026-02-17 11:45:28,518 - INFO - 127.0.0.1 - - [17/Feb/2026 11:45:28] "GET / HTTP/1.1" 200 -
+2026-02-17 11:45:28,539 - INFO - 127.0.0.1 - - [17/Feb/2026 11:45:28] "GET /static/js/app.js HTTP/1.1" 200 -
+2026-02-17 11:45:28,657 - INFO - 127.0.0.1 - - [17/Feb/2026 11:45:28] "GET /socket.io/?EIO=4&transport=polling&t=PnhQsv8 HTTP/1.1" 200 -
+2026-02-17 11:45:28,662 - INFO - 127.0.0.1 - - [17/Feb/2026 11:45:28] "GET /api/config HTTP/1.1" 200 -
+2026-02-17 11:45:28,670 - INFO - Client connected: HZ1XQr_hZYlausibAAAB
+2026-02-17 11:45:28,671 - INFO - 127.0.0.1 - - [17/Feb/2026 11:45:28] "POST /socket.io/?EIO=4&transport=polling&t=PnhQsvL&sid=8AjuBWDhNTYcOh5_AAAA HTTP/1.1" 200 -
+2026-02-17 11:45:28,674 - INFO - 127.0.0.1 - - [17/Feb/2026 11:45:28] "GET /socket.io/?EIO=4&transport=polling&t=PnhQsvO&sid=8AjuBWDhNTYcOh5_AAAA HTTP/1.1" 200 -
+2026-02-17 11:45:32,376 - INFO - Client disconnected
+2026-02-17 11:45:32,377 - INFO - 127.0.0.1 - - [17/Feb/2026 11:45:32] "GET /socket.io/?EIO=4&transport=websocket&sid=8AjuBWDhNTYcOh5_AAAA HTTP/1.1" 200 -
+2026-02-17 11:45:57,638 - WARNING - Werkzeug appears to be used in a production deployment. Consider switching to a production web server instead.
+2026-02-17 11:45:57,643 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.0.2:5000
+2026-02-17 11:45:57,643 - INFO - [33mPress CTRL+C to quit[0m
+2026-02-17 11:45:57,864 - INFO - Websocket connected
+2026-02-17 11:46:02,610 - INFO - 127.0.0.1 - - [17/Feb/2026 11:46:02] "GET / HTTP/1.1" 200 -
+2026-02-17 11:46:02,631 - INFO - 127.0.0.1 - - [17/Feb/2026 11:46:02] "GET /static/js/app.js HTTP/1.1" 200 -
+2026-02-17 11:46:02,756 - INFO - 127.0.0.1 - - [17/Feb/2026 11:46:02] "GET /socket.io/?EIO=4&transport=polling&t=PnhQ_D_ HTTP/1.1" 200 -
+2026-02-17 11:46:02,761 - INFO - 127.0.0.1 - - [17/Feb/2026 11:46:02] "GET /api/config HTTP/1.1" 200 -
+2026-02-17 11:46:02,770 - INFO - Client connected: e51iRTR-0tbWx25KAAAB
+2026-02-17 11:46:02,774 - INFO - 127.0.0.1 - - [17/Feb/2026 11:46:02] "POST /socket.io/?EIO=4&transport=polling&t=PnhQ_E9&sid=up_XR489SJ1uLeRfAAAA HTTP/1.1" 200 -
+2026-02-17 11:46:02,778 - INFO - 127.0.0.1 - - [17/Feb/2026 11:46:02] "GET /socket.io/?EIO=4&transport=polling&t=PnhQ_ED&sid=up_XR489SJ1uLeRfAAAA HTTP/1.1" 200 -
+2026-02-17 11:46:06,437 - INFO - Client disconnected
+2026-02-17 11:46:06,438 - INFO - 127.0.0.1 - - [17/Feb/2026 11:46:06] "GET /socket.io/?EIO=4&transport=websocket&sid=up_XR489SJ1uLeRfAAAA HTTP/1.1" 200 -

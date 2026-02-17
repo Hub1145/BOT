@@ -6,5 +6,6 @@
   "balance_value": 10,
   "max_daily_loss_pct": 5,
   "entry_type": "candle_close",
+  "is_demo": true,
   "log_level": "info"
 }

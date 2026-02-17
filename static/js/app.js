@@ -31,6 +31,7 @@ function setupEventListeners() {
             document.getElementById('configBalanceValue').value = currentConfig.balance_value || 10;
             document.getElementById('configMaxDailyLoss').value = currentConfig.max_daily_loss_pct || 5;
             document.getElementById('configEntryType').value = currentConfig.entry_type || 'candle_close';
+            document.getElementById('configIsDemo').checked = currentConfig.is_demo !== false;
         }
         configModal.show();
     });
@@ -39,6 +40,10 @@ function setupEventListeners() {
 
     document.getElementById('clearConsoleBtn').addEventListener('click', () => {
         document.getElementById('consoleOutput').innerHTML = '';
+    });
+
+    document.getElementById('downloadLogsBtn').addEventListener('click', () => {
+        window.location.href = '/api/download_logs';
     });
 
     document.getElementById('addSymbolBtn').addEventListener('click', () => {
@@ -72,6 +77,15 @@ function setupSocketListeners() {
     });
 
     socket.on('account_update', (data) => {
+        const typeBadge = document.getElementById('accountTypeBadge');
+        if (data.is_demo) {
+            typeBadge.textContent = 'Demo';
+            typeBadge.className = 'badge rounded-pill bg-info ms-1';
+        } else {
+            typeBadge.textContent = 'Live';
+            typeBadge.className = 'badge rounded-pill bg-danger ms-1';
+        }
+
         document.getElementById('balanceDisplay').textContent = `$${Number(data.total_balance || 0).toFixed(2)}`;
         document.getElementById('totalPnlDisplay').textContent = `$${Number(data.net_profit || 0).toFixed(2)}`;
         document.getElementById('totalPnlDisplay').className = `stat-value ${data.net_profit >= 0 ? 'text-success' : 'text-danger'}`;
@@ -149,6 +163,7 @@ async function saveConfig() {
         balance_value: parseFloat(document.getElementById('configBalanceValue').value),
         max_daily_loss_pct: parseFloat(document.getElementById('configMaxDailyLoss').value),
         entry_type: document.getElementById('configEntryType').value,
+        is_demo: document.getElementById('configIsDemo').checked,
         symbols: currentConfig.symbols
     };
 

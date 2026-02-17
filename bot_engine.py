@@ -56,7 +56,22 @@ class TradingBotEngine:
 
         # Configure logging
         numeric_level = getattr(logging, self.config.get('log_level', 'INFO').upper(), logging.INFO)
-        logging.basicConfig(level=numeric_level, format='%(asctime)s - %(levelname)s - %(message)s')
+        root_logger = logging.getLogger()
+        root_logger.setLevel(numeric_level)
+
+        # Clear handlers
+        for handler in root_logger.handlers[:]:
+            root_logger.removeHandler(handler)
+
+        # Console handler
+        ch = logging.StreamHandler()
+        ch.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
+        root_logger.addHandler(ch)
+
+        # File handler
+        fh = logging.FileHandler('debug.log', encoding='utf-8')
+        fh.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
+        root_logger.addHandler(fh)
 
     def _load_config(self):
         try:
@@ -79,16 +94,22 @@ class TradingBotEngine:
     def on_open(self, ws):
         self.log("Deriv WebSocket connected.")
         self.is_connected = True
+        self._emit_updates() # Send initial state
         auth_request = {"authorize": self.config.get('deriv_api_token')}
         ws.send(json.dumps(auth_request))
 
     def on_message(self, ws, message):
-        data = json.loads(message)
+        try:
+            data = json.loads(message)
+        except Exception as e:
+            self.log(f"Error parsing message: {e}", 'error')
+            return
+
         msg_type = data.get('msg_type')
 
         if 'error' in data:
             self.log(f"Deriv Error: {data['error']['message']}", 'error')
-            if data['error']['code'] == 'AuthorizationRequired':
+            if data['error'].get('code') == 'AuthorizationRequired':
                 self.is_running = False
             return
 
@@ -122,12 +143,14 @@ class TradingBotEngine:
             self._handle_contract_update(data['proposal_open_contract'])
 
         elif msg_type == 'buy':
-            if 'buy' in data:
-                self.log(f"Trade opened: {data['buy']['contract_id']} for {data['buy']['buy_price']} USD")
+            buy_data = data.get('buy')
+            if buy_data:
+                self.log(f"Trade opened: {buy_data.get('contract_id')} for {buy_data.get('buy_price')} USD")
 
         elif msg_type == 'sell':
-            if 'sell' in data:
-                self.log(f"Trade closed: {data['sell']['contract_id']}")
+            sell_data = data.get('sell')
+            if sell_data:
+                self.log(f"Trade closed: {sell_data.get('contract_id')}")
 
     def _init_symbol_data(self, symbol):
         if symbol not in self.symbol_data:
@@ -285,30 +308,34 @@ class TradingBotEngine:
             self.ws.send(json.dumps({"sell": contract_id, "price": 0}))
 
     def _handle_contract_update(self, contract):
-        cid = contract['contract_id']
-        symbol = contract['underlying']
-        is_sold = contract['is_sold']
-        side = 'buy' if contract['contract_type'] == 'CALL' else 'sell'
+        try:
+            cid = contract['contract_id']
+            symbol = contract['underlying']
+            is_sold = contract['is_sold']
+            # Map Deriv types to our long/short internal state
+            side = 'long' if contract['contract_type'] == 'CALL' else 'short'
 
-        if is_sold:
-            if cid in self.contracts:
-                profit = contract.get('profit', 0)
-                self.log(f"Trade {cid} ({symbol}) closed. PnL: {profit}")
-                self.net_trade_profit += profit
-                if profit > 0: self.total_trade_profit += profit
-                else: self.total_trade_loss += abs(profit)
-                self.total_trades_count += 1
-                del self.contracts[cid]
-        else:
-            self.contracts[cid] = {
-                'id': cid, 'symbol': symbol, 'side': side,
-                'entry_price': contract.get('entry_tick'),
-                'pnl': contract.get('profit', 0),
-                'stake': contract.get('buy_price', 0)
-            }
+            if is_sold:
+                if cid in self.contracts:
+                    profit = contract.get('profit', 0)
+                    self.log(f"Trade {cid} ({symbol}) closed. PnL: {profit}")
+                    self.net_trade_profit += profit
+                    if profit > 0: self.total_trade_profit += profit
+                    else: self.total_trade_loss += abs(profit)
+                    self.total_trades_count += 1
+                    del self.contracts[cid]
+            else:
+                self.contracts[cid] = {
+                    'id': cid, 'symbol': symbol, 'side': side,
+                    'entry_price': contract.get('entry_tick'),
+                    'pnl': contract.get('profit', 0),
+                    'stake': contract.get('buy_price', 0)
+                }
 
-        self._update_aggregated_positions()
-        self._emit_updates()
+            self._update_aggregated_positions()
+            self._emit_updates()
+        except Exception as e:
+            self.log(f"Error handling contract update: {e}", 'error')
 
     def _update_aggregated_positions(self):
         # Update UI compatibility fields
@@ -317,12 +344,13 @@ class TradingBotEngine:
         self.position_qty = {'long': 0.0, 'short': 0.0}
 
         for c in self.contracts.values():
-            side = c['side']
-            self.in_position[side] = True
-            # For simplicity, if multiple symbols, we show the first one's price/qty or avg
-            if self.position_entry_price[side] == 0:
-                self.position_entry_price[side] = c['entry_price']
-                self.position_qty[side] = c['stake']
+            side = c['side'] # 'long' or 'short'
+            if side in self.in_position:
+                self.in_position[side] = True
+                # For simplicity, if multiple symbols, we show the first one's price/qty or avg
+                if self.position_entry_price[side] == 0:
+                    self.position_entry_price[side] = c['entry_price'] or 0.0
+                    self.position_qty[side] = c['stake'] or 0.0
 
     def _emit_updates(self):
         self.open_trades = []
@@ -342,13 +370,20 @@ class TradingBotEngine:
 
         payload = {
             'running': self.is_running,
+            'is_demo': self.config.get('is_demo', True),
             'total_balance': self.account_balance,
             'available_balance': self.available_balance,
             'open_trades': self.open_trades,
             'net_profit': self.net_profit,
             'total_trades': self.total_trades_count + len(self.open_trades),
             'total_capital': self.total_equity,
+            'total_capital_2nd': self.total_capital_2nd,
             'used_amount': self.used_amount_notional,
+            'remaining_amount': self.remaining_amount_notional,
+            'max_allowed_used_display': self.max_allowed_display,
+            'max_amount_display': self.max_amount_display,
+            'used_fees': self.used_fees,
+            'size_fees': self.size_fees,
             'net_trade_profit': self.net_trade_profit,
             'total_trade_profit': self.total_trade_profit,
             'total_trade_loss': self.total_trade_loss,
@@ -415,7 +450,8 @@ class TradingBotEngine:
         self.log("Config applied live")
         return {"success": True}
 
-    def fetch_account_data_sync(self): pass
+    def fetch_account_data_sync(self):
+        self._emit_updates()
 
     def batch_modify_tpsl(self): pass
 
