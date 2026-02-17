@@ -141,7 +141,8 @@ class TradingBotEngine:
             self._handle_candles(symbol, granularity, candles)
 
         elif msg_type == 'tick':
-            self._handle_tick(data['tick'])
+            sub_id = data.get('subscription', {}).get('id')
+            self._handle_tick(data['tick'], sub_id)
 
         elif msg_type == 'proposal_open_contract':
             self._handle_contract_update(data['proposal_open_contract'])
@@ -189,7 +190,7 @@ class TradingBotEngine:
                 if candles:
                     self.symbol_data[symbol]['current_15min_candle'] = candles[-1]
 
-    def _handle_tick(self, tick):
+    def _handle_tick(self, tick, sub_id=None):
         symbol = tick['symbol']
         price = tick['quote']
         tick_time = datetime.fromtimestamp(tick['epoch'], tz=timezone.utc)
@@ -198,6 +199,8 @@ class TradingBotEngine:
             if symbol not in self.symbol_data: return
             sd = self.symbol_data[symbol]
             sd['last_tick'] = price
+            if sub_id and not sd.get('subscription_id'):
+                sd['subscription_id'] = sub_id
 
             if sd['current_15min_candle']:
                 candle_start = datetime.fromtimestamp(sd['current_15min_candle']['epoch'], tz=timezone.utc)
@@ -486,6 +489,16 @@ class TradingBotEngine:
                 self.ws.send(json.dumps({"ticks": symbol, "subscribe": 1}))
                 self._fetch_history(self.ws, symbol, 900, 100)
                 self._fetch_history(self.ws, symbol, 86400, 1)
+
+            removed_symbols = old_symbols - new_symbols
+            for symbol in removed_symbols:
+                sd = self.symbol_data.get(symbol)
+                if sd and sd.get('subscription_id'):
+                    self.log(f"Unsubscribing from symbol: {symbol}")
+                    self.ws.send(json.dumps({"forget": sd['subscription_id']}))
+                with self.data_lock:
+                    if symbol in self.symbol_data:
+                        del self.symbol_data[symbol]
 
         return {"success": True}
 
