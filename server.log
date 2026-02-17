@@ -1,0 +1,19 @@
+2026-02-17 11:52:27,961 - WARNING - Werkzeug appears to be used in a production deployment. Consider switching to a production web server instead.
+ * Serving Flask app 'app'
+ * Debug mode: off
+2026-02-17 11:52:27,983 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.0.2:5000
+2026-02-17 11:52:27,983 - INFO - [33mPress CTRL+C to quit[0m
+2026-02-17 11:52:28,241 - INFO - Websocket connected
+2026-02-17 11:52:37,620 - INFO - 127.0.0.1 - - [17/Feb/2026 11:52:37] "GET / HTTP/1.1" 200 -
+2026-02-17 11:52:37,652 - INFO - 127.0.0.1 - - [17/Feb/2026 11:52:37] "GET /static/js/app.js HTTP/1.1" 200 -
+2026-02-17 11:52:37,761 - INFO - 127.0.0.1 - - [17/Feb/2026 11:52:37] "GET /socket.io/?EIO=4&transport=polling&t=PnhSVfx HTTP/1.1" 200 -
+2026-02-17 11:52:37,765 - INFO - 127.0.0.1 - - [17/Feb/2026 11:52:37] "GET /api/config HTTP/1.1" 200 -
+2026-02-17 11:52:37,774 - INFO - Client connected: Q63xbTb49Io8G_IpAAAB
+2026-02-17 11:52:37,775 - INFO - 127.0.0.1 - - [17/Feb/2026 11:52:37] "POST /socket.io/?EIO=4&transport=polling&t=PnhSVg6&sid=qkw1bRt4H2WyjwvKAAAA HTTP/1.1" 200 -
+2026-02-17 11:52:37,779 - INFO - 127.0.0.1 - - [17/Feb/2026 11:52:37] "GET /socket.io/?EIO=4&transport=polling&t=PnhSVg9&sid=qkw1bRt4H2WyjwvKAAAA HTTP/1.1" 200 -
+2026-02-17 11:52:37,786 - INFO - 127.0.0.1 - - [17/Feb/2026 11:52:37] "GET /socket.io/?EIO=4&transport=polling&t=PnhSVgN&sid=qkw1bRt4H2WyjwvKAAAA HTTP/1.1" 200 -
+2026-02-17 11:52:38,504 - INFO - Client disconnected
+2026-02-17 11:52:38,505 - INFO - 127.0.0.1 - - [17/Feb/2026 11:52:38] "GET /socket.io/?EIO=4&transport=websocket&sid=qkw1bRt4H2WyjwvKAAAA HTTP/1.1" 200 -

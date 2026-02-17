@@ -43,7 +43,7 @@ class TradingBotEngine:
         # Positions and data
         self.open_trades = []
         self.contracts = {} # contract_id -> contract_info
-        self.symbol_data = {} # Symbol -> { '1h_candles': [], 'daily_open': price, 'last_tick': price, ... }
+        self.symbol_data = {} # Symbol -> { '15min_candles': [], 'daily_open': price, 'last_tick': price, ... }
 
         # UI Compatibility (aggregated or first symbol)
         self.in_position = {'long': False, 'short': False}
@@ -119,7 +119,7 @@ class TradingBotEngine:
             for symbol in self.config.get('symbols', []):
                 self._init_symbol_data(symbol)
                 ws.send(json.dumps({"ticks": symbol, "subscribe": 1}))
-                self._fetch_history(ws, symbol, 3600, 24) # 1h
+                self._fetch_history(ws, symbol, 900, 100) # 15min
                 self._fetch_history(ws, symbol, 86400, 1)  # Daily
             ws.send(json.dumps({"proposal_open_contract": 1, "subscribe": 1}))
 
@@ -155,11 +155,11 @@ class TradingBotEngine:
     def _init_symbol_data(self, symbol):
         if symbol not in self.symbol_data:
             self.symbol_data[symbol] = {
-                '1h_candles': [],
+                '15min_candles': [],
                 'daily_open': None,
                 'last_tick': None,
-                'last_signal_hour': None,
-                'current_1h_candle': None
+                'last_signal_15min': None,
+                'current_15min_candle': None
             }
 
     def _fetch_history(self, ws, symbol, granularity, count):
@@ -180,10 +180,10 @@ class TradingBotEngine:
                 if candles:
                     self.symbol_data[symbol]['daily_open'] = candles[-1]['open']
                     self.log(f"Daily Open for {symbol}: {self.symbol_data[symbol]['daily_open']}")
-            elif granularity == 3600:
-                self.symbol_data[symbol]['1h_candles'] = candles
+            elif granularity == 900:
+                self.symbol_data[symbol]['15min_candles'] = candles
                 if candles:
-                    self.symbol_data[symbol]['current_1h_candle'] = candles[-1]
+                    self.symbol_data[symbol]['current_15min_candle'] = candles[-1]
 
     def _handle_tick(self, tick):
         symbol = tick['symbol']
@@ -195,11 +195,11 @@ class TradingBotEngine:
             sd = self.symbol_data[symbol]
             sd['last_tick'] = price
 
-            if sd['current_1h_candle']:
-                candle_start = datetime.fromtimestamp(sd['current_1h_candle']['epoch'], tz=timezone.utc)
-                if tick_time >= candle_start + timedelta(hours=1):
-                    # 1H Candle transition
-                    self.log(f"1H Candle closed for {symbol} at {sd['current_1h_candle']['close']}")
+            if sd['current_15min_candle']:
+                candle_start = datetime.fromtimestamp(sd['current_15min_candle']['epoch'], tz=timezone.utc)
+                if tick_time >= candle_start + timedelta(minutes=15):
+                    # 15min Candle transition
+                    self.log(f"15m Candle closed for {symbol} at {sd['current_15min_candle']['close']}")
                     if self.is_running and self.config.get('entry_type') == 'candle_close':
                         self._process_strategy(symbol, True)
 
@@ -207,14 +207,16 @@ class TradingBotEngine:
                     if tick_time.hour == 0 and tick_time.minute == 0:
                         self._fetch_history(self.ws, symbol, 86400, 1)
 
-                    sd['current_1h_candle'] = {
-                        'epoch': int(tick_time.replace(minute=0, second=0, microsecond=0).timestamp()),
+                    # New 15m candle start time
+                    new_start_minute = (tick_time.minute // 15) * 15
+                    sd['current_15min_candle'] = {
+                        'epoch': int(tick_time.replace(minute=new_start_minute, second=0, microsecond=0).timestamp()),
                         'open': price, 'high': price, 'low': price, 'close': price
                     }
                 else:
-                    sd['current_1h_candle']['close'] = price
-                    sd['current_1h_candle']['high'] = max(sd['current_1h_candle']['high'], price)
-                    sd['current_1h_candle']['low'] = min(sd['current_1h_candle']['low'], price)
+                    sd['current_15min_candle']['close'] = price
+                    sd['current_15min_candle']['high'] = max(sd['current_15min_candle']['high'], price)
+                    sd['current_15min_candle']['low'] = min(sd['current_15min_candle']['low'], price)
 
             if self.is_running and self.config.get('entry_type') == 'tick':
                 self._process_strategy(symbol, False)
@@ -222,35 +224,35 @@ class TradingBotEngine:
     def _process_strategy(self, symbol, is_candle_close):
         sd = self.symbol_data[symbol]
         daily_open = sd['daily_open']
-        current_1h = sd['current_1h_candle']
+        current_15m = sd['current_15min_candle']
         current_price = sd['last_tick']
 
-        if daily_open is None or current_1h is None or current_price is None:
+        if daily_open is None or current_15m is None or current_price is None:
             return
 
-        hour_key = current_1h['epoch']
-        if sd.get('last_processed_hour') == hour_key and is_candle_close:
+        time_key = current_15m['epoch']
+        if sd.get('last_processed_15m') == time_key and is_candle_close:
             return # Already processed this candle close
 
         # Strategy
         signal = None
-        check_price = current_1h['close'] if is_candle_close else current_price
+        check_price = current_15m['close'] if is_candle_close else current_price
 
-        # BUY: 1hr open <= Daily Open AND check_price > Daily Open AND check_price > 1hr open (bullish)
-        if current_1h['open'] <= daily_open and check_price > daily_open and check_price > current_1h['open']:
+        # BUY: 15m open <= Daily Open AND check_price > Daily Open AND check_price > 15m open (bullish)
+        if current_15m['open'] <= daily_open and check_price > daily_open and check_price > current_15m['open']:
             signal = 'buy'
-        # SELL: 1hr open >= Daily Open AND check_price < Daily Open AND check_price < 1hr open (bearish)
-        elif current_1h['open'] >= daily_open and check_price < daily_open and check_price < current_1h['open']:
+        # SELL: 15m open >= Daily Open AND check_price < Daily Open AND check_price < 15m open (bearish)
+        elif current_15m['open'] >= daily_open and check_price < daily_open and check_price < current_15m['open']:
             signal = 'sell'
 
         if signal:
-            # Check if we already traded this hour for this symbol to avoid multiple entries on ticks
-            if sd.get('last_trade_hour') == hour_key:
+            # Check if we already traded this 15m period for this symbol to avoid multiple entries on ticks
+            if sd.get('last_trade_15m') == time_key:
                 return
 
-            sd['last_trade_hour'] = hour_key
+            sd['last_trade_15m'] = time_key
             if is_candle_close:
-                sd['last_processed_hour'] = hour_key
+                sd['last_processed_15m'] = time_key
 
             self._execute_trade(symbol, signal)
 
