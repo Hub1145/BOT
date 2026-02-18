@@ -133,7 +133,7 @@ class TradingBotEngine:
                 self._init_symbol_data(symbol)
                 ws.send(json.dumps({"ticks": symbol, "subscribe": 1}))
                 self._fetch_history(ws, symbol, 900, 100) # 15min
-                self._fetch_history(ws, symbol, 86400, 1)  # Daily
+                self._fetch_history(ws, symbol, 86400, 2)  # Daily (Fetch 2 to ensure we get current day)
             ws.send(json.dumps({"proposal_open_contract": 1, "subscribe": 1}))
 
         elif msg_type == 'balance':
@@ -192,8 +192,26 @@ class TradingBotEngine:
             if symbol not in self.symbol_data: return
             if granularity == 86400:
                 if candles:
-                    self.symbol_data[symbol]['daily_open'] = candles[-1]['open']
-                    self.log(f"Daily Open for {symbol}: {self.symbol_data[symbol]['daily_open']}")
+                    # Deriv daily candles start at 00:00 UTC
+                    now_utc = datetime.now(timezone.utc)
+                    today_start_epoch = int(now_utc.replace(hour=0, minute=0, second=0, microsecond=0).timestamp())
+
+                    # Usually the last candle returned is the current day's candle
+                    target_candle = candles[-1]
+
+                    # If we have multiple candles and the last one's epoch is LESS than today's start,
+                    # it means Deriv hasn't started the current day's candle in history yet.
+                    # In that case, the 'open' of the "current" day SHOULD be the close of the last completed candle
+                    # OR we wait for the first tick of the day.
+                    # However, if target_candle['epoch'] == today_start_epoch, then target_candle['open'] is perfect.
+
+                    if target_candle['epoch'] < today_start_epoch:
+                        # Price at the very start of today is the close of yesterday
+                        self.symbol_data[symbol]['daily_open'] = target_candle['close']
+                        self.log(f"Daily Open for {symbol} set from yesterday's close: {self.symbol_data[symbol]['daily_open']} (Today's candle not in history yet)")
+                    else:
+                        self.symbol_data[symbol]['daily_open'] = target_candle['open']
+                        self.log(f"Daily Open for {symbol}: {self.symbol_data[symbol]['daily_open']} (Epoch: {target_candle['epoch']})")
             elif granularity == 900:
                 self.symbol_data[symbol]['15min_candles'] = candles
                 if candles:
@@ -206,11 +224,15 @@ class TradingBotEngine:
         tick_date = tick_time.date()
 
         with self.data_lock:
-            # Check for new day to reset daily starting balance
+            # Check for new day to reset daily starting balance and refresh daily opens
             if self.last_balance_reset_date is None or tick_date > self.last_balance_reset_date:
                 self.daily_start_balance = self.account_balance
                 self.last_balance_reset_date = tick_date
                 self.log(f"New day detected ({tick_date}). Daily starting balance reset to: {self.daily_start_balance}")
+
+                # Refresh daily open for ALL symbols
+                for sym in self.config.get('symbols', []):
+                    self._fetch_history(self.ws, sym, 86400, 2)
 
             if symbol not in self.symbol_data: return
             sd = self.symbol_data[symbol]
@@ -225,10 +247,6 @@ class TradingBotEngine:
                     self.log(f"15m Candle closed for {symbol} at {sd['current_15min_candle']['close']}")
                     if self.is_running and self.config.get('entry_type') == 'candle_close':
                         self._process_strategy(symbol, True)
-
-                    # Refresh daily open at start of day
-                    if tick_time.hour == 0 and tick_time.minute == 0:
-                        self._fetch_history(self.ws, symbol, 86400, 1)
 
                     # New 15m candle start time
                     new_start_minute = (tick_time.minute // 15) * 15
@@ -511,7 +529,7 @@ class TradingBotEngine:
                 self._init_symbol_data(symbol)
                 self.ws.send(json.dumps({"ticks": symbol, "subscribe": 1}))
                 self._fetch_history(self.ws, symbol, 900, 100)
-                self._fetch_history(self.ws, symbol, 86400, 1)
+                self._fetch_history(self.ws, symbol, 86400, 2)
 
             removed_symbols = old_symbols - new_symbols
             for symbol in removed_symbols:

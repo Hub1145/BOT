@@ -3,6 +3,7 @@ from flask_socketio import SocketIO, emit
 import json
 import logging
 import os
+import threading
 from bot_engine import TradingBotEngine
 
 logging.basicConfig(
