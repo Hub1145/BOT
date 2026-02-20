@@ -32,6 +32,10 @@ function setupEventListeners() {
             document.getElementById('configBalanceType').value = currentConfig.use_fixed_balance ? 'fixed' : 'percent';
             document.getElementById('configBalanceValue').value = currentConfig.balance_value || 10;
             document.getElementById('configMaxDailyLoss').value = currentConfig.max_daily_loss_pct || 5;
+            document.getElementById('configTpEnabled').checked = currentConfig.tp_enabled || false;
+            document.getElementById('configTpValue').value = currentConfig.tp_value || 0;
+            document.getElementById('configSlEnabled').checked = currentConfig.sl_enabled || false;
+            document.getElementById('configSlValue').value = currentConfig.sl_value || 0;
             document.getElementById('configEntryType').value = currentConfig.entry_type || 'candle_close';
             document.getElementById('configIsDemo').checked = currentConfig.is_demo !== false;
         }
@@ -188,6 +192,10 @@ async function saveConfig() {
         use_fixed_balance: document.getElementById('configBalanceType').value === 'fixed',
         balance_value: parseFloat(document.getElementById('configBalanceValue').value),
         max_daily_loss_pct: parseFloat(document.getElementById('configMaxDailyLoss').value),
+        tp_enabled: document.getElementById('configTpEnabled').checked,
+        tp_value: parseFloat(document.getElementById('configTpValue').value),
+        sl_enabled: document.getElementById('configSlEnabled').checked,
+        sl_value: parseFloat(document.getElementById('configSlValue').value),
         entry_type: document.getElementById('configEntryType').value,
         is_demo: document.getElementById('configIsDemo').checked,
         symbols: currentConfig.symbols

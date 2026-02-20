@@ -254,6 +254,27 @@
                         <label class="form-label">Max Daily Loss (%)</label>
                         <input type="number" class="form-control" id="configMaxDailyLoss">
                     </div>
+                    <hr>
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <label class="form-label">Take Profit ($)</label>
+                            <div class="input-group">
+                                <div class="input-group-text">
+                                    <input class="form-check-input mt-0" type="checkbox" id="configTpEnabled">
+                                </div>
+                                <input type="number" class="form-control" id="configTpValue" step="0.1">
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label">Stop Loss ($)</label>
+                            <div class="input-group">
+                                <div class="input-group-text">
+                                    <input class="form-check-input mt-0" type="checkbox" id="configSlEnabled">
+                                </div>
+                                <input type="number" class="form-control" id="configSlValue" step="0.1">
+                            </div>
+                        </div>
+                    </div>
                     <div class="mb-3">
                         <label class="form-label">Entry Logic</label>
                         <select class="form-select" id="configEntryType">

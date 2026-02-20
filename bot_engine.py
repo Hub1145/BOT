@@ -87,6 +87,14 @@ class TradingBotEngine:
         self.console_logs.append(log_entry)
         self.emit('console_log', log_entry)
 
+        # Also write to standard logging for the debug.log file
+        if level == 'error':
+            logging.error(message)
+        elif level == 'warning':
+            logging.warning(message)
+        else:
+            logging.info(message)
+
     def _get_ws_url(self):
         app_id = self.config.get('deriv_app_id', '62845')
         return f"wss://ws.binaryws.com/websockets/v3?app_id={app_id}"
@@ -386,13 +394,33 @@ class TradingBotEngine:
                     self.total_trades_count += 1
                     del self.contracts[cid]
             else:
+                profit = contract.get('profit', 0)
+                is_closing = self.contracts.get(cid, {}).get('is_closing', False)
+
                 self.contracts[cid] = {
                     'id': cid, 'symbol': symbol, 'side': side,
                     'entry_price': contract.get('entry_tick'),
-                    'pnl': contract.get('profit', 0),
+                    'pnl': profit,
                     'stake': contract.get('buy_price', 0),
-                    'expiry_time': contract.get('date_expiry')
+                    'expiry_time': contract.get('date_expiry'),
+                    'is_closing': is_closing
                 }
+
+                # TP/SL check
+                if not is_closing:
+                    tp_enabled = self.config.get('tp_enabled', False)
+                    tp_value = self.config.get('tp_value', 0)
+                    sl_enabled = self.config.get('sl_enabled', False)
+                    sl_value = self.config.get('sl_value', 0)
+
+                    if tp_enabled and profit >= tp_value:
+                        self.log(f"TP reached for {symbol} ({cid}): {profit} USD. Closing...")
+                        self.contracts[cid]['is_closing'] = True
+                        self._close_contract(cid)
+                    elif sl_enabled and profit <= -sl_value:
+                        self.log(f"SL reached for {symbol} ({cid}): {profit} USD. Closing...")
+                        self.contracts[cid]['is_closing'] = True
+                        self._close_contract(cid)
 
             self._update_aggregated_positions()
             self._emit_updates()

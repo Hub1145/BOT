@@ -55,7 +55,8 @@ def update_config():
         allowed_params = [
             'deriv_api_token', 'deriv_app_id', 'symbols',
             'use_fixed_balance', 'balance_value', 'max_daily_loss_pct',
-            'entry_type', 'is_demo', 'log_level'
+            'entry_type', 'is_demo', 'log_level',
+            'tp_enabled', 'tp_value', 'sl_enabled', 'sl_value'
         ]
 
         # Update current_config with only allowed and present keys from new_config
