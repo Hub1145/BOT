@@ -193,3 +193,49 @@
 2026-02-20 06:41:41,536 - INFO - WS Connection Closed
 2026-02-20 06:41:43,561 - INFO - Client disconnected
 2026-02-20 06:41:43,561 - INFO - 127.0.0.1 - - [20/Feb/2026 06:41:43] "GET /socket.io/?EIO=4&transport=websocket&sid=0z6LDUBlKaaL7Ho6AAAA HTTP/1.1" 200 -
+2026-02-20 08:48:42,229 - INFO - Bot started | Trading: OFF
+2026-02-20 08:48:42,231 - WARNING - Werkzeug appears to be used in a production deployment. Consider switching to a production web server instead.
+2026-02-20 08:48:42,239 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.0.2:5000
+2026-02-20 08:48:42,240 - INFO - [33mPress CTRL+C to quit[0m
+2026-02-20 08:48:42,488 - INFO - Websocket connected
+2026-02-20 08:48:42,489 - INFO - Deriv WebSocket connected.
+2026-02-20 08:49:16,543 - ERROR - Deriv Error: Sorry, an error occurred while processing your request.
+2026-02-20 08:49:29,324 - INFO - Bot started | Trading: OFF
+2026-02-20 08:49:29,326 - WARNING - Werkzeug appears to be used in a production deployment. Consider switching to a production web server instead.
+2026-02-20 08:49:35,925 - INFO - 127.0.0.1 - - [20/Feb/2026 08:49:35] "GET / HTTP/1.1" 200 -
+2026-02-20 08:49:35,980 - INFO - 127.0.0.1 - - [20/Feb/2026 08:49:35] "GET /static/js/app.js HTTP/1.1" 200 -
+2026-02-20 08:49:36,266 - INFO - 127.0.0.1 - - [20/Feb/2026 08:49:36] "GET /socket.io/?EIO=4&transport=polling&t=PnwFNtn HTTP/1.1" 200 -
+2026-02-20 08:49:36,276 - INFO - 127.0.0.1 - - [20/Feb/2026 08:49:36] "GET /api/config HTTP/1.1" 200 -
+2026-02-20 08:49:36,292 - INFO - Client connected: hhZmc5eJibfw-m4mAAAB
+2026-02-20 08:49:36,294 - INFO - 127.0.0.1 - - [20/Feb/2026 08:49:36] "POST /socket.io/?EIO=4&transport=polling&t=PnwFNuN&sid=PZShW8tUy14sdIETAAAA HTTP/1.1" 200 -
+2026-02-20 08:49:36,315 - INFO - 127.0.0.1 - - [20/Feb/2026 08:49:36] "GET /socket.io/?EIO=4&transport=polling&t=PnwFNuV&sid=PZShW8tUy14sdIETAAAA HTTP/1.1" 200 -
+2026-02-20 08:49:36,334 - INFO - 127.0.0.1 - - [20/Feb/2026 08:49:36] "GET /socket.io/?EIO=4&transport=polling&t=PnwFNv8&sid=PZShW8tUy14sdIETAAAA HTTP/1.1" 200 -
+2026-02-20 08:49:40,113 - INFO - Client disconnected
+2026-02-20 08:49:40,113 - INFO - 127.0.0.1 - - [20/Feb/2026 08:49:40] "GET /socket.io/?EIO=4&transport=websocket&sid=PZShW8tUy14sdIETAAAA HTTP/1.1" 200 -
+2026-02-20 08:51:06,333 - INFO - Bot started | Trading: OFF
+2026-02-20 08:51:06,334 - WARNING - Werkzeug appears to be used in a production deployment. Consider switching to a production web server instead.
+2026-02-20 08:51:06,341 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.0.2:5000
+2026-02-20 08:51:06,342 - INFO - [33mPress CTRL+C to quit[0m
+2026-02-20 08:51:06,570 - INFO - Websocket connected
+2026-02-20 08:51:06,571 - INFO - Deriv WebSocket connected.
+2026-02-20 08:51:06,833 - INFO - Authorization successful.
+2026-02-20 08:51:06,834 - INFO - Daily starting balance set: 245.14
+2026-02-20 08:51:11,956 - INFO - 127.0.0.1 - - [20/Feb/2026 08:51:11] "GET / HTTP/1.1" 200 -
+2026-02-20 08:51:11,979 - INFO - 127.0.0.1 - - [20/Feb/2026 08:51:11] "GET /static/js/app.js HTTP/1.1" 200 -
+2026-02-20 08:51:12,115 - INFO - 127.0.0.1 - - [20/Feb/2026 08:51:12] "GET /socket.io/?EIO=4&transport=polling&t=PnwFlHg HTTP/1.1" 200 -
+2026-02-20 08:51:12,128 - INFO - 127.0.0.1 - - [20/Feb/2026 08:51:12] "GET /api/config HTTP/1.1" 200 -
+2026-02-20 08:51:12,132 - INFO - Client connected: YzSl2aYz85N5QUs_AAAB
+2026-02-20 08:51:12,134 - INFO - 127.0.0.1 - - [20/Feb/2026 08:51:12] "POST /socket.io/?EIO=4&transport=polling&t=PnwFlHy&sid=ts4d5RAQdjwmSKvEAAAA HTTP/1.1" 200 -
+2026-02-20 08:51:12,143 - INFO - 127.0.0.1 - - [20/Feb/2026 08:51:12] "GET /socket.io/?EIO=4&transport=polling&t=PnwFlH_&sid=ts4d5RAQdjwmSKvEAAAA HTTP/1.1" 200 -
+2026-02-20 08:51:12,150 - INFO - 127.0.0.1 - - [20/Feb/2026 08:51:12] "GET /socket.io/?EIO=4&transport=polling&t=PnwFlIH&sid=ts4d5RAQdjwmSKvEAAAA HTTP/1.1" 200 -
+2026-02-20 08:51:15,843 - INFO - Client disconnected
+2026-02-20 08:51:15,843 - INFO - 127.0.0.1 - - [20/Feb/2026 08:51:15] "GET /socket.io/?EIO=4&transport=websocket&sid=ts4d5RAQdjwmSKvEAAAA HTTP/1.1" 200 -
+2026-02-20 08:53:06,934 - ERROR - WS Error: Connection to remote host was lost.
+2026-02-20 08:53:06,934 - ERROR - Connection to remote host was lost. - goodbye
+2026-02-20 08:53:06,934 - INFO - WS Connection Closed

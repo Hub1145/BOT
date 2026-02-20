@@ -91,8 +91,10 @@ def update_config():
                 if not bot_engine:
                     bot_engine = TradingBotEngine(config_file, emit_to_client)
 
-                # We don't automatically start passive monitoring anymore to respect "Only start when running"
-                if bot_engine.is_running:
+                # Start passive monitoring for balance if not trading
+                if not bot_engine.is_running:
+                    bot_engine.start(passive_monitoring=True)
+                else:
                     bot_engine._apply_api_credentials()
                 
                 # Check if the currently selected credentials are valid
@@ -182,9 +184,17 @@ def get_status():
     if not bot_engine:
         try:
             bot_engine = TradingBotEngine(config_file, emit_to_client)
+            bot_engine.start(passive_monitoring=True)
         except Exception as e:
             logging.error(f"Error initializing bot engine for status: {e}")
             return jsonify({'running': False, 'error': str(e)}), 500
+
+    # Trigger a sync if not running to get fresh data for dashboard
+    if not bot_engine.is_running:
+        try:
+            bot_engine.fetch_account_data_sync()
+        except Exception as e:
+            logging.error(f"Error fetching sync account data: {e}")
 
     # Calculate trades and fees for emission
     total_active_trades_count = bot_engine.total_trades_count + len(bot_engine.open_trades)
@@ -242,11 +252,14 @@ def handle_connect(auth=None):
     if not bot_engine:
         try:
             bot_engine = TradingBotEngine(config_file, emit_to_client)
+            bot_engine.start(passive_monitoring=True)
         except Exception as e:
             logging.error(f"Error auto-initializing bot engine on connect: {e}")
 
     if bot_engine:
         emit('bot_status', {'running': bot_engine.is_running}, room=sid)
+        # Trigger a sync to ensure metrics are fresh
+        bot_engine.fetch_account_data_sync()
 
         payload = {
             'is_demo': bot_engine.config.get('is_demo', True),
@@ -376,5 +389,6 @@ def handle_emergency_sl(data=None):
 if __name__ == '__main__':
     if not bot_engine:
         bot_engine = TradingBotEngine(config_file, emit_to_client)
+        bot_engine.start(passive_monitoring=True)
         
     socketio.run(app, host='0.0.0.0', port=5000, debug=False, use_reloader=False, log_output=True, allow_unsafe_werkzeug=True)

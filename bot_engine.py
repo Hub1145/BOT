@@ -473,11 +473,6 @@ class TradingBotEngine:
                     else: self.total_trade_loss += abs(profit)
                     self.total_trades_count += 1
                     del self.contracts[cid]
-
-                # Check if we should close WS now
-                if not self.is_running and not self.contracts:
-                    self.log("No active trades and bot stopped. Closing WebSocket to save resources.")
-                    if self.ws: self.ws.close()
             else:
                 profit = contract.get('profit', 0)
                 is_closing = self.contracts.get(cid, {}).get('is_closing', False)
@@ -602,14 +597,9 @@ class TradingBotEngine:
 
     def _run_ws(self):
         while not self.stop_event.is_set():
-            # If not running and no trades to monitor, don't connect
-            tp_enabled = self.config.get('tp_enabled', False)
-            sl_enabled = self.config.get('sl_enabled', False)
-            if not self.is_running and not self.contracts:
-                time.sleep(1)
-                continue
-            if not self.is_running and not (tp_enabled or sl_enabled):
-                time.sleep(1)
+            # Connect if we have a token, to allow balance monitoring
+            if not self.config.get('deriv_api_token'):
+                time.sleep(2)
                 continue
 
             try:
@@ -630,18 +620,10 @@ class TradingBotEngine:
         self.is_running = False
         self.log("Bot trading paused")
 
-        # If no positions need monitoring (or TP/SL disabled), close WS
-        tp_enabled = self.config.get('tp_enabled', False)
-        sl_enabled = self.config.get('sl_enabled', False)
-
-        if not self.contracts or (not tp_enabled and not sl_enabled):
-            self.log("Closing WebSocket - idle in stop mode.")
-            if self.ws:
-                self.ws.close()
-        else:
-            # Keep WS for positions but unsubscribe from ticks to save resources
-            self.log("Keeping WebSocket for position monitoring. Unsubscribing from ticks.")
-            if self.ws and self.ws.sock and self.ws.sock.connected:
+        # Unsubscribe from ticks to save resources
+        self.log("Unsubscribing from ticks to save resources (Passive Monitoring active).")
+        if self.ws and self.ws.sock and self.ws.sock.connected:
+            with self.data_lock:
                 for sym, sd in self.symbol_data.items():
                     if sd.get('subscription_id'):
                         self.ws.send(json.dumps({"forget": sd['subscription_id']}))
