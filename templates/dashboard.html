@@ -257,7 +257,7 @@
                     <hr>
                     <div class="row g-2 mb-3">
                         <div class="col-6">
-                            <label class="form-label">Take Profit ($)</label>
+                            <label class="form-label" id="configTpLabel">Take Profit ($)</label>
                             <div class="input-group">
                                 <div class="input-group-text">
                                     <input class="form-check-input mt-0" type="checkbox" id="configTpEnabled">
@@ -266,7 +266,7 @@
                             </div>
                         </div>
                         <div class="col-6">
-                            <label class="form-label">Stop Loss ($)</label>
+                            <label class="form-label" id="configSlLabel">Stop Loss ($)</label>
                             <div class="input-group">
                                 <div class="input-group-text">
                                     <input class="form-check-input mt-0" type="checkbox" id="configSlEnabled">
@@ -278,8 +278,9 @@
                     <div class="mb-3">
                         <label class="form-label">Trading Strategy</label>
                         <select class="form-select" id="configActiveStrategy">
-                            <option value="strategy_1">Strategy 1 (Daily / 15m)</option>
-                            <option value="strategy_2">Strategy 2 (1h / 3m)</option>
+                            <option value="strategy_1">Slow (Daily / 15m)</option>
+                            <option value="strategy_2">Moderate (1h / 3m)</option>
+                            <option value="strategy_3">Fast (15m / 1m)</option>
                         </select>
                     </div>
                     <div class="mb-3">

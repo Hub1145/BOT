@@ -9,14 +9,22 @@ import websocket
 class TradingBotEngine:
     STRATEGY_MAP = {
         'strategy_1': {
+            'name': 'Slow',
             'htf_granularity': 86400, # Daily
             'ltf_granularity': 900,   # 15m
             'expiry_type': 'eod'      # End of Day
         },
         'strategy_2': {
+            'name': 'Moderate',
             'htf_granularity': 3600,  # 1h
             'ltf_granularity': 180,   # 3m
-            'expiry_type': '2h'       # 2 Hours
+            'expiry_type': 'htf_close' # Close of HTF (1h)
+        },
+        'strategy_3': {
+            'name': 'Fast',
+            'htf_granularity': 900,   # 15m
+            'ltf_granularity': 60,    # 1m
+            'expiry_type': 'htf_close' # Close of HTF (15m)
         }
     }
 
@@ -91,7 +99,8 @@ class TradingBotEngine:
             with open(self.config_path, 'r') as f:
                 return json.load(f)
         except Exception as e:
-            print(f"Error loading config: {e}")
+            # We can't use self.log yet because it might emit before engine is ready
+            logging.error(f"Error loading config: {e}")
             return {}
 
     def log(self, message, level='info'):
@@ -227,9 +236,14 @@ class TradingBotEngine:
                     now_utc = datetime.now(timezone.utc)
                     # For Daily (86400), start is 00:00 UTC
                     # For Hourly (3600), start is top of the hour
-                    htf_start_epoch = int(now_utc.replace(minute=0, second=0, microsecond=0).timestamp())
+                    # For 15m (900), start is every 15m
+                    htf_start_epoch = int(now_utc.replace(second=0, microsecond=0).timestamp())
                     if granularity == 86400:
                         htf_start_epoch = int(now_utc.replace(hour=0, minute=0, second=0, microsecond=0).timestamp())
+                    elif granularity == 3600:
+                        htf_start_epoch = int(now_utc.replace(minute=0, second=0, microsecond=0).timestamp())
+                    elif granularity == 900:
+                        htf_start_epoch = int(now_utc.replace(minute=(now_utc.minute // 15) * 15, second=0, microsecond=0).timestamp())
 
                     target_candle = candles[-1]
 
@@ -275,13 +289,14 @@ class TradingBotEngine:
             if sub_id and not sd.get('subscription_id'):
                 sd['subscription_id'] = sub_id
 
-            # HTF Refresh for Strategy 2 (Hourly)
-            if strat_key == 'strategy_2':
-                if sd['htf_epoch'] is None or tick.get('epoch') >= sd['htf_epoch'] + 3600:
+            # HTF Refresh for Strategy 2 (Hourly) and Strategy 3 (15m)
+            if strat_key in ['strategy_2', 'strategy_3']:
+                htf_gran = strat['htf_granularity']
+                if sd['htf_epoch'] is None or tick.get('epoch') >= sd['htf_epoch'] + htf_gran:
                     last_fetch = sd.get('last_htf_fetch_time', 0)
                     if time.time() - last_fetch > 60: # Throttle to once per minute
                         sd['last_htf_fetch_time'] = time.time()
-                        self._fetch_history(self.ws, symbol, 3600, 2)
+                        self._fetch_history(self.ws, symbol, htf_gran, 2)
 
             # LTF Candle Management
             if sd['current_ltf_candle']:
@@ -372,9 +387,22 @@ class TradingBotEngine:
             end_of_day = (now + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
             duration_seconds = int((end_of_day - now).total_seconds())
             expiry_label = f"Expiry: {end_of_day.strftime('%H:%M:%S')} UTC"
-        elif strat['expiry_type'] == '2h':
-            duration_seconds = 7200 # 2 hours
-            expiry_label = "Duration: 2h"
+        elif strat['expiry_type'] == 'htf_close':
+            htf_gran = strat['htf_granularity']
+            # Calculate next HTF close
+            if htf_gran == 3600:
+                next_close = (now + timedelta(hours=1)).replace(minute=0, second=0, microsecond=0)
+            elif htf_gran == 900:
+                next_minute = ((now.minute // 15) + 1) * 15
+                if next_minute >= 60:
+                    next_close = (now + timedelta(hours=1)).replace(minute=0, second=0, microsecond=0)
+                else:
+                    next_close = now.replace(minute=next_minute, second=0, microsecond=0)
+            else: # Fallback
+                next_close = now + timedelta(seconds=htf_gran)
+
+            duration_seconds = int((next_close - now).total_seconds())
+            expiry_label = f"Expiry: {next_close.strftime('%H:%M:%S')} UTC"
 
         if duration_seconds < 60:
             return
@@ -456,16 +484,28 @@ class TradingBotEngine:
                 # TP/SL check
                 if not is_closing:
                     tp_enabled = self.config.get('tp_enabled', False)
-                    tp_value = self.config.get('tp_value', 0)
                     sl_enabled = self.config.get('sl_enabled', False)
-                    sl_value = self.config.get('sl_value', 0)
 
-                    if tp_enabled and profit >= tp_value:
-                        self.log(f"TP reached for {symbol} ({cid}): {profit} USD. Closing...")
+                    use_fixed = self.config.get('use_fixed_balance', True)
+                    stake = contract.get('buy_price', 0)
+
+                    tp_val = self.config.get('tp_value', 0)
+                    sl_val = self.config.get('sl_value', 0)
+
+                    if use_fixed:
+                        tp_threshold = tp_val
+                        sl_threshold = sl_val
+                    else:
+                        # Use tp_val/sl_val as percentages of the stake
+                        tp_threshold = stake * (tp_val / 100.0)
+                        sl_threshold = stake * (sl_val / 100.0)
+
+                    if tp_enabled and tp_threshold > 0 and profit >= tp_threshold:
+                        self.log(f"TP reached for {symbol} ({cid}): {profit:.2f} USD. Closing...")
                         self.contracts[cid]['is_closing'] = True
                         self._close_contract(cid)
-                    elif sl_enabled and profit <= -sl_value:
-                        self.log(f"SL reached for {symbol} ({cid}): {profit} USD. Closing...")
+                    elif sl_enabled and sl_threshold > 0 and profit <= -sl_threshold:
+                        self.log(f"SL reached for {symbol} ({cid}): {profit:.2f} USD. Closing...")
                         self.contracts[cid]['is_closing'] = True
                         self._close_contract(cid)
 

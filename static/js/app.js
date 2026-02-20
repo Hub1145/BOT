@@ -12,20 +12,37 @@ document.addEventListener('DOMContentLoaded', () => {
     startCountdownTimer();
 });
 
-function updateEntryTypeLabel() {
+function updateConfigLabels() {
+    // Entry Type Label
     const strategySelect = document.getElementById('configActiveStrategy');
-    if (!strategySelect) return;
-    const strategy = strategySelect.value;
-    const label = document.getElementById('configEntryTypeLabel');
-    if (strategy === 'strategy_1') {
-        label.textContent = "Wait for 15m Candle Close";
+    if (strategySelect) {
+        const strategy = strategySelect.value;
+        const label = document.getElementById('configEntryTypeLabel');
+        if (strategy === 'strategy_1') {
+            label.textContent = "Wait for 15m Candle Close";
+        } else if (strategy === 'strategy_2') {
+            label.textContent = "Wait for 3m Candle Close";
+        } else {
+            label.textContent = "Wait for 1m Candle Close";
+        }
+    }
+
+    // TP/SL Unit Labels
+    const balanceType = document.getElementById('configBalanceType').value;
+    const tpLabel = document.getElementById('configTpLabel');
+    const slLabel = document.getElementById('configSlLabel');
+    if (balanceType === 'fixed') {
+        tpLabel.textContent = "Take Profit ($)";
+        slLabel.textContent = "Stop Loss ($)";
     } else {
-        label.textContent = "Wait for 3m Candle Close";
+        tpLabel.textContent = "Take Profit (%)";
+        slLabel.textContent = "Stop Loss (%)";
     }
 }
 
 function setupEventListeners() {
-    document.getElementById('configActiveStrategy').addEventListener('change', updateEntryTypeLabel);
+    document.getElementById('configActiveStrategy').addEventListener('change', updateConfigLabels);
+    document.getElementById('configBalanceType').addEventListener('change', updateConfigLabels);
     document.getElementById('themeToggle').addEventListener('change', (e) => {
         document.body.setAttribute('data-theme', e.target.checked ? 'light' : 'dark');
     });
@@ -52,7 +69,7 @@ function setupEventListeners() {
             document.getElementById('configActiveStrategy').value = currentConfig.active_strategy || 'strategy_1';
             document.getElementById('configEntryType').value = currentConfig.entry_type || 'candle_close';
             document.getElementById('configIsDemo').checked = currentConfig.is_demo !== false;
-            updateEntryTypeLabel();
+            updateConfigLabels();
         }
         configModal.show();
     });
