@@ -276,9 +276,16 @@
                         </div>
                     </div>
                     <div class="mb-3">
+                        <label class="form-label">Trading Strategy</label>
+                        <select class="form-select" id="configActiveStrategy">
+                            <option value="strategy_1">Strategy 1 (Daily / 15m)</option>
+                            <option value="strategy_2">Strategy 2 (1h / 3m)</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
                         <label class="form-label">Entry Logic</label>
                         <select class="form-select" id="configEntryType">
-                            <option value="candle_close">Wait for 15m Candle Close</option>
+                            <option value="candle_close" id="configEntryTypeLabel">Wait for LTF Candle Close</option>
                             <option value="tick">Enter on Tick (Immediate)</option>
                         </select>
                     </div>

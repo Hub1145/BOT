@@ -7,6 +7,19 @@ from collections import deque
 import websocket
 
 class TradingBotEngine:
+    STRATEGY_MAP = {
+        'strategy_1': {
+            'htf_granularity': 86400, # Daily
+            'ltf_granularity': 900,   # 15m
+            'expiry_type': 'eod'      # End of Day
+        },
+        'strategy_2': {
+            'htf_granularity': 3600,  # 1h
+            'ltf_granularity': 180,   # 3m
+            'expiry_type': '2h'       # 2 Hours
+        }
+    }
+
     def __init__(self, config_path, emit_callback):
         self.config_path = config_path
         self.emit = emit_callback
@@ -43,7 +56,7 @@ class TradingBotEngine:
         # Positions and data
         self.open_trades = []
         self.contracts = {} # contract_id -> contract_info
-        self.symbol_data = {} # Symbol -> { '15min_candles': [], 'daily_open': price, 'last_tick': price, ... }
+        self.symbol_data = {} # Symbol -> { 'ltf_candles': [], 'htf_open': price, 'last_tick': price, ... }
 
         # UI Compatibility (aggregated or first symbol)
         self.in_position = {'long': False, 'short': False}
@@ -137,11 +150,15 @@ class TradingBotEngine:
             self._emit_updates()
 
             ws.send(json.dumps({"balance": 1, "subscribe": 1}))
+
+            strat_key = self.config.get('active_strategy', 'strategy_1')
+            strat = self.STRATEGY_MAP.get(strat_key, self.STRATEGY_MAP['strategy_1'])
+
             for symbol in self.config.get('symbols', []):
                 self._init_symbol_data(symbol)
                 ws.send(json.dumps({"ticks": symbol, "subscribe": 1}))
-                self._fetch_history(ws, symbol, 900, 100) # 15min
-                self._fetch_history(ws, symbol, 86400, 2)  # Daily (Fetch 2 to ensure we get current day)
+                self._fetch_history(ws, symbol, strat['ltf_granularity'], 100)
+                self._fetch_history(ws, symbol, strat['htf_granularity'], 2)
             ws.send(json.dumps({"proposal_open_contract": 1, "subscribe": 1}))
 
         elif msg_type == 'balance':
@@ -177,11 +194,13 @@ class TradingBotEngine:
     def _init_symbol_data(self, symbol):
         if symbol not in self.symbol_data:
             self.symbol_data[symbol] = {
-                '15min_candles': [],
-                'daily_open': None,
+                'ltf_candles': [],
+                'htf_open': None,
+                'htf_epoch': None,
                 'last_tick': None,
-                'last_signal_15min': None,
-                'current_15min_candle': None
+                'last_processed_ltf': None,
+                'last_trade_ltf': None,
+                'current_ltf_candle': None
             }
 
     def _fetch_history(self, ws, symbol, granularity, count):
@@ -196,34 +215,36 @@ class TradingBotEngine:
         ws.send(json.dumps(request))
 
     def _handle_candles(self, symbol, granularity, candles):
+        strat_key = self.config.get('active_strategy', 'strategy_1')
+        strat = self.STRATEGY_MAP.get(strat_key, self.STRATEGY_MAP['strategy_1'])
+
         with self.data_lock:
             if symbol not in self.symbol_data: return
-            if granularity == 86400:
-                if candles:
-                    # Deriv daily candles start at 00:00 UTC
-                    now_utc = datetime.now(timezone.utc)
-                    today_start_epoch = int(now_utc.replace(hour=0, minute=0, second=0, microsecond=0).timestamp())
+            sd = self.symbol_data[symbol]
 
-                    # Usually the last candle returned is the current day's candle
+            if granularity == strat['htf_granularity']:
+                if candles:
+                    now_utc = datetime.now(timezone.utc)
+                    # For Daily (86400), start is 00:00 UTC
+                    # For Hourly (3600), start is top of the hour
+                    htf_start_epoch = int(now_utc.replace(minute=0, second=0, microsecond=0).timestamp())
+                    if granularity == 86400:
+                        htf_start_epoch = int(now_utc.replace(hour=0, minute=0, second=0, microsecond=0).timestamp())
+
                     target_candle = candles[-1]
 
-                    # If we have multiple candles and the last one's epoch is LESS than today's start,
-                    # it means Deriv hasn't started the current day's candle in history yet.
-                    # In that case, the 'open' of the "current" day SHOULD be the close of the last completed candle
-                    # OR we wait for the first tick of the day.
-                    # However, if target_candle['epoch'] == today_start_epoch, then target_candle['open'] is perfect.
-
-                    if target_candle['epoch'] < today_start_epoch:
-                        # Price at the very start of today is the close of yesterday
-                        self.symbol_data[symbol]['daily_open'] = target_candle['close']
-                        self.log(f"Daily Open for {symbol} set from yesterday's close: {self.symbol_data[symbol]['daily_open']} (Today's candle not in history yet)")
+                    if target_candle['epoch'] < htf_start_epoch:
+                        sd['htf_open'] = target_candle['close']
+                        sd['htf_epoch'] = htf_start_epoch
+                        self.log(f"HTF Open for {symbol} set from previous close: {sd['htf_open']} (Target candle not in history yet)")
                     else:
-                        self.symbol_data[symbol]['daily_open'] = target_candle['open']
-                        self.log(f"Daily Open for {symbol}: {self.symbol_data[symbol]['daily_open']} (Epoch: {target_candle['epoch']})")
-            elif granularity == 900:
-                self.symbol_data[symbol]['15min_candles'] = candles
+                        sd['htf_open'] = target_candle['open']
+                        sd['htf_epoch'] = target_candle['epoch']
+                        self.log(f"HTF Open for {symbol}: {sd['htf_open']} (Epoch: {sd['htf_epoch']})")
+            elif granularity == strat['ltf_granularity']:
+                sd['ltf_candles'] = candles
                 if candles:
-                    self.symbol_data[symbol]['current_15min_candle'] = candles[-1]
+                    sd['current_ltf_candle'] = candles[-1]
 
     def _handle_tick(self, tick, sub_id=None):
         symbol = tick['symbol']
@@ -231,16 +252,22 @@ class TradingBotEngine:
         tick_time = datetime.fromtimestamp(tick['epoch'], tz=timezone.utc)
         tick_date = tick_time.date()
 
+        strat_key = self.config.get('active_strategy', 'strategy_1')
+        strat = self.STRATEGY_MAP.get(strat_key, self.STRATEGY_MAP['strategy_1'])
+        ltf_min = strat['ltf_granularity'] // 60
+        htf_sec = strat['htf_granularity']
+
         with self.data_lock:
-            # Check for new day to reset daily starting balance and refresh daily opens
+            # Check for new day to reset daily starting balance
             if self.last_balance_reset_date is None or tick_date > self.last_balance_reset_date:
                 self.daily_start_balance = self.account_balance
                 self.last_balance_reset_date = tick_date
                 self.log(f"New day detected ({tick_date}). Daily starting balance reset to: {self.daily_start_balance}")
 
-                # Refresh daily open for ALL symbols
-                for sym in self.config.get('symbols', []):
-                    self._fetch_history(self.ws, sym, 86400, 2)
+                # Refresh daily open if strategy 1 is active (Strategy 1 uses Daily)
+                if strat_key == 'strategy_1':
+                    for sym in self.config.get('symbols', []):
+                        self._fetch_history(self.ws, sym, 86400, 2)
 
             if symbol not in self.symbol_data: return
             sd = self.symbol_data[symbol]
@@ -248,24 +275,33 @@ class TradingBotEngine:
             if sub_id and not sd.get('subscription_id'):
                 sd['subscription_id'] = sub_id
 
-            if sd['current_15min_candle']:
-                candle_start = datetime.fromtimestamp(sd['current_15min_candle']['epoch'], tz=timezone.utc)
-                if tick_time >= candle_start + timedelta(minutes=15):
-                    # 15min Candle transition
-                    self.log(f"15m Candle closed for {symbol} at {sd['current_15min_candle']['close']}")
+            # HTF Refresh for Strategy 2 (Hourly)
+            if strat_key == 'strategy_2':
+                if sd['htf_epoch'] is None or tick.get('epoch') >= sd['htf_epoch'] + 3600:
+                    last_fetch = sd.get('last_htf_fetch_time', 0)
+                    if time.time() - last_fetch > 60: # Throttle to once per minute
+                        sd['last_htf_fetch_time'] = time.time()
+                        self._fetch_history(self.ws, symbol, 3600, 2)
+
+            # LTF Candle Management
+            if sd['current_ltf_candle']:
+                candle_start = datetime.fromtimestamp(sd['current_ltf_candle']['epoch'], tz=timezone.utc)
+                if tick_time >= candle_start + timedelta(seconds=strat['ltf_granularity']):
+                    # LTF Candle transition
+                    self.log(f"LTF ({ltf_min}m) Candle closed for {symbol} at {sd['current_ltf_candle']['close']}")
                     if self.is_running and self.config.get('entry_type') == 'candle_close':
                         self._process_strategy(symbol, True)
 
-                    # New 15m candle start time
-                    new_start_minute = (tick_time.minute // 15) * 15
-                    sd['current_15min_candle'] = {
+                    # New LTF candle start time
+                    new_start_minute = (tick_time.minute // ltf_min) * ltf_min
+                    sd['current_ltf_candle'] = {
                         'epoch': int(tick_time.replace(minute=new_start_minute, second=0, microsecond=0).timestamp()),
                         'open': price, 'high': price, 'low': price, 'close': price
                     }
                 else:
-                    sd['current_15min_candle']['close'] = price
-                    sd['current_15min_candle']['high'] = max(sd['current_15min_candle']['high'], price)
-                    sd['current_15min_candle']['low'] = min(sd['current_15min_candle']['low'], price)
+                    sd['current_ltf_candle']['close'] = price
+                    sd['current_ltf_candle']['high'] = max(sd['current_ltf_candle']['high'], price)
+                    sd['current_ltf_candle']['low'] = min(sd['current_ltf_candle']['low'], price)
 
             if self.is_running and self.config.get('entry_type') == 'tick':
                 self._process_strategy(symbol, False)
@@ -287,36 +323,36 @@ class TradingBotEngine:
                 return
 
         sd = self.symbol_data[symbol]
-        daily_open = sd['daily_open']
-        current_15m = sd['current_15min_candle']
+        htf_open = sd['htf_open']
+        current_ltf = sd['current_ltf_candle']
         current_price = sd['last_tick']
 
-        if daily_open is None or current_15m is None or current_price is None:
+        if htf_open is None or current_ltf is None or current_price is None:
             return
 
-        time_key = current_15m['epoch']
-        if sd.get('last_processed_15m') == time_key and is_candle_close:
+        time_key = current_ltf['epoch']
+        if sd.get('last_processed_ltf') == time_key and is_candle_close:
             return # Already processed this candle close
 
-        # Strategy
+        # Strategy Breakout Logic
         signal = None
-        check_price = current_15m['close'] if is_candle_close else current_price
+        check_price = current_ltf['close'] if is_candle_close else current_price
 
-        # BUY: 15m open <= Daily Open AND check_price > Daily Open AND check_price > 15m open (bullish)
-        if current_15m['open'] <= daily_open and check_price > daily_open and check_price > current_15m['open']:
+        # BUY: LTF open <= HTF Open AND check_price > HTF Open AND bullish
+        if current_ltf['open'] <= htf_open and check_price > htf_open and check_price > current_ltf['open']:
             signal = 'buy'
-        # SELL: 15m open >= Daily Open AND check_price < Daily Open AND check_price < 15m open (bearish)
-        elif current_15m['open'] >= daily_open and check_price < daily_open and check_price < current_15m['open']:
+        # SELL: LTF open >= HTF Open AND check_price < HTF Open AND bearish
+        elif current_ltf['open'] >= htf_open and check_price < htf_open and check_price < current_ltf['open']:
             signal = 'sell'
 
         if signal:
-            # Check if we already traded this 15m period for this symbol to avoid multiple entries on ticks
-            if sd.get('last_trade_15m') == time_key:
+            # Check if we already traded this LTF period for this symbol to avoid multiple entries on ticks
+            if sd.get('last_trade_ltf') == time_key:
                 return
 
-            sd['last_trade_15m'] = time_key
+            sd['last_trade_ltf'] = time_key
             if is_candle_close:
-                sd['last_processed_15m'] = time_key
+                sd['last_processed_ltf'] = time_key
 
             self._execute_trade(symbol, signal)
 
@@ -324,10 +360,21 @@ class TradingBotEngine:
         # side is 'buy' or 'sell' from strategy
         internal_side = 'long' if side == 'buy' else 'short'
 
-        # End of day calculation (UTC)
+        strat_key = self.config.get('active_strategy', 'strategy_1')
+        strat = self.STRATEGY_MAP.get(strat_key, self.STRATEGY_MAP['strategy_1'])
+
+        duration_seconds = 0
         now = datetime.now(timezone.utc)
-        end_of_day = (now + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
-        duration_seconds = int((end_of_day - now).total_seconds())
+        expiry_label = ""
+
+        if strat['expiry_type'] == 'eod':
+            # End of day calculation (UTC)
+            end_of_day = (now + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
+            duration_seconds = int((end_of_day - now).total_seconds())
+            expiry_label = f"Expiry: {end_of_day.strftime('%H:%M:%S')} UTC"
+        elif strat['expiry_type'] == '2h':
+            duration_seconds = 7200 # 2 hours
+            expiry_label = "Duration: 2h"
 
         if duration_seconds < 60:
             return
@@ -354,7 +401,7 @@ class TradingBotEngine:
 
         amount = max(0.35, round(amount, 2))
 
-        self.log(f"Opening {side.upper()} on {symbol} | Stake: {amount} | Expiry: {end_of_day.strftime('%H:%M:%S')} UTC")
+        self.log(f"Opening {side.upper()} on {symbol} | Stake: {amount} | {expiry_label}")
 
         buy_request = {
             "buy": 1,
@@ -541,6 +588,9 @@ class TradingBotEngine:
         old_token = self.config.get('deriv_api_token')
         new_token = new_config.get('deriv_api_token')
 
+        old_strat = self.config.get('active_strategy', 'strategy_1')
+        new_strat = new_config.get('active_strategy', 'strategy_1')
+
         self.config = new_config
         self.log("Config applied live")
 
@@ -549,15 +599,33 @@ class TradingBotEngine:
             self._apply_api_credentials()
             return {"success": True}
 
+        # If strategy changed, reset all symbol data to re-fetch with new granularities
+        if old_strat != new_strat:
+            self.log(f"Strategy changed to {new_strat}. Resetting data...")
+            with self.data_lock:
+                # Keep subscription ids but clear candles/opens
+                for sym in self.symbol_data:
+                    sub_id = self.symbol_data[sym].get('subscription_id')
+                    self._init_symbol_data(sym)
+                    self.symbol_data[sym]['subscription_id'] = sub_id
+
+            if self.ws and self.ws.sock and self.ws.sock.connected:
+                strat = self.STRATEGY_MAP.get(new_strat, self.STRATEGY_MAP['strategy_1'])
+                for sym in new_symbols:
+                    self._fetch_history(self.ws, sym, strat['ltf_granularity'], 100)
+                    self._fetch_history(self.ws, sym, strat['htf_granularity'], 2)
+            return {"success": True}
+
         # If only symbols changed and we are connected
         if self.ws and self.ws.sock and self.ws.sock.connected:
+            strat = self.STRATEGY_MAP.get(new_strat, self.STRATEGY_MAP['strategy_1'])
             added_symbols = new_symbols - old_symbols
             for symbol in added_symbols:
                 self.log(f"Subscribing to new symbol: {symbol}")
                 self._init_symbol_data(symbol)
                 self.ws.send(json.dumps({"ticks": symbol, "subscribe": 1}))
-                self._fetch_history(self.ws, symbol, 900, 100)
-                self._fetch_history(self.ws, symbol, 86400, 2)
+                self._fetch_history(self.ws, symbol, strat['ltf_granularity'], 100)
+                self._fetch_history(self.ws, symbol, strat['htf_granularity'], 2)
 
             removed_symbols = old_symbols - new_symbols
             for symbol in removed_symbols:

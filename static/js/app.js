@@ -12,7 +12,20 @@ document.addEventListener('DOMContentLoaded', () => {
     startCountdownTimer();
 });
 
+function updateEntryTypeLabel() {
+    const strategySelect = document.getElementById('configActiveStrategy');
+    if (!strategySelect) return;
+    const strategy = strategySelect.value;
+    const label = document.getElementById('configEntryTypeLabel');
+    if (strategy === 'strategy_1') {
+        label.textContent = "Wait for 15m Candle Close";
+    } else {
+        label.textContent = "Wait for 3m Candle Close";
+    }
+}
+
 function setupEventListeners() {
+    document.getElementById('configActiveStrategy').addEventListener('change', updateEntryTypeLabel);
     document.getElementById('themeToggle').addEventListener('change', (e) => {
         document.body.setAttribute('data-theme', e.target.checked ? 'light' : 'dark');
     });
@@ -36,8 +49,10 @@ function setupEventListeners() {
             document.getElementById('configTpValue').value = currentConfig.tp_value || 0;
             document.getElementById('configSlEnabled').checked = currentConfig.sl_enabled || false;
             document.getElementById('configSlValue').value = currentConfig.sl_value || 0;
+            document.getElementById('configActiveStrategy').value = currentConfig.active_strategy || 'strategy_1';
             document.getElementById('configEntryType').value = currentConfig.entry_type || 'candle_close';
             document.getElementById('configIsDemo').checked = currentConfig.is_demo !== false;
+            updateEntryTypeLabel();
         }
         configModal.show();
     });
@@ -196,6 +211,7 @@ async function saveConfig() {
         tp_value: parseFloat(document.getElementById('configTpValue').value),
         sl_enabled: document.getElementById('configSlEnabled').checked,
         sl_value: parseFloat(document.getElementById('configSlValue').value),
+        active_strategy: document.getElementById('configActiveStrategy').value,
         entry_type: document.getElementById('configEntryType').value,
         is_demo: document.getElementById('configIsDemo').checked,
         symbols: currentConfig.symbols
