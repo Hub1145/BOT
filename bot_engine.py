@@ -160,15 +160,17 @@ class TradingBotEngine:
 
             ws.send(json.dumps({"balance": 1, "subscribe": 1}))
 
-            strat_key = self.config.get('active_strategy', 'strategy_1')
-            strat = self.STRATEGY_MAP.get(strat_key, self.STRATEGY_MAP['strategy_1'])
-
-            for symbol in self.config.get('symbols', []):
-                self._init_symbol_data(symbol)
-                ws.send(json.dumps({"ticks": symbol, "subscribe": 1}))
-                self._fetch_history(ws, symbol, strat['ltf_granularity'], 100)
-                self._fetch_history(ws, symbol, strat['htf_granularity'], 2)
             ws.send(json.dumps({"proposal_open_contract": 1, "subscribe": 1}))
+
+            if self.is_running:
+                strat_key = self.config.get('active_strategy', 'strategy_1')
+                strat = self.STRATEGY_MAP.get(strat_key, self.STRATEGY_MAP['strategy_1'])
+
+                for symbol in self.config.get('symbols', []):
+                    self._init_symbol_data(symbol)
+                    ws.send(json.dumps({"ticks": symbol, "subscribe": 1}))
+                    self._fetch_history(ws, symbol, strat['ltf_granularity'], 100)
+                    self._fetch_history(ws, symbol, strat['htf_granularity'], 2)
 
         elif msg_type == 'balance':
             self.account_balance = data['balance']['balance']
@@ -188,7 +190,9 @@ class TradingBotEngine:
             self._handle_tick(data['tick'], sub_id)
 
         elif msg_type == 'proposal_open_contract':
-            self._handle_contract_update(data['proposal_open_contract'])
+            poc = data.get('proposal_open_contract')
+            if poc and 'contract_id' in poc:
+                self._handle_contract_update(poc)
 
         elif msg_type == 'buy':
             buy_data = data.get('buy')
@@ -289,37 +293,38 @@ class TradingBotEngine:
             if sub_id and not sd.get('subscription_id'):
                 sd['subscription_id'] = sub_id
 
-            # HTF Refresh for Strategy 2 (Hourly) and Strategy 3 (15m)
-            if strat_key in ['strategy_2', 'strategy_3']:
-                htf_gran = strat['htf_granularity']
-                if sd['htf_epoch'] is None or tick.get('epoch') >= sd['htf_epoch'] + htf_gran:
-                    last_fetch = sd.get('last_htf_fetch_time', 0)
-                    if time.time() - last_fetch > 60: # Throttle to once per minute
-                        sd['last_htf_fetch_time'] = time.time()
-                        self._fetch_history(self.ws, symbol, htf_gran, 2)
+            if self.is_running:
+                # HTF Refresh for Strategy 2 (Hourly) and Strategy 3 (15m)
+                if strat_key in ['strategy_2', 'strategy_3']:
+                    htf_gran = strat['htf_granularity']
+                    if sd['htf_epoch'] is None or tick.get('epoch') >= sd['htf_epoch'] + htf_gran:
+                        last_fetch = sd.get('last_htf_fetch_time', 0)
+                        if time.time() - last_fetch > 60: # Throttle to once per minute
+                            sd['last_htf_fetch_time'] = time.time()
+                            self._fetch_history(self.ws, symbol, htf_gran, 2)
 
-            # LTF Candle Management
-            if sd['current_ltf_candle']:
-                candle_start = datetime.fromtimestamp(sd['current_ltf_candle']['epoch'], tz=timezone.utc)
-                if tick_time >= candle_start + timedelta(seconds=strat['ltf_granularity']):
-                    # LTF Candle transition
-                    self.log(f"LTF ({ltf_min}m) Candle closed for {symbol} at {sd['current_ltf_candle']['close']}")
-                    if self.is_running and self.config.get('entry_type') == 'candle_close':
-                        self._process_strategy(symbol, True)
+                # LTF Candle Management
+                if sd['current_ltf_candle']:
+                    candle_start = datetime.fromtimestamp(sd['current_ltf_candle']['epoch'], tz=timezone.utc)
+                    if tick_time >= candle_start + timedelta(seconds=strat['ltf_granularity']):
+                        # LTF Candle transition
+                        self.log(f"LTF ({ltf_min}m) Candle closed for {symbol} at {sd['current_ltf_candle']['close']}")
+                        if self.config.get('entry_type') == 'candle_close':
+                            self._process_strategy(symbol, True)
 
-                    # New LTF candle start time
-                    new_start_minute = (tick_time.minute // ltf_min) * ltf_min
-                    sd['current_ltf_candle'] = {
-                        'epoch': int(tick_time.replace(minute=new_start_minute, second=0, microsecond=0).timestamp()),
-                        'open': price, 'high': price, 'low': price, 'close': price
-                    }
-                else:
-                    sd['current_ltf_candle']['close'] = price
-                    sd['current_ltf_candle']['high'] = max(sd['current_ltf_candle']['high'], price)
-                    sd['current_ltf_candle']['low'] = min(sd['current_ltf_candle']['low'], price)
+                        # New LTF candle start time
+                        new_start_minute = (tick_time.minute // ltf_min) * ltf_min
+                        sd['current_ltf_candle'] = {
+                            'epoch': int(tick_time.replace(minute=new_start_minute, second=0, microsecond=0).timestamp()),
+                            'open': price, 'high': price, 'low': price, 'close': price
+                        }
+                    else:
+                        sd['current_ltf_candle']['close'] = price
+                        sd['current_ltf_candle']['high'] = max(sd['current_ltf_candle']['high'], price)
+                        sd['current_ltf_candle']['low'] = min(sd['current_ltf_candle']['low'], price)
 
-            if self.is_running and self.config.get('entry_type') == 'tick':
-                self._process_strategy(symbol, False)
+                if self.config.get('entry_type') == 'tick':
+                    self._process_strategy(symbol, False)
 
     def _process_strategy(self, symbol, is_candle_close):
         # Check Max Daily Loss relative to starting balance of the day
@@ -468,6 +473,11 @@ class TradingBotEngine:
                     else: self.total_trade_loss += abs(profit)
                     self.total_trades_count += 1
                     del self.contracts[cid]
+
+                # Check if we should close WS now
+                if not self.is_running and not self.contracts:
+                    self.log("No active trades and bot stopped. Closing WebSocket to save resources.")
+                    if self.ws: self.ws.close()
             else:
                 profit = contract.get('profit', 0)
                 is_closing = self.contracts.get(cid, {}).get('is_closing', False)
@@ -574,13 +584,34 @@ class TradingBotEngine:
     def start(self, passive_monitoring=False):
         self.is_running = not passive_monitoring
         self.log(f"Bot started | Trading: {'ON' if self.is_running else 'OFF'}")
+
         if not self.ws_thread or not self.ws_thread.is_alive():
             self.stop_event.clear()
             self.ws_thread = threading.Thread(target=self._run_ws, daemon=True)
             self.ws_thread.start()
+        elif self.is_running and self.ws and self.ws.sock and self.ws.sock.connected:
+            # Already connected but just started trading, trigger subscriptions
+            self.log("Already connected, triggering trading subscriptions...")
+            strat_key = self.config.get('active_strategy', 'strategy_1')
+            strat = self.STRATEGY_MAP.get(strat_key, self.STRATEGY_MAP['strategy_1'])
+            for symbol in self.config.get('symbols', []):
+                self._init_symbol_data(symbol)
+                self.ws.send(json.dumps({"ticks": symbol, "subscribe": 1}))
+                self._fetch_history(self.ws, symbol, strat['ltf_granularity'], 100)
+                self._fetch_history(self.ws, symbol, strat['htf_granularity'], 2)
 
     def _run_ws(self):
         while not self.stop_event.is_set():
+            # If not running and no trades to monitor, don't connect
+            tp_enabled = self.config.get('tp_enabled', False)
+            sl_enabled = self.config.get('sl_enabled', False)
+            if not self.is_running and not self.contracts:
+                time.sleep(1)
+                continue
+            if not self.is_running and not (tp_enabled or sl_enabled):
+                time.sleep(1)
+                continue
+
             try:
                 self.ws = websocket.WebSocketApp(
                     self._get_ws_url(),
@@ -598,6 +629,23 @@ class TradingBotEngine:
     def stop(self):
         self.is_running = False
         self.log("Bot trading paused")
+
+        # If no positions need monitoring (or TP/SL disabled), close WS
+        tp_enabled = self.config.get('tp_enabled', False)
+        sl_enabled = self.config.get('sl_enabled', False)
+
+        if not self.contracts or (not tp_enabled and not sl_enabled):
+            self.log("Closing WebSocket - idle in stop mode.")
+            if self.ws:
+                self.ws.close()
+        else:
+            # Keep WS for positions but unsubscribe from ticks to save resources
+            self.log("Keeping WebSocket for position monitoring. Unsubscribing from ticks.")
+            if self.ws and self.ws.sock and self.ws.sock.connected:
+                for sym, sd in self.symbol_data.items():
+                    if sd.get('subscription_id'):
+                        self.ws.send(json.dumps({"forget": sd['subscription_id']}))
+                        sd['subscription_id'] = None
 
     def stop_bot(self):
         self.stop_event.set()

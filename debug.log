@@ -138,3 +138,58 @@
 2026-02-20 03:32:38,449 - INFO - Websocket connected
 2026-02-20 03:32:38,449 - INFO - Deriv WebSocket connected.
 2026-02-20 03:32:38,511 - ERROR - Deriv Error: Input validation failed: authorize
+2026-02-20 06:39:32,050 - WARNING - Werkzeug appears to be used in a production deployment. Consider switching to a production web server instead.
+2026-02-20 06:39:32,056 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.0.2:5000
+2026-02-20 06:39:32,057 - INFO - [33mPress CTRL+C to quit[0m
+2026-02-20 06:39:34,390 - INFO - 127.0.0.1 - - [20/Feb/2026 06:39:34] "GET / HTTP/1.1" 200 -
+2026-02-20 06:39:34,445 - INFO - 127.0.0.1 - - [20/Feb/2026 06:39:34] "GET /static/js/app.js HTTP/1.1" 200 -
+2026-02-20 06:39:34,704 - INFO - 127.0.0.1 - - [20/Feb/2026 06:39:34] "GET /socket.io/?EIO=4&transport=polling&t=PnvndCQ HTTP/1.1" 200 -
+2026-02-20 06:39:34,714 - INFO - 127.0.0.1 - - [20/Feb/2026 06:39:34] "GET /api/config HTTP/1.1" 200 -
+2026-02-20 06:39:34,730 - INFO - Client connected: D0g9FaZLdTGFwE6gAAAB
+2026-02-20 06:39:34,732 - INFO - 127.0.0.1 - - [20/Feb/2026 06:39:34] "POST /socket.io/?EIO=4&transport=polling&t=PnvndCz&sid=JuQ8Nl2UN3LxmuhmAAAA HTTP/1.1" 200 -
+2026-02-20 06:39:34,739 - INFO - 127.0.0.1 - - [20/Feb/2026 06:39:34] "GET /socket.io/?EIO=4&transport=polling&t=PnvndD3&sid=JuQ8Nl2UN3LxmuhmAAAA HTTP/1.1" 200 -
+2026-02-20 06:39:34,757 - INFO - 127.0.0.1 - - [20/Feb/2026 06:39:34] "GET /socket.io/?EIO=4&transport=polling&t=PnvndDW&sid=JuQ8Nl2UN3LxmuhmAAAA HTTP/1.1" 200 -
+2026-02-20 06:39:37,549 - INFO - Bot started | Trading: ON
+2026-02-20 06:39:37,859 - INFO - Websocket connected
+2026-02-20 06:39:37,859 - INFO - Deriv WebSocket connected.
+2026-02-20 06:39:38,103 - INFO - Authorization successful.
+2026-02-20 06:39:38,103 - INFO - Daily starting balance set: 245.14
+2026-02-20 06:39:38,278 - INFO - HTF Open for R_100: 854.14 (Epoch: 1771545600)
+2026-02-20 06:39:38,279 - ERROR - Error handling contract update: 'contract_id'
+2026-02-20 06:39:40,673 - INFO - Bot trading paused
+2026-02-20 06:39:40,673 - INFO - Closing WebSocket - idle in stop mode.
+2026-02-20 06:39:42,765 - INFO - Client disconnected
+2026-02-20 06:39:42,765 - INFO - 127.0.0.1 - - [20/Feb/2026 06:39:42] "GET /socket.io/?EIO=4&transport=websocket&sid=JuQ8Nl2UN3LxmuhmAAAA HTTP/1.1" 200 -
+2026-02-20 06:39:50,269 - INFO - WS Connection Closed
+2026-02-20 06:39:55,481 - INFO - Websocket connected
+2026-02-20 06:39:55,482 - INFO - Deriv WebSocket connected.
+2026-02-20 06:39:55,768 - INFO - Authorization successful.
+2026-02-20 06:39:55,864 - ERROR - Error handling contract update: 'contract_id'
+2026-02-20 06:41:33,186 - WARNING - Werkzeug appears to be used in a production deployment. Consider switching to a production web server instead.
+2026-02-20 06:41:33,190 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.0.2:5000
+2026-02-20 06:41:33,190 - INFO - [33mPress CTRL+C to quit[0m
+2026-02-20 06:41:35,512 - INFO - 127.0.0.1 - - [20/Feb/2026 06:41:35] "GET / HTTP/1.1" 200 -
+2026-02-20 06:41:35,533 - INFO - 127.0.0.1 - - [20/Feb/2026 06:41:35] "GET /static/js/app.js HTTP/1.1" 200 -
+2026-02-20 06:41:35,641 - INFO - 127.0.0.1 - - [20/Feb/2026 06:41:35] "GET /socket.io/?EIO=4&transport=polling&t=Pnvo4kJ HTTP/1.1" 200 -
+2026-02-20 06:41:35,647 - INFO - 127.0.0.1 - - [20/Feb/2026 06:41:35] "GET /api/config HTTP/1.1" 200 -
+2026-02-20 06:41:35,655 - INFO - Client connected: t-Ima374CIQKHIjUAAAB
+2026-02-20 06:41:35,656 - INFO - 127.0.0.1 - - [20/Feb/2026 06:41:35] "POST /socket.io/?EIO=4&transport=polling&t=Pnvo4kU&sid=0z6LDUBlKaaL7Ho6AAAA HTTP/1.1" 200 -
+2026-02-20 06:41:35,657 - INFO - 127.0.0.1 - - [20/Feb/2026 06:41:35] "GET /socket.io/?EIO=4&transport=polling&t=Pnvo4kW&sid=0z6LDUBlKaaL7Ho6AAAA HTTP/1.1" 200 -
+2026-02-20 06:41:35,668 - INFO - 127.0.0.1 - - [20/Feb/2026 06:41:35] "GET /socket.io/?EIO=4&transport=polling&t=Pnvo4km&sid=0z6LDUBlKaaL7Ho6AAAA HTTP/1.1" 200 -
+2026-02-20 06:41:38,354 - INFO - Bot started | Trading: ON
+2026-02-20 06:41:38,589 - INFO - Websocket connected
+2026-02-20 06:41:38,589 - INFO - Deriv WebSocket connected.
+2026-02-20 06:41:38,847 - INFO - Authorization successful.
+2026-02-20 06:41:38,847 - INFO - Daily starting balance set: 245.14
+2026-02-20 06:41:38,925 - INFO - HTF Open for R_100: 854.14 (Epoch: 1771545600)
+2026-02-20 06:41:41,487 - INFO - Bot trading paused
+2026-02-20 06:41:41,487 - INFO - Closing WebSocket - idle in stop mode.
+2026-02-20 06:41:41,536 - INFO - WS Connection Closed
+2026-02-20 06:41:43,561 - INFO - Client disconnected
+2026-02-20 06:41:43,561 - INFO - 127.0.0.1 - - [20/Feb/2026 06:41:43] "GET /socket.io/?EIO=4&transport=websocket&sid=0z6LDUBlKaaL7Ho6AAAA HTTP/1.1" 200 -
