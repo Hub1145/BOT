@@ -12,5 +12,7 @@
   "tp_enabled": false,
   "tp_value": 0,
   "sl_enabled": false,
-  "sl_value": 0
+  "sl_value": 0,
+  "force_close_enabled": false,
+  "force_close_duration": 60
 }

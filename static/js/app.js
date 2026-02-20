@@ -66,6 +66,8 @@ function setupEventListeners() {
             document.getElementById('configTpValue').value = currentConfig.tp_value || 0;
             document.getElementById('configSlEnabled').checked = currentConfig.sl_enabled || false;
             document.getElementById('configSlValue').value = currentConfig.sl_value || 0;
+            document.getElementById('configForceCloseEnabled').checked = currentConfig.force_close_enabled || false;
+            document.getElementById('configForceCloseDuration').value = currentConfig.force_close_duration || 60;
             document.getElementById('configActiveStrategy').value = currentConfig.active_strategy || 'strategy_1';
             document.getElementById('configEntryType').value = currentConfig.entry_type || 'candle_close';
             document.getElementById('configIsDemo').checked = currentConfig.is_demo !== false;
@@ -228,6 +230,8 @@ async function saveConfig() {
         tp_value: parseFloat(document.getElementById('configTpValue').value),
         sl_enabled: document.getElementById('configSlEnabled').checked,
         sl_value: parseFloat(document.getElementById('configSlValue').value),
+        force_close_enabled: document.getElementById('configForceCloseEnabled').checked,
+        force_close_duration: parseInt(document.getElementById('configForceCloseDuration').value),
         active_strategy: document.getElementById('configActiveStrategy').value,
         entry_type: document.getElementById('configEntryType').value,
         is_demo: document.getElementById('configIsDemo').checked,

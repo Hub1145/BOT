@@ -295,6 +295,10 @@ class TradingBotEngine:
             if sub_id and not sd.get('subscription_id'):
                 sd['subscription_id'] = sub_id
 
+            # Background Position Monitoring (Force Close, TP/SL)
+            # This runs even if is_running is False, as long as WS is connected
+            self._monitor_open_contracts()
+
             if self.is_running:
                 # HTF Refresh for Strategy 2 (Hourly) and Strategy 3 (15m)
                 if strat_key in ['strategy_2', 'strategy_3']:
@@ -377,6 +381,51 @@ class TradingBotEngine:
                 sd['last_processed_ltf'] = time_key
 
             self._execute_trade(symbol, signal)
+
+    def _monitor_open_contracts(self):
+        now_epoch = int(time.time())
+        force_close_enabled = self.config.get('force_close_enabled', False)
+        force_close_duration = self.config.get('force_close_duration', 60)
+        tp_enabled = self.config.get('tp_enabled', False)
+        sl_enabled = self.config.get('sl_enabled', False)
+
+        for cid in list(self.contracts.keys()):
+            c = self.contracts[cid]
+            if c.get('is_closing'): continue
+
+            # Force Close Check
+            purchase_time = c.get('purchase_time')
+            if force_close_enabled and purchase_time:
+                if now_epoch - purchase_time >= force_close_duration:
+                    self.log(f"Force close duration reached for {c['symbol']} ({cid}). Closing...")
+                    self.contracts[cid]['is_closing'] = True
+                    self._close_contract(cid)
+                    continue
+
+            # TP/SL check (Redundant but safe if proposal updates are slow)
+            # Note: profit/stake should be in contract info
+            profit = c.get('pnl', 0)
+            stake = c.get('stake', 0)
+            use_fixed = self.config.get('use_fixed_balance', True)
+
+            tp_val = self.config.get('tp_value', 0)
+            sl_val = self.config.get('sl_value', 0)
+
+            if use_fixed:
+                tp_threshold = tp_val
+                sl_threshold = sl_val
+            else:
+                tp_threshold = stake * (tp_val / 100.0)
+                sl_threshold = stake * (sl_val / 100.0)
+
+            if tp_enabled and tp_threshold > 0 and profit >= tp_threshold:
+                self.log(f"TP reached (monitor) for {c['symbol']} ({cid}): {profit:.2f} USD. Closing...")
+                self.contracts[cid]['is_closing'] = True
+                self._close_contract(cid)
+            elif sl_enabled and sl_threshold > 0 and profit <= -sl_threshold:
+                self.log(f"SL reached (monitor) for {c['symbol']} ({cid}): {profit:.2f} USD. Closing...")
+                self.contracts[cid]['is_closing'] = True
+                self._close_contract(cid)
 
     def _execute_trade(self, symbol, side):
         # side is 'buy' or 'sell' from strategy
@@ -471,12 +520,26 @@ class TradingBotEngine:
                     'entry_price': contract.get('entry_tick'),
                     'pnl': profit,
                     'stake': contract.get('buy_price', 0),
+                    'purchase_time': contract.get('purchase_time'),
                     'expiry_time': contract.get('date_expiry'),
                     'is_closing': is_closing
                 }
 
                 # TP/SL check
                 if not is_closing:
+                    # Force Close Duration Check
+                    force_close_enabled = self.config.get('force_close_enabled', False)
+                    force_close_duration = self.config.get('force_close_duration', 60)
+                    purchase_time = contract.get('purchase_time')
+
+                    if force_close_enabled and purchase_time:
+                        now_epoch = int(time.time())
+                        if now_epoch - purchase_time >= force_close_duration:
+                            self.log(f"Force close duration reached for {symbol} ({cid}). Closing...")
+                            self.contracts[cid]['is_closing'] = True
+                            self._close_contract(cid)
+                            return # Skip further checks if closing
+
                     tp_enabled = self.config.get('tp_enabled', False)
                     sl_enabled = self.config.get('sl_enabled', False)
 

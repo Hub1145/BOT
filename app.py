@@ -57,6 +57,7 @@ def update_config():
             'use_fixed_balance', 'balance_value', 'max_daily_loss_pct',
             'entry_type', 'is_demo', 'log_level',
             'tp_enabled', 'tp_value', 'sl_enabled', 'sl_value',
+            'force_close_enabled', 'force_close_duration',
             'active_strategy'
         ]
 
