@@ -18,13 +18,15 @@ class TradingBotEngine:
             'name': 'Moderate',
             'htf_granularity': 3600,  # 1h
             'ltf_granularity': 180,   # 3m
-            'expiry_type': 'htf_close' # Close of HTF (1h)
+            'expiry_type': 'fixed',
+            'duration': 3600          # 1 hour
         },
         'strategy_3': {
             'name': 'Fast',
             'htf_granularity': 900,   # 15m
             'ltf_granularity': 60,    # 1m
-            'expiry_type': 'htf_close' # Close of HTF (15m)
+            'expiry_type': 'fixed',
+            'duration': 900           # 15 minutes
         }
     }
 
@@ -392,22 +394,9 @@ class TradingBotEngine:
             end_of_day = (now + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
             duration_seconds = int((end_of_day - now).total_seconds())
             expiry_label = f"Expiry: {end_of_day.strftime('%H:%M:%S')} UTC"
-        elif strat['expiry_type'] == 'htf_close':
-            htf_gran = strat['htf_granularity']
-            # Calculate next HTF close
-            if htf_gran == 3600:
-                next_close = (now + timedelta(hours=1)).replace(minute=0, second=0, microsecond=0)
-            elif htf_gran == 900:
-                next_minute = ((now.minute // 15) + 1) * 15
-                if next_minute >= 60:
-                    next_close = (now + timedelta(hours=1)).replace(minute=0, second=0, microsecond=0)
-                else:
-                    next_close = now.replace(minute=next_minute, second=0, microsecond=0)
-            else: # Fallback
-                next_close = now + timedelta(seconds=htf_gran)
-
-            duration_seconds = int((next_close - now).total_seconds())
-            expiry_label = f"Expiry: {next_close.strftime('%H:%M:%S')} UTC"
+        elif strat['expiry_type'] == 'fixed':
+            duration_seconds = strat['duration']
+            expiry_label = f"Expiry: {duration_seconds // 60} minutes"
 
         if duration_seconds < 60:
             return
