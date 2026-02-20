@@ -391,19 +391,31 @@ class TradingBotEngine:
 
         for cid in list(self.contracts.keys()):
             c = self.contracts[cid]
-            if c.get('is_closing'): continue
+
+            # Ghost cleanup: if expired more than 60s ago and still here
+            if c.get('expiry_time') and now_epoch > c['expiry_time'] + 60:
+                self.log(f"Cleaning up ghost contract {cid} for {c['symbol']} (expired 60s ago).")
+                del self.contracts[cid]
+                continue
+
+            if c.get('is_closing'):
+                # Retry closing if it's been in is_closing state for more than 30s
+                if c.get('last_close_attempt') and now_epoch - c['last_close_attempt'] > 30:
+                    self.log(f"Retrying close for contract {cid} ({c['symbol']})...")
+                    self._close_contract(cid)
+                continue
 
             # Force Close Check
             purchase_time = c.get('purchase_time')
             if force_close_enabled and purchase_time:
-                if now_epoch - purchase_time >= force_close_duration:
-                    self.log(f"Force close duration reached for {c['symbol']} ({cid}). Closing...")
+                elapsed = now_epoch - purchase_time
+                if elapsed >= force_close_duration:
+                    self.log(f"Force close duration reached for {c['symbol']} ({cid}): {elapsed}s elapsed. Closing...")
                     self.contracts[cid]['is_closing'] = True
                     self._close_contract(cid)
                     continue
 
             # TP/SL check (Redundant but safe if proposal updates are slow)
-            # Note: profit/stake should be in contract info
             profit = c.get('pnl', 0)
             stake = c.get('stake', 0)
             use_fixed = self.config.get('use_fixed_balance', True)
@@ -413,17 +425,17 @@ class TradingBotEngine:
 
             if use_fixed:
                 tp_threshold = tp_val
-                sl_threshold = sl_val
+                sl_threshold = -sl_val # SL is input as positive, we check for profit <= negative
             else:
                 tp_threshold = stake * (tp_val / 100.0)
-                sl_threshold = stake * (sl_val / 100.0)
+                sl_threshold = -stake * (sl_val / 100.0)
 
-            if tp_enabled and tp_threshold > 0 and profit >= tp_threshold:
-                self.log(f"TP reached (monitor) for {c['symbol']} ({cid}): {profit:.2f} USD. Closing...")
+            if tp_enabled and tp_val > 0 and profit >= tp_threshold:
+                self.log(f"TP reached (monitor) for {c['symbol']} ({cid}): {profit:.2f} USD (Target: >= {tp_threshold:.2f}). Closing...")
                 self.contracts[cid]['is_closing'] = True
                 self._close_contract(cid)
-            elif sl_enabled and sl_threshold > 0 and profit <= -sl_threshold:
-                self.log(f"SL reached (monitor) for {c['symbol']} ({cid}): {profit:.2f} USD. Closing...")
+            elif sl_enabled and sl_val > 0 and profit <= sl_threshold:
+                self.log(f"SL reached (monitor) for {c['symbol']} ({cid}): {profit:.2f} USD (Target: <= {sl_threshold:.2f}). Closing...")
                 self.contracts[cid]['is_closing'] = True
                 self._close_contract(cid)
 
@@ -492,6 +504,8 @@ class TradingBotEngine:
 
     def _close_contract(self, contract_id):
         if self.ws and self.ws.sock and self.ws.sock.connected:
+            if contract_id in self.contracts:
+                self.contracts[contract_id]['last_close_attempt'] = int(time.time())
             self.ws.send(json.dumps({"sell": contract_id, "price": 0}))
 
     def _handle_contract_update(self, contract):
@@ -551,18 +565,17 @@ class TradingBotEngine:
 
                     if use_fixed:
                         tp_threshold = tp_val
-                        sl_threshold = sl_val
+                        sl_threshold = -sl_val
                     else:
-                        # Use tp_val/sl_val as percentages of the stake
                         tp_threshold = stake * (tp_val / 100.0)
-                        sl_threshold = stake * (sl_val / 100.0)
+                        sl_threshold = -stake * (sl_val / 100.0)
 
-                    if tp_enabled and tp_threshold > 0 and profit >= tp_threshold:
-                        self.log(f"TP reached for {symbol} ({cid}): {profit:.2f} USD. Closing...")
+                    if tp_enabled and tp_val > 0 and profit >= tp_threshold:
+                        self.log(f"TP reached for {symbol} ({cid}): {profit:.2f} USD (Target: >= {tp_threshold:.2f}). Closing...")
                         self.contracts[cid]['is_closing'] = True
                         self._close_contract(cid)
-                    elif sl_enabled and sl_threshold > 0 and profit <= -sl_threshold:
-                        self.log(f"SL reached for {symbol} ({cid}): {profit:.2f} USD. Closing...")
+                    elif sl_enabled and sl_val > 0 and profit <= sl_threshold:
+                        self.log(f"SL reached for {symbol} ({cid}): {profit:.2f} USD (Target: <= {sl_threshold:.2f}). Closing...")
                         self.contracts[cid]['is_closing'] = True
                         self._close_contract(cid)
 

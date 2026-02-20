@@ -156,23 +156,41 @@ function setupSocketListeners() {
 
 function updateActiveTrades(trades) {
     const container = document.getElementById('activeTradesContainer');
-    if (!trades || trades.length === 0) {
+    if (!trades || !Array.isArray(trades) || trades.length === 0) {
         container.innerHTML = '<p class="text-muted text-center py-4">No active positions</p>';
         return;
     }
 
-    container.innerHTML = trades.map(t => `
-        <div class="trade-card ${t.type.toLowerCase()}">
-            <div class="d-flex justify-content-between">
-                <strong>${t.symbol} (${t.type})</strong>
-                <span class="${t.pnl >= 0 ? 'text-success' : 'text-danger'} font-weight-bold">$${t.pnl.toFixed(2)}</span>
+    container.innerHTML = trades.map(t => {
+        const pnl = typeof t.pnl === 'number' ? t.pnl : 0;
+        const entry = typeof t.entry_spot_price === 'number' ? t.entry_spot_price : 0;
+        const stake = typeof t.stake === 'number' ? t.stake : 0;
+        const typeLabel = t.type ? t.type.toLowerCase() : 'unknown';
+
+        return `
+            <div class="trade-card ${typeLabel}">
+                <div class="d-flex justify-content-between align-items-center">
+                    <strong>${t.symbol || 'Unknown'} (${t.type || '???'})</strong>
+                    <div class="d-flex align-items-center gap-3">
+                        <span class="${pnl >= 0 ? 'text-success' : 'text-danger'} fw-bold">$${pnl.toFixed(2)}</span>
+                        <button class="btn btn-sm btn-outline-danger" onclick="closeTrade('${t.id}')" title="Close Trade">
+                            <i class="bi bi-x-circle"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="small text-muted d-flex justify-content-between mt-1">
+                    <div>ID: ${t.id} | Entry: ${entry.toFixed(4)} | Stake: $${stake.toFixed(2)}</div>
+                    <div class="expiry-countdown text-warning" data-expiry="${t.expiry_time}">${formatCountdown(t.expiry_time)}</div>
+                </div>
             </div>
-            <div class="small text-muted d-flex justify-content-between">
-                <div>ID: ${t.id} | Entry: ${t.entry_spot_price.toFixed(4)} | Stake: $${t.stake.toFixed(2)}</div>
-                <div class="expiry-countdown text-warning" data-expiry="${t.expiry_time}">${formatCountdown(t.expiry_time)}</div>
-            </div>
-        </div>
-    `).join('');
+        `;
+    }).join('');
+}
+
+function closeTrade(id) {
+    if (confirm(`Are you sure you want to close trade ${id}?`)) {
+        socket.emit('close_trade', { contract_id: id });
+    }
 }
 
 function startCountdownTimer() {

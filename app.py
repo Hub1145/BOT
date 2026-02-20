@@ -386,6 +386,15 @@ def handle_emergency_sl(data=None):
     
     bot_engine.emergency_sl()
 
+@socketio.on('close_trade')
+def handle_close_trade(data):
+    global bot_engine
+    if bot_engine:
+        contract_id = data.get('contract_id')
+        if contract_id:
+            bot_engine.log(f"Manual close requested for trade {contract_id}")
+            bot_engine._close_contract(contract_id)
+
 
 if __name__ == '__main__':
     if not bot_engine:
