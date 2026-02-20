@@ -18,12 +18,17 @@ function updateConfigLabels() {
     if (strategySelect) {
         const strategy = strategySelect.value;
         const label = document.getElementById('configEntryTypeLabel');
+        const customExpiryContainer = document.getElementById('customExpiryContainer');
+
         if (strategy === 'strategy_1') {
             label.textContent = "Wait for 15m Candle Close";
+            customExpiryContainer.style.display = 'none';
         } else if (strategy === 'strategy_2') {
             label.textContent = "Wait for 3m Candle Close";
+            customExpiryContainer.style.display = 'block';
         } else {
             label.textContent = "Wait for 1m Candle Close";
+            customExpiryContainer.style.display = 'block';
         }
     }
 
@@ -69,6 +74,7 @@ function setupEventListeners() {
             document.getElementById('configForceCloseEnabled').checked = currentConfig.force_close_enabled || false;
             document.getElementById('configForceCloseDuration').value = currentConfig.force_close_duration || 60;
             document.getElementById('configActiveStrategy').value = currentConfig.active_strategy || 'strategy_1';
+            document.getElementById('configCustomExpiry').value = currentConfig.custom_expiry || 'default';
             document.getElementById('configEntryType').value = currentConfig.entry_type || 'candle_close';
             document.getElementById('configIsDemo').checked = currentConfig.is_demo !== false;
             updateConfigLabels();
@@ -251,6 +257,7 @@ async function saveConfig() {
         force_close_enabled: document.getElementById('configForceCloseEnabled').checked,
         force_close_duration: parseInt(document.getElementById('configForceCloseDuration').value),
         active_strategy: document.getElementById('configActiveStrategy').value,
+        custom_expiry: document.getElementById('configCustomExpiry').value,
         entry_type: document.getElementById('configEntryType').value,
         is_demo: document.getElementById('configIsDemo').checked,
         symbols: currentConfig.symbols

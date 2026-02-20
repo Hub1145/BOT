@@ -450,16 +450,29 @@ class TradingBotEngine:
         now = datetime.now(timezone.utc)
         expiry_label = ""
 
+        custom_expiry = self.config.get('custom_expiry', 'default')
+
         if strat['expiry_type'] == 'eod':
             # End of day calculation (UTC)
             end_of_day = (now + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
             duration_seconds = int((end_of_day - now).total_seconds())
             expiry_label = f"Expiry: {end_of_day.strftime('%H:%M:%S')} UTC"
         elif strat['expiry_type'] == 'fixed':
-            duration_seconds = strat['duration']
-            expiry_label = f"Expiry: {duration_seconds // 60} minutes"
+            if custom_expiry != 'default':
+                try:
+                    duration_seconds = int(custom_expiry)
+                    if duration_seconds >= 60:
+                        expiry_label = f"Expiry: {duration_seconds // 60} minutes"
+                    else:
+                        expiry_label = f"Expiry: {duration_seconds} seconds"
+                except:
+                    duration_seconds = strat['duration']
+                    expiry_label = f"Expiry: {duration_seconds // 60} minutes"
+            else:
+                duration_seconds = strat['duration']
+                expiry_label = f"Expiry: {duration_seconds // 60} minutes"
 
-        if duration_seconds < 60:
+        if duration_seconds <= 0:
             return
 
         # Position management: One trade per symbol, cancel opposite
