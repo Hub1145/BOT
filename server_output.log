@@ -1,41 +1,59 @@
-2026-02-21 17:55:07,302 - INFO - Bot started | Trading: OFF
-2026-02-21 17:55:07,303 - WARNING - Werkzeug appears to be used in a production deployment. Consider switching to a production web server instead.
+2026-02-21 18:31:51,666 - INFO - Bot started | Trading: OFF
+2026-02-21 18:31:51,667 - WARNING - Werkzeug appears to be used in a production deployment. Consider switching to a production web server instead.
  * Serving Flask app 'app'
  * Debug mode: off
-2026-02-21 17:55:07,310 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+2026-02-21 18:31:51,674 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
  * Running on http://127.0.0.1:5000
  * Running on http://192.168.0.2:5000
-2026-02-21 17:55:07,310 - INFO - [33mPress CTRL+C to quit[0m
-2026-02-21 17:55:07,566 - INFO - Websocket connected
-2026-02-21 17:55:07,566 - INFO - Deriv WebSocket connected.
-2026-02-21 17:55:07,870 - INFO - Authorization successful.
-2026-02-21 17:55:07,870 - INFO - Daily starting balance set: 323.71
-2026-02-21 17:56:10,643 - INFO - 127.0.0.1 - - [21/Feb/2026 17:56:10] "GET / HTTP/1.1" 200 -
-2026-02-21 17:56:10,707 - INFO - 127.0.0.1 - - [21/Feb/2026 17:56:10] "GET /static/js/app.js HTTP/1.1" 200 -
-2026-02-21 17:56:11,038 - INFO - 127.0.0.1 - - [21/Feb/2026 17:56:11] "GET /socket.io/?EIO=4&transport=polling&t=Po1M49- HTTP/1.1" 200 -
-2026-02-21 17:56:11,053 - INFO - 127.0.0.1 - - [21/Feb/2026 17:56:11] "GET /api/config HTTP/1.1" 200 -
-2026-02-21 17:56:11,083 - INFO - Client connected: a-f-LPVtpAkcZ5u-AAAB
-2026-02-21 17:56:11,088 - INFO - 127.0.0.1 - - [21/Feb/2026 17:56:11] "POST /socket.io/?EIO=4&transport=polling&t=Po1M4Am&sid=_lMNmIZPOCjxT08FAAAA HTTP/1.1" 200 -
-2026-02-21 17:56:11,101 - INFO - 127.0.0.1 - - [21/Feb/2026 17:56:11] "GET /socket.io/?EIO=4&transport=polling&t=Po1M4Aw&sid=_lMNmIZPOCjxT08FAAAA HTTP/1.1" 200 -
-2026-02-21 17:56:11,119 - INFO - 127.0.0.1 - - [21/Feb/2026 17:56:11] "GET /socket.io/?EIO=4&transport=polling&t=Po1M4Bb&sid=_lMNmIZPOCjxT08FAAAA HTTP/1.1" 200 -
-2026-02-21 17:56:11,963 - INFO - Client disconnected
-2026-02-21 17:56:11,964 - INFO - 127.0.0.1 - - [21/Feb/2026 17:56:11] "GET /socket.io/?EIO=4&transport=websocket&sid=_lMNmIZPOCjxT08FAAAA HTTP/1.1" 200 -
-2026-02-21 17:57:07,964 - ERROR - WS Error: Connection to remote host was lost.
-2026-02-21 17:57:07,965 - ERROR - Connection to remote host was lost. - goodbye
-2026-02-21 17:57:07,965 - INFO - WS Connection Closed
-2026-02-21 17:57:13,268 - INFO - Websocket connected
-2026-02-21 17:57:13,268 - INFO - Deriv WebSocket connected.
-2026-02-21 17:57:13,579 - INFO - Authorization successful.
-2026-02-21 17:59:13,680 - ERROR - WS Error: Connection to remote host was lost.
-2026-02-21 17:59:13,680 - ERROR - Connection to remote host was lost. - goodbye
-2026-02-21 17:59:13,680 - INFO - WS Connection Closed
-2026-02-21 17:59:18,954 - INFO - Websocket connected
-2026-02-21 17:59:18,954 - INFO - Deriv WebSocket connected.
-2026-02-21 17:59:19,329 - INFO - Authorization successful.
-2026-02-21 18:01:19,426 - ERROR - WS Error: Connection to remote host was lost.
-2026-02-21 18:01:19,426 - ERROR - Connection to remote host was lost. - goodbye
-2026-02-21 18:01:19,426 - INFO - WS Connection Closed
-2026-02-21 18:01:24,701 - INFO - Websocket connected
-2026-02-21 18:01:24,702 - INFO - Deriv WebSocket connected.
-2026-02-21 18:01:25,093 - INFO - Authorization successful.
+2026-02-21 18:31:51,674 - INFO - [33mPress CTRL+C to quit[0m
+2026-02-21 18:31:51,917 - INFO - Websocket connected
+2026-02-21 18:31:51,917 - INFO - Deriv WebSocket connected.
+2026-02-21 18:31:52,167 - INFO - Authorization successful.
+2026-02-21 18:31:52,167 - INFO - Daily starting balance set: 323.71
+2026-02-21 18:31:57,296 - INFO - 127.0.0.1 - - [21/Feb/2026 18:31:57] "GET / HTTP/1.1" 200 -
+2026-02-21 18:31:57,349 - INFO - 127.0.0.1 - - [21/Feb/2026 18:31:57] "GET /static/js/app.js HTTP/1.1" 200 -
+2026-02-21 18:31:57,644 - INFO - 127.0.0.1 - - [21/Feb/2026 18:31:57] "GET /socket.io/?EIO=4&transport=polling&t=Po1UGEv HTTP/1.1" 200 -
+2026-02-21 18:31:57,655 - INFO - 127.0.0.1 - - [21/Feb/2026 18:31:57] "GET /api/config HTTP/1.1" 200 -
+2026-02-21 18:31:57,669 - INFO - Client connected: bnzAkP5OMXBnG1MOAAAB
+2026-02-21 18:31:57,670 - INFO - 127.0.0.1 - - [21/Feb/2026 18:31:57] "POST /socket.io/?EIO=4&transport=polling&t=Po1UGFN&sid=-7CBDPnuTyAqGG2tAAAA HTTP/1.1" 200 -
+2026-02-21 18:31:57,694 - INFO - 127.0.0.1 - - [21/Feb/2026 18:31:57] "GET /socket.io/?EIO=4&transport=polling&t=Po1UGFU&sid=-7CBDPnuTyAqGG2tAAAA HTTP/1.1" 200 -
+2026-02-21 18:31:57,712 - INFO - 127.0.0.1 - - [21/Feb/2026 18:31:57] "GET /socket.io/?EIO=4&transport=polling&t=Po1UGG8&sid=-7CBDPnuTyAqGG2tAAAA HTTP/1.1" 200 -
+2026-02-21 18:32:28,602 - INFO - Client disconnected
+2026-02-21 18:32:28,603 - INFO - 127.0.0.1 - - [21/Feb/2026 18:32:28] "GET /socket.io/?EIO=4&transport=websocket&sid=-7CBDPnuTyAqGG2tAAAA HTTP/1.1" 200 -
+2026-02-21 18:33:52,307 - ERROR - WS Error: Connection to remote host was lost.
+2026-02-21 18:33:52,307 - ERROR - Connection to remote host was lost. - goodbye
+2026-02-21 18:33:52,307 - INFO - WS Connection Closed
+2026-02-21 18:33:52,864 - INFO - 127.0.0.1 - - [21/Feb/2026 18:33:52] "GET / HTTP/1.1" 200 -
+2026-02-21 18:33:52,879 - INFO - 127.0.0.1 - - [21/Feb/2026 18:33:52] "GET /static/js/app.js HTTP/1.1" 200 -
+2026-02-21 18:33:53,001 - INFO - 127.0.0.1 - - [21/Feb/2026 18:33:53] "GET /socket.io/?EIO=4&transport=polling&t=Po1UiPa HTTP/1.1" 200 -
+2026-02-21 18:33:53,007 - INFO - 127.0.0.1 - - [21/Feb/2026 18:33:53] "GET /api/config HTTP/1.1" 200 -
+2026-02-21 18:33:53,015 - INFO - Client connected: FahGK_D2siiHb3TwAAAD
+2026-02-21 18:33:53,017 - INFO - 127.0.0.1 - - [21/Feb/2026 18:33:53] "POST /socket.io/?EIO=4&transport=polling&t=Po1UiPk&sid=fS1X3fc_lcwCW423AAAC HTTP/1.1" 200 -
+2026-02-21 18:33:53,019 - INFO - 127.0.0.1 - - [21/Feb/2026 18:33:53] "GET /socket.io/?EIO=4&transport=polling&t=Po1UiPm&sid=fS1X3fc_lcwCW423AAAC HTTP/1.1" 200 -
+2026-02-21 18:33:53,166 - INFO - Client disconnected
+2026-02-21 18:33:53,167 - INFO - 127.0.0.1 - - [21/Feb/2026 18:33:53] "GET /socket.io/?EIO=4&transport=websocket&sid=fS1X3fc_lcwCW423AAAC HTTP/1.1" 200 -
+2026-02-21 18:33:57,562 - INFO - Websocket connected
+2026-02-21 18:33:57,562 - INFO - Deriv WebSocket connected.
+2026-02-21 18:33:57,879 - INFO - Authorization successful.
+2026-02-21 18:34:58,313 - INFO - 127.0.0.1 - - [21/Feb/2026 18:34:58] "GET / HTTP/1.1" 200 -
+2026-02-21 18:34:58,325 - INFO - 127.0.0.1 - - [21/Feb/2026 18:34:58] "GET /static/js/app.js HTTP/1.1" 200 -
+2026-02-21 18:34:58,448 - INFO - 127.0.0.1 - - [21/Feb/2026 18:34:58] "GET /api/config HTTP/1.1" 200 -
+2026-02-21 18:34:58,450 - INFO - 127.0.0.1 - - [21/Feb/2026 18:34:58] "GET /socket.io/?EIO=4&transport=polling&t=Po1UyO5 HTTP/1.1" 200 -
+2026-02-21 18:34:58,459 - INFO - Client connected: GSH_-JchYfCrOtkUAAAF
+2026-02-21 18:34:58,461 - INFO - 127.0.0.1 - - [21/Feb/2026 18:34:58] "POST /socket.io/?EIO=4&transport=polling&t=Po1UyOM&sid=E5a15YElSvQanecsAAAE HTTP/1.1" 200 -
+2026-02-21 18:34:58,465 - INFO - 127.0.0.1 - - [21/Feb/2026 18:34:58] "GET /socket.io/?EIO=4&transport=polling&t=Po1UyOP&sid=E5a15YElSvQanecsAAAE HTTP/1.1" 200 -
+2026-02-21 18:34:59,648 - INFO - Client disconnected
+2026-02-21 18:34:59,648 - INFO - 127.0.0.1 - - [21/Feb/2026 18:34:59] "GET /socket.io/?EIO=4&transport=websocket&sid=E5a15YElSvQanecsAAAE HTTP/1.1" 200 -
+2026-02-21 18:35:58,128 - ERROR - WS Error: Connection to remote host was lost.
+2026-02-21 18:35:58,129 - ERROR - Connection to remote host was lost. - goodbye
+2026-02-21 18:35:58,129 - INFO - WS Connection Closed
+2026-02-21 18:36:03,408 - INFO - Websocket connected
+2026-02-21 18:36:03,408 - INFO - Deriv WebSocket connected.
+2026-02-21 18:36:03,680 - INFO - Authorization successful.
+2026-02-21 18:38:03,783 - ERROR - WS Error: Connection to remote host was lost.
+2026-02-21 18:38:03,783 - ERROR - Connection to remote host was lost. - goodbye
+2026-02-21 18:38:03,783 - INFO - WS Connection Closed
+2026-02-21 18:38:09,019 - INFO - Websocket connected
+2026-02-21 18:38:09,020 - INFO - Deriv WebSocket connected.
+2026-02-21 18:38:09,323 - INFO - Authorization successful.

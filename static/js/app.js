@@ -29,6 +29,9 @@ function updateConfigLabels() {
         } else if (strategy === 'strategy_4') {
             label.textContent = "Wait for 1m Candle Close";
             customExpiryContainer.style.display = 'block';
+        } else if (strategy === 'strategy_5') {
+            label.textContent = "Wait for 1m Candle Close";
+            customExpiryContainer.style.display = 'none'; // Strategy 5 uses dynamic expiry
         } else {
             label.textContent = "Wait for 1m Candle Close";
             customExpiryContainer.style.display = 'block';
@@ -36,10 +39,10 @@ function updateConfigLabels() {
     }
 
     // TP/SL Unit Labels
-    const balanceType = document.getElementById('configBalanceType').value;
+    const useFixed = document.getElementById('configUseFixedBalance').checked;
     const tpLabel = document.getElementById('configTpLabel');
     const slLabel = document.getElementById('configSlLabel');
-    if (balanceType === 'fixed') {
+    if (useFixed) {
         tpLabel.textContent = "Take Profit ($)";
         slLabel.textContent = "Stop Loss ($)";
     } else {
@@ -50,7 +53,7 @@ function updateConfigLabels() {
 
 function setupEventListeners() {
     document.getElementById('configActiveStrategy').addEventListener('change', updateConfigLabels);
-    document.getElementById('configBalanceType').addEventListener('change', updateConfigLabels);
+    document.getElementById('configUseFixedBalance').addEventListener('change', updateConfigLabels);
     document.getElementById('themeToggle').addEventListener('change', (e) => {
         document.body.setAttribute('data-theme', e.target.checked ? 'light' : 'dark');
     });
@@ -67,7 +70,7 @@ function setupEventListeners() {
         if (currentConfig) {
             document.getElementById('configApiToken').value = currentConfig.deriv_api_token || '';
             document.getElementById('configAppId').value = currentConfig.deriv_app_id || '62845';
-            document.getElementById('configBalanceType').value = currentConfig.use_fixed_balance ? 'fixed' : 'percent';
+            document.getElementById('configUseFixedBalance').checked = currentConfig.use_fixed_balance !== false;
             document.getElementById('configBalanceValue').value = currentConfig.balance_value || 10;
             document.getElementById('configMaxDailyLoss').value = currentConfig.max_daily_loss_pct || 5;
             document.getElementById('configTpEnabled').checked = currentConfig.tp_enabled || false;
@@ -143,11 +146,25 @@ function setupSocketListeners() {
         document.getElementById('usedAmountDisplay').textContent = `$${Number(data.used_amount || 0).toFixed(2)}`;
         document.getElementById('realizedPnlDisplay').textContent = `$${Number(data.net_trade_profit || 0).toFixed(2)}`;
         document.getElementById('floatingPnlDisplay').textContent = `$${Number((data.net_profit || 0) - (data.net_trade_profit || 0)).toFixed(2)}`;
+
+        if (document.getElementById('winRateDisplay')) {
+            document.getElementById('winRateDisplay').textContent = `${data.win_rate || 0}%`;
+        }
+        if (document.getElementById('avgPnlDisplay')) {
+            const avg = data.avg_pnl || 0;
+            const el = document.getElementById('avgPnlDisplay');
+            el.textContent = `$${Number(avg).toFixed(2)}`;
+            el.className = `stat-value ${avg >= 0 ? 'text-success' : 'text-danger'}`;
+        }
     });
 
     socket.on('trades_update', (data) => {
         activeTrades = data.trades;
         updateActiveTrades(data.trades);
+    });
+
+    socket.on('screener_update', (data) => {
+        updateScreenerTable(data.symbol, data.data);
     });
 
     socket.on('console_log', (data) => {
@@ -161,6 +178,33 @@ function setupSocketListeners() {
 
     socket.on('error', (data) => alert('Error: ' + data.message));
     socket.on('success', (data) => console.log('Success:', data.message));
+}
+
+const screenerDataMap = {};
+
+function updateScreenerTable(symbol, data) {
+    screenerDataMap[symbol] = data;
+    const body = document.getElementById('screenerTableBody');
+    if (!body) return;
+
+    body.innerHTML = Object.keys(screenerDataMap).sort().map(sym => {
+        const d = screenerDataMap[sym];
+        const confColor = d.confidence >= 60 ? 'text-success' : (d.confidence <= -60 ? 'text-danger' : 'text-warning');
+        const dirColor = d.direction === 'CALL' ? 'text-success' : 'text-danger';
+
+        return `
+            <tr>
+                <td><strong>${sym}</strong></td>
+                <td class="${confColor} fw-bold">${d.confidence}%</td>
+                <td class="${dirColor} fw-bold">${d.direction}</td>
+                <td><small>${d.regime}</small></td>
+                <td>${d.trend}</td>
+                <td>${d.momentum}</td>
+                <td>${d.volatility}</td>
+                <td>${d.structure}</td>
+            </tr>
+        `;
+    }).join('');
 }
 
 function updateActiveTrades(trades) {
@@ -250,7 +294,7 @@ async function saveConfig() {
     const config = {
         deriv_api_token: document.getElementById('configApiToken').value,
         deriv_app_id: document.getElementById('configAppId').value,
-        use_fixed_balance: document.getElementById('configBalanceType').value === 'fixed',
+        use_fixed_balance: document.getElementById('configUseFixedBalance').checked,
         balance_value: parseFloat(document.getElementById('configBalanceValue').value),
         max_daily_loss_pct: parseFloat(document.getElementById('configMaxDailyLoss').value),
         tp_enabled: document.getElementById('configTpEnabled').checked,

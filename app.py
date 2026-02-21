@@ -240,7 +240,9 @@ def get_status():
         # Realized profit tracking
         'net_trade_profit': getattr(bot_engine, 'net_trade_profit', 0.0),
         'total_trade_profit': getattr(bot_engine, 'total_trade_profit', 0.0),
-        'total_trade_loss': getattr(bot_engine, 'total_trade_loss', 0.0)
+        'total_trade_loss': getattr(bot_engine, 'total_trade_loss', 0.0),
+        'win_rate': (getattr(bot_engine, 'wins_count', 0) / bot_engine.total_trades_count * 100) if bot_engine.total_trades_count > 0 else 0,
+        'avg_pnl': (getattr(bot_engine, 'net_trade_profit', 0) / bot_engine.total_trades_count) if bot_engine.total_trades_count > 0 else 0
     })
  
 @socketio.on('connect')
@@ -280,7 +282,9 @@ def handle_connect(auth=None):
             'total_trades': len(bot_engine.open_trades) + bot_engine.total_trades_count,
             'net_trade_profit': bot_engine.net_trade_profit,
             'total_trade_profit': bot_engine.total_trade_profit,
-            'total_trade_loss': bot_engine.total_trade_loss
+            'total_trade_loss': bot_engine.total_trade_loss,
+            'win_rate': (bot_engine.wins_count / bot_engine.total_trades_count * 100) if bot_engine.total_trades_count > 0 else 0,
+            'avg_pnl': (bot_engine.net_trade_profit / bot_engine.total_trades_count) if bot_engine.total_trades_count > 0 else 0
         }
         emit('account_update', payload, room=sid)
         

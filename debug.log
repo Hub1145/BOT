@@ -39,3 +39,126 @@
 2026-02-21 18:01:24,701 - INFO - Websocket connected
 2026-02-21 18:01:24,702 - INFO - Deriv WebSocket connected.
 2026-02-21 18:01:25,093 - INFO - Authorization successful.
+2026-02-21 18:03:25,224 - ERROR - WS Error: Connection to remote host was lost.
+2026-02-21 18:03:25,225 - ERROR - Connection to remote host was lost. - goodbye
+2026-02-21 18:03:25,225 - INFO - WS Connection Closed
+2026-02-21 18:03:30,499 - INFO - Websocket connected
+2026-02-21 18:03:30,500 - INFO - Deriv WebSocket connected.
+2026-02-21 18:03:30,745 - INFO - Authorization successful.
+2026-02-21 18:05:30,851 - ERROR - WS Error: Connection to remote host was lost.
+2026-02-21 18:05:30,851 - ERROR - Connection to remote host was lost. - goodbye
+2026-02-21 18:05:30,851 - INFO - WS Connection Closed
+2026-02-21 18:05:36,077 - INFO - Websocket connected
+2026-02-21 18:05:36,078 - INFO - Deriv WebSocket connected.
+2026-02-21 18:05:36,408 - INFO - Authorization successful.
+2026-02-21 18:07:36,501 - ERROR - WS Error: Connection to remote host was lost.
+2026-02-21 18:07:36,501 - ERROR - Connection to remote host was lost. - goodbye
+2026-02-21 18:07:36,501 - INFO - WS Connection Closed
+2026-02-21 18:07:41,807 - INFO - Websocket connected
+2026-02-21 18:07:41,807 - INFO - Deriv WebSocket connected.
+2026-02-21 18:07:42,126 - INFO - Authorization successful.
+2026-02-21 18:16:53,709 - ERROR - WS Error: Connection to remote host was lost.
+2026-02-21 18:16:53,721 - ERROR - Connection to remote host was lost. - goodbye
+2026-02-21 18:16:53,723 - INFO - WS Connection Closed
+2026-02-21 18:16:59,004 - INFO - Websocket connected
+2026-02-21 18:16:59,006 - INFO - Deriv WebSocket connected.
+2026-02-21 18:16:59,426 - INFO - Authorization successful.
+2026-02-21 18:18:59,536 - ERROR - WS Error: Connection to remote host was lost.
+2026-02-21 18:18:59,539 - ERROR - Connection to remote host was lost. - goodbye
+2026-02-21 18:18:59,539 - INFO - WS Connection Closed
+2026-02-21 18:19:04,811 - INFO - Websocket connected
+2026-02-21 18:19:04,812 - INFO - Deriv WebSocket connected.
+2026-02-21 18:19:05,107 - INFO - Authorization successful.
+2026-02-21 18:21:05,229 - ERROR - WS Error: Connection to remote host was lost.
+2026-02-21 18:21:05,231 - ERROR - Connection to remote host was lost. - goodbye
+2026-02-21 18:21:05,232 - INFO - WS Connection Closed
+2026-02-21 18:21:10,511 - INFO - Websocket connected
+2026-02-21 18:21:10,513 - INFO - Deriv WebSocket connected.
+2026-02-21 18:21:10,766 - INFO - Authorization successful.
+2026-02-21 18:23:10,862 - ERROR - WS Error: Connection to remote host was lost.
+2026-02-21 18:23:10,863 - ERROR - Connection to remote host was lost. - goodbye
+2026-02-21 18:23:10,863 - INFO - WS Connection Closed
+2026-02-21 18:23:16,163 - INFO - Websocket connected
+2026-02-21 18:23:16,163 - INFO - Deriv WebSocket connected.
+2026-02-21 18:23:16,486 - INFO - Authorization successful.
+2026-02-21 18:25:16,607 - ERROR - WS Error: Connection to remote host was lost.
+2026-02-21 18:25:16,608 - ERROR - Connection to remote host was lost. - goodbye
+2026-02-21 18:25:16,608 - INFO - WS Connection Closed
+2026-02-21 18:25:21,901 - INFO - Websocket connected
+2026-02-21 18:25:21,902 - INFO - Deriv WebSocket connected.
+2026-02-21 18:25:22,168 - INFO - Authorization successful.
+2026-02-21 18:27:22,305 - ERROR - WS Error: Connection to remote host was lost.
+2026-02-21 18:27:22,306 - ERROR - Connection to remote host was lost. - goodbye
+2026-02-21 18:27:22,310 - INFO - WS Connection Closed
+2026-02-21 18:27:27,627 - INFO - Websocket connected
+2026-02-21 18:27:27,628 - INFO - Deriv WebSocket connected.
+2026-02-21 18:27:27,936 - INFO - Authorization successful.
+2026-02-21 18:29:28,223 - ERROR - WS Error: Connection to remote host was lost.
+2026-02-21 18:29:28,223 - ERROR - Connection to remote host was lost. - goodbye
+2026-02-21 18:29:28,224 - INFO - WS Connection Closed
+2026-02-21 18:29:33,525 - INFO - Websocket connected
+2026-02-21 18:29:33,526 - INFO - Deriv WebSocket connected.
+2026-02-21 18:29:33,863 - INFO - Authorization successful.
+2026-02-21 18:31:33,994 - ERROR - WS Error: Connection to remote host was lost.
+2026-02-21 18:31:33,995 - ERROR - Connection to remote host was lost. - goodbye
+2026-02-21 18:31:33,999 - INFO - WS Connection Closed
+2026-02-21 18:31:39,216 - INFO - Websocket connected
+2026-02-21 18:31:39,216 - INFO - Deriv WebSocket connected.
+2026-02-21 18:31:39,473 - INFO - Authorization successful.
+2026-02-21 18:31:51,666 - INFO - Bot started | Trading: OFF
+2026-02-21 18:31:51,667 - WARNING - Werkzeug appears to be used in a production deployment. Consider switching to a production web server instead.
+2026-02-21 18:31:51,674 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.0.2:5000
+2026-02-21 18:31:51,674 - INFO - [33mPress CTRL+C to quit[0m
+2026-02-21 18:31:51,917 - INFO - Websocket connected
+2026-02-21 18:31:51,917 - INFO - Deriv WebSocket connected.
+2026-02-21 18:31:52,167 - INFO - Authorization successful.
+2026-02-21 18:31:52,167 - INFO - Daily starting balance set: 323.71
+2026-02-21 18:31:57,296 - INFO - 127.0.0.1 - - [21/Feb/2026 18:31:57] "GET / HTTP/1.1" 200 -
+2026-02-21 18:31:57,349 - INFO - 127.0.0.1 - - [21/Feb/2026 18:31:57] "GET /static/js/app.js HTTP/1.1" 200 -
+2026-02-21 18:31:57,644 - INFO - 127.0.0.1 - - [21/Feb/2026 18:31:57] "GET /socket.io/?EIO=4&transport=polling&t=Po1UGEv HTTP/1.1" 200 -
+2026-02-21 18:31:57,655 - INFO - 127.0.0.1 - - [21/Feb/2026 18:31:57] "GET /api/config HTTP/1.1" 200 -
+2026-02-21 18:31:57,669 - INFO - Client connected: bnzAkP5OMXBnG1MOAAAB
+2026-02-21 18:31:57,670 - INFO - 127.0.0.1 - - [21/Feb/2026 18:31:57] "POST /socket.io/?EIO=4&transport=polling&t=Po1UGFN&sid=-7CBDPnuTyAqGG2tAAAA HTTP/1.1" 200 -
+2026-02-21 18:31:57,694 - INFO - 127.0.0.1 - - [21/Feb/2026 18:31:57] "GET /socket.io/?EIO=4&transport=polling&t=Po1UGFU&sid=-7CBDPnuTyAqGG2tAAAA HTTP/1.1" 200 -
+2026-02-21 18:31:57,712 - INFO - 127.0.0.1 - - [21/Feb/2026 18:31:57] "GET /socket.io/?EIO=4&transport=polling&t=Po1UGG8&sid=-7CBDPnuTyAqGG2tAAAA HTTP/1.1" 200 -
+2026-02-21 18:32:28,602 - INFO - Client disconnected
+2026-02-21 18:32:28,603 - INFO - 127.0.0.1 - - [21/Feb/2026 18:32:28] "GET /socket.io/?EIO=4&transport=websocket&sid=-7CBDPnuTyAqGG2tAAAA HTTP/1.1" 200 -
+2026-02-21 18:33:52,307 - ERROR - WS Error: Connection to remote host was lost.
+2026-02-21 18:33:52,307 - ERROR - Connection to remote host was lost. - goodbye
+2026-02-21 18:33:52,307 - INFO - WS Connection Closed
+2026-02-21 18:33:52,864 - INFO - 127.0.0.1 - - [21/Feb/2026 18:33:52] "GET / HTTP/1.1" 200 -
+2026-02-21 18:33:52,879 - INFO - 127.0.0.1 - - [21/Feb/2026 18:33:52] "GET /static/js/app.js HTTP/1.1" 200 -
+2026-02-21 18:33:53,001 - INFO - 127.0.0.1 - - [21/Feb/2026 18:33:53] "GET /socket.io/?EIO=4&transport=polling&t=Po1UiPa HTTP/1.1" 200 -
+2026-02-21 18:33:53,007 - INFO - 127.0.0.1 - - [21/Feb/2026 18:33:53] "GET /api/config HTTP/1.1" 200 -
+2026-02-21 18:33:53,015 - INFO - Client connected: FahGK_D2siiHb3TwAAAD
+2026-02-21 18:33:53,017 - INFO - 127.0.0.1 - - [21/Feb/2026 18:33:53] "POST /socket.io/?EIO=4&transport=polling&t=Po1UiPk&sid=fS1X3fc_lcwCW423AAAC HTTP/1.1" 200 -
+2026-02-21 18:33:53,019 - INFO - 127.0.0.1 - - [21/Feb/2026 18:33:53] "GET /socket.io/?EIO=4&transport=polling&t=Po1UiPm&sid=fS1X3fc_lcwCW423AAAC HTTP/1.1" 200 -
+2026-02-21 18:33:53,166 - INFO - Client disconnected
+2026-02-21 18:33:53,167 - INFO - 127.0.0.1 - - [21/Feb/2026 18:33:53] "GET /socket.io/?EIO=4&transport=websocket&sid=fS1X3fc_lcwCW423AAAC HTTP/1.1" 200 -
+2026-02-21 18:33:57,562 - INFO - Websocket connected
+2026-02-21 18:33:57,562 - INFO - Deriv WebSocket connected.
+2026-02-21 18:33:57,879 - INFO - Authorization successful.
+2026-02-21 18:34:58,313 - INFO - 127.0.0.1 - - [21/Feb/2026 18:34:58] "GET / HTTP/1.1" 200 -
+2026-02-21 18:34:58,325 - INFO - 127.0.0.1 - - [21/Feb/2026 18:34:58] "GET /static/js/app.js HTTP/1.1" 200 -
+2026-02-21 18:34:58,448 - INFO - 127.0.0.1 - - [21/Feb/2026 18:34:58] "GET /api/config HTTP/1.1" 200 -
+2026-02-21 18:34:58,450 - INFO - 127.0.0.1 - - [21/Feb/2026 18:34:58] "GET /socket.io/?EIO=4&transport=polling&t=Po1UyO5 HTTP/1.1" 200 -
+2026-02-21 18:34:58,459 - INFO - Client connected: GSH_-JchYfCrOtkUAAAF
+2026-02-21 18:34:58,461 - INFO - 127.0.0.1 - - [21/Feb/2026 18:34:58] "POST /socket.io/?EIO=4&transport=polling&t=Po1UyOM&sid=E5a15YElSvQanecsAAAE HTTP/1.1" 200 -
+2026-02-21 18:34:58,465 - INFO - 127.0.0.1 - - [21/Feb/2026 18:34:58] "GET /socket.io/?EIO=4&transport=polling&t=Po1UyOP&sid=E5a15YElSvQanecsAAAE HTTP/1.1" 200 -
+2026-02-21 18:34:59,648 - INFO - Client disconnected
+2026-02-21 18:34:59,648 - INFO - 127.0.0.1 - - [21/Feb/2026 18:34:59] "GET /socket.io/?EIO=4&transport=websocket&sid=E5a15YElSvQanecsAAAE HTTP/1.1" 200 -
+2026-02-21 18:35:58,128 - ERROR - WS Error: Connection to remote host was lost.
+2026-02-21 18:35:58,129 - ERROR - Connection to remote host was lost. - goodbye
+2026-02-21 18:35:58,129 - INFO - WS Connection Closed
+2026-02-21 18:36:03,408 - INFO - Websocket connected
+2026-02-21 18:36:03,408 - INFO - Deriv WebSocket connected.
+2026-02-21 18:36:03,680 - INFO - Authorization successful.
+2026-02-21 18:38:03,783 - ERROR - WS Error: Connection to remote host was lost.
+2026-02-21 18:38:03,783 - ERROR - Connection to remote host was lost. - goodbye
+2026-02-21 18:38:03,783 - INFO - WS Connection Closed
+2026-02-21 18:38:09,019 - INFO - Websocket connected
+2026-02-21 18:38:09,020 - INFO - Deriv WebSocket connected.
+2026-02-21 18:38:09,323 - INFO - Authorization successful.
