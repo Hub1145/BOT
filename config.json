@@ -1,5 +1,5 @@
 {
-  "deriv_api_token": "",
+  "deriv_api_token": "381klIwm4Mr8BTT",
   "deriv_app_id": "62845",
   "symbols": [
     "R_100",
@@ -11,13 +11,13 @@
   "max_daily_loss_pct": 5,
   "entry_type": "candle_close",
   "is_demo": true,
-  "log_level": "info",
-  "active_strategy": "strategy_1",
+  "log_level": "INFO",
   "tp_enabled": false,
   "tp_value": 0,
   "sl_enabled": false,
   "sl_value": 0,
   "force_close_enabled": false,
   "force_close_duration": 60,
+  "active_strategy": "strategy_1",
   "custom_expiry": "default"
 }
