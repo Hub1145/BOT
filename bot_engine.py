@@ -191,7 +191,8 @@ class TradingBotEngine:
                     self._init_symbol_data(symbol)
                     ws.send(json.dumps({"ticks": symbol, "subscribe": 1}))
                     self._fetch_history(ws, symbol, strat['ltf_granularity'], 100)
-                    self._fetch_history(ws, symbol, strat['htf_granularity'], 2)
+                    h_count = 200 if strat_key in ['strategy_4', 'strategy_5'] else 2
+                    self._fetch_history(ws, symbol, strat['htf_granularity'], h_count)
 
         elif msg_type == 'balance':
             self.account_balance = data['balance']['balance']
@@ -351,8 +352,8 @@ class TradingBotEngine:
                         last_fetch = sd.get('last_htf_fetch_time', 0)
                         if time.time() - last_fetch > 60: # Throttle to once per minute
                             sd['last_htf_fetch_time'] = time.time()
-                            # Fetch more for Strategy 4 to recalculate zones
-                            count = 100 if strat_key == 'strategy_4' else 2
+                            # Fetch more for Strategy 4/5 to recalculate zones/indicators
+                            count = 200 if strat_key in ['strategy_4', 'strategy_5'] else 2
                             self._fetch_history(self.ws, symbol, htf_gran, count)
 
                 # HTF Candle Management (Internal tracking for closure triggers)
@@ -413,16 +414,22 @@ class TradingBotEngine:
 
     def _update_screener(self, symbol):
         sd = self.symbol_data.get(symbol)
-        if not sd or len(sd['htf_candles']) < 50: return
+        if not sd or len(sd['htf_candles']) < 100: return
 
         # Convert to DataFrame
         df = pd.DataFrame(sd['htf_candles'])
 
+        # Ensure we have data for the last candle
+        last_idx = -1
+        if pd.isna(df['close'].iloc[last_idx]): return
+
         # --- 1. TREND BLOCK (Weight 25%) ---
-        # EMA Cross + ADX + MACD + SMA200 + Ichimoku + PSAR
+        # Exhaustive Trend Research
         ema20 = ta.trend.EMAIndicator(df['close'], window=20).ema_indicator()
         ema50 = ta.trend.EMAIndicator(df['close'], window=50).ema_indicator()
         sma200 = ta.trend.SMAIndicator(df['close'], window=200).sma_indicator()
+        wma20 = ta.trend.WMAIndicator(df['close'], window=20).wma_indicator()
+        wma50 = ta.trend.WMAIndicator(df['close'], window=50).wma_indicator()
         adx_ind = ta.trend.ADXIndicator(df['high'], df['low'], df['close'])
         adx = adx_ind.adx()
         macd_ind = ta.trend.MACD(df['close'])
@@ -430,94 +437,112 @@ class TradingBotEngine:
         macd_signal = macd_ind.macd_signal()
         ichimoku = ta.trend.IchimokuIndicator(df['high'], df['low'])
         psar = ta.trend.PSARIndicator(df['high'], df['low'], df['close'])
+        aroon = ta.trend.AroonIndicator(df['close'])
+        kst = ta.trend.KSTIndicator(df['close'])
+        vortex = ta.trend.VortexIndicator(df['high'], df['low'], df['close'])
+        trix = ta.trend.TRIXIndicator(df['close']).trix()
+        dpo = ta.trend.DPOIndicator(df['close']).dpo()
+        mass = ta.trend.MassIndex(df['high'], df['low']).mass_index()
+        stc = ta.trend.STCIndicator(df['close']).stc()
 
-        last_ema20 = ema20.iloc[-1]
-        last_ema50 = ema50.iloc[-1]
-        last_sma200 = sma200.iloc[-1] if not sma200.empty and not pd.isna(sma200.iloc[-1]) else df['close'].iloc[-1]
-        last_adx = adx.iloc[-1]
-        last_macd = macd.iloc[-1]
-        last_macd_sig = macd_signal.iloc[-1]
         last_close = df['close'].iloc[-1]
 
-        # Ichimoku
-        span_a = ichimoku.ichimoku_a().iloc[-1]
-        span_b = ichimoku.ichimoku_b().iloc[-1]
-
-        # PSAR
-        psar_up = psar.psar_up().iloc[-1]
-        psar_down = psar.psar_down().iloc[-1]
-
         trend_score = 0
-        if last_ema20 > last_ema50: trend_score += 20
-        else: trend_score -= 20
+        if ema20.iloc[-1] > ema50.iloc[-1]: trend_score += 10
+        else: trend_score -= 10
 
-        if last_close > last_sma200: trend_score += 15
+        if wma20.iloc[-1] > wma50.iloc[-1]: trend_score += 10
+        else: trend_score -= 10
+
+        if not sma200.empty and not pd.isna(sma200.iloc[-1]):
+            if last_close > sma200.iloc[-1]: trend_score += 15
+            else: trend_score -= 15
+
+        if macd.iloc[-1] > macd_signal.iloc[-1]: trend_score += 15
         else: trend_score -= 15
 
-        if last_macd > last_macd_sig: trend_score += 15
-        else: trend_score -= 15
+        if last_close > ichimoku.ichimoku_a().iloc[-1] and last_close > ichimoku.ichimoku_b().iloc[-1]: trend_score += 15
+        elif last_close < ichimoku.ichimoku_a().iloc[-1] and last_close < ichimoku.ichimoku_b().iloc[-1]: trend_score -= 15
 
-        if last_close > span_a and last_close > span_b: trend_score += 20 # Above Cloud
-        elif last_close < span_a and last_close < span_b: trend_score -= 20 # Below Cloud
+        if not pd.isna(psar.psar_up().iloc[-1]): trend_score += 10
+        if not pd.isna(psar.psar_down().iloc[-1]): trend_score -= 10
 
-        if not pd.isna(psar_up): trend_score += 15 # PSAR Buy
-        if not pd.isna(psar_down): trend_score -= 15 # PSAR Sell
+        if aroon.aroon_up().iloc[-1] > aroon.aroon_down().iloc[-1]: trend_score += 10
+        else: trend_score -= 10
 
-        if last_adx > 25: trend_score *= 1.3
+        if vortex.vortex_indicator_pos().iloc[-1] > vortex.vortex_indicator_neg().iloc[-1]: trend_score += 10
+        else: trend_score -= 10
+
+        if trix.iloc[-1] > 0: trend_score += 5
+        if dpo.iloc[-1] > 0: trend_score += 5
+        if kst.kst().iloc[-1] > kst.kst_sig().iloc[-1]: trend_score += 10
+        if mass.iloc[-1] > 27: trend_score *= 0.8 # Reversal warning
+        if stc.iloc[-1] > 75: trend_score += 10
+        elif stc.iloc[-1] < 25: trend_score -= 10
+
+        if adx.iloc[-1] > 25: trend_score *= 1.3
 
         # --- 2. MOMENTUM BLOCK (Weight 25%) ---
-        # RSI + Stochastic + Williams %R + Awesome Oscillator + ROC
+        # Exhaustive Momentum Research
         rsi = ta.momentum.RSIIndicator(df['close']).rsi()
         stoch = ta.momentum.StochasticOscillator(df['high'], df['low'], df['close']).stoch()
+        stoch_rsi = ta.momentum.StochRSIIndicator(df['close']).stochrsi()
         wr = ta.momentum.WilliamsRIndicator(df['high'], df['low'], df['close']).williams_r()
         ao = ta.momentum.AwesomeOscillatorIndicator(df['high'], df['low']).awesome_oscillator()
         roc = ta.momentum.ROCIndicator(df['close']).roc()
-
-        last_rsi = rsi.iloc[-1]
-        last_stoch = stoch.iloc[-1]
-        last_wr = wr.iloc[-1]
-        last_ao = ao.iloc[-1]
-        last_roc = roc.iloc[-1]
+        tsi = ta.momentum.TSIIndicator(df['close']).tsi()
+        uo = ta.momentum.UltimateOscillator(df['high'], df['low'], df['close']).ultimate_oscillator()
+        ppo = ta.momentum.PercentagePriceOscillator(df['close'])
+        kama = ta.momentum.KAMAIndicator(df['close']).kama()
 
         mom_score = 0
-        if last_rsi > 50: mom_score += 15
-        if last_rsi < 50: mom_score -= 15
-        if last_stoch > 80: mom_score += 10
-        if last_stoch < 20: mom_score -= 10
-        if last_wr > -20: mom_score += 10
-        if last_wr < -80: mom_score -= 10
-        if last_ao > 0: mom_score += 15
+        if rsi.iloc[-1] > 50: mom_score += 10
+        else: mom_score -= 10
+
+        if stoch.iloc[-1] > 50: mom_score += 10
+        else: mom_score -= 10
+
+        if stoch_rsi.iloc[-1] > 0.5: mom_score += 10
+        else: mom_score -= 10
+
+        if wr.iloc[-1] > -50: mom_score += 10
+        else: mom_score -= 10
+
+        if ao.iloc[-1] > 0: mom_score += 15
         else: mom_score -= 15
-        if last_roc > 0: mom_score += 15
-        else: mom_score -= 15
+
+        if roc.iloc[-1] > 0: mom_score += 10
+        else: mom_score -= 10
+
+        if tsi.iloc[-1] > 0: mom_score += 10
+        if uo.iloc[-1] > 50: mom_score += 10
+        if ppo.ppo().iloc[-1] > ppo.ppo_signal().iloc[-1]: mom_score += 10
+        if last_close > kama.iloc[-1]: mom_score += 5
 
         # --- 3. VOLATILITY BLOCK (Weight 25%) ---
-        # BB + ATR + CCI + Keltner + Donchian
+        # Exhaustive Volatility Research
         bb = ta.volatility.BollingerBands(df['close'])
-        cci = ta.trend.CCIIndicator(df['high'], df['low'], df['close']).cci()
         keltner = ta.volatility.KeltnerChannel(df['high'], df['low'], df['close'])
         donchian = ta.volatility.DonchianChannel(df['high'], df['low'], df['close'])
-
-        bb_high = bb.bollinger_hband().iloc[-1]
-        bb_low = bb.bollinger_lband().iloc[-1]
-        last_cci = cci.iloc[-1]
-        k_high = keltner.keltner_channel_hband().iloc[-1]
-        k_low = keltner.keltner_channel_lband().iloc[-1]
-        d_high = donchian.donchian_channel_hband().iloc[-1]
-        d_low = donchian.donchian_channel_lband().iloc[-1]
+        atr = ta.volatility.AverageTrueRange(df['high'], df['low'], df['close']).average_true_range()
+        ui = ta.volatility.UlcerIndex(df['close']).ulcer_index()
+        cci = ta.trend.CCIIndicator(df['high'], df['low'], df['close']).cci()
 
         vol_score = 0
-        if last_close > bb_high: vol_score += 25
-        elif last_close < bb_low: vol_score -= 25
+        if last_close > bb.bollinger_hband().iloc[-1]: vol_score += 20
+        elif last_close < bb.bollinger_lband().iloc[-1]: vol_score -= 20
 
-        if last_cci > 100: vol_score += 20
-        elif last_cci < -100: vol_score -= 20
+        if last_close > keltner.keltner_channel_hband().iloc[-1]: vol_score += 20
+        elif last_close < keltner.keltner_channel_lband().iloc[-1]: vol_score -= 20
 
-        if last_close > k_high: vol_score += 20
-        elif last_close < k_low: vol_score -= 20
+        if last_close >= donchian.donchian_channel_hband().iloc[-1]: vol_score += 20
+        elif last_close <= donchian.donchian_channel_lband().iloc[-1]: vol_score -= 20
 
-        if last_close >= d_high: vol_score += 20
-        elif last_close <= d_low: vol_score -= 20
+        if cci.iloc[-1] > 100: vol_score += 20
+        elif cci.iloc[-1] < -100: vol_score -= 20
+
+        # UI risk factor (lower is better for trend, higher suggests volatility)
+        if ui.iloc[-1] < 5: vol_score *= 1.1 # Stable trend
 
         # --- 4. STRUCTURE BLOCK (Weight 25%) ---
         # Multiple Candlestick Patterns
@@ -532,6 +557,10 @@ class TradingBotEngine:
         elif pattern == "bearish_engulfing": struct_score -= 100
         elif pattern == "bullish_pin": struct_score += 70
         elif pattern == "bearish_pin": struct_score -= 70
+        elif pattern == "bullish_harami": struct_score += 60
+        elif pattern == "bearish_harami": struct_score -= 60
+        elif pattern == "tweezer_bottom": struct_score += 80
+        elif pattern == "tweezer_top": struct_score -= 80
         elif pattern == "marubozu":
             if c1['close'] > c1['open']: struct_score += 50
             else: struct_score -= 50
@@ -666,6 +695,19 @@ class TradingBotEngine:
             if curr['close'] < curr['open'] and prev['close'] > prev['open']:
                 if curr['close'] <= prev['open'] and curr['open'] >= prev['close']:
                     return "bearish_engulfing"
+
+        # Harami (Inside bar)
+        if body < prev_body * 0.5:
+            if max(curr['open'], curr['close']) <= max(prev['open'], prev['close']) and \
+               min(curr['open'], curr['close']) >= min(prev['open'], prev['close']):
+                if curr['close'] > curr['open']: return "bullish_harami"
+                else: return "bearish_harami"
+
+        # Tweezer
+        if abs(curr['high'] - prev['high']) < (total_range * 0.05) and curr['high'] > max(curr['open'], curr['close']):
+            return "tweezer_top"
+        if abs(curr['low'] - prev['low']) < (total_range * 0.05) and curr['low'] < min(curr['open'], curr['close']):
+            return "tweezer_bottom"
 
         # Doji (Indecision)
         # Body is very small (less than 10% of range)
@@ -1187,21 +1229,23 @@ class TradingBotEngine:
 
             if self.ws and self.ws.sock and self.ws.sock.connected:
                 strat = self.STRATEGY_MAP.get(new_strat, self.STRATEGY_MAP['strategy_1'])
+                h_count = 200 if new_strat in ['strategy_4', 'strategy_5'] else 2
                 for sym in new_symbols:
                     self._fetch_history(self.ws, sym, strat['ltf_granularity'], 100)
-                    self._fetch_history(self.ws, sym, strat['htf_granularity'], 2)
+                    self._fetch_history(self.ws, sym, strat['htf_granularity'], h_count)
             return {"success": True}
 
         # If only symbols changed and we are connected
         if self.ws and self.ws.sock and self.ws.sock.connected:
             strat = self.STRATEGY_MAP.get(new_strat, self.STRATEGY_MAP['strategy_1'])
+            h_count = 200 if new_strat in ['strategy_4', 'strategy_5'] else 2
             added_symbols = new_symbols - old_symbols
             for symbol in added_symbols:
                 self.log(f"Subscribing to new symbol: {symbol}")
                 self._init_symbol_data(symbol)
                 self.ws.send(json.dumps({"ticks": symbol, "subscribe": 1}))
                 self._fetch_history(self.ws, symbol, strat['ltf_granularity'], 100)
-                self._fetch_history(self.ws, symbol, strat['htf_granularity'], 2)
+                self._fetch_history(self.ws, symbol, strat['htf_granularity'], h_count)
 
             removed_symbols = old_symbols - new_symbols
             for symbol in removed_symbols:

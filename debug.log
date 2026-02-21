@@ -162,3 +162,54 @@
 2026-02-21 18:38:09,019 - INFO - Websocket connected
 2026-02-21 18:38:09,020 - INFO - Deriv WebSocket connected.
 2026-02-21 18:38:09,323 - INFO - Authorization successful.
+2026-02-21 18:40:09,426 - ERROR - WS Error: Connection to remote host was lost.
+2026-02-21 18:40:09,427 - ERROR - Connection to remote host was lost. - goodbye
+2026-02-21 18:40:09,427 - INFO - WS Connection Closed
+2026-02-21 18:40:14,646 - INFO - Websocket connected
+2026-02-21 18:40:14,647 - INFO - Deriv WebSocket connected.
+2026-02-21 18:40:14,881 - INFO - Authorization successful.
+2026-02-21 18:42:15,051 - ERROR - WS Error: Connection to remote host was lost.
+2026-02-21 18:42:15,051 - ERROR - Connection to remote host was lost. - goodbye
+2026-02-21 18:42:15,051 - INFO - WS Connection Closed
+2026-02-21 18:42:20,282 - INFO - Websocket connected
+2026-02-21 18:42:20,282 - INFO - Deriv WebSocket connected.
+2026-02-21 18:42:20,542 - INFO - Authorization successful.
+2026-02-21 18:44:20,672 - ERROR - WS Error: Connection to remote host was lost.
+2026-02-21 18:44:20,673 - ERROR - Connection to remote host was lost. - goodbye
+2026-02-21 18:44:20,673 - INFO - WS Connection Closed
+2026-02-21 18:44:25,998 - INFO - Websocket connected
+2026-02-21 18:44:25,999 - INFO - Deriv WebSocket connected.
+2026-02-21 18:44:26,357 - INFO - Authorization successful.
+2026-02-21 19:30:09,480 - ERROR - WS Error: Connection to remote host was lost.
+2026-02-21 19:30:09,494 - ERROR - Connection to remote host was lost. - goodbye
+2026-02-21 19:30:09,496 - INFO - WS Connection Closed
+2026-02-21 19:30:14,879 - INFO - Websocket connected
+2026-02-21 19:30:14,880 - INFO - Deriv WebSocket connected.
+2026-02-21 19:30:15,265 - INFO - Authorization successful.
+2026-02-21 19:32:15,416 - ERROR - WS Error: Connection to remote host was lost.
+2026-02-21 19:32:15,419 - ERROR - Connection to remote host was lost. - goodbye
+2026-02-21 19:32:15,419 - INFO - WS Connection Closed
+2026-02-21 19:32:20,665 - INFO - Websocket connected
+2026-02-21 19:32:20,666 - INFO - Deriv WebSocket connected.
+2026-02-21 19:32:20,924 - INFO - Authorization successful.
+2026-02-21 19:33:57,083 - INFO - Bot started | Trading: OFF
+2026-02-21 19:33:57,085 - WARNING - Werkzeug appears to be used in a production deployment. Consider switching to a production web server instead.
+2026-02-21 19:33:57,094 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.0.2:5000
+2026-02-21 19:33:57,095 - INFO - [33mPress CTRL+C to quit[0m
+2026-02-21 19:33:57,301 - INFO - Websocket connected
+2026-02-21 19:33:57,302 - INFO - Deriv WebSocket connected.
+2026-02-21 19:33:57,538 - INFO - Authorization successful.
+2026-02-21 19:33:57,538 - INFO - Daily starting balance set: 323.71
+2026-02-21 19:34:02,912 - INFO - 127.0.0.1 - - [21/Feb/2026 19:34:02] "GET / HTTP/1.1" 200 -
+2026-02-21 19:34:03,007 - INFO - 127.0.0.1 - - [21/Feb/2026 19:34:03] "GET /static/js/app.js HTTP/1.1" 200 -
+2026-02-21 19:34:03,349 - INFO - 127.0.0.1 - - [21/Feb/2026 19:34:03] "GET /socket.io/?EIO=4&transport=polling&t=Po1iTqu HTTP/1.1" 200 -
+2026-02-21 19:34:03,364 - INFO - 127.0.0.1 - - [21/Feb/2026 19:34:03] "GET /api/config HTTP/1.1" 200 -
+2026-02-21 19:34:03,381 - INFO - Client connected: 07yjPFTXp504tFXBAAAB
+2026-02-21 19:34:03,383 - INFO - 127.0.0.1 - - [21/Feb/2026 19:34:03] "POST /socket.io/?EIO=4&transport=polling&t=Po1iTra&sid=94IoVDesknIoYVXfAAAA HTTP/1.1" 200 -
+2026-02-21 19:34:03,398 - INFO - 127.0.0.1 - - [21/Feb/2026 19:34:03] "GET /socket.io/?EIO=4&transport=polling&t=Po1iTrk&sid=94IoVDesknIoYVXfAAAA HTTP/1.1" 200 -
+2026-02-21 19:34:03,415 - INFO - 127.0.0.1 - - [21/Feb/2026 19:34:03] "GET /socket.io/?EIO=4&transport=polling&t=Po1iTsF&sid=94IoVDesknIoYVXfAAAA HTTP/1.1" 200 -
+2026-02-21 19:34:04,848 - INFO - Client disconnected
+2026-02-21 19:34:04,849 - INFO - 127.0.0.1 - - [21/Feb/2026 19:34:04] "GET /socket.io/?EIO=4&transport=websocket&sid=94IoVDesknIoYVXfAAAA HTTP/1.1" 200 -
