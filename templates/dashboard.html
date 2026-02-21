@@ -163,9 +163,6 @@
                     <li class="nav-item">
                         <button class="nav-link" data-bs-toggle="tab" data-bs-target="#logTab">Log</button>
                     </li>
-                    <li class="nav-item">
-                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#screenerTab">Screener</button>
-                    </li>
                 </ul>
 
                 <div class="tab-content">
@@ -215,29 +212,6 @@
                     <div class="tab-pane fade" id="positionTab">
                         <div id="activeTradesContainer">
                             <p class="text-muted text-center py-4">No active positions</p>
-                        </div>
-                    </div>
-
-                    <!-- Screener Tab -->
-                    <div class="tab-pane fade" id="screenerTab">
-                        <div class="table-responsive">
-                            <table class="table table-dark table-striped table-hover mt-2">
-                                <thead>
-                                    <tr>
-                                        <th>Symbol</th>
-                                        <th>Conf %</th>
-                                        <th>Dir</th>
-                                        <th>Regime</th>
-                                        <th>Trend</th>
-                                        <th>Mom</th>
-                                        <th>Vol</th>
-                                        <th>Struct</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="screenerTableBody">
-                                    <tr><td colspan="8" class="text-center text-muted">Waiting for data...</td></tr>
-                                </tbody>
-                            </table>
                         </div>
                     </div>
 
@@ -317,11 +291,7 @@
                     <div class="mb-3">
                         <label class="form-label">Trading Strategy</label>
                         <select class="form-select" id="configActiveStrategy">
-                            <option value="strategy_1">Slow (Daily / 15m)</option>
-                            <option value="strategy_2">Moderate (1h / 3m)</option>
-                            <option value="strategy_3">Fast (15m / 1m)</option>
-                            <option value="strategy_4">Pure Price Action (5m / 1m)</option>
-                            <option value="strategy_5">Intelligence Screener (15m/5m/1m)</option>
+                            <option value="strategy_1">Breakout (Daily / 1h)</option>
                         </select>
                     </div>
                     <div class="mb-3" id="customExpiryContainer">

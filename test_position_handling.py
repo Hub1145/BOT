@@ -81,5 +81,36 @@ class TestPositionHandling(unittest.TestCase):
         calls = [json.loads(c.args[0]) for c in self.bot.ws.send.call_args_list]
         self.assertTrue(any(c.get('sell') == 'c2' for c in calls))
 
+    def test_breakout_strategy_logic(self):
+        symbol = 'R_100'
+        self.bot._init_symbol_data(symbol)
+        sd = self.bot.symbol_data[symbol]
+
+        # Set HTF (Daily) Open to 100
+        sd['htf_open'] = 100.0
+
+        # Scenario 1: 1HR candle opens below and closes above (Breakout Buy)
+        sd['current_ltf_candle'] = {'epoch': 1000, 'open': 99.0, 'close': 101.0}
+        sd['last_tick'] = 101.0
+
+        self.bot._process_strategy(symbol, is_candle_close=True)
+
+        calls = [json.loads(c.args[0]) for c in self.bot.ws.send.call_args_list]
+        buy_calls = [c for c in calls if c.get('buy') == 1]
+        self.assertEqual(len(buy_calls), 1)
+        self.assertEqual(buy_calls[0]['parameters']['contract_type'], 'CALL')
+
+        self.bot.ws.send.reset_mock()
+
+        # Scenario 2: 1HR candle opens above and closes above (No Breakout Buy)
+        sd['current_ltf_candle'] = {'epoch': 2000, 'open': 100.5, 'close': 101.0}
+        sd['last_tick'] = 101.0
+
+        self.bot._process_strategy(symbol, is_candle_close=True)
+
+        calls = [json.loads(c.args[0]) for c in self.bot.ws.send.call_args_list]
+        buy_calls = [c for c in calls if c.get('buy') == 1]
+        self.assertEqual(len(buy_calls), 0)
+
 if __name__ == '__main__':
     unittest.main()

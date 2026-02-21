@@ -21,19 +21,10 @@ function updateConfigLabels() {
         const customExpiryContainer = document.getElementById('customExpiryContainer');
 
         if (strategy === 'strategy_1') {
-            label.textContent = "Wait for 15m Candle Close";
+            label.textContent = "Wait for 1h Candle Close";
             customExpiryContainer.style.display = 'none';
-        } else if (strategy === 'strategy_2') {
-            label.textContent = "Wait for 3m Candle Close";
-            customExpiryContainer.style.display = 'block';
-        } else if (strategy === 'strategy_4') {
-            label.textContent = "Wait for 1m Candle Close";
-            customExpiryContainer.style.display = 'block';
-        } else if (strategy === 'strategy_5') {
-            label.textContent = "Wait for 1m Candle Close";
-            customExpiryContainer.style.display = 'none'; // Strategy 5 uses dynamic expiry
         } else {
-            label.textContent = "Wait for 1m Candle Close";
+            label.textContent = "Wait for Candle Close";
             customExpiryContainer.style.display = 'block';
         }
     }
@@ -163,10 +154,6 @@ function setupSocketListeners() {
         updateActiveTrades(data.trades);
     });
 
-    socket.on('screener_update', (data) => {
-        updateScreenerTable(data.symbol, data.data);
-    });
-
     socket.on('console_log', (data) => {
         const consoleOutput = document.getElementById('consoleOutput');
         const line = document.createElement('div');
@@ -178,33 +165,6 @@ function setupSocketListeners() {
 
     socket.on('error', (data) => alert('Error: ' + data.message));
     socket.on('success', (data) => console.log('Success:', data.message));
-}
-
-const screenerDataMap = {};
-
-function updateScreenerTable(symbol, data) {
-    screenerDataMap[symbol] = data;
-    const body = document.getElementById('screenerTableBody');
-    if (!body) return;
-
-    body.innerHTML = Object.keys(screenerDataMap).sort().map(sym => {
-        const d = screenerDataMap[sym];
-        const confColor = d.confidence >= 60 ? 'text-success' : (d.confidence <= -60 ? 'text-danger' : 'text-warning');
-        const dirColor = d.direction === 'CALL' ? 'text-success' : 'text-danger';
-
-        return `
-            <tr>
-                <td><strong>${sym}</strong></td>
-                <td class="${confColor} fw-bold">${d.confidence}%</td>
-                <td class="${dirColor} fw-bold">${d.direction}</td>
-                <td><small>${d.regime}</small></td>
-                <td>${d.trend}</td>
-                <td>${d.momentum}</td>
-                <td>${d.volatility}</td>
-                <td>${d.structure}</td>
-            </tr>
-        `;
-    }).join('');
 }
 
 function updateActiveTrades(trades) {

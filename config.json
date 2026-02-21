@@ -1,8 +1,10 @@
 {
-  "deriv_api_token": "381klIwm4Mr8BTT",
+  "deriv_api_token": "",
   "deriv_app_id": "62845",
   "symbols": [
-    "R_100"
+    "R_100",
+    "R_75",
+    "R_25"
   ],
   "use_fixed_balance": true,
   "balance_value": 10,
@@ -10,12 +12,12 @@
   "entry_type": "candle_close",
   "is_demo": true,
   "log_level": "info",
-  "active_strategy": "strategy_2",
+  "active_strategy": "strategy_1",
   "tp_enabled": false,
   "tp_value": 0,
   "sl_enabled": false,
   "sl_value": 0,
   "force_close_enabled": false,
   "force_close_duration": 60,
-  "custom_expiry": "30"
+  "custom_expiry": "default"
 }
