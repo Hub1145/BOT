@@ -10,7 +10,7 @@
   "entry_type": "candle_close",
   "is_demo": true,
   "log_level": "info",
-  "active_strategy": "strategy_1",
+  "active_strategy": "strategy_2",
   "tp_enabled": false,
   "tp_value": 0,
   "sl_enabled": false,

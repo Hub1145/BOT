@@ -26,6 +26,9 @@ function updateConfigLabels() {
         } else if (strategy === 'strategy_2') {
             label.textContent = "Wait for 3m Candle Close";
             customExpiryContainer.style.display = 'block';
+        } else if (strategy === 'strategy_4') {
+            label.textContent = "Wait for 1m Candle Close";
+            customExpiryContainer.style.display = 'block';
         } else {
             label.textContent = "Wait for 1m Candle Close";
             customExpiryContainer.style.display = 'block';

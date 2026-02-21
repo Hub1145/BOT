@@ -27,6 +27,13 @@ class TradingBotEngine:
             'ltf_granularity': 60,    # 1m
             'expiry_type': 'fixed',
             'duration': 900           # 15 minutes
+        },
+        'strategy_4': {
+            'name': 'SNR Price Action',
+            'htf_granularity': 300,   # 5m for SNR
+            'ltf_granularity': 60,    # 1m for Entry
+            'expiry_type': 'fixed',
+            'duration': 300           # 5m expiry
         }
     }
 
@@ -210,12 +217,14 @@ class TradingBotEngine:
         if symbol not in self.symbol_data:
             self.symbol_data[symbol] = {
                 'ltf_candles': [],
+                'htf_candles': [],
                 'htf_open': None,
                 'htf_epoch': None,
                 'last_tick': None,
                 'last_processed_ltf': None,
                 'last_trade_ltf': None,
-                'current_ltf_candle': None
+                'current_ltf_candle': None,
+                'snr_zones': [] # List of { 'price': level, 'type': 'S'|'R'|'Flip', 'touches': n }
             }
 
     def _fetch_history(self, ws, symbol, granularity, count):
@@ -261,6 +270,11 @@ class TradingBotEngine:
                         sd['htf_open'] = target_candle['open']
                         sd['htf_epoch'] = target_candle['epoch']
                         self.log(f"HTF Open for {symbol}: {sd['htf_open']} (Epoch: {sd['htf_epoch']})")
+
+                if strat_key == 'strategy_4':
+                    sd['htf_candles'] = candles
+                    self._calculate_snr_zones(symbol)
+
             elif granularity == strat['ltf_granularity']:
                 sd['ltf_candles'] = candles
                 if candles:
@@ -300,14 +314,16 @@ class TradingBotEngine:
             self._monitor_open_contracts()
 
             if self.is_running:
-                # HTF Refresh for Strategy 2 (Hourly) and Strategy 3 (15m)
-                if strat_key in ['strategy_2', 'strategy_3']:
+                # HTF Refresh for Strategy 2, 3, 4
+                if strat_key in ['strategy_2', 'strategy_3', 'strategy_4']:
                     htf_gran = strat['htf_granularity']
                     if sd['htf_epoch'] is None or tick.get('epoch') >= sd['htf_epoch'] + htf_gran:
                         last_fetch = sd.get('last_htf_fetch_time', 0)
                         if time.time() - last_fetch > 60: # Throttle to once per minute
                             sd['last_htf_fetch_time'] = time.time()
-                            self._fetch_history(self.ws, symbol, htf_gran, 2)
+                            # Fetch more for Strategy 4 to recalculate zones
+                            count = 100 if strat_key == 'strategy_4' else 2
+                            self._fetch_history(self.ws, symbol, htf_gran, count)
 
                 # LTF Candle Management
                 if sd['current_ltf_candle']:
@@ -315,6 +331,11 @@ class TradingBotEngine:
                     if tick_time >= candle_start + timedelta(seconds=strat['ltf_granularity']):
                         # LTF Candle transition
                         self.log(f"LTF ({ltf_min}m) Candle closed for {symbol} at {sd['current_ltf_candle']['close']}")
+
+                        # Store closed candle for pattern recognition
+                        sd['ltf_candles'].append(sd['current_ltf_candle'])
+                        if len(sd['ltf_candles']) > 100: sd['ltf_candles'].pop(0)
+
                         if self.config.get('entry_type') == 'candle_close':
                             self._process_strategy(symbol, True)
 
@@ -331,6 +352,116 @@ class TradingBotEngine:
 
                 if self.config.get('entry_type') == 'tick':
                     self._process_strategy(symbol, False)
+
+    def _calculate_snr_zones(self, symbol):
+        sd = self.symbol_data.get(symbol)
+        if not sd or not sd['htf_candles']: return
+
+        candles = sd['htf_candles'][-100:]
+        if len(candles) < 20: return
+
+        levels = []
+        # Find local peaks and troughs
+        for i in range(1, len(candles) - 1):
+            # Resistance: Peak
+            if candles[i]['high'] > candles[i-1]['high'] and candles[i]['high'] > candles[i+1]['high']:
+                levels.append({'price': candles[i]['high'], 'type': 'R'})
+            # Support: Trough
+            if candles[i]['low'] < candles[i-1]['low'] and candles[i]['low'] < candles[i+1]['low']:
+                levels.append({'price': candles[i]['low'], 'type': 'S'})
+
+        # Cluster levels
+        # Threshold: 0.05% of price
+        if not levels: return
+        avg_price = sum(c['close'] for c in candles) / len(candles)
+        threshold = avg_price * 0.0005
+
+        clusters = []
+        for l in levels:
+            found = False
+            for c in clusters:
+                if abs(l['price'] - c['price']) < threshold:
+                    c['prices'].append(l['price'])
+                    c['touches'] += 1
+                    # If it was R and now S, it's a Flip
+                    if l['type'] != c['last_type']:
+                        c['is_flip'] = True
+                    c['last_type'] = l['type']
+                    found = True
+                    break
+            if not found:
+                clusters.append({
+                    'price': l['price'],
+                    'touches': 1,
+                    'is_flip': False,
+                    'last_type': l['type'],
+                    'prices': [l['price']]
+                })
+
+        # Refine clusters: calculate mean price and filter by touches >= 2
+        active_zones = []
+        for c in clusters:
+            if c['touches'] >= 2:
+                mean_price = sum(c['prices']) / len(c['prices'])
+                active_zones.append({
+                    'price': mean_price,
+                    'touches': c['touches'],
+                    'is_flip': c['is_flip'],
+                    'type': 'Flip' if c['is_flip'] else c['last_type']
+                })
+
+        # Sort by strength (touches) and take top 5
+        active_zones.sort(key=lambda x: x['touches'], reverse=True)
+        sd['snr_zones'] = active_zones[:5]
+
+        if active_zones:
+            levels_str = ", ".join([f"{z['price']:.2f}({z['type']})" for z in sd['snr_zones']])
+            self.log(f"SNR Zones for {symbol}: {levels_str}")
+
+    def _check_price_action_patterns(self, candles):
+        if len(candles) < 2: return None
+
+        curr = candles[-1]
+        prev = candles[-2]
+
+        body = abs(curr['close'] - curr['open'])
+        upper_wick = curr['high'] - max(curr['open'], curr['close'])
+        lower_wick = min(curr['open'], curr['close']) - curr['low']
+        total_range = curr['high'] - curr['low']
+
+        if total_range == 0: return None
+
+        # Marubozu (Aggression) check
+        # If body is more than 90% of total range, it's aggressive
+        is_marubozu = body > (total_range * 0.9)
+        if is_marubozu: return "marubozu"
+
+        # Pin Bar / Hammer
+        # Body is small (less than 35% of range), one wick is > 60% of range
+        if body < (total_range * 0.35):
+            if lower_wick > (total_range * 0.6):
+                return "bullish_pin"
+            if upper_wick > (total_range * 0.6):
+                return "bearish_pin"
+
+        # Engulfing
+        prev_body = abs(prev['close'] - prev['open'])
+        if body > prev_body:
+            # Bullish Engulfing
+            if curr['close'] > curr['open'] and prev['close'] < prev['open']:
+                if curr['close'] >= prev['open'] and curr['open'] <= prev['close']:
+                    return "bullish_engulfing"
+            # Bearish Engulfing
+            if curr['close'] < curr['open'] and prev['close'] > prev['open']:
+                if curr['close'] <= prev['open'] and curr['open'] >= prev['close']:
+                    return "bearish_engulfing"
+
+        # Doji (Indecision)
+        # Body is very small (less than 10% of range)
+        if body < (total_range * 0.1):
+            return "doji"
+
+        return None
 
     def _process_strategy(self, symbol, is_candle_close):
         # Check Max Daily Loss relative to starting balance of the day
@@ -360,16 +491,49 @@ class TradingBotEngine:
         if sd.get('last_processed_ltf') == time_key and is_candle_close:
             return # Already processed this candle close
 
-        # Strategy Breakout Logic
+        # Strategy Signal Logic
         signal = None
-        check_price = current_ltf['close'] if is_candle_close else current_price
+        strat_key = self.config.get('active_strategy', 'strategy_1')
 
-        # BUY: LTF open <= HTF Open AND check_price > HTF Open AND bullish
-        if current_ltf['open'] <= htf_open and check_price > htf_open and check_price > current_ltf['open']:
-            signal = 'buy'
-        # SELL: LTF open >= HTF Open AND check_price < HTF Open AND bearish
-        elif current_ltf['open'] >= htf_open and check_price < htf_open and check_price < current_ltf['open']:
-            signal = 'sell'
+        if strat_key == 'strategy_4':
+            # SNR Price Action Logic
+            if not is_candle_close: return # Only on 1m candle close
+
+            zones = sd.get('snr_zones', [])
+            if not zones: return
+
+            pattern = self._check_price_action_patterns(sd['ltf_candles'])
+            if not pattern or pattern == "marubozu": return
+
+            # Check if current candle touched any zone
+            for z in zones:
+                # Buffer: 0.02%
+                buffer = z['price'] * 0.0002
+                touched = current_ltf['low'] <= (z['price'] + buffer) and current_ltf['high'] >= (z['price'] - buffer)
+
+                if touched:
+                    # Bullish Reversal at Support or Flip
+                    if z['type'] in ['S', 'Flip'] and pattern in ['bullish_pin', 'bullish_engulfing', 'doji']:
+                        if current_ltf['close'] > current_ltf['open']: # Confirm bullish
+                            signal = 'buy'
+                            self.log(f"Strategy 4 BUY Signal: {pattern} at {z['type']} zone {z['price']:.2f}")
+                            break
+                    # Bearish Reversal at Resistance or Flip
+                    elif z['type'] in ['R', 'Flip'] and pattern in ['bearish_pin', 'bearish_engulfing', 'doji']:
+                        if current_ltf['close'] < current_ltf['open']: # Confirm bearish
+                            signal = 'sell'
+                            self.log(f"Strategy 4 SELL Signal: {pattern} at {z['type']} zone {z['price']:.2f}")
+                            break
+        else:
+            # Default Breakout Logic (Strategy 1, 2, 3)
+            check_price = current_ltf['close'] if is_candle_close else current_price
+
+            # BUY: LTF open <= HTF Open AND check_price > HTF Open AND bullish
+            if current_ltf['open'] <= htf_open and check_price > htf_open and check_price > current_ltf['open']:
+                signal = 'buy'
+            # SELL: LTF open >= HTF Open AND check_price < HTF Open AND bearish
+            elif current_ltf['open'] >= htf_open and check_price < htf_open and check_price < current_ltf['open']:
+                signal = 'sell'
 
         if signal:
             # Check if we already traded this LTF period for this symbol to avoid multiple entries on ticks
@@ -461,16 +625,22 @@ class TradingBotEngine:
             if custom_expiry != 'default':
                 try:
                     duration_seconds = int(custom_expiry)
-                    if duration_seconds >= 60:
-                        expiry_label = f"Expiry: {duration_seconds // 60} minutes"
-                    else:
-                        expiry_label = f"Expiry: {duration_seconds} seconds"
                 except:
                     duration_seconds = strat['duration']
-                    expiry_label = f"Expiry: {duration_seconds // 60} minutes"
             else:
-                duration_seconds = strat['duration']
-                expiry_label = f"Expiry: {duration_seconds // 60} minutes"
+                # Calculate duration till NEXT HTF candle close for Strategy 2 and 3
+                # if the user wants "Time till candle close" behavior
+                if strat_key in ['strategy_2', 'strategy_3']:
+                    htf_gran = strat['htf_granularity']
+                    next_close_epoch = ((int(now.timestamp()) // htf_gran) + 1) * htf_gran
+                    duration_seconds = next_close_epoch - int(now.timestamp())
+                else:
+                    duration_seconds = strat['duration']
+
+            if duration_seconds >= 60:
+                expiry_label = f"Expiry: {duration_seconds // 60}m {duration_seconds % 60}s"
+            else:
+                expiry_label = f"Expiry: {duration_seconds} seconds"
 
         if duration_seconds <= 0:
             return
