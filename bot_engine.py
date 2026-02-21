@@ -428,8 +428,8 @@ class TradingBotEngine:
         ema20 = ta.trend.EMAIndicator(df['close'], window=20).ema_indicator()
         ema50 = ta.trend.EMAIndicator(df['close'], window=50).ema_indicator()
         sma200 = ta.trend.SMAIndicator(df['close'], window=200).sma_indicator()
-        wma20 = ta.trend.WMAIndicator(df['close'], window=20).wma_indicator()
-        wma50 = ta.trend.WMAIndicator(df['close'], window=50).wma_indicator()
+        wma20 = ta.trend.WMAIndicator(df['close'], window=20).wma()
+        wma50 = ta.trend.WMAIndicator(df['close'], window=50).wma()
         adx_ind = ta.trend.ADXIndicator(df['high'], df['low'], df['close'])
         adx = adx_ind.adx()
         macd_ind = ta.trend.MACD(df['close'])
@@ -437,7 +437,7 @@ class TradingBotEngine:
         macd_signal = macd_ind.macd_signal()
         ichimoku = ta.trend.IchimokuIndicator(df['high'], df['low'])
         psar = ta.trend.PSARIndicator(df['high'], df['low'], df['close'])
-        aroon = ta.trend.AroonIndicator(df['close'])
+        aroon = ta.trend.AroonIndicator(df['high'], df['low'])
         kst = ta.trend.KSTIndicator(df['close'])
         vortex = ta.trend.VortexIndicator(df['high'], df['low'], df['close'])
         trix = ta.trend.TRIXIndicator(df['close']).trix()
@@ -519,6 +519,35 @@ class TradingBotEngine:
         if ppo.ppo().iloc[-1] > ppo.ppo_signal().iloc[-1]: mom_score += 10
         if last_close > kama.iloc[-1]: mom_score += 5
 
+        # --- VOLUME BLOCK (If available) ---
+        if 'volume' in df.columns and not df['volume'].empty:
+            mfi = ta.volume.MFIIndicator(df['high'], df['low'], df['close'], df['volume']).money_flow_index()
+            obv = ta.volume.OnBalanceVolumeIndicator(df['close'], df['volume']).on_balance_volume()
+            cmf = ta.volume.ChaikinMoneyFlowIndicator(df['high'], df['low'], df['close'], df['volume']).chaikin_money_flow()
+            vpt = ta.volume.VolumePriceTrendIndicator(df['close'], df['volume']).volume_price_trend()
+            fi = ta.volume.ForceIndexIndicator(df['close'], df['volume']).force_index()
+            em = ta.volume.EaseOfMovementIndicator(df['high'], df['low'], df['volume']).ease_of_movement()
+            adi = ta.volume.AccDistIndexIndicator(df['high'], df['low'], df['close'], df['volume']).acc_dist_index()
+            nvi = ta.volume.NegativeVolumeIndexIndicator(df['close'], df['volume']).negative_volume_index()
+            pvo = ta.momentum.PercentageVolumeOscillator(df['volume'])
+            vwap = ta.volume.VolumeWeightedAveragePrice(df['high'], df['low'], df['close'], df['volume']).volume_weighted_average_price()
+
+            volumem_score = 0
+            if mfi.iloc[-1] > 50: volumem_score += 10
+            if cmf.iloc[-1] > 0: volumem_score += 10
+            if fi.iloc[-1] > 0: volumem_score += 10
+            if obv.iloc[-1] > obv.iloc[-2]: volumem_score += 10
+            if pvo.pvo().iloc[-1] > pvo.pvo_signal().iloc[-1]: volumem_score += 10
+            if vpt.iloc[-1] > vpt.iloc[-2]: volumem_score += 5
+            if em.iloc[-1] > 0: volumem_score += 5
+            if adi.iloc[-1] > adi.iloc[-2]: volumem_score += 5
+            if nvi.iloc[-1] > nvi.iloc[-2]: volumem_score += 5
+            if last_close > vwap.iloc[-1]: volumem_score += 10
+
+            # Incorporate Volume into Momentum or create a new block
+            # For now, let's mix it into mom_score to keep the 4-block UI
+            mom_score = (mom_score * 0.7) + (volumem_score * 0.3)
+
         # --- 3. VOLATILITY BLOCK (Weight 25%) ---
         # Exhaustive Volatility Research
         bb = ta.volatility.BollingerBands(df['close'])
@@ -576,8 +605,11 @@ class TradingBotEngine:
         confidence = min(max(total_score, -100), 100)
 
         regime = "Ranging"
-        if last_adx > 25:
-            regime = "Trending Up" if last_ema20 > last_ema50 else "Trending Down"
+        _adx = adx.iloc[-1]
+        _ema20 = ema20.iloc[-1]
+        _ema50 = ema50.iloc[-1]
+        if _adx > 25:
+            regime = "Trending Up" if _ema20 > _ema50 else "Trending Down"
 
         self.screener_data[symbol] = {
             'confidence': round(confidence, 1),
@@ -587,7 +619,7 @@ class TradingBotEngine:
             'momentum': round(mom_score, 1),
             'volatility': round(vol_score, 1),
             'structure': round(struct_score, 1),
-            'adx': round(last_adx, 1)
+            'adx': round(_adx, 1)
         }
 
         # Emit to UI
