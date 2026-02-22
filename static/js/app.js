@@ -219,7 +219,10 @@ function updateScreenerTable(symbol, data) {
 
     body.innerHTML = Object.keys(screenerDataMap).sort().map(sym => {
         const d = screenerDataMap[sym];
-        const confColor = d.confidence >= 65 ? 'text-success' : (d.confidence <= -65 ? 'text-danger' : 'text-warning');
+        const threshold = d.threshold || (currentConfig?.contract_type === 'multiplier' ? 68 : 72);
+        const streak = d.streak || 0;
+
+        const confColor = Math.abs(d.confidence) >= threshold ? 'text-success' : 'text-warning';
         const dirColor = d.direction === 'CALL' ? 'text-success' : 'text-danger';
 
         const contractType = currentConfig ? currentConfig.contract_type : 'rise_fall';
@@ -230,10 +233,12 @@ function updateScreenerTable(symbol, data) {
             recommendation = `${d.expiry_min}m | 1mATR:${d.atr_1m}`;
         }
 
+        const streakBadge = streak >= 3 ? `<span class="badge bg-danger ms-1" title="Loss Streak: ${streak}">S</span>` : '';
+
         return `
             <tr>
-                <td><strong>${sym}</strong></td>
-                <td class="${confColor} fw-bold">${d.confidence}%</td>
+                <td><strong>${sym}</strong>${streakBadge}</td>
+                <td class="${confColor} fw-bold">${d.confidence}% <small class="text-muted">/${threshold}%</small></td>
                 <td class="${dirColor} fw-bold">${d.direction}</td>
                 <td><small>${recommendation}</small></td>
                 <td>${d.trend}</td>

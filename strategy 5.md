@@ -1,89 +1,78 @@
-# Strategy 5: Synthetic Intelligence Screener (v2.0)
+# Strategy 5: Synthetic Intelligence Screener (v2.1)
 
-Strategy 5 v2.0 is a highly optimized trading engine specifically designed for Deriv Volatility Indices. It recognizes that synthetic markets are mathematically generated and focuses on pure price action algorithms by stripping away indicator noise and lag.
+Strategy 5 v2.1 is an advanced trading engine specifically optimized for Deriv Volatility Indices. This version focuses on eliminating noise, correcting leverage logic, and introducing structural geometry (Fractals & Order Blocks) to achieve high-precision entries.
 
-The engine splits into two distinct profiles: **The Scalper (Rise/Fall)** and **The Day Trader (Multiplier)**.
-
-## 1. Upgraded Multi-Timeframe Architecture
-
-The timeframe hierarchy is separated based on the trading mode:
+## 1. Multi-Timeframe Architecture (v2.1 Refined)
 
 ### Mode A: Rise & Fall (Scalping)
-*   **Daily:** Ignored.
-*   **1-Hour (Macro Bias):** Determines the "Do Not Trade Against" direction and maps major Support/Resistance.
-*   **15-Minute (Momentum Bias):** Confirms intraday wave expansion or exhaustion.
-*   **5-Minute (Core Setup):** Primary timeframe for indicator suite and block scoring.
-*   **1-Minute (Trigger & Entry):** Precise execution (pullbacks, pin bars, engulfing).
+*   **1-Hour (Macro Bias):** Determines "Do Not Trade Against" direction and maps major SNR.
+*   **15-Minute (Momentum Bias):** Confirms intraday wave expansion.
+*   **5-Minute (Core Setup):** Primary timeframe for indicator suite and **Fractal Detection**.
+*   **1-Minute (Trigger & Entry):** Precise execution via reversal candle confirmation.
 
 ### Mode B: Multiplier (Day Trading)
-*   **Daily (Macro Trend):** Sets the global regime and used for Pivot calculations.
-*   **1-Hour (Core Setup):** Primary timeframe for indicator scoring and trend validation.
-*   **15-Minute (Structure):** Used to find optimal pullback zones.
-*   **5-Minute (Trigger):** Timed entry into the 1H/Daily trend.
-*   **1-Minute:** Ignored.
+*   **Daily (Macro Trend):** Sets global regime and Pivot calculations.
+*   **1-Hour (Core Setup):** Primary timeframe for indicator scoring and **Order Block Detection**.
+*   **15-Minute (Structure):** Used for pullback identification (EMA 50 / SuperTrend).
+*   **5-Minute (Momentum):** Confirms resumption of trend after a pullback.
+*   **1-Minute (Execution):** Final entry confirmation candle (Precision Leg).
 
 ---
 
-## 2. Optimized Intelligence Engine
-
-The engine focuses on the sharpest tools to eliminate redundancy and lag.
+## 2. The v2.1 Intelligence Engine
 
 ### A) Trend Block (Regime Filter)
-*   **EMA 50 & EMA 200:** Golden standard for trend bias.
-*   **SuperTrend Indicator:** Algorithmic indicator that responds perfectly to synthetic markets.
-*   **ADX (Average Directional Index):** Trend strength filter. Multiplier trades are disabled if ADX < 20.
+*   **EMA 50 & EMA 200:** Trend bias golden standard.
+*   **SuperTrend:** Algorithmic trend following.
+*   **ADX:** Trend strength filter. Higher ADX (>30) unlocks higher leverage.
 
-### B) Momentum Block (Velocity & Exhaustion)
-*   **RSI (14):** Base momentum.
-*   **Stoch RSI:** Highly sensitive for trigger timing.
-*   **MACD (12, 26, 9):** Strictly used for **Divergence Detection**, not crossovers.
+### B) Momentum Block
+*   **RSI (14) & Stoch RSI:** Velocity and trigger timing.
+*   **MACD Divergence:** Identifies structural exhaustion (Divergence only, no crossovers).
 
-### C) Volatility Block (Expansion)
-*   **ATR (Average True Range):** Used for dynamic Stop Loss and Multiplier sizing.
-*   **Bollinger Bands (20, 2):** Used for mean-reversion (Rise/Fall) and volatility breakouts (Multipliers).
+### C) Volatility Block
+*   **ATR (Average True Range):** Measures volatility expansion. Used for dynamic multiplier selection.
+*   **Bollinger Bands:** Identifies band-walks (trend) and rejections (range).
 
-### D) Structure Block (Geometry)
-*   **Auto Support & Resistance (HTF SNR):** Maps 1H and 15m order blocks and rejection zones.
+### D) Structure Block (v2.1 Geometry)
+*   **5m Fractals (Scalping):** Detects recent swing highs/lows for precise retest entries.
+*   **1H Order Blocks (Multiplier):** Identifies institutional "Order Flow" zones (last opposite candle before an impulse) for high-probability pullback entries.
 *   **Price Distance from EMA 50:** Measures overextension.
 
 ---
 
-## 3. Dynamic Scoring & Execution Logic
+## 3. Dynamic Scoring & Thresholds
 
-### Mode A: RISE & FALL LOGIC (Scalping)
-*   **Goal:** Quick strikes exploiting mean reversion and momentum exhaustion.
-*   **Weighting:** Structure (40%), Momentum (40%), Volatility (20%), Trend (0%).
-*   **Signal Trigger (>= 65% Confidence):**
-    *   Price touches 1H SNR or 15m outer Bollinger Band.
-    *   5m Stoch RSI is crossing back.
-    *   1m chart prints a reversal candle.
-*   **Dynamic Expiry:**
-    *   Triggered on 1m Reversal: 3 to 5 Minutes.
-    *   Triggered on 5m Reversal: 10 to 15 Minutes.
+### Mode A: RISE & FALL (Scalping)
+*   **Confidence Threshold:** **>= 72%** (Strict filter for binary outcomes).
+*   **Weighting:** Structure (40%), Momentum (40%), Volatility (20%).
+*   **Logic:** Requires a 5m Fractal retest or 1H SNR touch + 1m reversal candle.
 
-### Mode B: MULTIPLIER LOGIC (Day Trading)
-*   **Goal:** Catching large, sustained moves.
-*   **Weighting:** Trend (50%), Volatility (30%), Structure (20%), Momentum (Filter).
-*   **Signal Trigger (>= 75% Confidence):**
-    *   1H EMA 50 > EMA 200 and ADX > 25.
-    *   Price pulls back to 15m EMA 50 or SuperTrend line.
-    *   5m chart shows momentum resuming.
-*   **ATR-Based Multiplier Selection:**
-    *   High Volatility (High ATR): 10x - 20x Multiplier.
-    *   Low Volatility (Low ATR): 50x Multiplier.
-*   **Target Levels:**
-    *   Stop Loss: 1.5x 1H ATR.
-    *   Take Profit: 3.0x 1H ATR (1:2 RR minimum).
+### Mode B: MULTIPLIER (Day Trading)
+*   **Confidence Threshold:** **>= 68%** (Intervention possible via position management).
+*   **Weighting:** Trend (50%), Volatility (30%), Structure (20%).
+*   **Precision Entry:** Once 1H/15m/5m conditions align, requires a **1m confirmation candle** in the signal direction.
+
+### v2.1 Multiplier Selection (Corrected)
+Leverage is tied to Volatility and Trend Strength:
+*   **High Volatility (High ATR) + Strong Trend (ADX > 30):** 20x - 50x Multiplier.
+*   **Medium Volatility (ADX > 20):** 10x - 20x Multiplier.
+*   **Low Volatility (Compression):** 5x - 10x Multiplier (Wait for breakout).
 
 ---
 
-## 4. Advanced Position Management
+## 4. Advanced Position & Risk Management
 
-### For Multiplier (Day Trading)
-*   **Free Ride Protocol:** SL moved to Entry Price + margin once profit reaches **1.5 ATR**.
-*   **SuperTrend Trailing:** Profit is allowed to run as long as the **15-Minute SuperTrend** holds.
-*   **Divergence Hard Exit:** Position closed immediately if **1H MACD** prints a valid divergence against the trade.
+### Adaptive Sensitivity (Streak Tracking)
+The engine learns from recent performance. If **3+ consecutive losses** occur on a symbol:
+1.  The confidence threshold is automatically increased by **10%**.
+2.  Filters become stricter until a winning trade resets the streak.
 
-### For Rise & Fall (Scalping)
-*   **Late Entry Penalty:** Trade cancelled if the 1m candle has already moved more than 30% of its average ATR.
-*   **Volatility Freeze:** Execution paused if 1m ATR drops below baseline threshold.
+### Multiplier Decision Engine
+*   **Free Ride Protocol:** SL moved to Entry + small margin once profit reaches **1.5 ATR**.
+*   **SuperTrend Trailing:** Position trails the **15-Minute SuperTrend** line once in "Free Ride".
+*   **Divergence Hard Exit:** Immediate exit if a **1H MACD Divergence** prints against the position.
+
+### Scalping Protections
+*   **Late Entry Penalty:** Trade cancelled if 1m candle body exceeds 30% of its average ATR.
+*   **Volatility Freeze:** Execution paused if 1m ATR drops below baseline (market consolidation).

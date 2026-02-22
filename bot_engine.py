@@ -82,6 +82,7 @@ class TradingBotEngine:
         self.total_trade_loss = 0.0
         self.wins_count = 0
         self.losses_count = 0
+        self.symbol_streaks = {} # Symbol -> current consecutive losses
         self.daily_start_balance = 0.0
         self.last_balance_reset_date = None
 
@@ -557,6 +558,52 @@ class TradingBotEngine:
                     direction[i] = 1
         return pd.Series(supertrend), pd.Series(direction)
 
+    def _calculate_fractals(self, df, window=2):
+        """Identify Swing Highs and Lows (Fractals)."""
+        if len(df) < 2 * window + 1: return pd.Series([False]*len(df)), pd.Series([False]*len(df))
+
+        highs = df['high']
+        lows = df['low']
+
+        is_high = [False] * len(df)
+        is_low = [False] * len(df)
+
+        for i in range(window, len(df) - window):
+            # Swing High
+            if all(highs.iloc[i] > highs.iloc[i-window:i]) and all(highs.iloc[i] > highs.iloc[i+1:i+window+1]):
+                is_high[i] = True
+            # Swing Low
+            if all(lows.iloc[i] < lows.iloc[i-window:i]) and all(lows.iloc[i] < lows.iloc[i+1:i+window+1]):
+                is_low[i] = True
+
+        return pd.Series(is_high, index=df.index), pd.Series(is_low, index=df.index)
+
+    def _calculate_order_blocks(self, df, lookback=100):
+        """Identify Order Blocks: Last opposite candle before a strong impulsive move."""
+        if len(df) < lookback: return []
+
+        obs = []
+        for i in range(len(df) - 5, window := 5, -1):
+            # Check for impulsive move (3 consecutive candles of same color with increasing volume or size)
+            if i < 10: break
+
+            # Simple impulse check: body size > 2x average of previous 10
+            avg_body = abs(df['close'].iloc[i-10:i] - df['open'].iloc[i-10:i]).mean()
+            body = abs(df['close'].iloc[i] - df['open'].iloc[i])
+
+            if body > 2 * avg_body:
+                is_bullish_impulse = df['close'].iloc[i] > df['open'].iloc[i]
+                # Find last opposite candle
+                for j in range(i-1, i-6, -1):
+                    if is_bullish_impulse and df['close'].iloc[j] < df['open'].iloc[j]:
+                        obs.append({'price': df['low'].iloc[j], 'high': df['high'].iloc[j], 'type': 'Bullish OB', 'epoch': df['epoch'].iloc[j]})
+                        break
+                    elif not is_bullish_impulse and df['close'].iloc[j] > df['open'].iloc[j]:
+                        obs.append({'price': df['high'].iloc[j], 'low': df['low'].iloc[j], 'type': 'Bearish OB', 'epoch': df['epoch'].iloc[j]})
+                        break
+            if len(obs) >= 5: break
+        return obs
+
     def _detect_macd_divergence(self, df, window=20):
         if len(df) < window + 10: return 0 # No signal
 
@@ -600,9 +647,15 @@ class TradingBotEngine:
         if is_multiplier:
             if len(sd.get('htf_candles', [])) < 100: return
             df_core = pd.DataFrame(sd['htf_candles'])
+            # Calculate 1H Order Blocks
+            sd['order_blocks'] = self._calculate_order_blocks(df_core)
         else:
             if len(sd.get('m5_candles', [])) < 100: return
             df_core = pd.DataFrame(sd['m5_candles'])
+            # Calculate 5m Fractals
+            f_high, f_low = self._calculate_fractals(df_core)
+            sd['fractal_highs'] = df_core['high'][f_high].tolist()
+            sd['fractal_lows'] = df_core['low'][f_low].tolist()
 
         last_close = df_core['close'].iloc[-1]
 
@@ -662,16 +715,31 @@ class TradingBotEngine:
 
         vol_score = (v_pos - v_neg) / (v_pos + v_neg) if (v_pos + v_neg) > 0 else 0
 
-        # --- 4. STRUCTURE BLOCK ---
-        # SNR, Price distance from EMA
+        # --- 4. STRUCTURE BLOCK (v2.1 Enhanced) ---
         s_pos, s_neg = 0, 0
         dist = (last_close - ema50) / ema50
         if abs(dist) < 0.05: s_pos += 1
         else: s_neg += 1 # Overextended
 
-        # HTF SNR Alignment (Uses 1H or 15m depending on mode)
-        ref_symbol_data = sd
-        zones = ref_symbol_data.get('snr_zones', [])
+        if is_multiplier:
+            # Multiplier: Order Block Alignment
+            obs = sd.get('order_blocks', [])
+            for ob in obs:
+                if ob['type'] == 'Bullish OB' and abs(last_close - ob['price']) / ob['price'] < 0.005:
+                    s_pos += 3
+                elif ob['type'] == 'Bearish OB' and abs(last_close - ob['price']) / ob['price'] < 0.005:
+                    s_neg += 3
+        else:
+            # Rise & Fall: Fractal Retests
+            f_highs = sd.get('fractal_highs', [])[-5:]
+            f_lows = sd.get('fractal_lows', [])[-5:]
+            for fh in f_highs:
+                if abs(last_close - fh) / fh < 0.002: s_neg += 3 # Resistance retest
+            for fl in f_lows:
+                if abs(last_close - fl) / fl < 0.002: s_pos += 3 # Support retest
+
+        # HTF SNR Alignment
+        zones = sd.get('snr_zones', [])
         for z in zones:
             if abs(last_close - z['price']) / z['price'] < 0.005:
                 if z['type'] in ['S', 'Flip']: s_pos += 2
@@ -682,9 +750,7 @@ class TradingBotEngine:
         # --- FINAL CONFIDENCE & WEIGHTING ---
         if is_multiplier:
             # Mode B: Trend (50%), Volatility (30%), Structure (20%), Momentum Filter
-            # Normalized to 100
             confidence = (trend_score * 50) + (vol_score * 30) + (struct_score * 20)
-            # Momentum Filter: if momentum strongly opposes trend, reduce confidence
             if (trend_score > 0 and mom_score < -0.5) or (trend_score < 0 and mom_score > 0.5):
                 confidence *= 0.5
         else:
@@ -703,21 +769,32 @@ class TradingBotEngine:
 
         suggested_multiplier = 10
         if is_multiplier:
-            # base it on Volatility (ATR)
-            # Higher ATR = Lower Multiplier (10-20x)
-            # Lower ATR = Higher Multiplier (50x)
-            # Use relative ATR (ATR / Price)
+            # v2.1 CORRECTED ATR Logic:
             rel_atr = atr_val / last_close
-            if rel_atr > 0.01: suggested_multiplier = 10
-            elif rel_atr > 0.005: suggested_multiplier = 20
-            else: suggested_multiplier = 50
+            if rel_atr >= 0.008 and adx_val > 30:
+                suggested_multiplier = 50
+            elif rel_atr >= 0.005 and adx_val > 25:
+                suggested_multiplier = 20
+            elif rel_atr >= 0.003 and adx_val > 20:
+                suggested_multiplier = 10
+            else:
+                suggested_multiplier = 5
 
         suggested_expiry = 5
         if abs(confidence) > 75: suggested_expiry = 15
         elif abs(confidence) > 60: suggested_expiry = 10
 
+        # Adaptive Threshold Adjustment (Streak Tracking)
+        streak = self.symbol_streaks.get(symbol, 0)
+        base_threshold = 72 if not is_multiplier else 68
+        adaptive_threshold = base_threshold
+        if streak >= 3:
+            adaptive_threshold += 10
+
         self.screener_data[symbol] = {
             'confidence': round(confidence, 1),
+            'threshold': adaptive_threshold,
+            'streak': streak,
             'direction': 'CALL' if confidence > 0 else 'PUT',
             'regime': "Trending" if adx_val > 25 else "Ranging",
             'trend': round(trend_score, 1),
@@ -932,72 +1009,89 @@ class TradingBotEngine:
                             self.log(f"Strategy 4 SELL Signal: {pattern} at {z['type']} zone {z['price']:.2f}")
                             break
         elif strat_key == 'strategy_5':
-            # Intelligence Screener Strategy v2.0
+            # Intelligence Screener Strategy v2.1 (Refined Synthetic Engine)
             metrics = self.screener_data.get(symbol)
             if not metrics: return
 
             contract_type = self.config.get('contract_type', 'rise_fall')
             is_multiplier = (contract_type == 'multiplier')
 
+            threshold = metrics.get('threshold', 72 if not is_multiplier else 68)
+
             if is_multiplier:
                 # Mode B: Multiplier (Day Trading)
-                # Signal Trigger (>= 75% Confidence)
-                if abs(metrics['confidence']) >= 75:
+                # Signal Trigger (Adaptive Threshold, v2.1)
+                if abs(metrics['confidence']) >= threshold:
                     direction = metrics['direction']
-                    # Trend Context: 1H EMA 50 > EMA 200
-                    # (Checked by Screener already in trend score, but let's confirm alignment)
-                    if (direction == 'CALL' and metrics['trend'] > 0) or (direction == 'PUT' and metrics['trend'] < 0):
-                        # Entry Context: Price pulls back to 15m EMA 50 or 15m SuperTrend line
-                        # Pullback check: 15m price is near EMA50 or SuperTrend
-                        df_m15 = pd.DataFrame(sd.get('m15_candles', []))
-                        if not df_m15.empty:
-                            ema50_15 = ta.trend.EMAIndicator(df_m15['close'], window=50).ema_indicator().iloc[-1]
-                            st_15, st_dir_15 = self._calculate_supertrend(df_m15)
-
-                            price_15 = df_m15['close'].iloc[-1]
-                            near_ema = abs(price_15 - ema50_15) / ema50_15 < 0.005
-                            near_st = abs(price_15 - st_15.iloc[-1]) / st_15.iloc[-1] < 0.005
-
-                            if near_ema or near_st:
-                                # 5m chart shows momentum resuming
-                                df_m5 = pd.DataFrame(sd.get('m5_candles', []))
-                                if not df_m5.empty:
-                                    last_m5 = df_m5.iloc[-1]
-                                    m5_resumed = (direction == 'CALL' and last_m5['close'] > last_m5['open']) or \
-                                                 (direction == 'PUT' and last_m5['close'] < last_m5['open'])
-                                    if m5_resumed:
-                                        signal = 'buy' if direction == 'CALL' else 'sell'
-                                        self.log(f"Strategy 5 MULTIPLIER {direction} on {symbol} - Confidence: {metrics['confidence']}%")
-            else:
-                # Mode A: Rise & Fall (Scalping)
-                # Signal Trigger (>= 65% Confidence)
-                if abs(metrics['confidence']) >= 65:
-                    direction = metrics['direction']
-
-                    # Price Action Context: Price touches 1H SNR or 15m outer Bollinger Band
+                    # Trend & Structure Alignment: Pullback to 15m EMA 50 or SuperTrend
                     df_m15 = pd.DataFrame(sd.get('m15_candles', []))
                     if not df_m15.empty:
-                        bb_15 = ta.volatility.BollingerBands(df_m15['close'])
+                        ema50_15 = ta.trend.EMAIndicator(df_m15['close'], window=50).ema_indicator().iloc[-1]
+                        st_15, st_dir_15 = self._calculate_supertrend(df_m15)
+
                         price_15 = df_m15['close'].iloc[-1]
-                        at_bb = price_15 >= bb_15.bollinger_hband().iloc[-1] or price_15 <= bb_15.bollinger_lband().iloc[-1]
+                        near_zone = (abs(price_15 - ema50_15) / ema50_15 < 0.005) or \
+                                    (abs(price_15 - st_15.iloc[-1]) / st_15.iloc[-1] < 0.005)
 
-                        at_snr = False
-                        zones = sd.get('snr_zones', [])
-                        for z in zones:
-                            if abs(price_15 - z['price']) / z['price'] < 0.002:
-                                at_snr = True
-                                break
+                        if near_zone:
+                            # 5m chart shows momentum resumption
+                            df_m5 = pd.DataFrame(sd.get('m5_candles', []))
+                            if not df_m5.empty:
+                                last_m5 = df_m5.iloc[-1]
+                                m5_resumed = (direction == 'CALL' and last_m5['close'] > last_m5['open']) or \
+                                             (direction == 'PUT' and last_m5['close'] < last_m5['open'])
 
-                        if at_bb or at_snr:
-                            # 1m chart prints a reversal candle (Trigger)
-                            if sd['ltf_candles']:
-                                pattern = self._check_price_action_patterns(sd['ltf_candles'])
-                                if direction == 'CALL' and pattern in ['bullish_pin', 'bullish_engulfing', 'tweezer_bottom']:
-                                    signal = 'buy'
-                                elif direction == 'PUT' and pattern in ['bearish_pin', 'bearish_engulfing', 'tweezer_top']:
-                                    signal = 'sell'
-                                if signal:
-                                    self.log(f"Strategy 5 SCALP {direction} on {symbol} - Confidence: {metrics['confidence']}% - Pattern: {pattern}")
+                                if m5_resumed:
+                                    # v2.1 ADDITION: 1m Entry Confirmation (Precision leg)
+                                    if sd['ltf_candles']:
+                                        last_ltf = sd['ltf_candles'][-1]
+                                        ltf_confirmed = (direction == 'CALL' and last_ltf['close'] > last_ltf['open']) or \
+                                                        (direction == 'PUT' and last_ltf['close'] < last_ltf['open'])
+                                        if ltf_confirmed:
+                                            signal = 'buy' if direction == 'CALL' else 'sell'
+                                            self.log(f"Strategy 5 MULTIPLIER {direction} on {symbol} - Conf: {metrics['confidence']}% (Threshold: {threshold}%)")
+            else:
+                # Mode A: Rise & Fall (Scalping)
+                # Signal Trigger (Adaptive Threshold, v2.1)
+                if abs(metrics['confidence']) >= threshold:
+                    direction = metrics['direction']
+
+                    # Structure Context: 5m Fractal Retest OR 1H SNR/15m BB touch
+                    at_structure = False
+
+                    price_5m = sd['current_ltf_candle']['close'] if sd.get('current_ltf_candle') else sd['last_tick']
+
+                    # 5m Fractals (Resistance for PUT, Support for CALL)
+                    f_highs = sd.get('fractal_highs', [])[-3:]
+                    f_lows = sd.get('fractal_lows', [])[-3:]
+                    if direction == 'PUT':
+                        at_structure = any(abs(price_5m - fh) / fh < 0.002 for fh in f_highs)
+                    else:
+                        at_structure = any(abs(price_5m - fl) / fl < 0.002 for fl in f_lows)
+
+                    # Fallback to S/R or BB
+                    if not at_structure:
+                        df_m15 = pd.DataFrame(sd.get('m15_candles', []))
+                        if not df_m15.empty:
+                            bb_15 = ta.volatility.BollingerBands(df_m15['close'])
+                            price_15 = df_m15['close'].iloc[-1]
+                            at_bb = (direction == 'PUT' and price_15 >= bb_15.bollinger_hband().iloc[-1]) or \
+                                    (direction == 'CALL' and price_15 <= bb_15.bollinger_lband().iloc[-1])
+
+                            zones = sd.get('snr_zones', [])
+                            at_snr = any(abs(price_15 - z['price']) / z['price'] < 0.002 for z in zones)
+                            at_structure = at_bb or at_snr
+
+                    if at_structure:
+                        # 1m chart reversal candle (Trigger)
+                        if sd['ltf_candles']:
+                            pattern = self._check_price_action_patterns(sd['ltf_candles'])
+                            if direction == 'CALL' and pattern in ['bullish_pin', 'bullish_engulfing', 'tweezer_bottom']:
+                                signal = 'buy'
+                            elif direction == 'PUT' and pattern in ['bearish_pin', 'bearish_engulfing', 'tweezer_top']:
+                                signal = 'sell'
+                            if signal:
+                                self.log(f"Strategy 5 SCALP {direction} on {symbol} - Conf: {metrics['confidence']}% (Threshold: {threshold}%) - Pattern: {pattern}")
         else:
             # Default Breakout Logic (Strategy 1, 2, 3)
             if strat_key == 'strategy_1' and not is_candle_close:
@@ -1337,9 +1431,16 @@ class TradingBotEngine:
                     if profit > 0:
                         self.total_trade_profit += profit
                         self.wins_count += 1
+                        # v2.1 Streak Tracking: Reset streak on win
+                        self.symbol_streaks[symbol] = 0
                     else:
                         self.total_trade_loss += abs(profit)
                         self.losses_count += 1
+                        # v2.1 Streak Tracking: Increment streak on loss
+                        self.symbol_streaks[symbol] = self.symbol_streaks.get(symbol, 0) + 1
+                        if self.symbol_streaks[symbol] >= 3:
+                            self.log(f"Adaptive Sensitivity: {symbol} on {self.symbol_streaks[symbol]} loss streak. Threshold increased.", "warning")
+
                     self.total_trades_count += 1
                     del self.contracts[cid]
             else:
