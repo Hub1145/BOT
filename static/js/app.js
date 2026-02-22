@@ -37,9 +37,9 @@ function updateConfigLabels() {
             label.textContent = "Wait for 1m Candle Close";
             customExpiryContainer.style.display = 'block';
             strategy5Options.style.display = 'none';
-        } else if (strategy === 'strategy_5') {
+        } else if (strategy === 'strategy_5' || strategy === 'strategy_6') {
             label.textContent = "Wait for 1m Candle Close";
-            customExpiryContainer.style.display = 'none'; // Strategy 5 uses dynamic expiry
+            customExpiryContainer.style.display = 'none';
             strategy5Options.style.display = 'block';
             document.getElementById('screenerTabNavItem').style.display = 'block';
         } else {

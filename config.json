@@ -18,7 +18,7 @@
   "sl_value": 0,
   "force_close_enabled": false,
   "force_close_duration": 60,
-  "active_strategy": "strategy_5",
+  "active_strategy": "strategy_6",
   "contract_type": "rise_fall",
   "multiplier_value": "100",
   "custom_expiry": "default"

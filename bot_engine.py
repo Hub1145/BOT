@@ -46,6 +46,13 @@ class TradingBotEngine:
             'm5_granularity': 300,
             'daily_granularity': 86400,
             'expiry_type': 'dynamic'
+        },
+        'strategy_6': {
+            'name': 'Intelligence Legacy v1.0',
+            'htf_granularity': 3600,  # 1h for Intelligence Core
+            'ltf_granularity': 60,    # 1m for Timing
+            'bias_granularity': 14400, # 4h for bias
+            'expiry_type': 'dynamic'
         }
     }
 
@@ -203,6 +210,12 @@ class TradingBotEngine:
                         self._fetch_history(ws, symbol, 300, 100) # 5m
                         self._fetch_history(ws, symbol, 900, 200) # 15m
                         self._fetch_history(ws, symbol, 3600, 200) # 1h
+                        self._fetch_history(ws, symbol, 86400, 50) # Daily
+                        ws.send(json.dumps({"contracts_for": symbol}))
+                    elif strat_key == 'strategy_6':
+                        self._fetch_history(ws, symbol, 60, 100) # 1m
+                        self._fetch_history(ws, symbol, 3600, 200) # 1h
+                        self._fetch_history(ws, symbol, 14400, 100) # 4h
                         self._fetch_history(ws, symbol, 86400, 50) # Daily
                         ws.send(json.dumps({"contracts_for": symbol}))
 
@@ -382,6 +395,10 @@ class TradingBotEngine:
                     self._calculate_snr_zones(symbol)
 
                 if strat_key == 'strategy_5':
+                    sd['htf_candles'] = candles
+                    self._calculate_snr_zones(symbol, 3600) # 1H SNR
+                    self._update_screener(symbol)
+                elif strat_key == 'strategy_6':
                     sd['htf_candles'] = candles
                     self._calculate_snr_zones(symbol, 3600) # 1H SNR
                     self._update_screener(symbol)
@@ -634,6 +651,10 @@ class TradingBotEngine:
         return 0
 
     def _update_screener(self, symbol):
+        strat_key = self.config.get('active_strategy', 'strategy_1')
+        if strat_key == 'strategy_6':
+            return self._update_screener_v1(symbol)
+
         sd = self.symbol_data.get(symbol)
         if not sd: return
 
@@ -802,11 +823,166 @@ class TradingBotEngine:
             'volatility': round(vol_score, 1),
             'structure': round(struct_score, 1),
             'adx': round(adx_val, 1),
+            'srsi_k': round(srsi_k, 4),
             'atr': round(atr_val, 4),
             'atr_1m': round(atr_1m, 6),
             'expiry_min': suggested_expiry,
             'multiplier': suggested_multiplier,
             'st_dir': st_dir.iloc[-1],
+            'last_update': time.time()
+        }
+
+        self.emit('screener_update', {'symbol': symbol, 'data': self.screener_data[symbol]})
+
+    def _update_screener_v1(self, symbol):
+        sd = self.symbol_data.get(symbol)
+        if not sd or len(sd.get('htf_candles', [])) < 200: return
+
+        df_h = pd.DataFrame(sd['htf_candles'])
+        last_close = df_h['close'].iloc[-1]
+
+        # --- A) TREND BLOCK (Weight 3) ---
+        t_pos, t_neg = 0, 0
+        ema50 = ta.trend.EMAIndicator(df_h['close'], window=50).ema_indicator().iloc[-1]
+        ema200 = ta.trend.EMAIndicator(df_h['close'], window=200).ema_indicator().iloc[-1]
+        sma20 = ta.trend.SMAIndicator(df_h['close'], window=20).sma_indicator().iloc[-1]
+
+        if last_close > ema50: t_pos += 1
+        else: t_neg += 1
+        if ema50 > ema200: t_pos += 1
+        else: t_neg += 1
+        if last_close > sma20: t_pos += 1
+        else: t_neg += 1
+
+        adx_ind = ta.trend.ADXIndicator(df_h['high'], df_h['low'], df_h['close'])
+        adx = adx_ind.adx().iloc[-1]
+        if adx > 25:
+            if last_close > ema50: t_pos += 1
+            else: t_neg += 1
+
+        ichimoku = ta.trend.IchimokuIndicator(df_h['high'], df_h['low'])
+        span_a = ichimoku.ichimoku_a().iloc[-1]
+        span_b = ichimoku.ichimoku_b().iloc[-1]
+        if last_close > span_a and last_close > span_b: t_pos += 1
+        elif last_close < span_a and last_close < span_b: t_neg += 1
+
+        macd_ind = ta.trend.MACD(df_h['close'])
+        if macd_ind.macd().iloc[-1] > macd_ind.macd_signal().iloc[-1]: t_pos += 1
+        else: t_neg += 1
+
+        trend_sentiment = (t_pos - t_neg) / (t_pos + t_neg) if (t_pos + t_neg) > 0 else 0
+        trend_score = trend_sentiment * 3
+
+        # --- B) MOMENTUM BLOCK (Weight 2) ---
+        m_pos, m_neg = 0, 0
+        rsi = ta.momentum.RSIIndicator(df_h['close']).rsi().iloc[-1]
+        if rsi > 50: m_pos += 1
+        else: m_neg += 1
+
+        stoch_rsi = ta.momentum.StochRSIIndicator(df_h['close']).stochrsi_k().iloc[-1]
+        if stoch_rsi > 0.5: m_pos += 1
+        else: m_neg += 1
+
+        wr = ta.momentum.WilliamsRIndicator(df_h['high'], df_h['low'], df_h['close']).williams_r().iloc[-1]
+        if wr > -50: m_pos += 1
+        else: m_neg += 1
+
+        roc = ta.momentum.ROCIndicator(df_h['close']).roc().iloc[-1]
+        if roc > 0: m_pos += 1
+        else: m_neg += 1
+
+        cci = ta.trend.CCIIndicator(df_h['high'], df_h['low'], df_h['close']).cci().iloc[-1]
+        if cci > 0: m_pos += 1
+        else: m_neg += 1
+
+        mom_sentiment = (m_pos - m_neg) / (m_pos + m_neg) if (m_pos + m_neg) > 0 else 0
+        mom_score = mom_sentiment * 2
+
+        # --- C) VOLATILITY BLOCK (Weight 1) ---
+        v_pos, v_neg = 0, 0
+        atr_ind = ta.volatility.AverageTrueRange(df_h['high'], df_h['low'], df_h['close'])
+        atr = atr_ind.average_true_range().iloc[-1]
+        atr_prev = atr_ind.average_true_range().iloc[-2]
+        if atr > atr_prev: v_pos += 0.5
+
+        bb = ta.volatility.BollingerBands(df_h['close'])
+        bbw = (bb.bollinger_hband().iloc[-1] - bb.bollinger_lband().iloc[-1]) / bb.bollinger_mavg().iloc[-1]
+        prev_bbw = (bb.bollinger_hband().iloc[-2] - bb.bollinger_lband().iloc[-2]) / bb.bollinger_mavg().iloc[-2]
+        if bbw > prev_bbw: v_pos += 0.5
+
+        dc = ta.volatility.DonchianChannel(df_h['high'], df_h['low'], df_h['close'])
+        dc_mid = (dc.donchian_channel_hband().iloc[-1] + dc.donchian_channel_lband().iloc[-1]) / 2
+        if last_close > dc_mid: v_pos += 0.5
+        else: v_neg += 0.5
+
+        kc = ta.volatility.KeltnerChannel(df_h['high'], df_h['low'], df_h['close'])
+        if last_close > kc.keltner_channel_mband().iloc[-1]: v_pos += 0.5
+        else: v_neg += 0.5
+
+        vol_sentiment = (v_pos - v_neg) / (v_pos + v_neg) if (v_pos + v_neg) > 0 else 0
+        vol_score = vol_sentiment * 1
+
+        # --- D) STRUCTURE BLOCK (Weight 2) ---
+        s_pos, s_neg = 0, 0
+        dist = (last_close - ema50) / ema50
+        if abs(dist) < 0.05: s_pos += 1
+        elif abs(dist) > 0.1: s_neg += 0.5
+
+        sma20_v = df_h['close'].rolling(window=20).mean()
+        std20_v = df_h['close'].rolling(window=20).std()
+        z_score = (last_close - sma20_v.iloc[-1]) / std20_v.iloc[-1]
+        if abs(z_score) < 2: s_pos += 1
+        else: s_neg += 1
+
+        if last_close >= bb.bollinger_hband().iloc[-1]: s_neg += 1
+        elif last_close <= bb.bollinger_lband().iloc[-1]: s_pos += 1
+
+        if sd.get('daily_candles') and len(sd['daily_candles']) >= 2:
+            prev_day = sd['daily_candles'][-2]
+            pivot = (prev_day['high'] + prev_day['low'] + prev_day['close']) / 3
+            r1 = 2 * pivot - prev_day['low']
+            s1 = 2 * pivot - prev_day['high']
+            if last_close > pivot: s_pos += 0.5
+            if last_close > r1: s_neg += 0.5
+            if last_close < s1: s_pos += 0.5
+
+            day_high = prev_day['high']
+            day_low = prev_day['low']
+            if abs(last_close - day_high) / day_high < 0.01: s_neg += 0.5
+            if abs(last_close - day_low) / day_low < 0.01: s_pos += 0.5
+
+        zones = sd.get('snr_zones', [])
+        for z in zones:
+            if abs(last_close - z['price']) / z['price'] < 0.005:
+                if z['type'] in ['S', 'Flip']: s_pos += 1
+                elif z['type'] in ['R', 'Flip']: s_neg += 1
+
+        struct_sentiment = (s_pos - s_neg) / (s_pos + s_neg) if (s_pos + s_neg) > 0 else 0
+        struct_score = struct_sentiment * 2
+
+        raw_sum = trend_score + mom_score + vol_score + struct_score
+        confidence = (raw_sum / 8.0) * 100
+
+        abs_conf = abs(confidence)
+        suggested_expiry = 5
+        if abs_conf >= 70: suggested_expiry = 15
+        elif abs_conf >= 55: suggested_expiry = 10
+
+        suggested_multiplier = 5
+        if abs_conf >= 80: suggested_multiplier = 50
+        elif abs_conf >= 65: suggested_multiplier = 20
+
+        self.screener_data[symbol] = {
+            'confidence': round(confidence, 1),
+            'direction': 'CALL' if confidence > 0 else 'PUT',
+            'regime': "Trending" if adx > 25 else "Ranging",
+            'trend': round(trend_score, 1),
+            'momentum': round(mom_score, 1),
+            'volatility': round(vol_score, 1),
+            'structure': round(struct_score, 1),
+            'adx': round(adx, 1),
+            'expiry_min': suggested_expiry,
+            'multiplier': suggested_multiplier,
             'last_update': time.time()
         }
 
@@ -1008,8 +1184,8 @@ class TradingBotEngine:
                             signal = 'sell'
                             self.log(f"Strategy 4 SELL Signal: {pattern} at {z['type']} zone {z['price']:.2f}")
                             break
-        elif strat_key == 'strategy_5':
-            # Intelligence Screener Strategy v2.1 (Refined Synthetic Engine)
+        elif strat_key in ['strategy_5', 'strategy_6']:
+            # Intelligence Screener Strategy
             metrics = self.screener_data.get(symbol)
             if not metrics: return
 
@@ -1017,12 +1193,18 @@ class TradingBotEngine:
             is_multiplier = (contract_type == 'multiplier')
 
             threshold = metrics.get('threshold', 72 if not is_multiplier else 68)
+            if strat_key == 'strategy_6': threshold = 60 # Default for legacy v1
 
             if is_multiplier:
                 # Mode B: Multiplier (Day Trading)
-                # Signal Trigger (Adaptive Threshold, v2.1)
                 if abs(metrics['confidence']) >= threshold:
                     direction = metrics['direction']
+                    if strat_key == 'strategy_6':
+                        # Legacy v1 simple execution
+                        signal = 'buy' if direction == 'CALL' else 'sell'
+                        self.log(f"Strategy 6 MULTIPLIER {direction} on {symbol} - Conf: {metrics['confidence']}%")
+                        return # Skip v2.1 logic below
+
                     # Trend & Structure Alignment: Pullback to 15m EMA 50 or SuperTrend
                     df_m15 = pd.DataFrame(sd.get('m15_candles', []))
                     if not df_m15.empty:
@@ -1083,6 +1265,21 @@ class TradingBotEngine:
                             at_structure = at_bb or at_snr
 
                     if at_structure:
+                        if strat_key == 'strategy_6':
+                            # Legacy v1 simple execution
+                            signal = 'buy' if direction == 'CALL' else 'sell'
+                            self.log(f"Strategy 6 SCALP {direction} on {symbol} - Conf: {metrics['confidence']}%")
+                            return
+
+                        # v3.0 MANDATORY CO-CONDITION: Stoch RSI Extreme Zone
+                        srsi_k = metrics.get('srsi_k', 0.5)
+                        stoch_extreme = (direction == 'CALL' and srsi_k <= 0.2) or \
+                                        (direction == 'PUT' and srsi_k >= 0.8)
+
+                        if not stoch_extreme:
+                            # Log reason for no signal if near structure but RSI not extreme
+                            return
+
                         # 1m chart reversal candle (Trigger)
                         if sd['ltf_candles']:
                             pattern = self._check_price_action_patterns(sd['ltf_candles'])

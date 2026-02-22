@@ -46,7 +46,10 @@ Strategy 5 v2.1 is an advanced trading engine specifically optimized for Deriv V
 ### Mode A: RISE & FALL (Scalping)
 *   **Confidence Threshold:** **>= 72%** (Strict filter for binary outcomes).
 *   **Weighting:** Structure (40%), Momentum (40%), Volatility (20%).
-*   **Logic:** Requires a 5m Fractal retest or 1H SNR touch + 1m reversal candle.
+*   **Logic (v3.0):**
+    1.  **Structural Alignment:** Requires a 5m Fractal retest, 1H SNR touch, or 15m Bollinger Band extremity.
+    2.  **Mandatory Stoch RSI Extreme:** The structural touch **must** coincide with Stoch RSI in an extreme zone (<= 20% for Support/CALL, >= 80% for Resistance/PUT).
+    3.  **Trigger:** 1m reversal candle confirmation (Pin bar, Engulfing, etc.).
 
 ### Mode B: MULTIPLIER (Day Trading)
 *   **Confidence Threshold:** **>= 68%** (Intervention possible via position management).
