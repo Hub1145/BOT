@@ -70,7 +70,14 @@ function updateConfigLabels() {
 
 function setupEventListeners() {
     document.getElementById('configActiveStrategy').addEventListener('change', updateConfigLabels);
-    document.getElementById('configContractType').addEventListener('change', updateConfigLabels);
+    document.getElementById('configContractType').addEventListener('change', () => {
+        updateConfigLabels();
+        if (currentConfig) {
+            currentConfig.contract_type = document.getElementById('configContractType').value;
+            // Refresh screener table if data exists
+            updateScreenerTable(null, null);
+        }
+    });
     document.getElementById('configUseFixedBalance').addEventListener('change', updateConfigLabels);
     document.getElementById('themeToggle').addEventListener('change', (e) => {
         document.body.setAttribute('data-theme', e.target.checked ? 'light' : 'dark');
@@ -234,7 +241,9 @@ function updateMultiplierDropdown() {
 const screenerDataMap = {};
 
 function updateScreenerTable(symbol, data) {
-    screenerDataMap[symbol] = data;
+    if (symbol && data) {
+        screenerDataMap[symbol] = data;
+    }
     const body = document.getElementById('screenerTableBody');
     if (!body) return;
 
@@ -243,12 +252,20 @@ function updateScreenerTable(symbol, data) {
         const confColor = d.confidence >= 60 ? 'text-success' : (d.confidence <= -60 ? 'text-danger' : 'text-warning');
         const dirColor = d.direction === 'CALL' ? 'text-success' : 'text-danger';
 
+        const contractType = currentConfig ? currentConfig.contract_type : 'rise_fall';
+        let recommendation = "";
+        if (contractType === 'multiplier') {
+            recommendation = `x${d.multiplier} | TP:${d.tp_pips} | SL:${d.sl_pips}`;
+        } else {
+            recommendation = `${d.expiry_min} min expiry`;
+        }
+
         return `
             <tr>
                 <td><strong>${sym}</strong></td>
                 <td class="${confColor} fw-bold">${d.confidence}%</td>
                 <td class="${dirColor} fw-bold">${d.direction}</td>
-                <td><small>${d.regime}</small></td>
+                <td><small>${recommendation}</small></td>
                 <td>${d.trend}</td>
                 <td>${d.momentum}</td>
                 <td>${d.volatility}</td>

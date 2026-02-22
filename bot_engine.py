@@ -39,9 +39,9 @@ class TradingBotEngine:
         },
         'strategy_5': {
             'name': 'Intelligence Screener',
-            'htf_granularity': 300,   # 5m for Scoring
+            'htf_granularity': 3600,  # 1h for Intelligence Core
             'ltf_granularity': 60,    # 1m for Timing
-            'bias_granularity': 900,  # 15m for Trend
+            'bias_granularity': 14400, # 4h for intermediate regime
             'expiry_type': 'dynamic'
         }
     }
@@ -195,6 +195,11 @@ class TradingBotEngine:
                     self._fetch_history(ws, symbol, strat['htf_granularity'], h_count)
 
                     if strat_key == 'strategy_5':
+                        self._fetch_history(ws, symbol, 60, 100) # 1m
+                        self._fetch_history(ws, symbol, 300, 100) # 5m
+                        self._fetch_history(ws, symbol, 900, 100) # 15m
+                        self._fetch_history(ws, symbol, 3600, 200) # 1h (Need 200 for EMA200)
+                        self._fetch_history(ws, symbol, 14400, 100) # 4h
                         self._fetch_history(ws, symbol, 86400, 50) # Daily data
                         ws.send(json.dumps({"contracts_for": symbol}))
 
@@ -269,8 +274,10 @@ class TradingBotEngine:
             self.symbol_data[symbol] = {
                 'ltf_candles': [],
                 'htf_candles': [],
-                'bias_candles': [], # 15m for Strategy 5
+                'bias_candles': [], # 15m or 4h for Strategy 5
                 'daily_candles': [], # Daily for Strategy 5 Multiplier
+                'm5_candles': [],
+                'm15_candles': [],
                 'htf_open': None,
                 'htf_epoch': None,
                 'last_tick': None,
@@ -301,8 +308,33 @@ class TradingBotEngine:
             if symbol not in self.symbol_data: return
             sd = self.symbol_data[symbol]
 
+            if granularity == 60:
+                if len(candles) > 1: sd['ltf_candles'] = candles
+                else:
+                    sd['ltf_candles'].append(candles[0])
+                    if len(sd['ltf_candles']) > 100: sd['ltf_candles'].pop(0)
+            if granularity == 300:
+                if len(candles) > 1: sd['m5_candles'] = candles
+                else:
+                    sd['m5_candles'].append(candles[0])
+                    if len(sd['m5_candles']) > 100: sd['m5_candles'].pop(0)
+            if granularity == 900:
+                if len(candles) > 1: sd['m15_candles'] = candles
+                else:
+                    sd['m15_candles'].append(candles[0])
+                    if len(sd['m15_candles']) > 100: sd['m15_candles'].pop(0)
+            if granularity == 3600:
+                if len(candles) > 1: sd['htf_candles'] = candles
+                else:
+                    sd['htf_candles'].append(candles[0])
+                    if len(sd['htf_candles']) > 200: sd['htf_candles'].pop(0)
+            if granularity == 14400:
+                if len(candles) > 1: sd['bias_candles'] = candles
+                else:
+                    sd['bias_candles'].append(candles[0])
+                    if len(sd['bias_candles']) > 100: sd['bias_candles'].pop(0)
+
             if granularity == strat.get('bias_granularity'):
-                sd['bias_candles'] = candles
                 if candles:
                     sd['current_bias_candle'] = candles[-1]
 
@@ -383,6 +415,20 @@ class TradingBotEngine:
             self._monitor_open_contracts(symbol, price)
 
             if self.is_running:
+                # Refresh all timeframes for Strategy 5 periodically
+                if strat_key == 'strategy_5':
+                    now_epoch = tick.get('epoch')
+                    # Refresh every 1m for confirmation
+                    if now_epoch % 60 == 0: self._fetch_history(self.ws, symbol, 60, 2)
+                    # Refresh every 5m for confirmation
+                    if now_epoch % 300 == 0: self._fetch_history(self.ws, symbol, 300, 2)
+                    # Refresh every 15m for mid-term
+                    if now_epoch % 900 == 0: self._fetch_history(self.ws, symbol, 900, 2)
+                    # Refresh every 1h for htf
+                    if now_epoch % 3600 == 0: self._fetch_history(self.ws, symbol, 3600, 2)
+                    # Refresh every 4h for bias
+                    if now_epoch % 14400 == 0: self._fetch_history(self.ws, symbol, 14400, 2)
+
                 # HTF/Bias Refresh for Strategy 5
                 if strat_key == 'strategy_5':
                     bias_gran = strat['bias_granularity']
@@ -460,211 +506,130 @@ class TradingBotEngine:
 
     def _update_screener(self, symbol):
         sd = self.symbol_data.get(symbol)
-        if not sd or len(sd['htf_candles']) < 100: return
+        if not sd or len(sd.get('htf_candles', [])) < 20: return
 
-        # Convert to DataFrame
-        df = pd.DataFrame(sd['htf_candles'])
+        # --- 1. TREND BLOCK (Weight 4) ---
+        trend_raw = 0
+        df_h = pd.DataFrame(sd['htf_candles'])
+        ema50 = ta.trend.EMAIndicator(df_h['close'], window=50).ema_indicator().iloc[-1]
+        ema200 = ta.trend.EMAIndicator(df_h['close'], window=200).ema_indicator().iloc[-1]
+        last_close = df_h['close'].iloc[-1]
 
-        # Ensure we have data for the last candle
-        last_idx = -1
-        if pd.isna(df['close'].iloc[last_idx]): return
+        # Bullish/Bearish Trend (+/- 2)
+        if last_close > ema50 and ema50 > ema200: trend_raw += 2
+        elif last_close < ema50 and ema50 < ema200: trend_raw -= 2
 
-        # --- 1. TREND BLOCK (Weight 25%) ---
-        # Exhaustive Trend Research
-        ema20 = ta.trend.EMAIndicator(df['close'], window=20).ema_indicator()
-        ema50 = ta.trend.EMAIndicator(df['close'], window=50).ema_indicator()
-        sma200 = ta.trend.SMAIndicator(df['close'], window=200).sma_indicator()
-        wma20 = ta.trend.WMAIndicator(df['close'], window=20).wma()
-        wma50 = ta.trend.WMAIndicator(df['close'], window=50).wma()
-        adx_ind = ta.trend.ADXIndicator(df['high'], df['low'], df['close'])
-        adx = adx_ind.adx()
-        macd_ind = ta.trend.MACD(df['close'])
-        macd = macd_ind.macd()
-        macd_signal = macd_ind.macd_signal()
-        ichimoku = ta.trend.IchimokuIndicator(df['high'], df['low'])
-        psar = ta.trend.PSARIndicator(df['high'], df['low'], df['close'])
-        aroon = ta.trend.AroonIndicator(df['high'], df['low'])
-        kst = ta.trend.KSTIndicator(df['close'])
-        vortex = ta.trend.VortexIndicator(df['high'], df['low'], df['close'])
-        trix = ta.trend.TRIXIndicator(df['close']).trix()
-        dpo = ta.trend.DPOIndicator(df['close']).dpo()
-        mass = ta.trend.MassIndex(df['high'], df['low']).mass_index()
-        stc = ta.trend.STCIndicator(df['close']).stc()
+        # ADX > 25 (+1)
+        adx = ta.trend.ADXIndicator(df_h['high'], df_h['low'], df_h['close']).adx().iloc[-1]
+        if adx > 25: trend_raw += (1 if trend_raw >= 0 else -1)
 
-        last_close = df['close'].iloc[-1]
+        # MACD alignment (+1)
+        macd_ind = ta.trend.MACD(df_h['close'])
+        macd = macd_ind.macd().iloc[-1]
+        macd_sig = macd_ind.macd_signal().iloc[-1]
+        if macd > macd_sig: trend_raw += 1
+        else: trend_raw -= 1
 
-        trend_score = 0
-        if ema20.iloc[-1] > ema50.iloc[-1]: trend_score += 10
-        else: trend_score -= 10
+        trend_score = min(max(trend_raw, -4), 4)
 
-        if wma20.iloc[-1] > wma50.iloc[-1]: trend_score += 10
-        else: trend_score -= 10
+        # --- 2. MOMENTUM BLOCK (Weight 3) ---
+        mom_raw = 0
+        rsi = ta.momentum.RSIIndicator(df_h['close']).rsi().iloc[-1]
+        stoch_rsi = ta.momentum.StochRSIIndicator(df_h['close']).stochrsi().iloc[-1]
+        cci = ta.trend.CCIIndicator(df_h['high'], df_h['low'], df_h['close']).cci().iloc[-1]
 
-        if not sma200.empty and not pd.isna(sma200.iloc[-1]):
-            if last_close > sma200.iloc[-1]: trend_score += 15
-            else: trend_score -= 15
+        # RSI/StochRSI/CCI alignment with trend (+2)
+        if trend_score > 0:
+            if rsi > 50 and stoch_rsi > 0.5 and cci > 0: mom_raw += 2
+            elif rsi < 50 or stoch_rsi < 0.5 or cci < 0: mom_raw -= 2
+        elif trend_score < 0:
+            if rsi < 50 and stoch_rsi < 0.5 and cci < 0: mom_raw += 2
+            elif rsi > 50 or stoch_rsi > 0.5 or cci > 0: mom_raw -= 2
 
-        if macd.iloc[-1] > macd_signal.iloc[-1]: trend_score += 15
-        else: trend_score -= 15
+        # ROC/Williams alignment (+1)
+        roc = ta.momentum.ROCIndicator(df_h['close']).roc().iloc[-1]
+        wr = ta.momentum.WilliamsRIndicator(df_h['high'], df_h['low'], df_h['close']).williams_r().iloc[-1]
+        if trend_score > 0:
+            if roc > 0 and wr > -50: mom_raw += 1
+            else: mom_raw -= 1
+        elif trend_score < 0:
+            if roc < 0 and wr < -50: mom_raw += 1
+            else: mom_raw -= 1
 
-        if last_close > ichimoku.ichimoku_a().iloc[-1] and last_close > ichimoku.ichimoku_b().iloc[-1]: trend_score += 15
-        elif last_close < ichimoku.ichimoku_a().iloc[-1] and last_close < ichimoku.ichimoku_b().iloc[-1]: trend_score -= 15
+        mom_score = min(max(mom_raw, -3), 3)
 
-        if not pd.isna(psar.psar_up().iloc[-1]): trend_score += 10
-        if not pd.isna(psar.psar_down().iloc[-1]): trend_score -= 10
+        # --- 3. STRUCTURE BLOCK (Weight 2) ---
+        struct_raw = 0
+        # Patterns (+1)
+        pattern = self._check_price_action_patterns(sd['ltf_candles'])
+        if pattern:
+            if trend_score > 0 and "bullish" in pattern: struct_raw += 1
+            elif trend_score < 0 and "bearish" in pattern: struct_raw += 1
+            elif pattern == "doji": struct_raw += 0.5
+            else: struct_raw -= 1
 
-        if aroon.aroon_up().iloc[-1] > aroon.aroon_down().iloc[-1]: trend_score += 10
-        else: trend_score -= 10
+        # Price relative to EMA (+1)
+        if trend_score > 0 and last_close > ema50: struct_raw += 1
+        elif trend_score < 0 and last_close < ema50: struct_raw += 1
+        else: struct_raw -= 1
 
-        if vortex.vortex_indicator_pos().iloc[-1] > vortex.vortex_indicator_neg().iloc[-1]: trend_score += 10
-        else: trend_score -= 10
+        struct_score = min(max(struct_raw, -2), 2)
 
-        if trix.iloc[-1] > 0: trend_score += 5
-        if dpo.iloc[-1] > 0: trend_score += 5
-        if kst.kst().iloc[-1] > kst.kst_sig().iloc[-1]: trend_score += 10
-        if mass.iloc[-1] > 27: trend_score *= 0.8 # Reversal warning
-        if stc.iloc[-1] > 75: trend_score += 10
-        elif stc.iloc[-1] < 25: trend_score -= 10
+        # --- 4. VOLATILITY BLOCK (Weight 1) ---
+        vol_raw = 0
+        bb = ta.volatility.BollingerBands(df_h['close'])
+        bb_width = (bb.bollinger_hband().iloc[-1] - bb.bollinger_lband().iloc[-1]) / bb.bollinger_mavg().iloc[-1]
+        prev_bb_width = (bb.bollinger_hband().iloc[-2] - bb.bollinger_lband().iloc[-2]) / bb.bollinger_mavg().iloc[-2]
 
-        if adx.iloc[-1] > 25: trend_score *= 1.3
+        # Expansion in direction of trend (+1)
+        if bb_width > prev_bb_width: vol_raw += 1
+        else: vol_raw -= 1
 
-        # --- 2. MOMENTUM BLOCK (Weight 25%) ---
-        # Exhaustive Momentum Research
-        rsi = ta.momentum.RSIIndicator(df['close']).rsi()
-        stoch = ta.momentum.StochasticOscillator(df['high'], df['low'], df['close']).stoch()
-        stoch_rsi = ta.momentum.StochRSIIndicator(df['close']).stochrsi()
-        wr = ta.momentum.WilliamsRIndicator(df['high'], df['low'], df['close']).williams_r()
-        ao = ta.momentum.AwesomeOscillatorIndicator(df['high'], df['low']).awesome_oscillator()
-        roc = ta.momentum.ROCIndicator(df['close']).roc()
-        tsi = ta.momentum.TSIIndicator(df['close']).tsi()
-        uo = ta.momentum.UltimateOscillator(df['high'], df['low'], df['close']).ultimate_oscillator()
-        ppo = ta.momentum.PercentagePriceOscillator(df['close'])
-        kama = ta.momentum.KAMAIndicator(df['close']).kama()
+        vol_score = min(max(vol_raw, -1), 1)
 
-        mom_score = 0
-        if rsi.iloc[-1] > 50: mom_score += 10
-        else: mom_score -= 10
-
-        if stoch.iloc[-1] > 50: mom_score += 10
-        else: mom_score -= 10
-
-        if stoch_rsi.iloc[-1] > 0.5: mom_score += 10
-        else: mom_score -= 10
-
-        if wr.iloc[-1] > -50: mom_score += 10
-        else: mom_score -= 10
-
-        if ao.iloc[-1] > 0: mom_score += 15
-        else: mom_score -= 15
-
-        if roc.iloc[-1] > 0: mom_score += 10
-        else: mom_score -= 10
-
-        if tsi.iloc[-1] > 0: mom_score += 10
-        if uo.iloc[-1] > 50: mom_score += 10
-        if ppo.ppo().iloc[-1] > ppo.ppo_signal().iloc[-1]: mom_score += 10
-        if last_close > kama.iloc[-1]: mom_score += 5
-
-        # --- VOLUME BLOCK (If available) ---
-        if 'volume' in df.columns and not df['volume'].empty:
-            mfi = ta.volume.MFIIndicator(df['high'], df['low'], df['close'], df['volume']).money_flow_index()
-            obv = ta.volume.OnBalanceVolumeIndicator(df['close'], df['volume']).on_balance_volume()
-            cmf = ta.volume.ChaikinMoneyFlowIndicator(df['high'], df['low'], df['close'], df['volume']).chaikin_money_flow()
-            vpt = ta.volume.VolumePriceTrendIndicator(df['close'], df['volume']).volume_price_trend()
-            fi = ta.volume.ForceIndexIndicator(df['close'], df['volume']).force_index()
-            em = ta.volume.EaseOfMovementIndicator(df['high'], df['low'], df['volume']).ease_of_movement()
-            adi = ta.volume.AccDistIndexIndicator(df['high'], df['low'], df['close'], df['volume']).acc_dist_index()
-            nvi = ta.volume.NegativeVolumeIndexIndicator(df['close'], df['volume']).negative_volume_index()
-            pvo = ta.momentum.PercentageVolumeOscillator(df['volume'])
-            vwap = ta.volume.VolumeWeightedAveragePrice(df['high'], df['low'], df['close'], df['volume']).volume_weighted_average_price()
-
-            volumem_score = 0
-            if mfi.iloc[-1] > 50: volumem_score += 10
-            if cmf.iloc[-1] > 0: volumem_score += 10
-            if fi.iloc[-1] > 0: volumem_score += 10
-            if obv.iloc[-1] > obv.iloc[-2]: volumem_score += 10
-            if pvo.pvo().iloc[-1] > pvo.pvo_signal().iloc[-1]: volumem_score += 10
-            if vpt.iloc[-1] > vpt.iloc[-2]: volumem_score += 5
-            if em.iloc[-1] > 0: volumem_score += 5
-            if adi.iloc[-1] > adi.iloc[-2]: volumem_score += 5
-            if nvi.iloc[-1] > nvi.iloc[-2]: volumem_score += 5
-            if last_close > vwap.iloc[-1]: volumem_score += 10
-
-            # Incorporate Volume into Momentum or create a new block
-            # For now, let's mix it into mom_score to keep the 4-block UI
-            mom_score = (mom_score * 0.7) + (volumem_score * 0.3)
-
-        # --- 3. VOLATILITY BLOCK (Weight 25%) ---
-        # Exhaustive Volatility Research
-        bb = ta.volatility.BollingerBands(df['close'])
-        keltner = ta.volatility.KeltnerChannel(df['high'], df['low'], df['close'])
-        donchian = ta.volatility.DonchianChannel(df['high'], df['low'], df['close'])
-        atr = ta.volatility.AverageTrueRange(df['high'], df['low'], df['close']).average_true_range()
-        ui = ta.volatility.UlcerIndex(df['close']).ulcer_index()
-        cci = ta.trend.CCIIndicator(df['high'], df['low'], df['close']).cci()
-
-        vol_score = 0
-        if last_close > bb.bollinger_hband().iloc[-1]: vol_score += 20
-        elif last_close < bb.bollinger_lband().iloc[-1]: vol_score -= 20
-
-        if last_close > keltner.keltner_channel_hband().iloc[-1]: vol_score += 20
-        elif last_close < keltner.keltner_channel_lband().iloc[-1]: vol_score -= 20
-
-        if last_close >= donchian.donchian_channel_hband().iloc[-1]: vol_score += 20
-        elif last_close <= donchian.donchian_channel_lband().iloc[-1]: vol_score -= 20
-
-        if cci.iloc[-1] > 100: vol_score += 20
-        elif cci.iloc[-1] < -100: vol_score -= 20
-
-        # UI risk factor (lower is better for trend, higher suggests volatility)
-        if ui.iloc[-1] < 5: vol_score *= 1.1 # Stable trend
-
-        # --- 4. STRUCTURE BLOCK (Weight 25%) ---
-        # Multiple Candlestick Patterns
-        struct_score = 0
-        c1 = df.iloc[-1]
-        c2 = df.iloc[-2]
-
-        # Pattern checking logic from _check_price_action_patterns integrated
-        pattern = self._check_price_action_patterns(df.tail(5).to_dict('records'))
-
-        if pattern == "bullish_engulfing": struct_score += 100
-        elif pattern == "bearish_engulfing": struct_score -= 100
-        elif pattern == "bullish_pin": struct_score += 70
-        elif pattern == "bearish_pin": struct_score -= 70
-        elif pattern == "bullish_harami": struct_score += 60
-        elif pattern == "bearish_harami": struct_score -= 60
-        elif pattern == "tweezer_bottom": struct_score += 80
-        elif pattern == "tweezer_top": struct_score -= 80
-        elif pattern == "marubozu":
-            if c1['close'] > c1['open']: struct_score += 50
-            else: struct_score -= 50
-        elif pattern == "doji":
-            # Indecision, score towards trend
-            struct_score += (20 if trend_score > 0 else -20)
+        # --- Confidence Calculation ---
+        # Confidence = (raw_sum / 10) * 100
 
         # Include Daily Trend if available for Strategy 5
+        daily_alignment = 0
         if sd.get('daily_candles') and len(sd['daily_candles']) >= 20:
             df_daily = pd.DataFrame(sd['daily_candles'])
-            ema20_d = ta.trend.EMAIndicator(df_daily['close'], window=20).ema_indicator()
-            if df_daily['close'].iloc[-1] > ema20_d.iloc[-1]:
-                trend_score += 20
-            else:
-                trend_score -= 20
+            ema20_d = ta.trend.EMAIndicator(df_daily['close'], window=20).ema_indicator().iloc[-1]
+            if df_daily['close'].iloc[-1] > ema20_d: daily_alignment = 1
+            else: daily_alignment = -1
 
-        # Weighted Average (3, 2, 1, 2 ratio as requested)
-        # Total weight units = 8
-        total_score = (trend_score * (3/8)) + (mom_score * (2/8)) + (vol_score * (1/8)) + (struct_score * (2/8))
+        if daily_alignment != 0:
+            if (trend_score > 0 and daily_alignment > 0) or (trend_score < 0 and daily_alignment < 0):
+                trend_score += daily_alignment # Boost if aligns with daily
 
-        # Normalize to -100 to 100
-        confidence = min(max(total_score, -100), 100)
+        raw_sum = trend_score + mom_score + struct_score + vol_score
+        confidence = (raw_sum / 10.0) * 100
 
         regime = "Ranging"
-        _adx = adx.iloc[-1]
-        _ema20 = ema20.iloc[-1]
-        _ema50 = ema50.iloc[-1]
+        _adx = adx
+        _ema50 = ema50
+        _ema200 = ema200
         if _adx > 25:
-            regime = "Trending Up" if _ema20 > _ema50 else "Trending Down"
+            regime = "Trending Up" if _ema50 > _ema200 else "Trending Down"
+
+        # Recommendations
+        abs_conf = abs(confidence)
+        suggested_expiry = 5
+        if abs_conf >= 70: suggested_expiry = 15
+        elif abs_conf >= 55: suggested_expiry = 10
+        elif abs_conf >= 40: suggested_expiry = 5
+
+        suggested_multiplier = 5
+        if abs_conf >= 80: suggested_multiplier = 50
+        elif abs_conf >= 65: suggested_multiplier = 20
+        elif abs_conf >= 50: suggested_multiplier = 5
+
+        # SL/TP calculation using ATR (1H)
+        atr_1h = ta.volatility.AverageTrueRange(df_h['high'], df_h['low'], df_h['close']).average_true_range().iloc[-1]
+        # RiskFactor = 0.5-1.5 based on confidence
+        risk_factor = 0.5 + (abs_conf / 100.0)
+        sl_pips = atr_1h * risk_factor
+        tp_pips = sl_pips * 1.5 # 1:1.5 RR
 
         self.screener_data[symbol] = {
             'confidence': round(confidence, 1),
@@ -674,7 +639,11 @@ class TradingBotEngine:
             'momentum': round(mom_score, 1),
             'volatility': round(vol_score, 1),
             'structure': round(struct_score, 1),
-            'adx': round(_adx, 1)
+            'adx': round(_adx, 1),
+            'expiry_min': suggested_expiry,
+            'multiplier': suggested_multiplier,
+            'sl_pips': round(sl_pips, 4),
+            'tp_pips': round(tp_pips, 4)
         }
 
         # Emit to UI
@@ -878,11 +847,38 @@ class TradingBotEngine:
             contract_type = self.config.get('contract_type', 'rise_fall')
             for cid, c in self.contracts.items():
                 if c['symbol'] == symbol:
-                    # If signal reverses significantly (confidence below 20% or opposite)
                     is_long = c['side'] == 'long'
-                    if (is_long and metrics['confidence'] < 20) or (not is_long and metrics['confidence'] > -20):
-                        self.log(f"Strategy 5 EXIT Signal for {symbol}: Confidence {metrics['confidence']}% indicates reversal/weakness.")
+
+                    # Need data for exits
+                    if not sd.get('htf_candles') or len(sd['htf_candles']) < 200: continue
+                    df_exit = pd.DataFrame(sd['htf_candles'])
+
+                    # 1. EMA200 Cross Opposite Trend
+                    ema200_exit = ta.trend.EMAIndicator(df_exit['close'], window=200).ema_indicator().iloc[-1]
+                    if (is_long and current_price < ema200_exit) or (not is_long and current_price > ema200_exit):
+                        self.log(f"Strategy 5 EXIT for {symbol}: Price crossed EMA200 opposite trend.")
                         self._close_contract(cid)
+                        continue
+
+                    # 2. Confidence Reversal (below 20% or opposite)
+                    if (is_long and metrics['confidence'] < 20) or (not is_long and metrics['confidence'] > -20):
+                        self.log(f"Strategy 5 EXIT for {symbol}: Confidence {metrics['confidence']}% indicates reversal/weakness.")
+                        self._close_contract(cid)
+                        continue
+
+                    # 3. Trend Flip on HTF (1H)
+                    ema50_exit = ta.trend.EMAIndicator(df_exit['close'], window=50).ema_indicator().iloc[-1]
+                    if (is_long and ema50_exit < ema200_exit) or (not is_long and ema50_exit > ema200_exit):
+                        self.log(f"Strategy 5 EXIT for {symbol}: Trend flipped on HTF.")
+                        self._close_contract(cid)
+                        continue
+
+                    # 4. Momentum Contradicts Entry
+                    rsi_exit = ta.momentum.RSIIndicator(df_exit['close']).rsi().iloc[-1]
+                    if (is_long and rsi_exit < 40) or (not is_long and rsi_exit > 60):
+                        self.log(f"Strategy 5 EXIT for {symbol}: Momentum contradicts entry (RSI: {rsi_exit:.1f}).")
+                        self._close_contract(cid)
+                        continue
 
             # Confidence Threshold (e.g. > 60%)
             if abs(metrics['confidence']) >= 60:
@@ -1022,10 +1018,9 @@ class TradingBotEngine:
         if strat_key == 'strategy_5':
             # Dynamic expiry based on confidence and volatility
             metrics = self.screener_data.get(symbol, {})
-            conf = abs(metrics.get('confidence', 50))
-            if conf > 80: duration_seconds = 300 # 5m for high confidence
-            else: duration_seconds = 900 # 15m for lower confidence
-            expiry_label = f"Dynamic Expiry: {duration_seconds // 60}m"
+            duration_minutes = metrics.get('expiry_min', 10)
+            duration_seconds = duration_minutes * 60
+            expiry_label = f"Dynamic Expiry: {duration_minutes}m"
         elif strat['expiry_type'] == 'eod':
             # End of day calculation (UTC)
             end_of_day = (now + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
@@ -1081,13 +1076,21 @@ class TradingBotEngine:
         is_multiplier = (strat_key == 'strategy_5' and contract_type == 'multiplier')
 
         if is_multiplier:
-            mult_val = int(self.config.get('multiplier_value', 100))
-            tp_val = self.config.get('tp_value', 0)
-            sl_val = self.config.get('sl_value', 0)
-
             # Use 5% of balance for multipliers to grow exponentially but safely
             if not self.config.get('use_fixed_balance'):
                 amount = max(0.35, round(self.account_balance * 0.05, 2))
+
+            # Use suggested multiplier from screener if available
+            metrics = self.screener_data.get(symbol, {})
+            mult_val = metrics.get('multiplier', int(self.config.get('multiplier_value', 100)))
+
+            # Multiplier TP/SL must be absolute USD
+            tp_val_config = self.config.get('tp_value', 0)
+            sl_val_config = self.config.get('sl_value', 0)
+            use_fixed = self.config.get('use_fixed_balance', True)
+
+            tp_usd = tp_val_config if use_fixed else (amount * tp_val_config / 100.0)
+            sl_usd = sl_val_config if use_fixed else (amount * sl_val_config / 100.0)
 
             self.log(f"Opening MULTIPLIER {side.upper()} on {symbol} | Stake: {amount} | Mult: {mult_val}x")
 
@@ -1106,10 +1109,10 @@ class TradingBotEngine:
 
             # Multipliers use limit_order for TP/SL
             limit_order = {}
-            if self.config.get('tp_enabled') and tp_val > 0:
-                limit_order['take_profit'] = tp_val
-            if self.config.get('sl_enabled') and sl_val > 0:
-                limit_order['stop_loss'] = sl_val
+            if self.config.get('tp_enabled') and tp_usd > 0:
+                limit_order['take_profit'] = round(tp_usd, 2)
+            if self.config.get('sl_enabled') and sl_usd > 0:
+                limit_order['stop_loss'] = round(sl_usd, 2)
 
             if limit_order:
                 buy_request['parameters']['limit_order'] = limit_order
@@ -1249,18 +1252,32 @@ class TradingBotEngine:
         sl_usd = sl_val if use_fixed else (stake * sl_val / 100.0)
 
         if multiplier:
-            # For Multipliers, we have a clear linear relationship
-            # Profit = (Price - Entry) / Entry * Multiplier * Stake
-            # Price = Entry * (1 + Profit / (Multiplier * Stake))
-            denom = multiplier * stake
-            if denom == 0: return
+            # Check if Strategy 5 generated specific levels
+            metrics = self.screener_data.get(c['symbol'])
+            strat_key = self.config.get('active_strategy')
 
-            if side == 'long':
-                if tp_val > 0: self.contracts[cid]['tp_price'] = entry * (1 + tp_usd / denom)
-                if sl_val > 0: self.contracts[cid]['sl_price'] = entry * (1 - sl_usd / denom)
+            if strat_key == 'strategy_5' and metrics:
+                tp_pips = metrics.get('tp_pips', 0)
+                sl_pips = metrics.get('sl_pips', 0)
+                if side == 'long':
+                    self.contracts[cid]['tp_price'] = entry + tp_pips
+                    self.contracts[cid]['sl_price'] = entry - sl_pips
+                else:
+                    self.contracts[cid]['tp_price'] = entry - tp_pips
+                    self.contracts[cid]['sl_price'] = entry + sl_pips
             else:
-                if tp_val > 0: self.contracts[cid]['tp_price'] = entry * (1 - tp_usd / denom)
-                if sl_val > 0: self.contracts[cid]['sl_price'] = entry * (1 + sl_usd / denom)
+                # Fallback to fixed USD/percentage TP/SL
+                # Profit = (Price - Entry) / Entry * Multiplier * Stake
+                # Price = Entry * (1 + Profit / (Multiplier * Stake))
+                denom = multiplier * stake
+                if denom == 0: return
+
+                if side == 'long':
+                    if tp_val > 0: self.contracts[cid]['tp_price'] = entry * (1 + tp_usd / denom)
+                    if sl_val > 0: self.contracts[cid]['sl_price'] = entry * (1 - sl_usd / denom)
+                else:
+                    if tp_val > 0: self.contracts[cid]['tp_price'] = entry * (1 - tp_usd / denom)
+                    if sl_val > 0: self.contracts[cid]['sl_price'] = entry * (1 + sl_usd / denom)
         else:
             # For Rise & Fall, price-based TP/SL is an approximation
             # We'll use a 0.5% move as a default "unit" if no other info, but that's arbitrary.
@@ -1455,7 +1472,13 @@ class TradingBotEngine:
                     self._fetch_history(self.ws, sym, strat['ltf_granularity'], 100)
                     self._fetch_history(self.ws, sym, strat['htf_granularity'], h_count)
                     if new_strat == 'strategy_5':
-                        self._fetch_history(self.ws, sym, 86400, 50)
+                        self._fetch_history(self.ws, sym, 60, 100) # 1m
+                        self._fetch_history(self.ws, sym, 300, 100) # 5m
+                        self._fetch_history(self.ws, sym, 900, 100) # 15m
+                        self._fetch_history(self.ws, sym, 3600, 200) # 1h
+                        self._fetch_history(self.ws, sym, 14400, 100) # 4h
+                        self._fetch_history(self.ws, sym, 86400, 50) # Daily data
+                        self.ws.send(json.dumps({"contracts_for": sym}))
             return {"success": True}
 
         # If only symbols changed and we are connected
@@ -1470,7 +1493,12 @@ class TradingBotEngine:
                 self._fetch_history(self.ws, symbol, strat['ltf_granularity'], 100)
                 self._fetch_history(self.ws, symbol, strat['htf_granularity'], h_count)
                 if new_strat == 'strategy_5':
-                    self._fetch_history(self.ws, symbol, 86400, 50)
+                    self._fetch_history(self.ws, symbol, 60, 100) # 1m
+                    self._fetch_history(self.ws, symbol, 300, 100) # 5m
+                    self._fetch_history(self.ws, symbol, 900, 100) # 15m
+                    self._fetch_history(self.ws, symbol, 3600, 200) # 1h
+                    self._fetch_history(self.ws, symbol, 14400, 100) # 4h
+                    self._fetch_history(self.ws, symbol, 86400, 50) # Daily data
                     self.ws.send(json.dumps({"contracts_for": symbol}))
 
             removed_symbols = old_symbols - new_symbols
