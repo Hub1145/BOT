@@ -6,6 +6,7 @@ from datetime import datetime, timedelta, timezone
 from collections import deque
 import websocket
 import pandas as pd
+import numpy as np
 import ta
 
 class TradingBotEngine:
@@ -38,10 +39,12 @@ class TradingBotEngine:
             'duration': 300           # 5m expiry
         },
         'strategy_5': {
-            'name': 'Intelligence Screener',
-            'htf_granularity': 3600,  # 1h for Intelligence Core
-            'ltf_granularity': 60,    # 1m for Timing
-            'bias_granularity': 14400, # 4h for intermediate regime
+            'name': 'Intelligence Screener v2.0',
+            'htf_granularity': 3600,  # 1h
+            'ltf_granularity': 60,    # 1m
+            'bias_granularity': 900,   # 15m
+            'm5_granularity': 300,
+            'daily_granularity': 86400,
             'expiry_type': 'dynamic'
         }
     }
@@ -197,10 +200,9 @@ class TradingBotEngine:
                     if strat_key == 'strategy_5':
                         self._fetch_history(ws, symbol, 60, 100) # 1m
                         self._fetch_history(ws, symbol, 300, 100) # 5m
-                        self._fetch_history(ws, symbol, 900, 100) # 15m
-                        self._fetch_history(ws, symbol, 3600, 200) # 1h (Need 200 for EMA200)
-                        self._fetch_history(ws, symbol, 14400, 100) # 4h
-                        self._fetch_history(ws, symbol, 86400, 50) # Daily data
+                        self._fetch_history(ws, symbol, 900, 200) # 15m
+                        self._fetch_history(ws, symbol, 3600, 200) # 1h
+                        self._fetch_history(ws, symbol, 86400, 50) # Daily
                         ws.send(json.dumps({"contracts_for": symbol}))
 
         elif msg_type == 'balance':
@@ -326,7 +328,9 @@ class TradingBotEngine:
                 if len(candles) > 1: sd['m15_candles'] = candles
                 else:
                     sd['m15_candles'].append(candles[0])
-                    if len(sd['m15_candles']) > 100: sd['m15_candles'].pop(0)
+                    if len(sd['m15_candles']) > 200: sd['m15_candles'].pop(0)
+                if strat_key == 'strategy_5':
+                    self._calculate_snr_zones(symbol, 900) # 15m SNR
             if granularity == 3600:
                 if len(candles) > 1: sd['htf_candles'] = candles
                 else:
@@ -378,6 +382,7 @@ class TradingBotEngine:
 
                 if strat_key == 'strategy_5':
                     sd['htf_candles'] = candles
+                    self._calculate_snr_zones(symbol, 3600) # 1H SNR
                     self._update_screener(symbol)
 
             elif granularity == strat['ltf_granularity']:
@@ -508,264 +513,245 @@ class TradingBotEngine:
                     if strat_key == 'strategy_5':
                         self._update_screener(symbol)
 
+    def _calculate_supertrend(self, df, period=10, multiplier=3):
+        atr = ta.volatility.average_true_range(df['high'], df['low'], df['close'], window=period)
+        hl2 = (df['high'] + df['low']) / 2
+        upperband = hl2 + (multiplier * atr)
+        lowerband = hl2 - (multiplier * atr)
+
+        final_upperband = upperband.copy()
+        final_lowerband = lowerband.copy()
+
+        for i in range(1, len(df)):
+            if upperband.iloc[i] < final_upperband.iloc[i-1] or df['close'].iloc[i-1] > final_upperband.iloc[i-1]:
+                final_upperband.iloc[i] = upperband.iloc[i]
+            else:
+                final_upperband.iloc[i] = final_upperband.iloc[i-1]
+
+            if lowerband.iloc[i] > final_lowerband.iloc[i-1] or df['close'].iloc[i-1] < final_lowerband.iloc[i-1]:
+                final_lowerband.iloc[i] = lowerband.iloc[i]
+            else:
+                final_lowerband.iloc[i] = final_lowerband.iloc[i-1]
+
+        supertrend = [0.0] * len(df)
+        direction = [1] * len(df) # 1 for up, -1 for down
+
+        for i in range(1, len(df)):
+            if i == 1:
+                supertrend[i] = final_upperband.iloc[i]
+                direction[i] = -1
+                continue
+            if supertrend[i-1] == final_upperband.iloc[i-1]:
+                if df['close'].iloc[i] > final_upperband.iloc[i]:
+                    supertrend[i] = final_lowerband.iloc[i]
+                    direction[i] = 1
+                else:
+                    supertrend[i] = final_upperband.iloc[i]
+                    direction[i] = -1
+            else:
+                if df['close'].iloc[i] < final_lowerband.iloc[i]:
+                    supertrend[i] = final_upperband.iloc[i]
+                    direction[i] = -1
+                else:
+                    supertrend[i] = final_lowerband.iloc[i]
+                    direction[i] = 1
+        return pd.Series(supertrend), pd.Series(direction)
+
+    def _detect_macd_divergence(self, df, window=20):
+        if len(df) < window + 10: return 0 # No signal
+
+        macd_ind = ta.trend.MACD(df['close'])
+        macd = macd_ind.macd()
+
+        # Bullish Divergence: Price Lower Low, MACD Higher Low
+        p_idx = df['close'].iloc[-window:].idxmin()
+        m_idx = macd.iloc[-window:].idxmin()
+
+        # Check previous low
+        p_prev_low = df['close'].iloc[-2*window:-window].min()
+        m_prev_low = macd.iloc[-2*window:-window].min()
+
+        if df['close'].iloc[-1] < p_prev_low and macd.iloc[-1] > m_prev_low:
+            return 1 # Bullish Divergence
+
+        # Bearish Divergence: Price Higher High, MACD Lower High
+        p_idx_h = df['close'].iloc[-window:].idxmax()
+        m_idx_h = macd.iloc[-window:].idxmax()
+
+        p_prev_high = df['close'].iloc[-2*window:-window].max()
+        m_prev_high = macd.iloc[-2*window:-window].max()
+
+        if df['close'].iloc[-1] > p_prev_high and macd.iloc[-1] < m_prev_high:
+            return -1 # Bearish Divergence
+
+        return 0
+
     def _update_screener(self, symbol):
         sd = self.symbol_data.get(symbol)
-        if not sd or len(sd.get('htf_candles', [])) < 200: return
+        if not sd: return
 
-        df_h = pd.DataFrame(sd['htf_candles'])
-        last_close = df_h['close'].iloc[-1]
+        contract_type = self.config.get('contract_type', 'rise_fall')
+        is_multiplier = (contract_type == 'multiplier')
 
-        # --- A) TREND BLOCK (Weight 3) ---
-        # Indicators: EMA 50, EMA 200, SMA 20, ADX, Ichimoku, MACD, Aroon, DPO, KST, TRIX, Vortex, WMA
+        # Select Base Dataframe
+        # Mode A (Rise/Fall): 5m core
+        # Mode B (Multiplier): 1h core
+        df_core = None
+        if is_multiplier:
+            if len(sd.get('htf_candles', [])) < 100: return
+            df_core = pd.DataFrame(sd['htf_candles'])
+        else:
+            if len(sd.get('m5_candles', [])) < 100: return
+            df_core = pd.DataFrame(sd['m5_candles'])
+
+        last_close = df_core['close'].iloc[-1]
+
+        # --- 1. TREND BLOCK ---
+        # EMA 50/200, SuperTrend, ADX
         t_pos, t_neg = 0, 0
+        ema50 = ta.trend.EMAIndicator(df_core['close'], window=50).ema_indicator().iloc[-1]
+        ema200 = ta.trend.EMAIndicator(df_core['close'], window=200).ema_indicator().iloc[-1]
 
-        ema50 = ta.trend.EMAIndicator(df_h['close'], window=50).ema_indicator().iloc[-1]
-        ema200 = ta.trend.EMAIndicator(df_h['close'], window=200).ema_indicator().iloc[-1]
-        sma20 = ta.trend.SMAIndicator(df_h['close'], window=20).sma_indicator().iloc[-1]
-
-        # EMA/SMA Alignment
         if last_close > ema50: t_pos += 1
         else: t_neg += 1
         if ema50 > ema200: t_pos += 1
         else: t_neg += 1
-        if last_close > sma20: t_pos += 1
-        else: t_neg += 1
 
-        # ADX (Trend Strength)
-        adx_ind = ta.trend.ADXIndicator(df_h['high'], df_h['low'], df_h['close'])
-        adx = adx_ind.adx().iloc[-1]
-        if adx > 25:
+        st, st_dir = self._calculate_supertrend(df_core)
+        if st_dir.iloc[-1] == 1: t_pos += 2
+        else: t_neg += 2
+
+        adx_val = ta.trend.ADXIndicator(df_core['high'], df_core['low'], df_core['close']).adx().iloc[-1]
+        if adx_val > 25:
             if last_close > ema50: t_pos += 1
             else: t_neg += 1
 
-        # Ichimoku Cloud
-        ichimoku = ta.trend.IchimokuIndicator(df_h['high'], df_h['low'])
-        span_a = ichimoku.ichimoku_a().iloc[-1]
-        span_b = ichimoku.ichimoku_b().iloc[-1]
-        if last_close > span_a and last_close > span_b: t_pos += 1
-        elif last_close < span_a and last_close < span_b: t_neg += 1
+        trend_score = (t_pos - t_neg) / (t_pos + t_neg) if (t_pos + t_neg) > 0 else 0
 
-        # MACD
-        macd_ind = ta.trend.MACD(df_h['close'])
-        if macd_ind.macd().iloc[-1] > macd_ind.macd_signal().iloc[-1]: t_pos += 1
-        else: t_neg += 1
-
-        # Aroon
-        aroon = ta.trend.AroonIndicator(df_h['high'], df_h['low'])
-        if aroon.aroon_up().iloc[-1] > aroon.aroon_down().iloc[-1]: t_pos += 1
-        else: t_neg += 1
-
-        # DPO
-        dpo = ta.trend.DPOIndicator(df_h['close']).dpo().iloc[-1]
-        if dpo > 0: t_pos += 1
-        else: t_neg += 1
-
-        # KST
-        kst = ta.trend.KSTIndicator(df_h['close'])
-        if kst.kst().iloc[-1] > kst.kst_sig().iloc[-1]: t_pos += 1
-        else: t_neg += 1
-
-        # TRIX
-        trix = ta.trend.TRIXIndicator(df_h['close']).trix().iloc[-1]
-        if trix > 0: t_pos += 1
-        else: t_neg += 1
-
-        # Vortex
-        vortex = ta.trend.VortexIndicator(df_h['high'], df_h['low'], df_h['close'])
-        if vortex.vortex_indicator_pos().iloc[-1] > vortex.vortex_indicator_neg().iloc[-1]: t_pos += 1
-        else: t_neg += 1
-
-        # WMA
-        wma = ta.trend.WMAIndicator(df_h['close'], window=9).wma_indicator().iloc[-1]
-        if last_close > wma: t_pos += 1
-        else: t_neg += 1
-
-        trend_sentiment = (t_pos - t_neg) / (t_pos + t_neg) if (t_pos + t_neg) > 0 else 0
-        trend_score = trend_sentiment * 3
-
-        # --- B) MOMENTUM BLOCK (Weight 2) ---
-        # Indicators: RSI, Stoch RSI, Williams %R, ROC, CCI, TSI, Ultimate Oscillator, PPO
+        # --- 2. MOMENTUM BLOCK ---
+        # RSI, Stoch RSI, MACD Divergence
         m_pos, m_neg = 0, 0
-
-        rsi = ta.momentum.RSIIndicator(df_h['close']).rsi().iloc[-1]
+        rsi = ta.momentum.RSIIndicator(df_core['close']).rsi().iloc[-1]
         if rsi > 50: m_pos += 1
         else: m_neg += 1
 
-        stoch_rsi = ta.momentum.StochRSIIndicator(df_h['close']).stochrsi().iloc[-1]
-        if stoch_rsi > 0.5: m_pos += 1
+        stoch_rsi_ind = ta.momentum.StochRSIIndicator(df_core['close'])
+        srsi_k = stoch_rsi_ind.stochrsi_k().iloc[-1]
+        srsi_d = stoch_rsi_ind.stochrsi_d().iloc[-1]
+        if srsi_k > 0.5: m_pos += 1
+        else: m_neg += 1
+        if srsi_k > srsi_d: m_pos += 1
         else: m_neg += 1
 
-        wr = ta.momentum.WilliamsRIndicator(df_h['high'], df_h['low'], df_h['close']).williams_r().iloc[-1]
-        if wr > -50: m_pos += 1
-        else: m_neg += 1
+        div = self._detect_macd_divergence(df_core)
+        if div == 1: m_pos += 2
+        elif div == -1: m_neg += 2
 
-        roc = ta.momentum.ROCIndicator(df_h['close']).roc().iloc[-1]
-        if roc > 0: m_pos += 1
-        else: m_neg += 1
+        mom_score = (m_pos - m_neg) / (m_pos + m_neg) if (m_pos + m_neg) > 0 else 0
 
-        cci = ta.trend.CCIIndicator(df_h['high'], df_h['low'], df_h['close']).cci().iloc[-1]
-        if cci > 0: m_pos += 1
-        else: m_neg += 1
-
-        # TSI
-        tsi = ta.momentum.TSIIndicator(df_h['close']).tsi().iloc[-1]
-        if tsi > 0: m_pos += 1
-        else: m_neg += 1
-
-        # Ultimate Oscillator
-        uo = ta.momentum.UltimateOscillator(df_h['high'], df_h['low'], df_h['close']).ultimate_oscillator().iloc[-1]
-        if uo > 50: m_pos += 1
-        else: m_neg += 1
-
-        # PPO
-        ppo = ta.momentum.PercentagePriceOscillator(df_h['close']).ppo().iloc[-1]
-        if ppo > 0: m_pos += 1
-        else: m_neg += 1
-
-        mom_sentiment = (m_pos - m_neg) / (m_pos + m_neg) if (m_pos + m_neg) > 0 else 0
-        mom_score = mom_sentiment * 2
-
-        # --- C) VOLATILITY BLOCK (Weight 1) ---
-        # Indicators: ATR, Bollinger Bands, Donchian Channel, Keltner Channel, Ulcer Index, Mass Index
+        # --- 3. VOLATILITY BLOCK ---
+        # ATR, Bollinger Bands
         v_pos, v_neg = 0, 0
+        bb = ta.volatility.BollingerBands(df_core['close'])
+        if last_close > bb.bollinger_mavg().iloc[-1]: v_pos += 1
+        else: v_neg += 1
 
-        atr_ind = ta.volatility.AverageTrueRange(df_h['high'], df_h['low'], df_h['close'])
-        atr = atr_ind.average_true_range().iloc[-1]
-        atr_prev = atr_ind.average_true_range().iloc[-2]
-        if atr > atr_prev: v_pos += 0.5 # Expanding volatility is trend-supportive
+        # Band walk/breakout
+        if last_close > bb.bollinger_hband().iloc[-1]: v_pos += 1
+        elif last_close < bb.bollinger_lband().iloc[-1]: v_neg += 1
 
-        bb = ta.volatility.BollingerBands(df_h['close'])
-        bbw = (bb.bollinger_hband().iloc[-1] - bb.bollinger_lband().iloc[-1]) / bb.bollinger_mavg().iloc[-1]
-        prev_bbw = (bb.bollinger_hband().iloc[-2] - bb.bollinger_lband().iloc[-2]) / bb.bollinger_mavg().iloc[-2]
-        if bbw > prev_bbw: v_pos += 0.5
+        vol_score = (v_pos - v_neg) / (v_pos + v_neg) if (v_pos + v_neg) > 0 else 0
 
-        dc = ta.volatility.DonchianChannel(df_h['high'], df_h['low'], df_h['close'])
-        # Price relative to DC midline
-        dc_mid = (dc.donchian_channel_hband().iloc[-1] + dc.donchian_channel_lband().iloc[-1]) / 2
-        if last_close > dc_mid: v_pos += 0.5
-        else: v_neg += 0.5
-
-        kc = ta.volatility.KeltnerChannel(df_h['high'], df_h['low'], df_h['close'])
-        if last_close > kc.keltner_channel_mband().iloc[-1]: v_pos += 0.5
-        else: v_neg += 0.5
-
-        # Ulcer Index
-        ui = ta.volatility.UlcerIndex(df_h['close']).ulcer_index().iloc[-1]
-        if ui < 5: v_pos += 0.5
-        else: v_neg += 0.5
-
-        # Mass Index
-        mi = ta.trend.MassIndex(df_h['high'], df_h['low']).mass_index().iloc[-1]
-        if mi < 25: v_pos += 0.5
-        else: v_neg += 0.5
-
-        vol_sentiment = (v_pos - v_neg) / (v_pos + v_neg) if (v_pos + v_neg) > 0 else 0
-        vol_score = vol_sentiment * 1
-
-        # --- D) STRUCTURE / MEAN REVERSION BLOCK (Weight 2) ---
-        # Indicators: Price distance from EMA, Z-score, BB band touch, Pivot points, Daily Proximity, SNR Alignment
+        # --- 4. STRUCTURE BLOCK ---
+        # SNR, Price distance from EMA
         s_pos, s_neg = 0, 0
-
-        # Price distance from EMA 50
         dist = (last_close - ema50) / ema50
-        if trend_score > 0:
-            if 0 < dist < 0.05: s_pos += 1 # Healthy distance
-            elif dist > 0.1: s_neg += 0.5 # Overextended
-        elif trend_score < 0:
-            if -0.05 < dist < 0: s_pos += 1
-            elif dist < -0.1: s_neg += 0.5
-
-        # Z-Score (20 period)
-        sma20_v = df_h['close'].rolling(window=20).mean()
-        std20_v = df_h['close'].rolling(window=20).std()
-        z_score = (last_close - sma20_v.iloc[-1]) / std20_v.iloc[-1]
-        if abs(z_score) < 2: s_pos += 1
+        if abs(dist) < 0.05: s_pos += 1
         else: s_neg += 1 # Overextended
 
-        # BB Band Touch
-        if last_close >= bb.bollinger_hband().iloc[-1]: s_neg += 1 # Resistance touch
-        elif last_close <= bb.bollinger_lband().iloc[-1]: s_pos += 1 # Support touch
-
-        # Pivot Points (Standard)
-        if sd.get('daily_candles') and len(sd['daily_candles']) >= 2:
-            prev_day = sd['daily_candles'][-2]
-            pivot = (prev_day['high'] + prev_day['low'] + prev_day['close']) / 3
-            r1 = 2 * pivot - prev_day['low']
-            s1 = 2 * pivot - prev_day['high']
-            if last_close > pivot: s_pos += 0.5
-            if last_close > r1: s_neg += 0.5 # Potential reversal
-            if last_close < s1: s_pos += 0.5 # Potential bounce
-
-            # Daily Proximity
-            day_high = prev_day['high']
-            day_low = prev_day['low']
-            if abs(last_close - day_high) / day_high < 0.01: s_neg += 0.5 # Near daily high
-            if abs(last_close - day_low) / day_low < 0.01: s_pos += 0.5 # Near daily low
-
-        # HTF SNR Alignment
-        zones = sd.get('snr_zones', [])
+        # HTF SNR Alignment (Uses 1H or 15m depending on mode)
+        ref_symbol_data = sd
+        zones = ref_symbol_data.get('snr_zones', [])
         for z in zones:
             if abs(last_close - z['price']) / z['price'] < 0.005:
-                if z['type'] == 'S': s_pos += 1
-                elif z['type'] == 'R': s_neg += 1
+                if z['type'] in ['S', 'Flip']: s_pos += 2
+                elif z['type'] in ['R', 'Flip']: s_neg += 2
 
-        struct_sentiment = (s_pos - s_neg) / (s_pos + s_neg) if (s_pos + s_neg) > 0 else 0
-        struct_score = struct_sentiment * 2
+        struct_score = (s_pos - s_neg) / (s_pos + s_neg) if (s_pos + s_neg) > 0 else 0
 
-        # --- Confidence Calculation ---
-        # Total Max Weight = 3 + 2 + 1 + 2 = 8
-        raw_sum = trend_score + mom_score + vol_score + struct_score
-        confidence = (raw_sum / 8.0) * 100
+        # --- FINAL CONFIDENCE & WEIGHTING ---
+        if is_multiplier:
+            # Mode B: Trend (50%), Volatility (30%), Structure (20%), Momentum Filter
+            # Normalized to 100
+            confidence = (trend_score * 50) + (vol_score * 30) + (struct_score * 20)
+            # Momentum Filter: if momentum strongly opposes trend, reduce confidence
+            if (trend_score > 0 and mom_score < -0.5) or (trend_score < 0 and mom_score > 0.5):
+                confidence *= 0.5
+        else:
+            # Mode A: Structure (40%), Momentum (40%), Volatility (20%), Trend (0%)
+            confidence = (struct_score * 40) + (mom_score * 40) + (vol_score * 20)
 
-        regime = "Ranging"
-        _adx = adx
-        _ema50 = ema50
-        _ema200 = ema200
-        if _adx > 25:
-            regime = "Trending Up" if _ema50 > _ema200 else "Trending Down"
+        # Multiplier / Expiry Logic
+        atr_val = ta.volatility.AverageTrueRange(df_core['high'], df_core['low'], df_core['close']).average_true_range().iloc[-1]
 
-        # Recommendations
-        abs_conf = abs(confidence)
+        # 1m ATR for Volatility Freeze
+        atr_1m = 0
+        if sd['ltf_candles']:
+            df_1m = pd.DataFrame(sd['ltf_candles'])
+            if len(df_1m) >= 14:
+                atr_1m = ta.volatility.AverageTrueRange(df_1m['high'], df_1m['low'], df_1m['close']).average_true_range().iloc[-1]
+
+        suggested_multiplier = 10
+        if is_multiplier:
+            # base it on Volatility (ATR)
+            # Higher ATR = Lower Multiplier (10-20x)
+            # Lower ATR = Higher Multiplier (50x)
+            # Use relative ATR (ATR / Price)
+            rel_atr = atr_val / last_close
+            if rel_atr > 0.01: suggested_multiplier = 10
+            elif rel_atr > 0.005: suggested_multiplier = 20
+            else: suggested_multiplier = 50
+
         suggested_expiry = 5
-        if abs_conf >= 70: suggested_expiry = 15
-        elif abs_conf >= 55: suggested_expiry = 10
-        elif abs_conf >= 40: suggested_expiry = 5
-
-        suggested_multiplier = 5
-        if abs_conf >= 80: suggested_multiplier = 50
-        elif abs_conf >= 65: suggested_multiplier = 20
-        elif abs_conf >= 50: suggested_multiplier = 5
-
-        # SL/TP calculation using ATR (1H)
-        atr_1h = ta.volatility.AverageTrueRange(df_h['high'], df_h['low'], df_h['close']).average_true_range().iloc[-1]
-        # RiskFactor = 0.5-1.5 based on confidence
-        risk_factor = 0.5 + (abs_conf / 100.0)
-        sl_pips = atr_1h * risk_factor
-        tp_pips = sl_pips * 1.5 # 1:1.5 RR
+        if abs(confidence) > 75: suggested_expiry = 15
+        elif abs(confidence) > 60: suggested_expiry = 10
 
         self.screener_data[symbol] = {
             'confidence': round(confidence, 1),
             'direction': 'CALL' if confidence > 0 else 'PUT',
-            'regime': regime,
+            'regime': "Trending" if adx_val > 25 else "Ranging",
             'trend': round(trend_score, 1),
             'momentum': round(mom_score, 1),
             'volatility': round(vol_score, 1),
             'structure': round(struct_score, 1),
-            'adx': round(_adx, 1),
+            'adx': round(adx_val, 1),
+            'atr': round(atr_val, 4),
+            'atr_1m': round(atr_1m, 6),
             'expiry_min': suggested_expiry,
             'multiplier': suggested_multiplier,
-            'sl_pips': round(sl_pips, 4),
-            'tp_pips': round(tp_pips, 4)
+            'st_dir': st_dir.iloc[-1],
+            'last_update': time.time()
         }
 
-        # Emit to UI
         self.emit('screener_update', {'symbol': symbol, 'data': self.screener_data[symbol]})
 
-    def _calculate_snr_zones(self, symbol):
+    def _calculate_snr_zones(self, symbol, granularity=None):
         sd = self.symbol_data.get(symbol)
-        if not sd or not sd['htf_candles']: return
+        if not sd: return
 
-        candles = sd['htf_candles'][-100:]
+        strat_key = self.config.get('active_strategy')
+        if granularity is None:
+            strat = self.STRATEGY_MAP.get(strat_key, self.STRATEGY_MAP['strategy_1'])
+            granularity = strat['htf_granularity']
+
+        candles = []
+        if granularity == 3600: candles = sd.get('htf_candles', [])
+        elif granularity == 900: candles = sd.get('m15_candles', [])
+        elif granularity == 300: candles = sd.get('m5_candles', [])
+
+        if len(candles) < 20: return
+
+        candles = candles[-100:]
         if len(candles) < 20: return
 
         levels = []
@@ -946,33 +932,72 @@ class TradingBotEngine:
                             self.log(f"Strategy 4 SELL Signal: {pattern} at {z['type']} zone {z['price']:.2f}")
                             break
         elif strat_key == 'strategy_5':
-            # Intelligence Screener Strategy
+            # Intelligence Screener Strategy v2.0
             metrics = self.screener_data.get(symbol)
             if not metrics: return
 
-            # 15m Bias Check
-            if not sd['bias_candles']: return
-            bias_c = sd['bias_candles'][-1]
-            bias_bullish = bias_c['close'] > bias_c['open']
+            contract_type = self.config.get('contract_type', 'rise_fall')
+            is_multiplier = (contract_type == 'multiplier')
 
-            # Confidence Threshold (e.g. > 60%)
-            if abs(metrics['confidence']) >= 60:
-                direction = metrics['direction']
+            if is_multiplier:
+                # Mode B: Multiplier (Day Trading)
+                # Signal Trigger (>= 75% Confidence)
+                if abs(metrics['confidence']) >= 75:
+                    direction = metrics['direction']
+                    # Trend Context: 1H EMA 50 > EMA 200
+                    # (Checked by Screener already in trend score, but let's confirm alignment)
+                    if (direction == 'CALL' and metrics['trend'] > 0) or (direction == 'PUT' and metrics['trend'] < 0):
+                        # Entry Context: Price pulls back to 15m EMA 50 or 15m SuperTrend line
+                        # Pullback check: 15m price is near EMA50 or SuperTrend
+                        df_m15 = pd.DataFrame(sd.get('m15_candles', []))
+                        if not df_m15.empty:
+                            ema50_15 = ta.trend.EMAIndicator(df_m15['close'], window=50).ema_indicator().iloc[-1]
+                            st_15, st_dir_15 = self._calculate_supertrend(df_m15)
 
-                # Multi-TF Alignment
-                if direction == 'CALL' and bias_bullish:
-                    # Timing: Wait for bullish LTF candle or breakout
-                    if not sd['ltf_candles']: return
-                    last_ltf = sd['ltf_candles'][-1]
-                    if last_ltf['close'] > last_ltf['open']:
-                        self.log(f"Strategy 5 BUY on {symbol} - Confidence: {metrics['confidence']}%")
-                        signal = 'buy'
-                elif direction == 'PUT' and not bias_bullish:
-                    if not sd['ltf_candles']: return
-                    last_ltf = sd['ltf_candles'][-1]
-                    if last_ltf['close'] < last_ltf['open']:
-                        self.log(f"Strategy 5 SELL on {symbol} - Confidence: {metrics['confidence']}%")
-                        signal = 'sell'
+                            price_15 = df_m15['close'].iloc[-1]
+                            near_ema = abs(price_15 - ema50_15) / ema50_15 < 0.005
+                            near_st = abs(price_15 - st_15.iloc[-1]) / st_15.iloc[-1] < 0.005
+
+                            if near_ema or near_st:
+                                # 5m chart shows momentum resuming
+                                df_m5 = pd.DataFrame(sd.get('m5_candles', []))
+                                if not df_m5.empty:
+                                    last_m5 = df_m5.iloc[-1]
+                                    m5_resumed = (direction == 'CALL' and last_m5['close'] > last_m5['open']) or \
+                                                 (direction == 'PUT' and last_m5['close'] < last_m5['open'])
+                                    if m5_resumed:
+                                        signal = 'buy' if direction == 'CALL' else 'sell'
+                                        self.log(f"Strategy 5 MULTIPLIER {direction} on {symbol} - Confidence: {metrics['confidence']}%")
+            else:
+                # Mode A: Rise & Fall (Scalping)
+                # Signal Trigger (>= 65% Confidence)
+                if abs(metrics['confidence']) >= 65:
+                    direction = metrics['direction']
+
+                    # Price Action Context: Price touches 1H SNR or 15m outer Bollinger Band
+                    df_m15 = pd.DataFrame(sd.get('m15_candles', []))
+                    if not df_m15.empty:
+                        bb_15 = ta.volatility.BollingerBands(df_m15['close'])
+                        price_15 = df_m15['close'].iloc[-1]
+                        at_bb = price_15 >= bb_15.bollinger_hband().iloc[-1] or price_15 <= bb_15.bollinger_lband().iloc[-1]
+
+                        at_snr = False
+                        zones = sd.get('snr_zones', [])
+                        for z in zones:
+                            if abs(price_15 - z['price']) / z['price'] < 0.002:
+                                at_snr = True
+                                break
+
+                        if at_bb or at_snr:
+                            # 1m chart prints a reversal candle (Trigger)
+                            if sd['ltf_candles']:
+                                pattern = self._check_price_action_patterns(sd['ltf_candles'])
+                                if direction == 'CALL' and pattern in ['bullish_pin', 'bullish_engulfing', 'tweezer_bottom']:
+                                    signal = 'buy'
+                                elif direction == 'PUT' and pattern in ['bearish_pin', 'bearish_engulfing', 'tweezer_top']:
+                                    signal = 'sell'
+                                if signal:
+                                    self.log(f"Strategy 5 SCALP {direction} on {symbol} - Confidence: {metrics['confidence']}% - Pattern: {pattern}")
         else:
             # Default Breakout Logic (Strategy 1, 2, 3)
             if strat_key == 'strategy_1' and not is_candle_close:
@@ -1012,79 +1037,48 @@ class TradingBotEngine:
             side = c.get('side')
             is_long = side == 'long'
 
-            # --- DECISION MAKING POSITION ENGINE ---
+            # --- DECISION MAKING POSITION ENGINE v2.0 ---
             strat_key = self.config.get('active_strategy')
             if strat_key == 'strategy_5' and current_price:
-                # Get current market intelligence
-                metrics = self.screener_data.get(symbol, {})
                 sd = self.symbol_data.get(symbol, {})
                 df_h = pd.DataFrame(sd.get('htf_candles', []))
+                df_m15 = pd.DataFrame(sd.get('m15_candles', []))
 
-                if not df_h.empty and len(df_h) >= 200:
-                    # 1. Score-based Decision Engine
+                if not df_h.empty and len(df_h) >= 20 and not df_m15.empty and len(df_m15) >= 20:
                     exit_reason = None
-                    status = "Holding"
 
-                    trend_score = metrics.get('trend', 0)
-                    mom_score = metrics.get('momentum', 0)
-                    conf = metrics.get('confidence', 0)
+                    # 1. Divergence Hard Exit (1H)
+                    div = self._detect_macd_divergence(df_h)
+                    if (is_long and div == -1) or (not is_long and div == 1):
+                        exit_reason = "MACD Divergence detected"
 
-                    # Hard Exit Conditions
-                    if (is_long and trend_score < -1) or (not is_long and trend_score > 1):
-                        exit_reason = f"Trend score flip ({trend_score})"
-                    elif abs(conf) < 30:
-                        exit_reason = f"Confidence weak ({conf}%)"
-                    elif (is_long and mom_score < -2) or (not is_long and mom_score > 2):
-                        exit_reason = f"Momentum reversal ({mom_score})"
+                    # 2. Multiplier Management
+                    is_multiplier = c.get('contract_type') in ['MULTUP', 'MULTDOWN']
+                    if is_multiplier and not exit_reason:
+                        entry_price = c.get('entry_price')
+                        atr_1h = ta.volatility.AverageTrueRange(df_h['high'], df_h['low'], df_h['close']).average_true_range().iloc[-1]
 
-                    # Confidence Decay Check (Relative to entry)
-                    entry_conf = c.get('entry_snapshot', {}).get('confidence', 0)
-                    if (is_long and conf < entry_conf - 25) or (not is_long and conf > entry_conf + 25):
-                        exit_reason = f"Intelligence decay ({entry_conf}% -> {conf}%)"
+                        if entry_price:
+                            profit_pips = (current_price - entry_price) if is_long else (entry_price - current_price)
 
-                    # Alert/Weakening conditions (Non-exit)
-                    if not exit_reason:
-                        if abs(conf) < 50 or abs(trend_score) < 2:
-                            status = "Weakening"
-                        else:
-                            status = "Holding"
-                    else:
-                        status = "Closing"
+                            # "Free Ride" Protocol: SL to BE + margin at 1.5 ATR profit
+                            if profit_pips >= 1.5 * atr_1h and not c.get('is_freeride'):
+                                self.log(f"Multiplier FREE RIDE for {symbol}: 1.5 ATR profit reached. Moving SL to entry + margin.")
+                                # Add 0.02% margin to cover commissions/spread
+                                margin = entry_price * 0.0002
+                                c['sl_price'] = (entry_price + margin) if is_long else (entry_price - margin)
+                                c['is_freeride'] = True
 
-                    c['status'] = status
+                            # SuperTrend Trailing (15m)
+                            if c.get('is_freeride'):
+                                _, st_dir = self._calculate_supertrend(df_m15)
+                                if (is_long and st_dir.iloc[-1] == -1) or (not is_long and st_dir.iloc[-1] == 1):
+                                    exit_reason = "15m SuperTrend reversal (Trailing)"
 
                     if exit_reason:
                         self.log(f"Strategy 5 Engine EXIT for {symbol} ({cid}): {exit_reason}.")
                         self._close_contract(cid)
                         continue
-
-                    # 2. Dynamic Trailing Stop Loss (Multipliers Only)
-                    is_multiplier = c.get('contract_type') in ['MULTUP', 'MULTDOWN']
-                    if is_multiplier:
-                        atr = ta.volatility.AverageTrueRange(df_h['high'], df_h['low'], df_h['close']).average_true_range().iloc[-1]
-                    entry_price = c.get('entry_price')
-                    if entry_price:
-                        profit_pips = (current_price - entry_price) if is_long else (entry_price - current_price)
-
-                        # Move to Breakeven at 1 ATR profit
-                        if profit_pips >= atr and not c.get('is_breakeven'):
-                            self.log(f"Multiplier TRAIL for {symbol}: 1 ATR profit reached. Moving SL to breakeven.")
-                            # We don't have server-side SL adjustment here easily without another API call,
-                            # but we can track it internally for our failsafe tracking.
-                            c['sl_price'] = entry_price
-                            c['is_breakeven'] = True
-
-                        # Trail at 2 ATR profit
-                        if profit_pips >= 2 * atr:
-                            ema20 = ta.trend.EMAIndicator(df_h['close'], window=20).ema_indicator().iloc[-1]
-                            new_sl = ema20 if is_long else ema20
-                            # Ensure we don't move SL backwards
-                            if is_long:
-                                if new_sl > c.get('sl_price', 0):
-                                    c['sl_price'] = new_sl
-                            else:
-                                if c.get('sl_price', 999999) > new_sl:
-                                    c['sl_price'] = new_sl
 
             # Price-based TP/SL trigger (Fail-safe tracking for both types)
             if current_price and symbol == c['symbol'] and (tp_enabled or sl_enabled):
@@ -1171,11 +1165,34 @@ class TradingBotEngine:
         custom_expiry = self.config.get('custom_expiry', 'default')
 
         if strat_key == 'strategy_5':
-            # Dynamic expiry based on confidence and volatility
             metrics = self.screener_data.get(symbol, {})
-            duration_minutes = metrics.get('expiry_min', 10)
-            duration_seconds = duration_minutes * 60
-            expiry_label = f"Dynamic Expiry: {duration_minutes}m"
+            contract_type = self.config.get('contract_type', 'rise_fall')
+            is_multiplier = (contract_type == 'multiplier')
+
+            if not is_multiplier:
+                # Rise & Fall Constraints
+                # 1. Late Entry Penalty
+                if sd['ltf_candles']:
+                    last_c = sd['ltf_candles'][-1]
+                    body = abs(last_c['close'] - last_c['open'])
+                    df_ltf = pd.DataFrame(sd['ltf_candles'])
+                    avg_atr = ta.volatility.AverageTrueRange(df_ltf['high'], df_ltf['low'], df_ltf['close']).average_true_range().mean()
+                    if body > (avg_atr * 0.3):
+                        self.log(f"Strategy 5 Scalp CANCELLED: Late entry (body {body:.4f} > 30% avg ATR {avg_atr*0.3:.4f})")
+                        return
+
+                # 2. Volatility Freeze
+                if metrics.get('atr_1m', 0) < 0.00001: # Baseline threshold (Adjusted for synthetic indices)
+                    self.log(f"Strategy 5 Scalp PAUSED: Volatility too low (1m ATR: {metrics['atr_1m']})")
+                    return
+
+                # Dynamic expiry based on trigger timeframe
+                # We simplified this in _update_screener's suggested_expiry
+                duration_minutes = metrics.get('expiry_min', 5)
+                duration_seconds = duration_minutes * 60
+                expiry_label = f"Scalp Expiry: {duration_minutes}m"
+            else:
+                expiry_label = "Multiplier Position"
         elif strat['expiry_type'] == 'eod':
             # End of day calculation (UTC)
             end_of_day = (now + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
@@ -1231,23 +1248,24 @@ class TradingBotEngine:
         is_multiplier = (strat_key == 'strategy_5' and contract_type == 'multiplier')
 
         if is_multiplier:
-            # Use 5% of balance for multipliers to grow exponentially but safely
+            # Use 5% of balance for multipliers
             if not self.config.get('use_fixed_balance'):
                 amount = max(0.35, round(self.account_balance * 0.05, 2))
 
-            # Use suggested multiplier from screener if available
+            # Multiplier tied to Volatility (ATR)
             metrics = self.screener_data.get(symbol, {})
             mult_val = metrics.get('multiplier', int(self.config.get('multiplier_value', 100)))
 
-            # Multiplier TP/SL must be absolute USD
-            tp_val_config = self.config.get('tp_value', 0)
-            sl_val_config = self.config.get('sl_value', 0)
-            use_fixed = self.config.get('use_fixed_balance', True)
+            # TP/SL based on 1H ATR (Mode B: 1.5x ATR SL, 3.0x ATR TP)
+            atr_1h = metrics.get('atr', 1.0)
+            # We need to convert ATR-based price targets to USD profit/loss for multipliers
+            # Profit = (Price_Change / Entry_Price) * Multiplier * Stake
+            # So, Target_USD = (ATR_Multiple / Entry_Price) * Multiplier * Stake
+            entry_price = sd['last_tick']
+            sl_usd = ( (1.5 * atr_1h) / entry_price ) * mult_val * amount
+            tp_usd = ( (3.0 * atr_1h) / entry_price ) * mult_val * amount
 
-            tp_usd = tp_val_config if use_fixed else (amount * tp_val_config / 100.0)
-            sl_usd = sl_val_config if use_fixed else (amount * sl_val_config / 100.0)
-
-            self.log(f"Opening MULTIPLIER {side.upper()} on {symbol} | Stake: {amount} | Mult: {mult_val}x")
+            self.log(f"Opening MULTIPLIER {side.upper()} on {symbol} | Stake: {amount} | Mult: {mult_val}x | ATR: {atr_1h}")
 
             buy_request = {
                 "buy": 1,
@@ -1262,15 +1280,11 @@ class TradingBotEngine:
                 }
             }
 
-            # Multipliers use limit_order for TP/SL
-            limit_order = {}
-            if self.config.get('tp_enabled') and tp_usd > 0:
-                limit_order['take_profit'] = round(tp_usd, 2)
-            if self.config.get('sl_enabled') and sl_usd > 0:
-                limit_order['stop_loss'] = round(sl_usd, 2)
-
-            if limit_order:
-                buy_request['parameters']['limit_order'] = limit_order
+            limit_order = {
+                'take_profit': round(tp_usd, 2),
+                'stop_loss': round(sl_usd, 2)
+            }
+            buy_request['parameters']['limit_order'] = limit_order
         else:
             self.log(f"Opening {side.upper()} on {symbol} | Stake: {amount} | {expiry_label}")
 
@@ -1288,21 +1302,14 @@ class TradingBotEngine:
                 }
             }
         if self.ws and self.ws.sock and self.ws.sock.connected:
-            # Capture entry snapshot for Multiplier position management
+            # Capture entry snapshot
             if is_multiplier:
                 metrics = self.screener_data.get(symbol, {})
-                sd = self.symbol_data.get(symbol)
-                df_h = pd.DataFrame(sd.get('htf_candles', []))
-
-                snapshot = {
-                    'direction': side,
+                sd['last_trade_snapshot'] = {
                     'confidence': metrics.get('confidence', 0),
-                    'atr': ta.volatility.AverageTrueRange(df_h['high'], df_h['low'], df_h['close']).average_true_range().iloc[-1] if not df_h.empty else 0,
-                    'adx': metrics.get('adx', 0),
-                    'ema50': ta.trend.EMAIndicator(df_h['close'], window=50).ema_indicator().iloc[-1] if not df_h.empty else 0,
-                    'ema200': ta.trend.EMAIndicator(df_h['close'], window=200).ema_indicator().iloc[-1] if not df_h.empty else 0,
+                    'atr': metrics.get('atr', 0),
+                    'entry_time': time.time()
                 }
-                sd['last_trade_snapshot'] = snapshot
 
             self.ws.send(json.dumps(buy_request))
 
@@ -1489,7 +1496,8 @@ class TradingBotEngine:
                 'id': cid, 'type': c['side'].capitalize(), 'symbol': c['symbol'],
                 'entry_spot_price': c['entry_price'], 'stake': c['stake'], 'pnl': c['pnl'],
                 'expiry_time': c['expiry_time'],
-                'status': c.get('status', 'Holding')
+                'status': c.get('status', 'Holding'),
+                'is_freeride': c.get('is_freeride', False)
             })
             floating_pnl += c['pnl']
             used_notional += c['stake']

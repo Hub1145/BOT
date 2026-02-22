@@ -219,15 +219,15 @@ function updateScreenerTable(symbol, data) {
 
     body.innerHTML = Object.keys(screenerDataMap).sort().map(sym => {
         const d = screenerDataMap[sym];
-        const confColor = d.confidence >= 60 ? 'text-success' : (d.confidence <= -60 ? 'text-danger' : 'text-warning');
+        const confColor = d.confidence >= 65 ? 'text-success' : (d.confidence <= -65 ? 'text-danger' : 'text-warning');
         const dirColor = d.direction === 'CALL' ? 'text-success' : 'text-danger';
 
         const contractType = currentConfig ? currentConfig.contract_type : 'rise_fall';
         let recommendation = "";
         if (contractType === 'multiplier') {
-            recommendation = `x${d.multiplier} | TP:${d.tp_pips} | SL:${d.sl_pips}`;
+            recommendation = `x${d.multiplier} | ATR:${d.atr}`;
         } else {
-            recommendation = `${d.expiry_min} min expiry`;
+            recommendation = `${d.expiry_min}m | 1mATR:${d.atr_1m}`;
         }
 
         return `
@@ -258,10 +258,13 @@ function updateActiveTrades(trades) {
         const stake = typeof t.stake === 'number' ? t.stake : 0;
         const typeLabel = t.type ? t.type.toLowerCase() : 'unknown';
 
+        const statusLabel = t.status === 'Active' ? '' : ` [${t.status}]`;
+        const freerideLabel = t.is_freeride ? ' <span class="badge bg-success">FREE RIDE</span>' : '';
+
         return `
             <div class="trade-card ${typeLabel}">
                 <div class="d-flex justify-content-between align-items-center">
-                    <strong>${t.symbol || 'Unknown'} (${t.type || '???'})</strong>
+                    <strong>${t.symbol || 'Unknown'} (${t.type || '???'})${statusLabel}${freerideLabel}</strong>
                     <div class="d-flex align-items-center gap-3">
                         <span class="${pnl >= 0 ? 'text-success' : 'text-danger'} fw-bold">$${pnl.toFixed(2)}</span>
                         <button class="btn btn-sm btn-outline-danger" onclick="closeTrade('${t.id}')" title="Close Trade">
