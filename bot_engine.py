@@ -194,6 +194,9 @@ class TradingBotEngine:
                     h_count = 200 if strat_key in ['strategy_4', 'strategy_5'] else 2
                     self._fetch_history(ws, symbol, strat['htf_granularity'], h_count)
 
+                    if strat_key == 'strategy_5':
+                        self._fetch_history(ws, symbol, 86400, 50) # Daily data
+
         elif msg_type == 'balance':
             self.account_balance = data['balance']['balance']
             self.available_balance = self.account_balance
@@ -232,6 +235,7 @@ class TradingBotEngine:
                 'ltf_candles': [],
                 'htf_candles': [],
                 'bias_candles': [], # 15m for Strategy 5
+                'daily_candles': [], # Daily for Strategy 5 Multiplier
                 'htf_open': None,
                 'htf_epoch': None,
                 'last_tick': None,
@@ -266,6 +270,11 @@ class TradingBotEngine:
                 sd['bias_candles'] = candles
                 if candles:
                     sd['current_bias_candle'] = candles[-1]
+
+            if granularity == 86400:
+                sd['daily_candles'] = candles
+                if strat_key == 'strategy_5':
+                    self._update_screener(symbol)
 
             if granularity == strat['htf_granularity']:
                 if candles:
@@ -597,6 +606,15 @@ class TradingBotEngine:
             # Indecision, score towards trend
             struct_score += (20 if trend_score > 0 else -20)
 
+        # Include Daily Trend if available for Strategy 5
+        if sd.get('daily_candles') and len(sd['daily_candles']) >= 20:
+            df_daily = pd.DataFrame(sd['daily_candles'])
+            ema20_d = ta.trend.EMAIndicator(df_daily['close'], window=20).ema_indicator()
+            if df_daily['close'].iloc[-1] > ema20_d.iloc[-1]:
+                trend_score += 20
+            else:
+                trend_score -= 20
+
         # Weighted Average (3, 2, 1, 2 ratio as requested)
         # Total weight units = 8
         total_score = (trend_score * (3/8)) + (mom_score * (2/8)) + (vol_score * (1/8)) + (struct_score * (2/8))
@@ -819,6 +837,16 @@ class TradingBotEngine:
             bias_c = sd['bias_candles'][-1]
             bias_bullish = bias_c['close'] > bias_c['open']
 
+            # DYNAMIC EXIT: If we have an open trade for this symbol, check for reversal
+            contract_type = self.config.get('contract_type', 'rise_fall')
+            for cid, c in self.contracts.items():
+                if c['symbol'] == symbol:
+                    # If signal reverses significantly (confidence below 20% or opposite)
+                    is_long = c['side'] == 'long'
+                    if (is_long and metrics['confidence'] < 20) or (not is_long and metrics['confidence'] > -20):
+                        self.log(f"Strategy 5 EXIT Signal for {symbol}: Confidence {metrics['confidence']}% indicates reversal/weakness.")
+                        self._close_contract(cid)
+
             # Confidence Threshold (e.g. > 60%)
             if abs(metrics['confidence']) >= 60:
                 direction = metrics['direction']
@@ -826,11 +854,13 @@ class TradingBotEngine:
                 # Multi-TF Alignment
                 if direction == 'CALL' and bias_bullish:
                     # Timing: Wait for bullish LTF candle or breakout
+                    if not sd['ltf_candles']: return
                     last_ltf = sd['ltf_candles'][-1]
                     if last_ltf['close'] > last_ltf['open']:
                         self.log(f"Strategy 5 BUY on {symbol} - Confidence: {metrics['confidence']}%")
                         signal = 'buy'
                 elif direction == 'PUT' and not bias_bullish:
+                    if not sd['ltf_candles']: return
                     last_ltf = sd['ltf_candles'][-1]
                     if last_ltf['close'] < last_ltf['open']:
                         self.log(f"Strategy 5 SELL on {symbol} - Confidence: {metrics['confidence']}%")
@@ -985,21 +1015,58 @@ class TradingBotEngine:
 
         amount = max(0.35, round(amount, 2))
 
-        self.log(f"Opening {side.upper()} on {symbol} | Stake: {amount} | {expiry_label}")
+        contract_type = self.config.get('contract_type', 'rise_fall')
+        is_multiplier = (strat_key == 'strategy_5' and contract_type == 'multiplier')
 
-        buy_request = {
-            "buy": 1,
-            "price": amount,
-            "parameters": {
-                "amount": amount,
-                "basis": "stake",
-                "contract_type": "CALL" if side == 'buy' else "PUT",
-                "currency": "USD",
-                "duration": duration_seconds,
-                "duration_unit": "s",
-                "symbol": symbol
+        if is_multiplier:
+            mult_val = int(self.config.get('multiplier_value', 100))
+            tp_val = self.config.get('tp_value', 0)
+            sl_val = self.config.get('sl_value', 0)
+
+            # Use 5% of balance for multipliers to grow exponentially but safely
+            if not self.config.get('use_fixed_balance'):
+                amount = max(0.35, round(self.account_balance * 0.05, 2))
+
+            self.log(f"Opening MULTIPLIER {side.upper()} on {symbol} | Stake: {amount} | Mult: {mult_val}x")
+
+            buy_request = {
+                "buy": 1,
+                "price": amount,
+                "parameters": {
+                    "amount": amount,
+                    "basis": "stake",
+                    "contract_type": "MULTUP" if side == 'buy' else "MULTDOWN",
+                    "currency": "USD",
+                    "multiplier": mult_val,
+                    "symbol": symbol
+                }
             }
-        }
+
+            # Multipliers use limit_order for TP/SL
+            limit_order = {}
+            if self.config.get('tp_enabled') and tp_val > 0:
+                limit_order['take_profit'] = tp_val
+            if self.config.get('sl_enabled') and sl_val > 0:
+                limit_order['stop_loss'] = sl_val
+
+            if limit_order:
+                buy_request['parameters']['limit_order'] = limit_order
+        else:
+            self.log(f"Opening {side.upper()} on {symbol} | Stake: {amount} | {expiry_label}")
+
+            buy_request = {
+                "buy": 1,
+                "price": amount,
+                "parameters": {
+                    "amount": amount,
+                    "basis": "stake",
+                    "contract_type": "CALL" if side == 'buy' else "PUT",
+                    "currency": "USD",
+                    "duration": duration_seconds,
+                    "duration_unit": "s",
+                    "symbol": symbol
+                }
+            }
         if self.ws and self.ws.sock and self.ws.sock.connected:
             self.ws.send(json.dumps(buy_request))
 
@@ -1015,7 +1082,8 @@ class TradingBotEngine:
             symbol = contract['underlying']
             is_sold = contract['is_sold']
             # Map Deriv types to our long/short internal state
-            side = 'long' if contract['contract_type'] == 'CALL' else 'short'
+            ctype = contract['contract_type']
+            side = 'long' if ctype in ['CALL', 'MULTUP'] else 'short'
 
             if is_sold:
                 if cid in self.contracts:
@@ -1265,6 +1333,8 @@ class TradingBotEngine:
                 for sym in new_symbols:
                     self._fetch_history(self.ws, sym, strat['ltf_granularity'], 100)
                     self._fetch_history(self.ws, sym, strat['htf_granularity'], h_count)
+                    if new_strat == 'strategy_5':
+                        self._fetch_history(self.ws, sym, 86400, 50)
             return {"success": True}
 
         # If only symbols changed and we are connected
@@ -1278,6 +1348,8 @@ class TradingBotEngine:
                 self.ws.send(json.dumps({"ticks": symbol, "subscribe": 1}))
                 self._fetch_history(self.ws, symbol, strat['ltf_granularity'], 100)
                 self._fetch_history(self.ws, symbol, strat['htf_granularity'], h_count)
+                if new_strat == 'strategy_5':
+                    self._fetch_history(self.ws, symbol, 86400, 50)
 
             removed_symbols = old_symbols - new_symbols
             for symbol in removed_symbols:

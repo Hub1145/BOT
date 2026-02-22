@@ -19,22 +19,33 @@ function updateConfigLabels() {
         const strategy = strategySelect.value;
         const label = document.getElementById('configEntryTypeLabel');
         const customExpiryContainer = document.getElementById('customExpiryContainer');
+        const strategy5Options = document.getElementById('strategy5Options');
 
         if (strategy === 'strategy_1') {
             label.textContent = "Wait for 15m Candle Close";
             customExpiryContainer.style.display = 'none';
+            strategy5Options.style.display = 'none';
         } else if (strategy === 'strategy_2') {
             label.textContent = "Wait for 3m Candle Close";
             customExpiryContainer.style.display = 'block';
+            strategy5Options.style.display = 'none';
         } else if (strategy === 'strategy_4') {
             label.textContent = "Wait for 1m Candle Close";
             customExpiryContainer.style.display = 'block';
+            strategy5Options.style.display = 'none';
         } else if (strategy === 'strategy_5') {
             label.textContent = "Wait for 1m Candle Close";
             customExpiryContainer.style.display = 'none'; // Strategy 5 uses dynamic expiry
+            strategy5Options.style.display = 'block';
+
+            // Toggle multiplier value visibility
+            const contractType = document.getElementById('configContractType').value;
+            document.getElementById('multiplierValueContainer').style.display =
+                contractType === 'multiplier' ? 'block' : 'none';
         } else {
             label.textContent = "Wait for 1m Candle Close";
             customExpiryContainer.style.display = 'block';
+            strategy5Options.style.display = 'none';
         }
     }
 
@@ -53,6 +64,7 @@ function updateConfigLabels() {
 
 function setupEventListeners() {
     document.getElementById('configActiveStrategy').addEventListener('change', updateConfigLabels);
+    document.getElementById('configContractType').addEventListener('change', updateConfigLabels);
     document.getElementById('configUseFixedBalance').addEventListener('change', updateConfigLabels);
     document.getElementById('themeToggle').addEventListener('change', (e) => {
         document.body.setAttribute('data-theme', e.target.checked ? 'light' : 'dark');
@@ -80,6 +92,8 @@ function setupEventListeners() {
             document.getElementById('configForceCloseEnabled').checked = currentConfig.force_close_enabled || false;
             document.getElementById('configForceCloseDuration').value = currentConfig.force_close_duration || 60;
             document.getElementById('configActiveStrategy').value = currentConfig.active_strategy || 'strategy_1';
+            document.getElementById('configContractType').value = currentConfig.contract_type || 'rise_fall';
+            document.getElementById('configMultiplierValue').value = currentConfig.multiplier_value || '100';
             document.getElementById('configCustomExpiry').value = currentConfig.custom_expiry || 'default';
             document.getElementById('configEntryType').value = currentConfig.entry_type || 'candle_close';
             document.getElementById('configIsDemo').checked = currentConfig.is_demo !== false;
@@ -304,6 +318,8 @@ async function saveConfig() {
         force_close_enabled: document.getElementById('configForceCloseEnabled').checked,
         force_close_duration: parseInt(document.getElementById('configForceCloseDuration').value),
         active_strategy: document.getElementById('configActiveStrategy').value,
+        contract_type: document.getElementById('configContractType').value,
+        multiplier_value: document.getElementById('configMultiplierValue').value,
         custom_expiry: document.getElementById('configCustomExpiry').value,
         entry_type: document.getElementById('configEntryType').value,
         is_demo: document.getElementById('configIsDemo').checked,

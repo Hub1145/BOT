@@ -324,6 +324,28 @@
                             <option value="strategy_5">Intelligence Screener (15m/5m/1m)</option>
                         </select>
                     </div>
+                    <div id="strategy5Options" style="display: none;">
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <label class="form-label">Contract Type</label>
+                                <select class="form-select" id="configContractType">
+                                    <option value="rise_fall">Rise & Fall</option>
+                                    <option value="multiplier">Multiplier</option>
+                                </select>
+                            </div>
+                            <div class="col-6" id="multiplierValueContainer" style="display: none;">
+                                <label class="form-label">Multiplier</label>
+                                <select class="form-select" id="configMultiplierValue">
+                                    <option value="100">100x</option>
+                                    <option value="200">200x</option>
+                                    <option value="300">300x</option>
+                                    <option value="400">400x</option>
+                                    <option value="500">500x</option>
+                                    <option value="1000">1000x</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
                     <div class="mb-3" id="customExpiryContainer">
                         <label class="form-label">Custom Expiry Duration</label>
                         <select class="form-select" id="configCustomExpiry">
