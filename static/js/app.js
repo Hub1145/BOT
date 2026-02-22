@@ -42,11 +42,6 @@ function updateConfigLabels() {
             customExpiryContainer.style.display = 'none'; // Strategy 5 uses dynamic expiry
             strategy5Options.style.display = 'block';
             document.getElementById('screenerTabNavItem').style.display = 'block';
-
-            // Toggle multiplier value visibility
-            const contractType = document.getElementById('configContractType').value;
-            document.getElementById('multiplierValueContainer').style.display =
-                contractType === 'multiplier' ? 'block' : 'none';
         } else {
             document.getElementById('screenerTabNavItem').style.display = 'none';
             label.textContent = "Wait for 1m Candle Close";
@@ -106,12 +101,10 @@ function setupEventListeners() {
             document.getElementById('configForceCloseDuration').value = currentConfig.force_close_duration || 60;
             document.getElementById('configActiveStrategy').value = currentConfig.active_strategy || 'strategy_1';
             document.getElementById('configContractType').value = currentConfig.contract_type || 'rise_fall';
-            document.getElementById('configMultiplierValue').value = currentConfig.multiplier_value || '100';
             document.getElementById('configCustomExpiry').value = currentConfig.custom_expiry || 'default';
             document.getElementById('configEntryType').value = currentConfig.entry_type || 'candle_close';
             document.getElementById('configIsDemo').checked = currentConfig.is_demo !== false;
             updateConfigLabels();
-            updateMultiplierDropdown();
         }
         configModal.show();
     });
@@ -210,32 +203,9 @@ function setupSocketListeners() {
     socket.on('multipliers_update', (data) => {
         const symbol = data.symbol;
         const multipliers = data.multipliers;
-        // Store these for the config modal if needed, but the requirement says
-        // "Each contract has their own specified multiplier values".
-        // Let's update the dropdown if the config modal is open and the symbol matches.
-        // Or better, just store them globally and update when symbol is selected.
         window.symbolMultipliers = window.symbolMultipliers || {};
         window.symbolMultipliers[symbol] = multipliers;
-        updateMultiplierDropdown();
     });
-}
-
-function updateMultiplierDropdown() {
-    const symbolList = currentConfig ? currentConfig.symbols : [];
-    if (symbolList.length === 0) return;
-
-    // For now, use the first symbol's multipliers or a merged list
-    const firstSymbol = symbolList[0];
-    const multipliers = (window.symbolMultipliers && window.symbolMultipliers[firstSymbol]) || [100, 200, 300, 400, 500];
-
-    const dropdown = document.getElementById('configMultiplierValue');
-    if (!dropdown) return;
-
-    const currentValue = dropdown.value;
-    dropdown.innerHTML = multipliers.map(m => `<option value="${m}">${m}x</option>`).join('');
-    if (multipliers.includes(parseInt(currentValue))) {
-        dropdown.value = currentValue;
-    }
 }
 
 const screenerDataMap = {};
@@ -373,7 +343,6 @@ async function saveConfig() {
         force_close_duration: parseInt(document.getElementById('configForceCloseDuration').value),
         active_strategy: document.getElementById('configActiveStrategy').value,
         contract_type: document.getElementById('configContractType').value,
-        multiplier_value: document.getElementById('configMultiplierValue').value,
         custom_expiry: document.getElementById('configCustomExpiry').value,
         entry_type: document.getElementById('configEntryType').value,
         is_demo: document.getElementById('configIsDemo').checked,
