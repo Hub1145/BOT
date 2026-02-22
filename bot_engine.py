@@ -11,9 +11,9 @@ import ta
 class TradingBotEngine:
     STRATEGY_MAP = {
         'strategy_1': {
-            'name': 'Slow (Daily / 15m)',
+            'name': 'Slow (Daily / 1h)',
             'htf_granularity': 86400, # Daily
-            'ltf_granularity': 900,   # 15m
+            'ltf_granularity': 3600,  # 1h
             'expiry_type': 'eod'      # End of Day
         },
         'strategy_2': {
@@ -251,13 +251,17 @@ class TradingBotEngine:
                 side = 'long' if ctype in ['CALL', 'MULTUP'] else 'short'
 
                 with self.data_lock:
+                    sd = self.symbol_data.get(symbol, {})
                     self.contracts[cid] = {
                         'id': cid, 'symbol': symbol, 'side': side,
+                        'contract_type': ctype,
                         'stake': buy_data.get('buy_price', 0),
                         'pnl': 0, 'is_closing': False,
+                        'status': 'Opened',
                         'multiplier': params.get('multiplier'),
                         'tp_price': None, 'sl_price': None,
-                        'entry_price': None
+                        'entry_price': None,
+                        'entry_snapshot': sd.get('last_trade_snapshot', {})
                     }
                     # Use last known tick as preliminary entry price for immediate TP/SL tracking
                     if symbol in self.symbol_data and self.symbol_data[symbol].get('last_tick'):
@@ -506,104 +510,157 @@ class TradingBotEngine:
 
     def _update_screener(self, symbol):
         sd = self.symbol_data.get(symbol)
-        if not sd or len(sd.get('htf_candles', [])) < 20: return
+        if not sd or len(sd.get('htf_candles', [])) < 200: return
 
-        # --- 1. TREND BLOCK (Weight 4) ---
-        trend_raw = 0
         df_h = pd.DataFrame(sd['htf_candles'])
-        ema50 = ta.trend.EMAIndicator(df_h['close'], window=50).ema_indicator().iloc[-1]
-        ema200 = ta.trend.EMAIndicator(df_h['close'], window=200).ema_indicator().iloc[-1]
         last_close = df_h['close'].iloc[-1]
 
-        # Bullish/Bearish Trend (+/- 2)
-        if last_close > ema50 and ema50 > ema200: trend_raw += 2
-        elif last_close < ema50 and ema50 < ema200: trend_raw -= 2
+        # --- A) TREND BLOCK (Weight 3) ---
+        # Indicators: EMA 50, EMA 200, SMA 20, ADX, Ichimoku, MACD
+        t_pos, t_neg = 0, 0
 
-        # ADX > 25 (+1)
-        adx = ta.trend.ADXIndicator(df_h['high'], df_h['low'], df_h['close']).adx().iloc[-1]
-        if adx > 25: trend_raw += (1 if trend_raw >= 0 else -1)
+        ema50 = ta.trend.EMAIndicator(df_h['close'], window=50).ema_indicator().iloc[-1]
+        ema200 = ta.trend.EMAIndicator(df_h['close'], window=200).ema_indicator().iloc[-1]
+        sma20 = ta.trend.SMAIndicator(df_h['close'], window=20).sma_indicator().iloc[-1]
 
-        # MACD alignment (+1)
+        # EMA/SMA Alignment
+        if last_close > ema50: t_pos += 1
+        else: t_neg += 1
+        if ema50 > ema200: t_pos += 1
+        else: t_neg += 1
+        if last_close > sma20: t_pos += 1
+        else: t_neg += 1
+
+        # ADX (Trend Strength)
+        adx_ind = ta.trend.ADXIndicator(df_h['high'], df_h['low'], df_h['close'])
+        adx = adx_ind.adx().iloc[-1]
+        if adx > 25:
+            if last_close > ema50: t_pos += 1
+            else: t_neg += 1
+
+        # Ichimoku Cloud
+        ichimoku = ta.trend.IchimokuIndicator(df_h['high'], df_h['low'])
+        span_a = ichimoku.ichimoku_a().iloc[-1]
+        span_b = ichimoku.ichimoku_b().iloc[-1]
+        if last_close > span_a and last_close > span_b: t_pos += 1
+        elif last_close < span_a and last_close < span_b: t_neg += 1
+
+        # MACD
         macd_ind = ta.trend.MACD(df_h['close'])
-        macd = macd_ind.macd().iloc[-1]
-        macd_sig = macd_ind.macd_signal().iloc[-1]
-        if macd > macd_sig: trend_raw += 1
-        else: trend_raw -= 1
+        if macd_ind.macd().iloc[-1] > macd_ind.macd_signal().iloc[-1]: t_pos += 1
+        else: t_neg += 1
 
-        trend_score = min(max(trend_raw, -4), 4)
+        trend_sentiment = (t_pos - t_neg) / (t_pos + t_neg) if (t_pos + t_neg) > 0 else 0
+        trend_score = trend_sentiment * 3
 
-        # --- 2. MOMENTUM BLOCK (Weight 3) ---
-        mom_raw = 0
+        # --- B) MOMENTUM BLOCK (Weight 2) ---
+        # Indicators: RSI, Stoch RSI, Williams %R, ROC, CCI
+        m_pos, m_neg = 0, 0
+
         rsi = ta.momentum.RSIIndicator(df_h['close']).rsi().iloc[-1]
+        if rsi > 50: m_pos += 1
+        else: m_neg += 1
+
         stoch_rsi = ta.momentum.StochRSIIndicator(df_h['close']).stochrsi().iloc[-1]
-        cci = ta.trend.CCIIndicator(df_h['high'], df_h['low'], df_h['close']).cci().iloc[-1]
+        if stoch_rsi > 0.5: m_pos += 1
+        else: m_neg += 1
 
-        # RSI/StochRSI/CCI alignment with trend (+2)
-        if trend_score > 0:
-            if rsi > 50 and stoch_rsi > 0.5 and cci > 0: mom_raw += 2
-            elif rsi < 50 or stoch_rsi < 0.5 or cci < 0: mom_raw -= 2
-        elif trend_score < 0:
-            if rsi < 50 and stoch_rsi < 0.5 and cci < 0: mom_raw += 2
-            elif rsi > 50 or stoch_rsi > 0.5 or cci > 0: mom_raw -= 2
-
-        # ROC/Williams alignment (+1)
-        roc = ta.momentum.ROCIndicator(df_h['close']).roc().iloc[-1]
         wr = ta.momentum.WilliamsRIndicator(df_h['high'], df_h['low'], df_h['close']).williams_r().iloc[-1]
-        if trend_score > 0:
-            if roc > 0 and wr > -50: mom_raw += 1
-            else: mom_raw -= 1
-        elif trend_score < 0:
-            if roc < 0 and wr < -50: mom_raw += 1
-            else: mom_raw -= 1
+        if wr > -50: m_pos += 1
+        else: m_neg += 1
 
-        mom_score = min(max(mom_raw, -3), 3)
+        roc = ta.momentum.ROCIndicator(df_h['close']).roc().iloc[-1]
+        if roc > 0: m_pos += 1
+        else: m_neg += 1
 
-        # --- 3. STRUCTURE BLOCK (Weight 2) ---
-        struct_raw = 0
-        # Patterns (+1)
-        pattern = self._check_price_action_patterns(sd['ltf_candles'])
-        if pattern:
-            if trend_score > 0 and "bullish" in pattern: struct_raw += 1
-            elif trend_score < 0 and "bearish" in pattern: struct_raw += 1
-            elif pattern == "doji": struct_raw += 0.5
-            else: struct_raw -= 1
+        cci = ta.trend.CCIIndicator(df_h['high'], df_h['low'], df_h['close']).cci().iloc[-1]
+        if cci > 0: m_pos += 1
+        else: m_neg += 1
 
-        # Price relative to EMA (+1)
-        if trend_score > 0 and last_close > ema50: struct_raw += 1
-        elif trend_score < 0 and last_close < ema50: struct_raw += 1
-        else: struct_raw -= 1
+        mom_sentiment = (m_pos - m_neg) / (m_pos + m_neg) if (m_pos + m_neg) > 0 else 0
+        mom_score = mom_sentiment * 2
 
-        struct_score = min(max(struct_raw, -2), 2)
+        # --- C) VOLATILITY BLOCK (Weight 1) ---
+        # Indicators: ATR, Bollinger Bands, Donchian Channel, Keltner Channel
+        v_pos, v_neg = 0, 0
 
-        # --- 4. VOLATILITY BLOCK (Weight 1) ---
-        vol_raw = 0
+        atr_ind = ta.volatility.AverageTrueRange(df_h['high'], df_h['low'], df_h['close'])
+        atr = atr_ind.average_true_range().iloc[-1]
+        atr_prev = atr_ind.average_true_range().iloc[-2]
+        if atr > atr_prev: v_pos += 0.5 # Expanding volatility is trend-supportive
+
         bb = ta.volatility.BollingerBands(df_h['close'])
-        bb_width = (bb.bollinger_hband().iloc[-1] - bb.bollinger_lband().iloc[-1]) / bb.bollinger_mavg().iloc[-1]
-        prev_bb_width = (bb.bollinger_hband().iloc[-2] - bb.bollinger_lband().iloc[-2]) / bb.bollinger_mavg().iloc[-2]
+        bbw = (bb.bollinger_hband().iloc[-1] - bb.bollinger_lband().iloc[-1]) / bb.bollinger_mavg().iloc[-1]
+        prev_bbw = (bb.bollinger_hband().iloc[-2] - bb.bollinger_lband().iloc[-2]) / bb.bollinger_mavg().iloc[-2]
+        if bbw > prev_bbw: v_pos += 0.5
 
-        # Expansion in direction of trend (+1)
-        if bb_width > prev_bb_width: vol_raw += 1
-        else: vol_raw -= 1
+        dc = ta.volatility.DonchianChannel(df_h['high'], df_h['low'], df_h['close'])
+        # Price relative to DC midline
+        dc_mid = (dc.donchian_channel_hband().iloc[-1] + dc.donchian_channel_lband().iloc[-1]) / 2
+        if last_close > dc_mid: v_pos += 0.5
+        else: v_neg += 0.5
 
-        vol_score = min(max(vol_raw, -1), 1)
+        kc = ta.volatility.KeltnerChannel(df_h['high'], df_h['low'], df_h['close'])
+        if last_close > kc.keltner_channel_mband().iloc[-1]: v_pos += 0.5
+        else: v_neg += 0.5
+
+        vol_sentiment = (v_pos - v_neg) / (v_pos + v_neg) if (v_pos + v_neg) > 0 else 0
+        vol_score = vol_sentiment * 1
+
+        # --- D) STRUCTURE / MEAN REVERSION BLOCK (Weight 2) ---
+        # Indicators: Price distance from EMA, Z-score, BB band touch, Pivot points, Daily Proximity, SNR Alignment
+        s_pos, s_neg = 0, 0
+
+        # Price distance from EMA 50
+        dist = (last_close - ema50) / ema50
+        if trend_score > 0:
+            if 0 < dist < 0.05: s_pos += 1 # Healthy distance
+            elif dist > 0.1: s_neg += 0.5 # Overextended
+        elif trend_score < 0:
+            if -0.05 < dist < 0: s_pos += 1
+            elif dist < -0.1: s_neg += 0.5
+
+        # Z-Score (20 period)
+        sma20_v = df_h['close'].rolling(window=20).mean()
+        std20_v = df_h['close'].rolling(window=20).std()
+        z_score = (last_close - sma20_v.iloc[-1]) / std20_v.iloc[-1]
+        if abs(z_score) < 2: s_pos += 1
+        else: s_neg += 1 # Overextended
+
+        # BB Band Touch
+        if last_close >= bb.bollinger_hband().iloc[-1]: s_neg += 1 # Resistance touch
+        elif last_close <= bb.bollinger_lband().iloc[-1]: s_pos += 1 # Support touch
+
+        # Pivot Points (Standard)
+        if sd.get('daily_candles') and len(sd['daily_candles']) >= 2:
+            prev_day = sd['daily_candles'][-2]
+            pivot = (prev_day['high'] + prev_day['low'] + prev_day['close']) / 3
+            r1 = 2 * pivot - prev_day['low']
+            s1 = 2 * pivot - prev_day['high']
+            if last_close > pivot: s_pos += 0.5
+            if last_close > r1: s_neg += 0.5 # Potential reversal
+            if last_close < s1: s_pos += 0.5 # Potential bounce
+
+            # Daily Proximity
+            day_high = prev_day['high']
+            day_low = prev_day['low']
+            if abs(last_close - day_high) / day_high < 0.01: s_neg += 0.5 # Near daily high
+            if abs(last_close - day_low) / day_low < 0.01: s_pos += 0.5 # Near daily low
+
+        # HTF SNR Alignment
+        zones = sd.get('snr_zones', [])
+        for z in zones:
+            if abs(last_close - z['price']) / z['price'] < 0.005:
+                if z['type'] == 'S': s_pos += 1
+                elif z['type'] == 'R': s_neg += 1
+
+        struct_sentiment = (s_pos - s_neg) / (s_pos + s_neg) if (s_pos + s_neg) > 0 else 0
+        struct_score = struct_sentiment * 2
 
         # --- Confidence Calculation ---
-        # Confidence = (raw_sum / 10) * 100
-
-        # Include Daily Trend if available for Strategy 5
-        daily_alignment = 0
-        if sd.get('daily_candles') and len(sd['daily_candles']) >= 20:
-            df_daily = pd.DataFrame(sd['daily_candles'])
-            ema20_d = ta.trend.EMAIndicator(df_daily['close'], window=20).ema_indicator().iloc[-1]
-            if df_daily['close'].iloc[-1] > ema20_d: daily_alignment = 1
-            else: daily_alignment = -1
-
-        if daily_alignment != 0:
-            if (trend_score > 0 and daily_alignment > 0) or (trend_score < 0 and daily_alignment < 0):
-                trend_score += daily_alignment # Boost if aligns with daily
-
-        raw_sum = trend_score + mom_score + struct_score + vol_score
-        confidence = (raw_sum / 10.0) * 100
+        # Total Max Weight = 3 + 2 + 1 + 2 = 8
+        raw_sum = trend_score + mom_score + vol_score + struct_score
+        confidence = (raw_sum / 8.0) * 100
 
         regime = "Ranging"
         _adx = adx
@@ -843,43 +900,6 @@ class TradingBotEngine:
             bias_c = sd['bias_candles'][-1]
             bias_bullish = bias_c['close'] > bias_c['open']
 
-            # DYNAMIC EXIT: If we have an open trade for this symbol, check for reversal
-            contract_type = self.config.get('contract_type', 'rise_fall')
-            for cid, c in self.contracts.items():
-                if c['symbol'] == symbol:
-                    is_long = c['side'] == 'long'
-
-                    # Need data for exits
-                    if not sd.get('htf_candles') or len(sd['htf_candles']) < 200: continue
-                    df_exit = pd.DataFrame(sd['htf_candles'])
-
-                    # 1. EMA200 Cross Opposite Trend
-                    ema200_exit = ta.trend.EMAIndicator(df_exit['close'], window=200).ema_indicator().iloc[-1]
-                    if (is_long and current_price < ema200_exit) or (not is_long and current_price > ema200_exit):
-                        self.log(f"Strategy 5 EXIT for {symbol}: Price crossed EMA200 opposite trend.")
-                        self._close_contract(cid)
-                        continue
-
-                    # 2. Confidence Reversal (below 20% or opposite)
-                    if (is_long and metrics['confidence'] < 20) or (not is_long and metrics['confidence'] > -20):
-                        self.log(f"Strategy 5 EXIT for {symbol}: Confidence {metrics['confidence']}% indicates reversal/weakness.")
-                        self._close_contract(cid)
-                        continue
-
-                    # 3. Trend Flip on HTF (1H)
-                    ema50_exit = ta.trend.EMAIndicator(df_exit['close'], window=50).ema_indicator().iloc[-1]
-                    if (is_long and ema50_exit < ema200_exit) or (not is_long and ema50_exit > ema200_exit):
-                        self.log(f"Strategy 5 EXIT for {symbol}: Trend flipped on HTF.")
-                        self._close_contract(cid)
-                        continue
-
-                    # 4. Momentum Contradicts Entry
-                    rsi_exit = ta.momentum.RSIIndicator(df_exit['close']).rsi().iloc[-1]
-                    if (is_long and rsi_exit < 40) or (not is_long and rsi_exit > 60):
-                        self.log(f"Strategy 5 EXIT for {symbol}: Momentum contradicts entry (RSI: {rsi_exit:.1f}).")
-                        self._close_contract(cid)
-                        continue
-
             # Confidence Threshold (e.g. > 60%)
             if abs(metrics['confidence']) >= 60:
                 direction = metrics['direction']
@@ -900,6 +920,9 @@ class TradingBotEngine:
                         signal = 'sell'
         else:
             # Default Breakout Logic (Strategy 1, 2, 3)
+            if strat_key == 'strategy_1' and not is_candle_close:
+                return
+
             check_price = current_ltf['close'] if is_candle_close else current_price
 
             # BUY: LTF open <= HTF Open AND check_price > HTF Open AND bullish
@@ -929,29 +952,106 @@ class TradingBotEngine:
 
         for cid in list(self.contracts.keys()):
             c = self.contracts[cid]
+            if symbol != c['symbol']: continue
 
-            # Price-based TP/SL trigger (Failsafe / Manual tracking)
+            side = c.get('side')
+            is_long = side == 'long'
+
+            # --- DECISION MAKING POSITION ENGINE ---
+            strat_key = self.config.get('active_strategy')
+            if strat_key == 'strategy_5' and current_price:
+                # Get current market intelligence
+                metrics = self.screener_data.get(symbol, {})
+                sd = self.symbol_data.get(symbol, {})
+                df_h = pd.DataFrame(sd.get('htf_candles', []))
+
+                if not df_h.empty and len(df_h) >= 200:
+                    # 1. Score-based Decision Engine
+                    exit_reason = None
+                    status = "Holding"
+
+                    trend_score = metrics.get('trend', 0)
+                    mom_score = metrics.get('momentum', 0)
+                    conf = metrics.get('confidence', 0)
+
+                    # Hard Exit Conditions
+                    if (is_long and trend_score < -1) or (not is_long and trend_score > 1):
+                        exit_reason = f"Trend score flip ({trend_score})"
+                    elif abs(conf) < 30:
+                        exit_reason = f"Confidence weak ({conf}%)"
+                    elif (is_long and mom_score < -2) or (not is_long and mom_score > 2):
+                        exit_reason = f"Momentum reversal ({mom_score})"
+
+                    # Confidence Decay Check (Relative to entry)
+                    entry_conf = c.get('entry_snapshot', {}).get('confidence', 0)
+                    if (is_long and conf < entry_conf - 25) or (not is_long and conf > entry_conf + 25):
+                        exit_reason = f"Intelligence decay ({entry_conf}% -> {conf}%)"
+
+                    # Alert/Weakening conditions (Non-exit)
+                    if not exit_reason:
+                        if abs(conf) < 50 or abs(trend_score) < 2:
+                            status = "Weakening"
+                        else:
+                            status = "Holding"
+                    else:
+                        status = "Closing"
+
+                    c['status'] = status
+
+                    if exit_reason:
+                        self.log(f"Strategy 5 Engine EXIT for {symbol} ({cid}): {exit_reason}.")
+                        self._close_contract(cid)
+                        continue
+
+                    # 2. Dynamic Trailing Stop Loss (Multipliers Only)
+                    is_multiplier = c.get('contract_type') in ['MULTUP', 'MULTDOWN']
+                    if is_multiplier:
+                        atr = ta.volatility.AverageTrueRange(df_h['high'], df_h['low'], df_h['close']).average_true_range().iloc[-1]
+                    entry_price = c.get('entry_price')
+                    if entry_price:
+                        profit_pips = (current_price - entry_price) if is_long else (entry_price - current_price)
+
+                        # Move to Breakeven at 1 ATR profit
+                        if profit_pips >= atr and not c.get('is_breakeven'):
+                            self.log(f"Multiplier TRAIL for {symbol}: 1 ATR profit reached. Moving SL to breakeven.")
+                            # We don't have server-side SL adjustment here easily without another API call,
+                            # but we can track it internally for our failsafe tracking.
+                            c['sl_price'] = entry_price
+                            c['is_breakeven'] = True
+
+                        # Trail at 2 ATR profit
+                        if profit_pips >= 2 * atr:
+                            ema20 = ta.trend.EMAIndicator(df_h['close'], window=20).ema_indicator().iloc[-1]
+                            new_sl = ema20 if is_long else ema20
+                            # Ensure we don't move SL backwards
+                            if is_long:
+                                if new_sl > c.get('sl_price', 0):
+                                    c['sl_price'] = new_sl
+                            else:
+                                if c.get('sl_price', 999999) > new_sl:
+                                    c['sl_price'] = new_sl
+
+            # Price-based TP/SL trigger (Fail-safe tracking for both types)
             if current_price and symbol == c['symbol'] and (tp_enabled or sl_enabled):
                     tp_price = c.get('tp_price')
                     sl_price = c.get('sl_price')
-                    side = c.get('side') # 'long' or 'short'
 
-                    if side == 'long':
+                    if is_long:
                         if tp_enabled and tp_price and current_price >= tp_price:
-                            self.log(f"Price-based TP reached for {c['symbol']} ({cid}): {current_price} >= {tp_price}. Closing...")
+                            self.log(f"TP reached for {c['symbol']} ({cid}): {current_price} >= {tp_price}. Closing...")
                             self._close_contract(cid)
                             continue
                         if sl_enabled and sl_price and current_price <= sl_price:
-                            self.log(f"Price-based SL reached for {c['symbol']} ({cid}): {current_price} <= {sl_price}. Closing...")
+                            self.log(f"SL reached for {c['symbol']} ({cid}): {current_price} <= {sl_price}. Closing...")
                             self._close_contract(cid)
                             continue
-                    elif side == 'short':
+                    else:
                         if tp_enabled and tp_price and current_price <= tp_price:
-                            self.log(f"Price-based TP reached for {c['symbol']} ({cid}): {current_price} <= {tp_price}. Closing...")
+                            self.log(f"TP reached for {c['symbol']} ({cid}): {current_price} <= {tp_price}. Closing...")
                             self._close_contract(cid)
                             continue
                         if sl_enabled and sl_price and current_price >= sl_price:
-                            self.log(f"Price-based SL reached for {c['symbol']} ({cid}): {current_price} >= {sl_price}. Closing...")
+                            self.log(f"SL reached for {c['symbol']} ({cid}): {current_price} >= {sl_price}. Closing...")
                             self._close_contract(cid)
                             continue
 
@@ -1133,6 +1233,22 @@ class TradingBotEngine:
                 }
             }
         if self.ws and self.ws.sock and self.ws.sock.connected:
+            # Capture entry snapshot for Multiplier position management
+            if is_multiplier:
+                metrics = self.screener_data.get(symbol, {})
+                sd = self.symbol_data.get(symbol)
+                df_h = pd.DataFrame(sd.get('htf_candles', []))
+
+                snapshot = {
+                    'direction': side,
+                    'confidence': metrics.get('confidence', 0),
+                    'atr': ta.volatility.AverageTrueRange(df_h['high'], df_h['low'], df_h['close']).average_true_range().iloc[-1] if not df_h.empty else 0,
+                    'adx': metrics.get('adx', 0),
+                    'ema50': ta.trend.EMAIndicator(df_h['close'], window=50).ema_indicator().iloc[-1] if not df_h.empty else 0,
+                    'ema200': ta.trend.EMAIndicator(df_h['close'], window=200).ema_indicator().iloc[-1] if not df_h.empty else 0,
+                }
+                sd['last_trade_snapshot'] = snapshot
+
             self.ws.send(json.dumps(buy_request))
 
     def _close_contract(self, contract_id):
@@ -1152,6 +1268,7 @@ class TradingBotEngine:
 
             if is_sold:
                 if cid in self.contracts:
+                    self.contracts[cid]['status'] = 'Sold'
                     profit = contract.get('profit', 0)
                     self.log(f"Trade {cid} ({symbol}) closed. PnL: {profit}")
                     self.net_trade_profit += profit
@@ -1173,12 +1290,14 @@ class TradingBotEngine:
 
                 self.contracts[cid] = {
                     'id': cid, 'symbol': symbol, 'side': side,
+                    'contract_type': ctype,
                     'entry_price': entry_tick,
                     'pnl': profit,
                     'stake': contract.get('buy_price', 0),
                     'purchase_time': contract.get('purchase_time'),
                     'expiry_time': contract.get('date_expiry'),
                     'is_closing': is_closing,
+                    'status': c_data.get('status', 'Active'),
                     'multiplier': contract.get('multiplier'),
                     'tp_price': c_data.get('tp_price'),
                     'sl_price': c_data.get('sl_price')
@@ -1314,7 +1433,8 @@ class TradingBotEngine:
             self.open_trades.append({
                 'id': cid, 'type': c['side'].capitalize(), 'symbol': c['symbol'],
                 'entry_spot_price': c['entry_price'], 'stake': c['stake'], 'pnl': c['pnl'],
-                'expiry_time': c['expiry_time']
+                'expiry_time': c['expiry_time'],
+                'status': c.get('status', 'Holding')
             })
             floating_pnl += c['pnl']
             used_notional += c['stake']

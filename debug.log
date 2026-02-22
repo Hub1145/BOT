@@ -147,3 +147,65 @@
 2026-02-22 16:21:30,556 - INFO - 127.0.0.1 - - [22/Feb/2026 16:21:30] "GET /socket.io/?EIO=4&transport=polling&t=Po69_4n&sid=3MBoz3Z8uLyZBtyHAAAA HTTP/1.1" 200 -
 2026-02-22 16:21:35,304 - INFO - Client disconnected
 2026-02-22 16:21:35,304 - INFO - 127.0.0.1 - - [22/Feb/2026 16:21:35] "GET /socket.io/?EIO=4&transport=websocket&sid=3MBoz3Z8uLyZBtyHAAAA HTTP/1.1" 200 -
+2026-02-22 17:42:29,092 - INFO - Trade opened: cid123 for 50 USD
+2026-02-22 17:44:08,732 - INFO - Bot started | Trading: OFF
+2026-02-22 17:44:08,733 - WARNING - Werkzeug appears to be used in a production deployment. Consider switching to a production web server instead.
+2026-02-22 17:44:08,739 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.0.2:5000
+2026-02-22 17:44:08,739 - INFO - [33mPress CTRL+C to quit[0m
+2026-02-22 17:47:11,365 - INFO - 127.0.0.1 - - [22/Feb/2026 17:47:11] "GET / HTTP/1.1" 200 -
+2026-02-22 17:47:11,411 - INFO - 127.0.0.1 - - [22/Feb/2026 17:47:11] "GET /static/js/app.js HTTP/1.1" 200 -
+2026-02-22 17:47:11,674 - INFO - 127.0.0.1 - - [22/Feb/2026 17:47:11] "GET /socket.io/?EIO=4&transport=polling&t=Po6TcEk HTTP/1.1" 200 -
+2026-02-22 17:47:11,685 - INFO - 127.0.0.1 - - [22/Feb/2026 17:47:11] "GET /api/config HTTP/1.1" 200 -
+2026-02-22 17:47:11,702 - INFO - Client connected: fuwgcDYjYL8em-XRAAAB
+2026-02-22 17:47:11,702 - INFO - 127.0.0.1 - - [22/Feb/2026 17:47:11] "POST /socket.io/?EIO=4&transport=polling&t=Po6TcF8&sid=cY4DKOGRkwz4T7nRAAAA HTTP/1.1" 200 -
+2026-02-22 17:47:11,711 - INFO - 127.0.0.1 - - [22/Feb/2026 17:47:11] "GET /socket.io/?EIO=4&transport=polling&t=Po6TcFD&sid=cY4DKOGRkwz4T7nRAAAA HTTP/1.1" 200 -
+2026-02-22 17:47:11,742 - INFO - 127.0.0.1 - - [22/Feb/2026 17:47:11] "GET /socket.io/?EIO=4&transport=polling&t=Po6TcFr&sid=cY4DKOGRkwz4T7nRAAAA HTTP/1.1" 200 -
+2026-02-22 17:47:17,054 - INFO - Client disconnected
+2026-02-22 17:47:17,054 - INFO - 127.0.0.1 - - [22/Feb/2026 17:47:17] "GET /socket.io/?EIO=4&transport=websocket&sid=cY4DKOGRkwz4T7nRAAAA HTTP/1.1" 200 -
+2026-02-22 17:48:43,842 - INFO - 127.0.0.1 - - [22/Feb/2026 17:48:43] "GET / HTTP/1.1" 200 -
+2026-02-22 17:48:43,857 - INFO - 127.0.0.1 - - [22/Feb/2026 17:48:43] "GET /static/js/app.js HTTP/1.1" 200 -
+2026-02-22 17:48:43,984 - INFO - 127.0.0.1 - - [22/Feb/2026 17:48:43] "GET /socket.io/?EIO=4&transport=polling&t=Po6TynA HTTP/1.1" 200 -
+2026-02-22 17:48:43,991 - INFO - 127.0.0.1 - - [22/Feb/2026 17:48:43] "GET /api/config HTTP/1.1" 200 -
+2026-02-22 17:48:43,999 - INFO - Client connected: Iy5XJejItx9pdGUeAAAD
+2026-02-22 17:48:44,002 - INFO - 127.0.0.1 - - [22/Feb/2026 17:48:44] "POST /socket.io/?EIO=4&transport=polling&t=Po6TynL&sid=vKAY0kP4KW-U8X3tAAAC HTTP/1.1" 200 -
+2026-02-22 17:48:44,004 - INFO - 127.0.0.1 - - [22/Feb/2026 17:48:44] "GET /socket.io/?EIO=4&transport=polling&t=Po6TynN&sid=vKAY0kP4KW-U8X3tAAAC HTTP/1.1" 200 -
+2026-02-22 17:48:44,890 - INFO - Config applied live
+2026-02-22 17:48:44,890 - INFO - Strategy changed to strategy_5. Resetting data...
+2026-02-22 17:48:44,891 - INFO - Configuration updated live from dashboard.
+2026-02-22 17:48:44,891 - INFO - Bot started | Trading: OFF
+2026-02-22 17:48:44,892 - INFO - 127.0.0.1 - - [22/Feb/2026 17:48:44] "POST /api/config HTTP/1.1" 200 -
+2026-02-22 17:48:45,423 - INFO - Client disconnected
+2026-02-22 17:48:45,424 - INFO - 127.0.0.1 - - [22/Feb/2026 17:48:45] "GET /socket.io/?EIO=4&transport=websocket&sid=vKAY0kP4KW-U8X3tAAAC HTTP/1.1" 200 -
+2026-02-22 17:50:22,929 - INFO - 127.0.0.1 - - [22/Feb/2026 17:50:22] "GET / HTTP/1.1" 200 -
+2026-02-22 17:50:22,942 - INFO - 127.0.0.1 - - [22/Feb/2026 17:50:22] "GET /static/js/app.js HTTP/1.1" 200 -
+2026-02-22 17:50:23,064 - INFO - 127.0.0.1 - - [22/Feb/2026 17:50:23] "GET /socket.io/?EIO=4&transport=polling&t=Po6UKzK HTTP/1.1" 200 -
+2026-02-22 17:50:23,069 - INFO - 127.0.0.1 - - [22/Feb/2026 17:50:23] "GET /api/config HTTP/1.1" 200 -
+2026-02-22 17:50:23,078 - INFO - Client connected: a0Mfprxger7uEfh9AAAF
+2026-02-22 17:50:23,080 - INFO - 127.0.0.1 - - [22/Feb/2026 17:50:23] "POST /socket.io/?EIO=4&transport=polling&t=Po6UKzS&sid=Lq-OQ71B3wI_-U5kAAAE HTTP/1.1" 200 -
+2026-02-22 17:50:23,082 - INFO - 127.0.0.1 - - [22/Feb/2026 17:50:23] "GET /socket.io/?EIO=4&transport=polling&t=Po6UKzU&sid=Lq-OQ71B3wI_-U5kAAAE HTTP/1.1" 200 -
+2026-02-22 17:50:23,814 - INFO - 127.0.0.1 - - [22/Feb/2026 17:50:23] "POST /api/config HTTP/1.1" 200 -
+2026-02-22 17:50:24,821 - INFO - Client disconnected
+2026-02-22 17:50:24,822 - INFO - 127.0.0.1 - - [22/Feb/2026 17:50:24] "GET /socket.io/?EIO=4&transport=websocket&sid=Lq-OQ71B3wI_-U5kAAAE HTTP/1.1" 200 -
+2026-02-22 17:57:27,450 - INFO - Trade opened: cid123 for 50 USD
+2026-02-22 17:59:26,646 - INFO - Trade opened: cid123 for 50 USD
+2026-02-22 18:03:09,265 - INFO - Trade opened: cid123 for 50 USD
+2026-02-22 18:04:55,625 - INFO - Bot started | Trading: OFF
+2026-02-22 18:04:55,626 - WARNING - Werkzeug appears to be used in a production deployment. Consider switching to a production web server instead.
+2026-02-22 18:04:55,631 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.0.2:5000
+2026-02-22 18:04:55,631 - INFO - [33mPress CTRL+C to quit[0m
+2026-02-22 18:06:40,683 - INFO - 127.0.0.1 - - [22/Feb/2026 18:06:40] "GET / HTTP/1.1" 200 -
+2026-02-22 18:06:40,727 - INFO - 127.0.0.1 - - [22/Feb/2026 18:06:40] "GET /static/js/app.js HTTP/1.1" 200 -
+2026-02-22 18:06:40,954 - INFO - 127.0.0.1 - - [22/Feb/2026 18:06:40] "GET /api/config HTTP/1.1" 200 -
+2026-02-22 18:06:40,957 - INFO - 127.0.0.1 - - [22/Feb/2026 18:06:40] "GET /socket.io/?EIO=4&transport=polling&t=Po6Y3iV HTTP/1.1" 200 -
+2026-02-22 18:06:40,976 - INFO - Client connected: dO7C_lwKhg90myGrAAAB
+2026-02-22 18:06:40,980 - INFO - 127.0.0.1 - - [22/Feb/2026 18:06:40] "POST /socket.io/?EIO=4&transport=polling&t=Po6Y3j4&sid=BP7v94LLhpOEV3_zAAAA HTTP/1.1" 200 -
+2026-02-22 18:06:40,987 - INFO - 127.0.0.1 - - [22/Feb/2026 18:06:40] "GET /socket.io/?EIO=4&transport=polling&t=Po6Y3j8&sid=BP7v94LLhpOEV3_zAAAA HTTP/1.1" 200 -
+2026-02-22 18:06:41,901 - INFO - 127.0.0.1 - - [22/Feb/2026 18:06:41] "POST /api/config HTTP/1.1" 200 -
+2026-02-22 18:06:43,416 - INFO - Client disconnected
+2026-02-22 18:06:43,417 - INFO - 127.0.0.1 - - [22/Feb/2026 18:06:43] "GET /socket.io/?EIO=4&transport=websocket&sid=BP7v94LLhpOEV3_zAAAA HTTP/1.1" 200 -
