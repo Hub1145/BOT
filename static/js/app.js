@@ -20,6 +20,10 @@ function updateConfigLabels() {
         const label = document.getElementById('configEntryTypeLabel');
         const customExpiryContainer = document.getElementById('customExpiryContainer');
         const strategy5Options = document.getElementById('strategy5Options');
+        const screenerTabNavItem = document.getElementById('screenerTabNavItem');
+
+        // Hide screener tab by default
+        if (screenerTabNavItem) screenerTabNavItem.style.display = 'none';
 
         if (strategy === 'strategy_1') {
             label.textContent = "Wait for 15m Candle Close";
@@ -37,12 +41,14 @@ function updateConfigLabels() {
             label.textContent = "Wait for 1m Candle Close";
             customExpiryContainer.style.display = 'none'; // Strategy 5 uses dynamic expiry
             strategy5Options.style.display = 'block';
+            document.getElementById('screenerTabNavItem').style.display = 'block';
 
             // Toggle multiplier value visibility
             const contractType = document.getElementById('configContractType').value;
             document.getElementById('multiplierValueContainer').style.display =
                 contractType === 'multiplier' ? 'block' : 'none';
         } else {
+            document.getElementById('screenerTabNavItem').style.display = 'none';
             label.textContent = "Wait for 1m Candle Close";
             customExpiryContainer.style.display = 'block';
             strategy5Options.style.display = 'none';
@@ -98,6 +104,7 @@ function setupEventListeners() {
             document.getElementById('configEntryType').value = currentConfig.entry_type || 'candle_close';
             document.getElementById('configIsDemo').checked = currentConfig.is_demo !== false;
             updateConfigLabels();
+            updateMultiplierDropdown();
         }
         configModal.show();
     });
@@ -192,6 +199,36 @@ function setupSocketListeners() {
 
     socket.on('error', (data) => alert('Error: ' + data.message));
     socket.on('success', (data) => console.log('Success:', data.message));
+
+    socket.on('multipliers_update', (data) => {
+        const symbol = data.symbol;
+        const multipliers = data.multipliers;
+        // Store these for the config modal if needed, but the requirement says
+        // "Each contract has their own specified multiplier values".
+        // Let's update the dropdown if the config modal is open and the symbol matches.
+        // Or better, just store them globally and update when symbol is selected.
+        window.symbolMultipliers = window.symbolMultipliers || {};
+        window.symbolMultipliers[symbol] = multipliers;
+        updateMultiplierDropdown();
+    });
+}
+
+function updateMultiplierDropdown() {
+    const symbolList = currentConfig ? currentConfig.symbols : [];
+    if (symbolList.length === 0) return;
+
+    // For now, use the first symbol's multipliers or a merged list
+    const firstSymbol = symbolList[0];
+    const multipliers = (window.symbolMultipliers && window.symbolMultipliers[firstSymbol]) || [100, 200, 300, 400, 500];
+
+    const dropdown = document.getElementById('configMultiplierValue');
+    if (!dropdown) return;
+
+    const currentValue = dropdown.value;
+    dropdown.innerHTML = multipliers.map(m => `<option value="${m}">${m}x</option>`).join('');
+    if (multipliers.includes(parseInt(currentValue))) {
+        dropdown.value = currentValue;
+    }
 }
 
 const screenerDataMap = {};

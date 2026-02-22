@@ -1,0 +1,49 @@
+2026-02-22 11:26:34,118 - INFO - Price-based SL reached for R_100 (mult2): 1000.6 >= 1000.5. Closing...
+2026-02-22 11:28:02,457 - INFO - Price-based SL reached for R_100 (mult2): 1000.6 >= 1000.5. Closing...
+2026-02-22 11:28:02,461 - INFO - Price-based TP reached for R_100 (mult1): 1001.5 >= 1000.9999999999999. Closing...
+2026-02-22 11:29:56,082 - INFO - Trade opened: cid123 for 50 USD
+2026-02-22 11:40:08,697 - INFO - Bot started | Trading: OFF
+2026-02-22 11:40:08,699 - WARNING - Werkzeug appears to be used in a production deployment. Consider switching to a production web server instead.
+2026-02-22 11:40:08,705 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.0.2:5000
+2026-02-22 11:40:08,706 - INFO - [33mPress CTRL+C to quit[0m
+2026-02-22 11:40:09,000 - INFO - Websocket connected
+2026-02-22 11:40:09,001 - INFO - Deriv WebSocket connected.
+2026-02-22 11:40:09,337 - INFO - Authorization successful.
+2026-02-22 11:40:09,337 - INFO - Daily starting balance set: 310.92
+2026-02-22 11:40:18,967 - INFO - 127.0.0.1 - - [22/Feb/2026 11:40:18] "GET / HTTP/1.1" 200 -
+2026-02-22 11:40:19,023 - INFO - 127.0.0.1 - - [22/Feb/2026 11:40:19] "GET /static/js/app.js HTTP/1.1" 200 -
+2026-02-22 11:40:19,292 - INFO - 127.0.0.1 - - [22/Feb/2026 11:40:19] "GET /socket.io/?EIO=4&transport=polling&t=Po59e74 HTTP/1.1" 200 -
+2026-02-22 11:40:19,302 - INFO - 127.0.0.1 - - [22/Feb/2026 11:40:19] "GET /api/config HTTP/1.1" 200 -
+2026-02-22 11:40:19,319 - INFO - Client connected: JdwOmzM_qhVTxkcRAAAB
+2026-02-22 11:40:19,323 - INFO - 127.0.0.1 - - [22/Feb/2026 11:40:19] "POST /socket.io/?EIO=4&transport=polling&t=Po59e7h&sid=vyL_TidvoVDQkrqvAAAA HTTP/1.1" 200 -
+2026-02-22 11:40:19,334 - INFO - 127.0.0.1 - - [22/Feb/2026 11:40:19] "GET /socket.io/?EIO=4&transport=polling&t=Po59e7n&sid=vyL_TidvoVDQkrqvAAAA HTTP/1.1" 200 -
+2026-02-22 11:40:19,354 - INFO - 127.0.0.1 - - [22/Feb/2026 11:40:19] "GET /socket.io/?EIO=4&transport=polling&t=Po59e8L&sid=vyL_TidvoVDQkrqvAAAA HTTP/1.1" 200 -
+2026-02-22 11:40:25,289 - INFO - Client disconnected
+2026-02-22 11:40:25,290 - INFO - 127.0.0.1 - - [22/Feb/2026 11:40:25] "GET /socket.io/?EIO=4&transport=websocket&sid=vyL_TidvoVDQkrqvAAAA HTTP/1.1" 200 -
+2026-02-22 11:41:44,344 - INFO - Bot started | Trading: OFF
+2026-02-22 11:41:44,345 - WARNING - Werkzeug appears to be used in a production deployment. Consider switching to a production web server instead.
+2026-02-22 11:41:44,349 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.0.2:5000
+2026-02-22 11:41:44,349 - INFO - [33mPress CTRL+C to quit[0m
+2026-02-22 11:41:44,573 - INFO - Websocket connected
+2026-02-22 11:41:44,574 - INFO - Deriv WebSocket connected.
+2026-02-22 11:41:44,804 - INFO - Authorization successful.
+2026-02-22 11:41:44,804 - INFO - Daily starting balance set: 310.92
+2026-02-22 11:41:54,287 - INFO - 127.0.0.1 - - [22/Feb/2026 11:41:54] "GET / HTTP/1.1" 200 -
+2026-02-22 11:41:54,307 - INFO - 127.0.0.1 - - [22/Feb/2026 11:41:54] "GET /static/js/app.js HTTP/1.1" 200 -
+2026-02-22 11:41:54,421 - INFO - 127.0.0.1 - - [22/Feb/2026 11:41:54] "GET /socket.io/?EIO=4&transport=polling&t=Po59_Lg HTTP/1.1" 200 -
+2026-02-22 11:41:54,424 - INFO - 127.0.0.1 - - [22/Feb/2026 11:41:54] "GET /api/config HTTP/1.1" 200 -
+2026-02-22 11:41:54,430 - INFO - Client connected: L0YeX8pLntn6-CT4AAAB
+2026-02-22 11:41:54,431 - INFO - 127.0.0.1 - - [22/Feb/2026 11:41:54] "POST /socket.io/?EIO=4&transport=polling&t=Po59_Lw&sid=jQ8YXGTl5mEifF-KAAAA HTTP/1.1" 200 -
+2026-02-22 11:41:54,449 - INFO - 127.0.0.1 - - [22/Feb/2026 11:41:54] "GET /socket.io/?EIO=4&transport=polling&t=Po59_Ly&sid=jQ8YXGTl5mEifF-KAAAA HTTP/1.1" 200 -
+2026-02-22 11:41:55,494 - INFO - Client disconnected
+2026-02-22 11:41:55,495 - INFO - 127.0.0.1 - - [22/Feb/2026 11:41:55] "GET /socket.io/?EIO=4&transport=websocket&sid=jQ8YXGTl5mEifF-KAAAA HTTP/1.1" 200 -
+2026-02-22 11:43:19,874 - INFO - Price-based SL reached for R_100 (c2): 105 >= 105. Closing...
+2026-02-22 11:43:19,878 - INFO - Cleaning up ghost contract c1 for R_100 (expired 60s ago).
+2026-02-22 11:44:48,945 - INFO - Price-based SL reached for R_100 (c2): 105 >= 105. Closing...
+2026-02-22 11:44:48,948 - INFO - Price-based TP reached for R_100 (c1): 105 >= 105. Closing...

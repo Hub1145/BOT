@@ -196,6 +196,7 @@ class TradingBotEngine:
 
                     if strat_key == 'strategy_5':
                         self._fetch_history(ws, symbol, 86400, 50) # Daily data
+                        ws.send(json.dumps({"contracts_for": symbol}))
 
         elif msg_type == 'balance':
             self.account_balance = data['balance']['balance']
@@ -219,10 +220,44 @@ class TradingBotEngine:
             if poc and 'contract_id' in poc:
                 self._handle_contract_update(poc)
 
+        elif msg_type == 'contracts_for':
+            echo = data.get('echo_req', {})
+            symbol = echo.get('contracts_for')
+            contracts = data.get('contracts_for', {}).get('available', [])
+            multipliers = []
+            for c in contracts:
+                if c.get('contract_type') == 'MULTUP':
+                    multipliers = c.get('multiplier_range', [])
+                    break
+            if multipliers:
+                self.log(f"Available multipliers for {symbol}: {multipliers}")
+                self.emit('multipliers_update', {'symbol': symbol, 'multipliers': multipliers})
+
         elif msg_type == 'buy':
             buy_data = data.get('buy')
             if buy_data:
-                self.log(f"Trade opened: {buy_data.get('contract_id')} for {buy_data.get('buy_price')} USD")
+                cid = buy_data.get('contract_id')
+                self.log(f"Trade opened: {cid} for {buy_data.get('buy_price')} USD")
+
+                # Initialize contract entry to start monitoring immediately
+                params = data.get('echo_req', {}).get('parameters', {})
+                symbol = params.get('symbol')
+                ctype = params.get('contract_type')
+                side = 'long' if ctype in ['CALL', 'MULTUP'] else 'short'
+
+                with self.data_lock:
+                    self.contracts[cid] = {
+                        'id': cid, 'symbol': symbol, 'side': side,
+                        'stake': buy_data.get('buy_price', 0),
+                        'pnl': 0, 'is_closing': False,
+                        'multiplier': params.get('multiplier'),
+                        'tp_price': None, 'sl_price': None,
+                        'entry_price': None
+                    }
+                    # Use last known tick as preliminary entry price for immediate TP/SL tracking
+                    if symbol in self.symbol_data and self.symbol_data[symbol].get('last_tick'):
+                        self.contracts[cid]['entry_price'] = self.symbol_data[symbol]['last_tick']
+                        self._calculate_target_prices(cid)
 
         elif msg_type == 'sell':
             sell_data = data.get('sell')
@@ -345,7 +380,7 @@ class TradingBotEngine:
 
             # Background Position Monitoring (Force Close, TP/SL)
             # This runs even if is_running is False, as long as WS is connected
-            self._monitor_open_contracts()
+            self._monitor_open_contracts(symbol, price)
 
             if self.is_running:
                 # HTF/Bias Refresh for Strategy 5
@@ -420,6 +455,8 @@ class TradingBotEngine:
 
                 if self.config.get('entry_type') == 'tick':
                     self._process_strategy(symbol, False)
+                    if strat_key == 'strategy_5':
+                        self._update_screener(symbol)
 
     def _update_screener(self, symbol):
         sd = self.symbol_data.get(symbol)
@@ -887,7 +924,7 @@ class TradingBotEngine:
 
             self._execute_trade(symbol, signal)
 
-    def _monitor_open_contracts(self):
+    def _monitor_open_contracts(self, symbol=None, current_price=None):
         now_epoch = int(time.time())
         force_close_enabled = self.config.get('force_close_enabled', False)
         force_close_duration = self.config.get('force_close_duration', 60)
@@ -896,6 +933,31 @@ class TradingBotEngine:
 
         for cid in list(self.contracts.keys()):
             c = self.contracts[cid]
+
+            # Price-based TP/SL trigger (Failsafe / Manual tracking)
+            if current_price and symbol == c['symbol'] and (tp_enabled or sl_enabled):
+                    tp_price = c.get('tp_price')
+                    sl_price = c.get('sl_price')
+                    side = c.get('side') # 'long' or 'short'
+
+                    if side == 'long':
+                        if tp_enabled and tp_price and current_price >= tp_price:
+                            self.log(f"Price-based TP reached for {c['symbol']} ({cid}): {current_price} >= {tp_price}. Closing...")
+                            self._close_contract(cid)
+                            continue
+                        if sl_enabled and sl_price and current_price <= sl_price:
+                            self.log(f"Price-based SL reached for {c['symbol']} ({cid}): {current_price} <= {sl_price}. Closing...")
+                            self._close_contract(cid)
+                            continue
+                    elif side == 'short':
+                        if tp_enabled and tp_price and current_price <= tp_price:
+                            self.log(f"Price-based TP reached for {c['symbol']} ({cid}): {current_price} <= {tp_price}. Closing...")
+                            self._close_contract(cid)
+                            continue
+                        if sl_enabled and sl_price and current_price >= sl_price:
+                            self.log(f"Price-based SL reached for {c['symbol']} ({cid}): {current_price} >= {sl_price}. Closing...")
+                            self._close_contract(cid)
+                            continue
 
             # Ghost cleanup: if expired more than 60s ago and still here
             if c.get('expiry_time') and now_epoch > c['expiry_time'] + 60:
@@ -1101,16 +1163,27 @@ class TradingBotEngine:
             else:
                 profit = contract.get('profit', 0)
                 is_closing = self.contracts.get(cid, {}).get('is_closing', False)
+                entry_tick = contract.get('entry_tick')
+
+                # Retrieve or initialize contract data
+                c_data = self.contracts.get(cid, {})
 
                 self.contracts[cid] = {
                     'id': cid, 'symbol': symbol, 'side': side,
-                    'entry_price': contract.get('entry_tick'),
+                    'entry_price': entry_tick,
                     'pnl': profit,
                     'stake': contract.get('buy_price', 0),
                     'purchase_time': contract.get('purchase_time'),
                     'expiry_time': contract.get('date_expiry'),
-                    'is_closing': is_closing
+                    'is_closing': is_closing,
+                    'multiplier': contract.get('multiplier'),
+                    'tp_price': c_data.get('tp_price'),
+                    'sl_price': c_data.get('sl_price')
                 }
+
+                # Calculate TP/SL prices if not yet set and we have an entry price
+                if entry_tick and not self.contracts[cid]['tp_price']:
+                    self._calculate_target_prices(cid)
 
                 # TP/SL check
                 if not is_closing:
@@ -1156,6 +1229,50 @@ class TradingBotEngine:
             self._emit_updates()
         except Exception as e:
             self.log(f"Error handling contract update: {e}", 'error')
+
+    def _calculate_target_prices(self, cid):
+        c = self.contracts[cid]
+        entry = c['entry_price']
+        if not entry: return
+
+        tp_val = self.config.get('tp_value', 0)
+        sl_val = self.config.get('sl_value', 0)
+        use_fixed = self.config.get('use_fixed_balance', True)
+        stake = c['stake']
+        multiplier = c.get('multiplier')
+        side = c['side'] # 'long' or 'short'
+
+        if not (tp_val > 0 or sl_val > 0): return
+
+        # Calculate threshold in USD
+        tp_usd = tp_val if use_fixed else (stake * tp_val / 100.0)
+        sl_usd = sl_val if use_fixed else (stake * sl_val / 100.0)
+
+        if multiplier:
+            # For Multipliers, we have a clear linear relationship
+            # Profit = (Price - Entry) / Entry * Multiplier * Stake
+            # Price = Entry * (1 + Profit / (Multiplier * Stake))
+            denom = multiplier * stake
+            if denom == 0: return
+
+            if side == 'long':
+                if tp_val > 0: self.contracts[cid]['tp_price'] = entry * (1 + tp_usd / denom)
+                if sl_val > 0: self.contracts[cid]['sl_price'] = entry * (1 - sl_usd / denom)
+            else:
+                if tp_val > 0: self.contracts[cid]['tp_price'] = entry * (1 - tp_usd / denom)
+                if sl_val > 0: self.contracts[cid]['sl_price'] = entry * (1 + sl_usd / denom)
+        else:
+            # For Rise & Fall, price-based TP/SL is an approximation
+            # We'll use a 0.5% move as a default "unit" if no other info, but that's arbitrary.
+            # Better: if it's Rise & Fall, we mostly rely on the 'profit' field monitoring
+            # which we already do. But let's set a wide price trigger as a safety.
+            # Assume 1% move corresponds to a significant win/loss for binary.
+            if side == 'long':
+                if tp_val > 0: self.contracts[cid]['tp_price'] = entry * 1.01
+                if sl_val > 0: self.contracts[cid]['sl_price'] = entry * 0.99
+            else:
+                if tp_val > 0: self.contracts[cid]['tp_price'] = entry * 0.99
+                if sl_val > 0: self.contracts[cid]['sl_price'] = entry * 1.01
 
     def _update_aggregated_positions(self):
         # Update UI compatibility fields
@@ -1320,6 +1437,10 @@ class TradingBotEngine:
         # If strategy changed, reset all symbol data to re-fetch with new granularities
         if old_strat != new_strat:
             self.log(f"Strategy changed to {new_strat}. Resetting data...")
+            if new_strat == 'strategy_5':
+                # Immediately calculate if data exists
+                for sym in self.symbol_data:
+                    self._update_screener(sym)
             with self.data_lock:
                 # Keep subscription ids but clear candles/opens
                 for sym in self.symbol_data:
@@ -1350,6 +1471,7 @@ class TradingBotEngine:
                 self._fetch_history(self.ws, symbol, strat['htf_granularity'], h_count)
                 if new_strat == 'strategy_5':
                     self._fetch_history(self.ws, symbol, 86400, 50)
+                    self.ws.send(json.dumps({"contracts_for": symbol}))
 
             removed_symbols = old_symbols - new_symbols
             for symbol in removed_symbols:
