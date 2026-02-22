@@ -11,9 +11,9 @@ import ta
 class TradingBotEngine:
     STRATEGY_MAP = {
         'strategy_1': {
-            'name': 'Slow (Daily / 1h)',
+            'name': 'Slow (Daily / 15m)',
             'htf_granularity': 86400, # Daily
-            'ltf_granularity': 3600,  # 1h
+            'ltf_granularity': 900,   # 15m
             'expiry_type': 'eod'      # End of Day
         },
         'strategy_2': {
@@ -516,7 +516,7 @@ class TradingBotEngine:
         last_close = df_h['close'].iloc[-1]
 
         # --- A) TREND BLOCK (Weight 3) ---
-        # Indicators: EMA 50, EMA 200, SMA 20, ADX, Ichimoku, MACD
+        # Indicators: EMA 50, EMA 200, SMA 20, ADX, Ichimoku, MACD, Aroon, DPO, KST, TRIX, Vortex, WMA
         t_pos, t_neg = 0, 0
 
         ema50 = ta.trend.EMAIndicator(df_h['close'], window=50).ema_indicator().iloc[-1]
@@ -550,11 +550,41 @@ class TradingBotEngine:
         if macd_ind.macd().iloc[-1] > macd_ind.macd_signal().iloc[-1]: t_pos += 1
         else: t_neg += 1
 
+        # Aroon
+        aroon = ta.trend.AroonIndicator(df_h['high'], df_h['low'])
+        if aroon.aroon_up().iloc[-1] > aroon.aroon_down().iloc[-1]: t_pos += 1
+        else: t_neg += 1
+
+        # DPO
+        dpo = ta.trend.DPOIndicator(df_h['close']).dpo().iloc[-1]
+        if dpo > 0: t_pos += 1
+        else: t_neg += 1
+
+        # KST
+        kst = ta.trend.KSTIndicator(df_h['close'])
+        if kst.kst().iloc[-1] > kst.kst_sig().iloc[-1]: t_pos += 1
+        else: t_neg += 1
+
+        # TRIX
+        trix = ta.trend.TRIXIndicator(df_h['close']).trix().iloc[-1]
+        if trix > 0: t_pos += 1
+        else: t_neg += 1
+
+        # Vortex
+        vortex = ta.trend.VortexIndicator(df_h['high'], df_h['low'], df_h['close'])
+        if vortex.vortex_indicator_pos().iloc[-1] > vortex.vortex_indicator_neg().iloc[-1]: t_pos += 1
+        else: t_neg += 1
+
+        # WMA
+        wma = ta.trend.WMAIndicator(df_h['close'], window=9).wma_indicator().iloc[-1]
+        if last_close > wma: t_pos += 1
+        else: t_neg += 1
+
         trend_sentiment = (t_pos - t_neg) / (t_pos + t_neg) if (t_pos + t_neg) > 0 else 0
         trend_score = trend_sentiment * 3
 
         # --- B) MOMENTUM BLOCK (Weight 2) ---
-        # Indicators: RSI, Stoch RSI, Williams %R, ROC, CCI
+        # Indicators: RSI, Stoch RSI, Williams %R, ROC, CCI, TSI, Ultimate Oscillator, PPO
         m_pos, m_neg = 0, 0
 
         rsi = ta.momentum.RSIIndicator(df_h['close']).rsi().iloc[-1]
@@ -577,11 +607,26 @@ class TradingBotEngine:
         if cci > 0: m_pos += 1
         else: m_neg += 1
 
+        # TSI
+        tsi = ta.momentum.TSIIndicator(df_h['close']).tsi().iloc[-1]
+        if tsi > 0: m_pos += 1
+        else: m_neg += 1
+
+        # Ultimate Oscillator
+        uo = ta.momentum.UltimateOscillator(df_h['high'], df_h['low'], df_h['close']).ultimate_oscillator().iloc[-1]
+        if uo > 50: m_pos += 1
+        else: m_neg += 1
+
+        # PPO
+        ppo = ta.momentum.PercentagePriceOscillator(df_h['close']).ppo().iloc[-1]
+        if ppo > 0: m_pos += 1
+        else: m_neg += 1
+
         mom_sentiment = (m_pos - m_neg) / (m_pos + m_neg) if (m_pos + m_neg) > 0 else 0
         mom_score = mom_sentiment * 2
 
         # --- C) VOLATILITY BLOCK (Weight 1) ---
-        # Indicators: ATR, Bollinger Bands, Donchian Channel, Keltner Channel
+        # Indicators: ATR, Bollinger Bands, Donchian Channel, Keltner Channel, Ulcer Index, Mass Index
         v_pos, v_neg = 0, 0
 
         atr_ind = ta.volatility.AverageTrueRange(df_h['high'], df_h['low'], df_h['close'])
@@ -602,6 +647,16 @@ class TradingBotEngine:
 
         kc = ta.volatility.KeltnerChannel(df_h['high'], df_h['low'], df_h['close'])
         if last_close > kc.keltner_channel_mband().iloc[-1]: v_pos += 0.5
+        else: v_neg += 0.5
+
+        # Ulcer Index
+        ui = ta.volatility.UlcerIndex(df_h['close']).ulcer_index().iloc[-1]
+        if ui < 5: v_pos += 0.5
+        else: v_neg += 0.5
+
+        # Mass Index
+        mi = ta.trend.MassIndex(df_h['high'], df_h['low']).mass_index().iloc[-1]
+        if mi < 25: v_pos += 0.5
         else: v_neg += 0.5
 
         vol_sentiment = (v_pos - v_neg) / (v_pos + v_neg) if (v_pos + v_neg) > 0 else 0
