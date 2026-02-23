@@ -21,6 +21,7 @@ class TestPositionHandling(unittest.TestCase):
         self.bot.ws.sock.connected = True
 
     def test_one_trade_per_symbol_cancel_opposite(self):
+        self.bot._init_symbol_data('R_100')
         # Simulate an existing LONG trade
         self.bot.contracts['c1'] = {
             'id': 'c1', 'symbol': 'R_100', 'side': 'long',
@@ -42,6 +43,7 @@ class TestPositionHandling(unittest.TestCase):
         self.assertTrue(any(c['parameters']['contract_type'] == 'PUT' for c in buy_calls))
 
     def test_do_not_open_same_direction(self):
+        self.bot._init_symbol_data('R_100')
         # Simulate an existing LONG trade
         self.bot.contracts['c1'] = {
             'id': 'c1', 'symbol': 'R_100', 'side': 'long',

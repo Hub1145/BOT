@@ -2,6 +2,7 @@ import json
 import time
 import logging
 import threading
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta, timezone
 from collections import deque
 import websocket
@@ -74,7 +75,7 @@ class TradingBotEngine:
         self.ws = None
         self.ws_thread = None
         self.stop_event = threading.Event()
-        self.strat7_thread = None
+        self.screener_thread = None
         self.strat7_cache = {} # Symbol -> { 'small': Analysis, 'mid': Analysis, 'high': Analysis, 'timestamp': float }
 
         # Account metrics
@@ -370,8 +371,6 @@ class TradingBotEngine:
 
             if granularity == 86400:
                 sd['daily_candles'] = candles
-                if strat_key == 'strategy_5':
-                    self._update_screener(symbol)
 
             if granularity == strat['htf_granularity']:
                 if candles:
@@ -405,11 +404,9 @@ class TradingBotEngine:
                 if strat_key == 'strategy_5':
                     sd['htf_candles'] = candles
                     self._calculate_snr_zones(symbol, 3600) # 1H SNR
-                    self._update_screener(symbol)
                 elif strat_key == 'strategy_6':
                     sd['htf_candles'] = candles
                     self._calculate_snr_zones(symbol, 3600) # 1H SNR
-                    self._update_screener(symbol)
 
             elif granularity == strat['ltf_granularity']:
                 sd['ltf_candles'] = candles
@@ -496,8 +493,6 @@ class TradingBotEngine:
                             'epoch': new_htf_start, 'open': price, 'high': price, 'low': price, 'close': price
                         }
 
-                        if strat_key == 'strategy_5':
-                            self._update_screener(symbol)
                     else:
                         sd['current_htf_candle']['close'] = price
                         sd['current_htf_candle']['high'] = max(sd['current_htf_candle']['high'], price)
@@ -536,8 +531,6 @@ class TradingBotEngine:
 
                 if self.config.get('entry_type') == 'tick':
                     self._process_strategy(symbol, False)
-                    if strat_key == 'strategy_5':
-                        self._update_screener(symbol)
 
     def _calculate_supertrend(self, df, period=10, multiplier=3):
         atr = ta.volatility.average_true_range(df['high'], df['low'], df['close'], window=period)
@@ -663,28 +656,37 @@ class TradingBotEngine:
         if strat_key == 'strategy_6':
             return self._update_screener_v1(symbol)
 
-        sd = self.symbol_data.get(symbol)
-        if not sd: return
+        with self.data_lock:
+            sd = self.symbol_data.get(symbol)
+            if not sd: return
+
+            # Create copies for thread-safe processing
+            m5_candles = list(sd.get('m5_candles', []))
+            m15_candles = list(sd.get('m15_candles', []))
+            htf_candles = list(sd.get('htf_candles', []))
+            ltf_candles = list(sd.get('ltf_candles', []))
+            daily_candles = list(sd.get('daily_candles', []))
+            snr_zones = list(sd.get('snr_zones', []))
 
         contract_type = self.config.get('contract_type', 'rise_fall')
         is_multiplier = (contract_type == 'multiplier')
 
         # Select Base Dataframe
-        # Mode A (Rise/Fall): 5m core
-        # Mode B (Multiplier): 1h core
         df_core = None
         if is_multiplier:
-            if len(sd.get('htf_candles', [])) < 100: return
-            df_core = pd.DataFrame(sd['htf_candles'])
+            if len(htf_candles) < 100: return
+            df_core = pd.DataFrame(htf_candles)
             # Calculate 1H Order Blocks
-            sd['order_blocks'] = self._calculate_order_blocks(df_core)
+            obs = self._calculate_order_blocks(df_core)
+            with self.data_lock: sd['order_blocks'] = obs
         else:
-            if len(sd.get('m5_candles', [])) < 100: return
-            df_core = pd.DataFrame(sd['m5_candles'])
+            if len(m5_candles) < 100: return
+            df_core = pd.DataFrame(m5_candles)
             # Calculate 5m Fractals
             f_high, f_low = self._calculate_fractals(df_core)
-            sd['fractal_highs'] = df_core['high'][f_high].tolist()
-            sd['fractal_lows'] = df_core['low'][f_low].tolist()
+            with self.data_lock:
+                sd['fractal_highs'] = df_core['high'][f_high].tolist()
+                sd['fractal_lows'] = df_core['low'][f_low].tolist()
 
         last_close = df_core['close'].iloc[-1]
 
@@ -768,8 +770,7 @@ class TradingBotEngine:
                 if abs(last_close - fl) / fl < 0.002: s_pos += 3 # Support retest
 
         # HTF SNR Alignment
-        zones = sd.get('snr_zones', [])
-        for z in zones:
+        for z in snr_zones:
             if abs(last_close - z['price']) / z['price'] < 0.005:
                 if z['type'] in ['S', 'Flip']: s_pos += 2
                 elif z['type'] in ['R', 'Flip']: s_neg += 2
@@ -791,8 +792,8 @@ class TradingBotEngine:
 
         # 1m ATR for Volatility Freeze
         atr_1m = 0
-        if sd['ltf_candles']:
-            df_1m = pd.DataFrame(sd['ltf_candles'])
+        if ltf_candles:
+            df_1m = pd.DataFrame(ltf_candles)
             if len(df_1m) >= 14:
                 atr_1m = ta.volatility.AverageTrueRange(df_1m['high'], df_1m['low'], df_1m['close']).average_true_range().iloc[-1]
 
@@ -843,10 +844,16 @@ class TradingBotEngine:
         self.emit('screener_update', {'symbol': symbol, 'data': self.screener_data[symbol]})
 
     def _update_screener_v1(self, symbol):
-        sd = self.symbol_data.get(symbol)
-        if not sd or len(sd.get('htf_candles', [])) < 200: return
+        with self.data_lock:
+            sd = self.symbol_data.get(symbol)
+            if not sd: return
+            htf_candles = list(sd.get('htf_candles', []))
+            daily_candles = list(sd.get('daily_candles', []))
+            snr_zones = list(sd.get('snr_zones', []))
 
-        df_h = pd.DataFrame(sd['htf_candles'])
+        if len(htf_candles) < 200: return
+
+        df_h = pd.DataFrame(htf_candles)
         last_close = df_h['close'].iloc[-1]
 
         # --- A) TREND BLOCK (Weight 3) ---
@@ -945,8 +952,8 @@ class TradingBotEngine:
         if last_close >= bb.bollinger_hband().iloc[-1]: s_neg += 1
         elif last_close <= bb.bollinger_lband().iloc[-1]: s_pos += 1
 
-        if sd.get('daily_candles') and len(sd['daily_candles']) >= 2:
-            prev_day = sd['daily_candles'][-2]
+        if daily_candles and len(daily_candles) >= 2:
+            prev_day = daily_candles[-2]
             pivot = (prev_day['high'] + prev_day['low'] + prev_day['close']) / 3
             r1 = 2 * pivot - prev_day['low']
             s1 = 2 * pivot - prev_day['high']
@@ -959,8 +966,7 @@ class TradingBotEngine:
             if abs(last_close - day_high) / day_high < 0.01: s_neg += 0.5
             if abs(last_close - day_low) / day_low < 0.01: s_pos += 0.5
 
-        zones = sd.get('snr_zones', [])
-        for z in zones:
+        for z in snr_zones:
             if abs(last_close - z['price']) / z['price'] < 0.005:
                 if z['type'] in ['S', 'Flip']: s_pos += 1
                 elif z['type'] in ['R', 'Flip']: s_neg += 1
@@ -1099,21 +1105,29 @@ class TradingBotEngine:
         except Exception as e:
             self.log(f"Error in Strategy 7 for {symbol}: {e}", "error")
 
-    def _strat7_update_loop(self):
-        """Background thread to update Strategy 7 analysis without blocking main engine."""
-        while not self.stop_event.is_set():
-            strat_key = self.config.get('active_strategy')
-            if strat_key == 'strategy_7':
+    def _background_screener_loop(self):
+        """Background thread to update screener analysis for Strategies 5, 6, and 7 without blocking main engine."""
+        with ThreadPoolExecutor(max_workers=10) as executor:
+            while not self.stop_event.is_set():
+                strat_key = self.config.get('active_strategy')
                 symbols = self.config.get('symbols', [])
-                for symbol in symbols:
-                    if self.stop_event.is_set(): break
-                    self._update_strat7_analysis(symbol)
-                    time.sleep(1) # Gap between symbols
 
-            # Update frequency
-            for _ in range(30):
-                if self.stop_event.is_set(): break
-                time.sleep(1)
+                if strat_key == 'strategy_7':
+                    for symbol in symbols:
+                        if self.stop_event.is_set(): break
+                        executor.submit(self._update_strat7_analysis, symbol)
+                        time.sleep(0.5) # Throttle submissions slightly
+                elif strat_key in ['strategy_5', 'strategy_6']:
+                    for symbol in symbols:
+                        if self.stop_event.is_set(): break
+                        executor.submit(self._update_screener, symbol)
+                        time.sleep(0.1)
+
+                # Dynamic sleep: shorter if we need frequent updates, longer otherwise
+                sleep_time = 30 if strat_key == 'strategy_7' else 10
+                for _ in range(sleep_time):
+                    if self.stop_event.is_set(): break
+                    time.sleep(1)
 
     def _update_strat7_analysis(self, symbol):
         tf_small_val = int(self.config.get('strat7_small_tf', 60))
@@ -1669,6 +1683,9 @@ class TradingBotEngine:
         # side is 'buy' or 'sell' from strategy
         internal_side = 'long' if side == 'buy' else 'short'
 
+        sd = self.symbol_data.get(symbol)
+        if not sd: return
+
         strat_key = self.config.get('active_strategy', 'strategy_1')
         strat = self.STRATEGY_MAP.get(strat_key, self.STRATEGY_MAP['strategy_1'])
 
@@ -2038,6 +2055,7 @@ class TradingBotEngine:
         payload = {
             'running': self.is_running,
             'is_demo': self.config.get('is_demo', True),
+            'active_strategy': self.config.get('active_strategy'),
             'total_balance': self.account_balance,
             'available_balance': self.available_balance,
             'open_trades': self.open_trades,
@@ -2066,9 +2084,9 @@ class TradingBotEngine:
         self.is_running = not passive_monitoring
         self.log(f"Bot started | Trading: {'ON' if self.is_running else 'OFF'}")
 
-        if not self.strat7_thread or not self.strat7_thread.is_alive():
-            self.strat7_thread = threading.Thread(target=self._strat7_update_loop, daemon=True)
-            self.strat7_thread.start()
+        if not self.screener_thread or not self.screener_thread.is_alive():
+            self.screener_thread = threading.Thread(target=self._background_screener_loop, daemon=True)
+            self.screener_thread.start()
 
         if not self.ws_thread or not self.ws_thread.is_alive():
             self.stop_event.clear()
@@ -2162,10 +2180,6 @@ class TradingBotEngine:
         # If strategy changed, reset all symbol data to re-fetch with new granularities
         if old_strat != new_strat:
             self.log(f"Strategy changed to {new_strat}. Resetting data...")
-            if new_strat == 'strategy_5':
-                # Immediately calculate if data exists
-                for sym in self.symbol_data:
-                    self._update_screener(sym)
             with self.data_lock:
                 # Keep subscription ids but clear candles/opens
                 for sym in self.symbol_data:
