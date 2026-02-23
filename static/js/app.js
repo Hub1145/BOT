@@ -29,7 +29,7 @@ function updateConfigLabels(strategyOverride = null) {
         if (screenerTabNavItem) screenerTabNavItem.style.display = 'none';
 
         if (strategy === 'strategy_1') {
-            label.textContent = "Wait for 15m Candle Close";
+            label.textContent = "Wait for 1h Candle Close";
             customExpiryContainer.style.display = 'none';
             strategy5Options.style.display = 'none';
             strategy7Options.style.display = 'none';
@@ -80,7 +80,7 @@ function updateConfigLabels(strategyOverride = null) {
 }
 
 function setupEventListeners() {
-    document.getElementById('configActiveStrategy').addEventListener('change', updateConfigLabels);
+    document.getElementById('configActiveStrategy').addEventListener('change', () => updateConfigLabels());
     document.getElementById('configContractType').addEventListener('change', () => {
         updateConfigLabels();
         if (currentConfig) {

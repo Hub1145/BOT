@@ -14,9 +14,9 @@ from deriv_ta import DerivTA, Interval
 class TradingBotEngine:
     STRATEGY_MAP = {
         'strategy_1': {
-            'name': 'Slow (Daily / 15m)',
+            'name': 'Slow (Daily / 1h)',
             'htf_granularity': 86400, # Daily
-            'ltf_granularity': 900,   # 15m
+            'ltf_granularity': 3600,  # 1h (Hardcoded per req)
             'expiry_type': 'eod'      # End of Day
         },
         'strategy_2': {
@@ -1114,6 +1114,11 @@ class TradingBotEngine:
         if abs_conf >= 80: suggested_multiplier = 50
         elif abs_conf >= 65: suggested_multiplier = 20
 
+        # 1m ATR for UI and Volatility Freeze
+        atr_1m = 0
+        if not df_h.empty:
+            atr_1m = ta.volatility.AverageTrueRange(df_h['high'], df_h['low'], df_h['close']).average_true_range().iloc[-1]
+
         self.screener_data[symbol] = {
             'confidence': round(confidence, 1),
             'direction': 'CALL' if confidence > 0 else 'PUT',
@@ -1123,115 +1128,13 @@ class TradingBotEngine:
             'volatility': round(vol_score, 1),
             'structure': round(struct_score, 1),
             'adx': round(adx, 1),
+            'atr_1m': round(atr_1m, 6),
             'expiry_min': suggested_expiry,
             'multiplier': suggested_multiplier,
             'last_update': time.time()
         }
 
         self.emit('screener_update', {'symbol': symbol, 'data': self.screener_data[symbol]})
-
-    def _process_strategy_7(self, symbol, is_candle_close):
-        sd = self.symbol_data[symbol]
-
-        # Get selected timeframes from config
-        # Defaults if not set
-        tf_small_val = int(self.config.get('strat7_small_tf', 60))
-        tf_mid_val = int(self.config.get('strat7_mid_tf', 300))
-        tf_high_val = int(self.config.get('strat7_high_tf', 3600))
-
-        # Throttle execution to avoid API rate limits
-        now = time.time()
-        if now - sd.get('last_strat7_run', 0) < 10: # Minimum 10s between checks
-            return
-        sd['last_strat7_run'] = now
-
-        def val_to_interval(val):
-            for item in Interval:
-                if item.value == val: return item
-            return Interval.INTERVAL_1_MINUTE
-
-        try:
-            h_small = DerivTA(symbol=symbol, interval=val_to_interval(tf_small_val))
-            h_mid = DerivTA(symbol=symbol, interval=val_to_interval(tf_mid_val))
-            h_high = DerivTA(symbol=symbol, interval=val_to_interval(tf_high_val))
-
-            # Fetch analysis
-            a_small = h_small.get_analysis()
-            a_mid = h_mid.get_analysis()
-            a_high = h_high.get_analysis()
-
-            rec_small = a_small.summary['RECOMMENDATION']
-            rec_mid = a_mid.summary['RECOMMENDATION']
-            rec_high = a_high.summary['RECOMMENDATION']
-
-            # Intelligence: Calculate confidence based on voting
-            # Summary has BUY, SELL, NEUTRAL counts
-            # We can use a custom confidence score
-            total_buy = a_small.summary['BUY'] + a_mid.summary['BUY'] + a_high.summary['BUY']
-            total_sell = a_small.summary['SELL'] + a_mid.summary['SELL'] + a_high.summary['SELL']
-            total_signals = total_buy + total_sell + a_small.summary['NEUTRAL'] + a_mid.summary['NEUTRAL'] + a_high.summary['NEUTRAL']
-
-            confidence = ((total_buy - total_sell) / total_signals) * 100 if total_signals > 0 else 0
-
-            # ATR for Risk Management
-            # Use Mid TF ATR as baseline
-            mid_atr = a_mid.indicators.get('ATR', 0)
-            if mid_atr == 0:
-                # Fallback calculation if ATR not in indicators
-                df_mid = h_mid.get_dataframe()
-                mid_atr = ta.volatility.AverageTrueRange(df_mid['high'], df_mid['low'], df_mid['close']).average_true_range().iloc[-1]
-
-            self.screener_data[symbol] = {
-                'confidence': round(confidence, 1),
-                'direction': 'CALL' if confidence > 0 else 'PUT',
-                'regime': rec_mid,
-                'summary_small': rec_small,
-                'summary_mid': rec_mid,
-                'summary_high': rec_high,
-                'atr': round(mid_atr, 4),
-                'last_update': time.time()
-            }
-            self.emit('screener_update', {'symbol': symbol, 'data': self.screener_data[symbol]})
-
-            signal = None
-
-            # Alignment Logic
-            # Same direction on all 3
-            all_buy = ("BUY" in rec_small) and ("BUY" in rec_mid) and ("BUY" in rec_high)
-            all_sell = ("SELL" in rec_small) and ("SELL" in rec_mid) and ("SELL" in rec_high)
-
-            # Strong signal check
-            all_strong_buy = (rec_small == "STRONG_BUY") and (rec_mid == "STRONG_BUY") and (rec_high == "STRONG_BUY")
-            all_strong_sell = (rec_small == "STRONG_SELL") and (rec_mid == "STRONG_SELL") and (rec_high == "STRONG_SELL")
-
-            if all_buy:
-                if all_strong_buy:
-                    # Start looking for reversal or continue
-                    # For now, continue on strong buy
-                    signal = 'buy'
-                else:
-                    signal = 'buy'
-            elif all_sell:
-                if all_strong_sell:
-                    signal = 'sell'
-                else:
-                    signal = 'sell'
-
-            if signal:
-                # Execution with frequency control
-                time_key = int(now // 60)
-                if sd.get('last_trade_ltf') != time_key:
-                    sd['last_trade_ltf'] = time_key
-                    # Snapshot ATR for execution
-                    sd['last_trade_snapshot'] = {
-                        'confidence': confidence,
-                        'atr': mid_atr,
-                        'entry_time': now
-                    }
-                    self._execute_trade(symbol, signal)
-
-        except Exception as e:
-            self.log(f"Error in Strategy 7 for {symbol}: {e}", "error")
 
     def _background_screener_loop(self):
         """Background thread to update screener analysis for Strategies 5, 6, and 7 without blocking main engine."""
@@ -1782,31 +1685,30 @@ class TradingBotEngine:
                             at_snr = any(abs(price_15 - z['price']) / z['price'] < 0.002 for z in zones)
                             at_structure = at_bb or at_snr
 
-                    if at_structure:
+                    if at_structure or strat_key == 'strategy_6':
                         if strat_key == 'strategy_6':
-                            # Legacy v1 simple execution
+                            # Legacy v1 simple execution (Bypass structure patterns)
                             signal = 'buy' if direction == 'CALL' else 'sell'
                             self.log(f"Strategy 6 SCALP {direction} on {symbol} - Conf: {metrics['confidence']}%")
-                            return
+                        else:
+                            # v4.0 MANDATORY CO-CONDITION: Stoch RSI Extreme Zone for Fractal touches
+                            srsi_k = metrics.get('srsi_k', 0.5)
+                            stoch_extreme = (direction == 'CALL' and srsi_k <= 0.2) or \
+                                            (direction == 'PUT' and srsi_k >= 0.8)
 
-                        # v4.0 MANDATORY CO-CONDITION: Stoch RSI Extreme Zone for Fractal touches
-                        srsi_k = metrics.get('srsi_k', 0.5)
-                        stoch_extreme = (direction == 'CALL' and srsi_k <= 0.2) or \
-                                        (direction == 'PUT' and srsi_k >= 0.8)
+                            if fractal_touch and not stoch_extreme:
+                                # Mandatory extreme RSI only for fractal setups
+                                return
 
-                        if fractal_touch and not stoch_extreme:
-                            # Mandatory extreme RSI only for fractal setups
-                            return
-
-                        # 1m chart reversal candle (Trigger)
-                        if sd['ltf_candles']:
-                            pattern = self._check_price_action_patterns(sd['ltf_candles'])
-                            if direction == 'CALL' and pattern in ['bullish_pin', 'bullish_engulfing', 'tweezer_bottom']:
-                                signal = 'buy'
-                            elif direction == 'PUT' and pattern in ['bearish_pin', 'bearish_engulfing', 'tweezer_top']:
-                                signal = 'sell'
-                            if signal:
-                                self.log(f"Strategy 5 SCALP {direction} on {symbol} - Conf: {metrics['confidence']}% (Threshold: {threshold}%) - Pattern: {pattern}")
+                            # 1m chart reversal candle (Trigger)
+                            if sd['ltf_candles']:
+                                pattern = self._check_price_action_patterns(sd['ltf_candles'])
+                                if direction == 'CALL' and pattern in ['bullish_pin', 'bullish_engulfing', 'tweezer_bottom']:
+                                    signal = 'buy'
+                                elif direction == 'PUT' and pattern in ['bearish_pin', 'bearish_engulfing', 'tweezer_top']:
+                                    signal = 'sell'
+                                if signal:
+                                    self.log(f"Strategy 5 SCALP {direction} on {symbol} - Conf: {metrics['confidence']}% (Threshold: {threshold}%) - Pattern: {pattern}")
         else:
             # Default Breakout Logic (Strategy 1, 2, 3)
             if strat_key == 'strategy_1' and not is_candle_close:
