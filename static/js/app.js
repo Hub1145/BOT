@@ -20,6 +20,7 @@ function updateConfigLabels() {
         const label = document.getElementById('configEntryTypeLabel');
         const customExpiryContainer = document.getElementById('customExpiryContainer');
         const strategy5Options = document.getElementById('strategy5Options');
+        const strategy7Options = document.getElementById('strategy7Options');
         const screenerTabNavItem = document.getElementById('screenerTabNavItem');
 
         // Hide screener tab by default
@@ -29,24 +30,35 @@ function updateConfigLabels() {
             label.textContent = "Wait for 15m Candle Close";
             customExpiryContainer.style.display = 'none';
             strategy5Options.style.display = 'none';
+            strategy7Options.style.display = 'none';
         } else if (strategy === 'strategy_2') {
             label.textContent = "Wait for 3m Candle Close";
             customExpiryContainer.style.display = 'block';
             strategy5Options.style.display = 'none';
+            strategy7Options.style.display = 'none';
         } else if (strategy === 'strategy_4') {
             label.textContent = "Wait for 1m Candle Close";
             customExpiryContainer.style.display = 'block';
             strategy5Options.style.display = 'none';
+            strategy7Options.style.display = 'none';
         } else if (strategy === 'strategy_5' || strategy === 'strategy_6') {
             label.textContent = "Wait for 1m Candle Close";
             customExpiryContainer.style.display = 'none';
             strategy5Options.style.display = 'block';
+            strategy7Options.style.display = 'none';
+            document.getElementById('screenerTabNavItem').style.display = 'block';
+        } else if (strategy === 'strategy_7') {
+            label.textContent = "Wait for LTF Confirm";
+            customExpiryContainer.style.display = 'none';
+            strategy5Options.style.display = 'block'; // Also has Multiplier/RiseFall
+            strategy7Options.style.display = 'block';
             document.getElementById('screenerTabNavItem').style.display = 'block';
         } else {
             document.getElementById('screenerTabNavItem').style.display = 'none';
             label.textContent = "Wait for 1m Candle Close";
             customExpiryContainer.style.display = 'block';
             strategy5Options.style.display = 'none';
+            strategy7Options.style.display = 'none';
         }
     }
 
@@ -104,6 +116,9 @@ function setupEventListeners() {
             document.getElementById('configCustomExpiry').value = currentConfig.custom_expiry || 'default';
             document.getElementById('configEntryType').value = currentConfig.entry_type || 'candle_close';
             document.getElementById('configIsDemo').checked = currentConfig.is_demo !== false;
+            document.getElementById('configStrat7SmallTF').value = currentConfig.strat7_small_tf || '60';
+            document.getElementById('configStrat7MidTF').value = currentConfig.strat7_mid_tf || '300';
+            document.getElementById('configStrat7HighTF').value = currentConfig.strat7_high_tf || '3600';
             updateConfigLabels();
         }
         configModal.show();
@@ -233,12 +248,19 @@ function updateScreenerTable(symbol, data) {
             recommendation = `${d.expiry_min}m | 1mATR:${d.atr_1m}`;
         }
 
+        if (d.summary_small) {
+            // Strategy 7 specific recommendation info
+            recommendation = `S:${d.summary_small} | M:${d.summary_mid} | H:${d.summary_high}`;
+        }
+
+        const displayConf = d.label ? `${d.label} (${d.confidence}%)` : `${d.confidence}%`;
+
         const streakBadge = streak >= 3 ? `<span class="badge bg-danger ms-1" title="Loss Streak: ${streak}">S</span>` : '';
 
         return `
             <tr>
                 <td><strong>${sym}</strong>${streakBadge}</td>
-                <td class="${confColor} fw-bold">${d.confidence}% <small class="text-muted">/${threshold}%</small></td>
+                <td class="${confColor} fw-bold">${displayConf} <small class="text-muted">/${threshold}%</small></td>
                 <td class="${dirColor} fw-bold">${d.direction}</td>
                 <td><small>${recommendation}</small></td>
                 <td>${d.trend}</td>
@@ -354,6 +376,9 @@ async function saveConfig() {
         custom_expiry: document.getElementById('configCustomExpiry').value,
         entry_type: document.getElementById('configEntryType').value,
         is_demo: document.getElementById('configIsDemo').checked,
+        strat7_small_tf: document.getElementById('configStrat7SmallTF').value,
+        strat7_mid_tf: document.getElementById('configStrat7MidTF').value,
+        strat7_high_tf: document.getElementById('configStrat7HighTF').value,
         symbols: currentConfig.symbols
     };
 

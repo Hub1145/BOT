@@ -323,7 +323,39 @@
                             <option value="strategy_4">Pure Price Action (5m / 1m)</option>
                             <option value="strategy_5">Intelligence Screener v2.1 (Synthetic Optimized)</option>
                             <option value="strategy_6">Intelligence Legacy v1.0 (Exhaustive Indicator Suite)</option>
+                            <option value="strategy_7">Intelligent Multi-TF Alignment (Custom 3-TF)</option>
                         </select>
+                    </div>
+                    <div id="strategy7Options" style="display: none;">
+                        <div class="row g-2 mb-3">
+                            <div class="col-4">
+                                <label class="form-label">Small TF</label>
+                                <select class="form-select" id="configStrat7SmallTF">
+                                    <option value="60">1m</option>
+                                    <option value="120">2m</option>
+                                    <option value="180">3m</option>
+                                    <option value="300">5m</option>
+                                </select>
+                            </div>
+                            <div class="col-4">
+                                <label class="form-label">Mid TF</label>
+                                <select class="form-select" id="configStrat7MidTF">
+                                    <option value="300" selected>5m</option>
+                                    <option value="900">15m</option>
+                                    <option value="1800">30m</option>
+                                    <option value="3600">1h</option>
+                                </select>
+                            </div>
+                            <div class="col-4">
+                                <label class="form-label">High TF</label>
+                                <select class="form-select" id="configStrat7HighTF">
+                                    <option value="3600" selected>1h</option>
+                                    <option value="7200">2h</option>
+                                    <option value="14400">4h</option>
+                                    <option value="86400">1d</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
                     <div id="strategy5Options" style="display: none;">
                         <div class="row g-2 mb-3">

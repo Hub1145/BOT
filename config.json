@@ -18,8 +18,11 @@
   "sl_value": 0,
   "force_close_enabled": false,
   "force_close_duration": 60,
-  "active_strategy": "strategy_6",
+  "active_strategy": "strategy_7",
   "contract_type": "rise_fall",
   "multiplier_value": "100",
-  "custom_expiry": "default"
+  "custom_expiry": "default",
+  "strat7_small_tf": "60",
+  "strat7_mid_tf": "300",
+  "strat7_high_tf": "3600"
 }

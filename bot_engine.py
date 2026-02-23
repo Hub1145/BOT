@@ -8,6 +8,7 @@ import websocket
 import pandas as pd
 import numpy as np
 import ta
+from deriv_ta import DerivTA, Interval
 
 class TradingBotEngine:
     STRATEGY_MAP = {
@@ -53,6 +54,11 @@ class TradingBotEngine:
             'ltf_granularity': 60,    # 1m for Timing
             'bias_granularity': 14400, # 4h for bias
             'expiry_type': 'dynamic'
+        },
+        'strategy_7': {
+            'name': 'Intelligent Multi-TF Alignment',
+            'expiry_type': 'dynamic',
+            'ltf_granularity': 60 # Default trigger on 1m
         }
     }
 
@@ -68,6 +74,8 @@ class TradingBotEngine:
         self.ws = None
         self.ws_thread = None
         self.stop_event = threading.Event()
+        self.strat7_thread = None
+        self.strat7_cache = {} # Symbol -> { 'small': Analysis, 'mid': Analysis, 'high': Analysis, 'timestamp': float }
 
         # Account metrics
         self.account_balance = 0.0
@@ -988,6 +996,217 @@ class TradingBotEngine:
 
         self.emit('screener_update', {'symbol': symbol, 'data': self.screener_data[symbol]})
 
+    def _process_strategy_7(self, symbol, is_candle_close):
+        sd = self.symbol_data[symbol]
+
+        # Get selected timeframes from config
+        # Defaults if not set
+        tf_small_val = int(self.config.get('strat7_small_tf', 60))
+        tf_mid_val = int(self.config.get('strat7_mid_tf', 300))
+        tf_high_val = int(self.config.get('strat7_high_tf', 3600))
+
+        # Throttle execution to avoid API rate limits
+        now = time.time()
+        if now - sd.get('last_strat7_run', 0) < 10: # Minimum 10s between checks
+            return
+        sd['last_strat7_run'] = now
+
+        def val_to_interval(val):
+            for item in Interval:
+                if item.value == val: return item
+            return Interval.INTERVAL_1_MINUTE
+
+        try:
+            h_small = DerivTA(symbol=symbol, interval=val_to_interval(tf_small_val))
+            h_mid = DerivTA(symbol=symbol, interval=val_to_interval(tf_mid_val))
+            h_high = DerivTA(symbol=symbol, interval=val_to_interval(tf_high_val))
+
+            # Fetch analysis
+            a_small = h_small.get_analysis()
+            a_mid = h_mid.get_analysis()
+            a_high = h_high.get_analysis()
+
+            rec_small = a_small.summary['RECOMMENDATION']
+            rec_mid = a_mid.summary['RECOMMENDATION']
+            rec_high = a_high.summary['RECOMMENDATION']
+
+            # Intelligence: Calculate confidence based on voting
+            # Summary has BUY, SELL, NEUTRAL counts
+            # We can use a custom confidence score
+            total_buy = a_small.summary['BUY'] + a_mid.summary['BUY'] + a_high.summary['BUY']
+            total_sell = a_small.summary['SELL'] + a_mid.summary['SELL'] + a_high.summary['SELL']
+            total_signals = total_buy + total_sell + a_small.summary['NEUTRAL'] + a_mid.summary['NEUTRAL'] + a_high.summary['NEUTRAL']
+
+            confidence = ((total_buy - total_sell) / total_signals) * 100 if total_signals > 0 else 0
+
+            # ATR for Risk Management
+            # Use Mid TF ATR as baseline
+            mid_atr = a_mid.indicators.get('ATR', 0)
+            if mid_atr == 0:
+                # Fallback calculation if ATR not in indicators
+                df_mid = h_mid.get_dataframe()
+                mid_atr = ta.volatility.AverageTrueRange(df_mid['high'], df_mid['low'], df_mid['close']).average_true_range().iloc[-1]
+
+            self.screener_data[symbol] = {
+                'confidence': round(confidence, 1),
+                'direction': 'CALL' if confidence > 0 else 'PUT',
+                'regime': rec_mid,
+                'summary_small': rec_small,
+                'summary_mid': rec_mid,
+                'summary_high': rec_high,
+                'atr': round(mid_atr, 4),
+                'last_update': time.time()
+            }
+            self.emit('screener_update', {'symbol': symbol, 'data': self.screener_data[symbol]})
+
+            signal = None
+
+            # Alignment Logic
+            # Same direction on all 3
+            all_buy = ("BUY" in rec_small) and ("BUY" in rec_mid) and ("BUY" in rec_high)
+            all_sell = ("SELL" in rec_small) and ("SELL" in rec_mid) and ("SELL" in rec_high)
+
+            # Strong signal check
+            all_strong_buy = (rec_small == "STRONG_BUY") and (rec_mid == "STRONG_BUY") and (rec_high == "STRONG_BUY")
+            all_strong_sell = (rec_small == "STRONG_SELL") and (rec_mid == "STRONG_SELL") and (rec_high == "STRONG_SELL")
+
+            if all_buy:
+                if all_strong_buy:
+                    # Start looking for reversal or continue
+                    # For now, continue on strong buy
+                    signal = 'buy'
+                else:
+                    signal = 'buy'
+            elif all_sell:
+                if all_strong_sell:
+                    signal = 'sell'
+                else:
+                    signal = 'sell'
+
+            if signal:
+                # Execution with frequency control
+                time_key = int(now // 60)
+                if sd.get('last_trade_ltf') != time_key:
+                    sd['last_trade_ltf'] = time_key
+                    # Snapshot ATR for execution
+                    sd['last_trade_snapshot'] = {
+                        'confidence': confidence,
+                        'atr': mid_atr,
+                        'entry_time': now
+                    }
+                    self._execute_trade(symbol, signal)
+
+        except Exception as e:
+            self.log(f"Error in Strategy 7 for {symbol}: {e}", "error")
+
+    def _strat7_update_loop(self):
+        """Background thread to update Strategy 7 analysis without blocking main engine."""
+        while not self.stop_event.is_set():
+            strat_key = self.config.get('active_strategy')
+            if strat_key == 'strategy_7':
+                symbols = self.config.get('symbols', [])
+                for symbol in symbols:
+                    if self.stop_event.is_set(): break
+                    self._update_strat7_analysis(symbol)
+                    time.sleep(1) # Gap between symbols
+
+            # Update frequency
+            for _ in range(30):
+                if self.stop_event.is_set(): break
+                time.sleep(1)
+
+    def _update_strat7_analysis(self, symbol):
+        tf_small_val = int(self.config.get('strat7_small_tf', 60))
+        tf_mid_val = int(self.config.get('strat7_mid_tf', 300))
+        tf_high_val = int(self.config.get('strat7_high_tf', 3600))
+
+        def val_to_interval(val):
+            for item in Interval:
+                if item.value == val: return item
+            return Interval.INTERVAL_1_MINUTE
+
+        try:
+            h_small = DerivTA(symbol=symbol, interval=val_to_interval(tf_small_val))
+            h_mid = DerivTA(symbol=symbol, interval=val_to_interval(tf_mid_val))
+            h_high = DerivTA(symbol=symbol, interval=val_to_interval(tf_high_val))
+
+            a_small = h_small.get_analysis()
+            a_mid = h_mid.get_analysis()
+            a_high = h_high.get_analysis()
+
+            self.strat7_cache[symbol] = {
+                'small': a_small,
+                'mid': a_mid,
+                'high': a_high,
+                'timestamp': time.time()
+            }
+
+            # Calculate Confidence based on v1 style voting
+            total_buy = a_small.summary['BUY'] + a_mid.summary['BUY'] + a_high.summary['BUY']
+            total_sell = a_small.summary['SELL'] + a_mid.summary['SELL'] + a_high.summary['SELL']
+            total_signals = total_buy + total_sell + a_small.summary['NEUTRAL'] + a_mid.summary['NEUTRAL'] + a_high.summary['NEUTRAL']
+
+            confidence = ((total_buy - total_sell) / total_signals) * 100 if total_signals > 0 else 0
+
+            # ATR for Risk (from Mid TF)
+            df_mid = h_mid.get_dataframe()
+            mid_atr = ta.volatility.AverageTrueRange(df_mid['high'], df_mid['low'], df_mid['close']).average_true_range().iloc[-1]
+
+            # Determine label
+            label = "NEUTRAL"
+            if total_buy > total_sell:
+                label = "STRONG_BUY" if (a_mid.summary['RECOMMENDATION'] == "STRONG_BUY") else "BUY"
+            elif total_sell > total_buy:
+                label = "STRONG_SELL" if (a_mid.summary['RECOMMENDATION'] == "STRONG_SELL") else "SELL"
+
+            self.screener_data[symbol] = {
+                'confidence': round(confidence, 1),
+                'label': label,
+                'direction': 'CALL' if confidence > 0 else 'PUT',
+                'regime': a_mid.summary['RECOMMENDATION'],
+                'summary_small': a_small.summary['RECOMMENDATION'],
+                'summary_mid': a_mid.summary['RECOMMENDATION'],
+                'summary_high': a_high.summary['RECOMMENDATION'],
+                'atr': round(mid_atr, 4),
+                'last_update': time.time()
+            }
+            self.emit('screener_update', {'symbol': symbol, 'data': self.screener_data[symbol]})
+
+        except Exception as e:
+            logging.error(f"Strategy 7 update error for {symbol}: {e}")
+
+    def _process_strategy_7(self, symbol, is_candle_close):
+        sd = self.symbol_data[symbol]
+        cache = self.strat7_cache.get(symbol)
+        if not cache: return
+
+        # Ensure cache isn't stale (max 2 cycles = 60s)
+        if time.time() - cache['timestamp'] > 65: return
+
+        rec_small = cache['small'].summary['RECOMMENDATION']
+        rec_mid = cache['mid'].summary['RECOMMENDATION']
+        rec_high = cache['high'].summary['RECOMMENDATION']
+
+        all_buy = ("BUY" in rec_small) and ("BUY" in rec_mid) and ("BUY" in rec_high)
+        all_sell = ("SELL" in rec_small) and ("SELL" in rec_mid) and ("SELL" in rec_high)
+
+        signal = None
+        if all_buy: signal = 'buy'
+        elif all_sell: signal = 'sell'
+
+        if signal:
+            now = time.time()
+            time_key = int(now // 60)
+            if sd.get('last_trade_ltf') != time_key:
+                sd['last_trade_ltf'] = time_key
+                # Sync ATR to engine snapshot
+                sd['last_trade_snapshot'] = {
+                    'confidence': self.screener_data[symbol].get('confidence', 0),
+                    'atr': self.screener_data[symbol].get('atr', 0),
+                    'entry_time': now
+                }
+                self._execute_trade(symbol, signal)
+
     def _calculate_snr_zones(self, symbol, granularity=None):
         sd = self.symbol_data.get(symbol)
         if not sd: return
@@ -1184,6 +1403,10 @@ class TradingBotEngine:
                             signal = 'sell'
                             self.log(f"Strategy 4 SELL Signal: {pattern} at {z['type']} zone {z['price']:.2f}")
                             break
+        elif strat_key == 'strategy_7':
+            # Strategy 7: Multi-Timeframe Alignment
+            self._process_strategy_7(symbol, is_candle_close)
+
         elif strat_key in ['strategy_5', 'strategy_6']:
             # Intelligence Screener Strategy
             metrics = self.screener_data.get(symbol)
@@ -1330,7 +1553,7 @@ class TradingBotEngine:
 
             # --- DECISION MAKING POSITION ENGINE v2.0 ---
             strat_key = self.config.get('active_strategy')
-            if strat_key == 'strategy_5' and current_price:
+            if (strat_key == 'strategy_5' or strat_key == 'strategy_7') and current_price:
                 sd = self.symbol_data.get(symbol, {})
                 df_h = pd.DataFrame(sd.get('htf_candles', []))
                 df_m15 = pd.DataFrame(sd.get('m15_candles', []))
@@ -1367,7 +1590,7 @@ class TradingBotEngine:
                                     exit_reason = "15m SuperTrend reversal (Trailing)"
 
                     if exit_reason:
-                        self.log(f"Strategy 5 Engine EXIT for {symbol} ({cid}): {exit_reason}.")
+                        self.log(f"Strategy {strat_key[-1]} Engine EXIT for {symbol} ({cid}): {exit_reason}.")
                         self._close_contract(cid)
                         continue
 
@@ -1842,6 +2065,10 @@ class TradingBotEngine:
     def start(self, passive_monitoring=False):
         self.is_running = not passive_monitoring
         self.log(f"Bot started | Trading: {'ON' if self.is_running else 'OFF'}")
+
+        if not self.strat7_thread or not self.strat7_thread.is_alive():
+            self.strat7_thread = threading.Thread(target=self._strat7_update_loop, daemon=True)
+            self.strat7_thread.start()
 
         if not self.ws_thread or not self.ws_thread.is_alive():
             self.stop_event.clear()
