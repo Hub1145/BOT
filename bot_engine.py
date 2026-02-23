@@ -59,7 +59,8 @@ class TradingBotEngine:
         'strategy_7': {
             'name': 'Intelligent Multi-TF Alignment',
             'expiry_type': 'dynamic',
-            'ltf_granularity': 60 # Default trigger on 1m
+            'ltf_granularity': 60, # Default trigger on 1m
+            'htf_granularity': 3600 # Placeholder to prevent KeyErrors
         }
     }
 
@@ -210,27 +211,32 @@ class TradingBotEngine:
                 for symbol in self.config.get('symbols', []):
                     self._init_symbol_data(symbol)
                     ws.send(json.dumps({"ticks": symbol, "subscribe": 1}))
+                    time.sleep(0.5)
+
+                    if strat_key == 'strategy_7': continue
+
                     self._fetch_history(ws, symbol, strat['ltf_granularity'], 100)
-                    h_count = 200 if strat_key in ['strategy_4', 'strategy_5'] else 2
+                    time.sleep(0.5)
+                    h_count = 200 if strat_key in ['strategy_4', 'strategy_5', 'strategy_6'] else 2
                     self._fetch_history(ws, symbol, strat['htf_granularity'], h_count)
+                    time.sleep(0.5)
 
                     # Enhanced History for Strategies 1 & 2 (Bias filters)
                     if strat_key in ['strategy_1', 'strategy_2']:
                         self._fetch_history(ws, symbol, 14400, 100) # 4H
+                        time.sleep(0.5)
 
                     if strat_key == 'strategy_5':
-                        self._fetch_history(ws, symbol, 60, 100) # 1m
-                        self._fetch_history(ws, symbol, 300, 100) # 5m
-                        self._fetch_history(ws, symbol, 900, 200) # 15m
-                        self._fetch_history(ws, symbol, 3600, 200) # 1h
-                        self._fetch_history(ws, symbol, 86400, 50) # Daily
+                        for g, c in [(60, 100), (300, 100), (900, 200), (3600, 200), (86400, 50)]:
+                            self._fetch_history(ws, symbol, g, c)
+                            time.sleep(0.5)
                         ws.send(json.dumps({"contracts_for": symbol}))
                     elif strat_key == 'strategy_6':
-                        self._fetch_history(ws, symbol, 60, 100) # 1m
-                        self._fetch_history(ws, symbol, 900, 200) # 15m
-                        self._fetch_history(ws, symbol, 3600, 200) # 1h
-                        self._fetch_history(ws, symbol, 86400, 50) # Daily
+                        for g, c in [(60, 100), (900, 200), (3600, 200), (86400, 50)]:
+                            self._fetch_history(ws, symbol, g, c)
+                            time.sleep(0.5)
                         ws.send(json.dumps({"contracts_for": symbol}))
+                    time.sleep(0.5)
 
         elif msg_type == 'balance':
             self.account_balance = data['balance']['balance']
@@ -345,6 +351,8 @@ class TradingBotEngine:
     def _handle_candles(self, symbol, granularity, candles):
         strat_key = self.config.get('active_strategy', 'strategy_1')
         strat = self.STRATEGY_MAP.get(strat_key, self.STRATEGY_MAP['strategy_1'])
+        htf_gran = strat.get('htf_granularity')
+        ltf_gran = strat.get('ltf_granularity')
 
         with self.data_lock:
             if symbol not in self.symbol_data: return
@@ -394,7 +402,7 @@ class TradingBotEngine:
             if granularity == 86400:
                 sd['daily_candles'] = candles
 
-            if granularity == strat['htf_granularity']:
+            if htf_gran and granularity == htf_gran:
                 if candles:
                     now_utc = datetime.now(timezone.utc)
                     # For Daily (86400), start is 00:00 UTC
@@ -430,7 +438,7 @@ class TradingBotEngine:
                     sd['htf_candles'] = candles
                     self._calculate_snr_zones(symbol, 3600) # 1H SNR
 
-            elif granularity == strat['ltf_granularity']:
+            elif ltf_gran and granularity == ltf_gran:
                 sd['ltf_candles'] = candles
                 if candles:
                     sd['current_ltf_candle'] = candles[-1]
@@ -1227,7 +1235,7 @@ class TradingBotEngine:
 
     def _background_screener_loop(self):
         """Background thread to update screener analysis for Strategies 5, 6, and 7 without blocking main engine."""
-        with ThreadPoolExecutor(max_workers=10) as executor:
+        with ThreadPoolExecutor(max_workers=5) as executor:
             while not self.stop_event.is_set():
                 strat_key = self.config.get('active_strategy')
                 symbols = self.config.get('symbols', [])
@@ -1236,12 +1244,12 @@ class TradingBotEngine:
                     for symbol in symbols:
                         if self.stop_event.is_set(): break
                         executor.submit(self._update_strat7_analysis, symbol)
-                        time.sleep(0.5) # Throttle submissions slightly
+                        time.sleep(2.0) # Increased throttle for Strategy 7 (heavy network)
                 elif strat_key in ['strategy_5', 'strategy_6']:
                     for symbol in symbols:
                         if self.stop_event.is_set(): break
                         executor.submit(self._update_screener, symbol)
-                        time.sleep(0.1)
+                        time.sleep(0.5)
 
                 # Dynamic sleep: shorter if we need frequent updates, longer otherwise
                 sleep_time = 30 if strat_key == 'strategy_7' else 10
@@ -2552,11 +2560,19 @@ class TradingBotEngine:
             self.log("Already connected, triggering trading subscriptions...")
             strat_key = self.config.get('active_strategy', 'strategy_1')
             strat = self.STRATEGY_MAP.get(strat_key, self.STRATEGY_MAP['strategy_1'])
+            h_count = 200 if strat_key in ['strategy_4', 'strategy_5', 'strategy_6'] else 2
+
             for symbol in self.config.get('symbols', []):
                 self._init_symbol_data(symbol)
                 self.ws.send(json.dumps({"ticks": symbol, "subscribe": 1}))
+                time.sleep(0.5)
+
+                if strat_key == 'strategy_7': continue
+
                 self._fetch_history(self.ws, symbol, strat['ltf_granularity'], 100)
-                self._fetch_history(self.ws, symbol, strat['htf_granularity'], 2)
+                time.sleep(0.5)
+                self._fetch_history(self.ws, symbol, strat['htf_granularity'], h_count)
+                time.sleep(0.5)
 
     def _run_ws(self):
         while not self.stop_event.is_set():
@@ -2644,44 +2660,61 @@ class TradingBotEngine:
 
             if self.ws and self.ws.sock and self.ws.sock.connected:
                 strat = self.STRATEGY_MAP.get(new_strat, self.STRATEGY_MAP['strategy_1'])
-                h_count = 200 if new_strat in ['strategy_4', 'strategy_5'] else 2
+                h_count = 200 if new_strat in ['strategy_4', 'strategy_5', 'strategy_6'] else 2
+
                 for sym in new_symbols:
+                    if new_strat == 'strategy_7':
+                        self.ws.send(json.dumps({"ticks": sym, "subscribe": 1}))
+                        time.sleep(0.5)
+                        continue
+
                     self._fetch_history(self.ws, sym, strat['ltf_granularity'], 100)
+                    time.sleep(0.5)
                     self._fetch_history(self.ws, sym, strat['htf_granularity'], h_count)
+                    time.sleep(0.5)
+
                     if new_strat == 'strategy_5':
-                        self._fetch_history(self.ws, sym, 60, 100) # 1m
-                        self._fetch_history(self.ws, sym, 300, 100) # 5m
-                        self._fetch_history(self.ws, sym, 900, 100) # 15m
-                        self._fetch_history(self.ws, sym, 3600, 200) # 1h
-                        self._fetch_history(self.ws, sym, 14400, 100) # 4h
-                        self._fetch_history(self.ws, sym, 86400, 50) # Daily data
+                        for g, c in [(60, 100), (300, 100), (900, 200), (3600, 200), (86400, 50)]:
+                            self._fetch_history(self.ws, sym, g, c)
+                            time.sleep(0.4)
                         self.ws.send(json.dumps({"contracts_for": sym}))
+                    elif new_strat == 'strategy_6':
+                        for g, c in [(60, 100), (900, 200), (3600, 200), (86400, 50)]:
+                            self._fetch_history(self.ws, sym, g, c)
+                            time.sleep(0.4)
+                        self.ws.send(json.dumps({"contracts_for": sym}))
+                    time.sleep(0.5)
             return {"success": True}
 
         # If only symbols changed and we are connected
         if self.ws and self.ws.sock and self.ws.sock.connected:
             strat = self.STRATEGY_MAP.get(new_strat, self.STRATEGY_MAP['strategy_1'])
-            h_count = 200 if new_strat in ['strategy_4', 'strategy_5'] else 2
+            h_count = 200 if new_strat in ['strategy_4', 'strategy_5', 'strategy_6'] else 2
             added_symbols = new_symbols - old_symbols
             for symbol in added_symbols:
                 self.log(f"Subscribing to new symbol: {symbol}")
                 self._init_symbol_data(symbol)
                 self.ws.send(json.dumps({"ticks": symbol, "subscribe": 1}))
+                time.sleep(0.5)
+
+                if new_strat == 'strategy_7': continue
+
                 self._fetch_history(self.ws, symbol, strat['ltf_granularity'], 100)
+                time.sleep(0.5)
                 self._fetch_history(self.ws, symbol, strat['htf_granularity'], h_count)
+                time.sleep(0.5)
+
                 if new_strat == 'strategy_5':
-                    self._fetch_history(self.ws, symbol, 60, 100) # 1m
-                    self._fetch_history(self.ws, symbol, 300, 100) # 5m
-                    self._fetch_history(self.ws, symbol, 900, 200) # 15m
-                    self._fetch_history(self.ws, symbol, 3600, 200) # 1h
-                    self._fetch_history(self.ws, symbol, 86400, 50) # Daily data
+                    for g, c in [(60, 100), (300, 100), (900, 200), (3600, 200), (86400, 50)]:
+                        self._fetch_history(self.ws, symbol, g, c)
+                        time.sleep(0.4)
                     self.ws.send(json.dumps({"contracts_for": symbol}))
                 elif new_strat == 'strategy_6':
-                    self._fetch_history(self.ws, symbol, 60, 100) # 1m
-                    self._fetch_history(self.ws, symbol, 900, 200) # 15m
-                    self._fetch_history(self.ws, symbol, 3600, 200) # 1h
-                    self._fetch_history(self.ws, symbol, 86400, 50) # Daily data
+                    for g, c in [(60, 100), (900, 200), (3600, 200), (86400, 50)]:
+                        self._fetch_history(self.ws, symbol, g, c)
+                        time.sleep(0.4)
                     self.ws.send(json.dumps({"contracts_for": symbol}))
+                time.sleep(0.5)
 
             removed_symbols = old_symbols - new_symbols
             for symbol in removed_symbols:
