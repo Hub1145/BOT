@@ -1,137 +1,104 @@
-# OKX Trading Bot Dashboard
+# Deriv Trading Bot Dashboard (Multi-Strategy)
 
-A real-time web application for monitoring and controlling an OKX trading bot with a custom limit order strategy.
+A high-performance, multi-strategy trading bot designed for Deriv Volatility Indices. This bot features a real-time web dashboard for monitoring statistics, logs, and active positions with a focus on precision execution and advanced technical analysis.
 
-## Features
+## 🚀 Key Features
 
-### 🎯 Real-Time Dashboard
-- **Console Output** - Live log stream showing signals, trades, and system events
+### 🎯 Intelligent Dashboard
+- **Amount Tab**: Comprehensive real-time statistics including Balance, PNL, Total Trades, Win Rate, and Average Trade PNL.
+- **Position Tab**: Live monitoring of all open contracts with real-time PNL tracking, entry spot prices, and automated expiry countdowns.
+- **Log Tab**: Real-time console output streaming system events, signal generation, and trade executions.
+- **Dynamic Screener**: Real-time technical analysis for advanced strategies (5, 6, and 7) with adaptive columns based on the active strategy.
 
-### ⚙️ Bot Controls
-- **Start/Stop** - Control bot execution with one click
-- **Configuration Panel** - Modify all trading parameters through the UI
-- **Light/Dark Mode** - Toggle between themes with persistent preference
-- **Batch Modify TP/SL** - Manually adjust Take Profit and Stop Loss for all open positions.
-- **Batch Cancel Orders** - Manually cancel all pending orders.
-- **Emergency SL** - Immediately close all open positions at market price in critical situations. This now serves as the single mechanism for batch closing positions.
+### ⚙️ Professional Bot Controls
+- **Start/Stop**: One-click control for bot execution. The bot continues to monitor and close existing positions even when trading is paused.
+- **Multi-Symbol Management**: Add and trade multiple symbols simultaneously. The bot handles concurrent analysis for all symbols without delays.
+- **Risk Management**: Toggle between fixed USD or percentage-based balance usage. Configure Max Daily Loss %, Take Profit, Stop Loss, and Force Close durations.
 
-### 📊 Strategy & Parameters
-- **Single Limit Order Strategy** - This bot employs a custom limit order strategy utilizing safety lines and price offsets for entry, Take Profit (TP), and Stop Loss (SL).
-- **Dynamic TP/SL** - TP and SL levels are dynamically calculated based on entry price and configurable offsets.
+---
 
-## Quick Start
+## 📊 Trading Strategies
 
-1.  **Download and Extract the Project**:
-    *   Download the project as a ZIP file.
-    *   Extract the contents to a local directory.
-    *   Navigate to the project directory in your terminal.
-2.  **Install Dependencies**:
+The bot supports seven distinct trading strategies, ranging from simple breakouts to complex intelligent screeners.
+
+### 🔹 Strategy 1: Slow Breakout (Daily / 15m)
+*   **Timeframes**: Daily (HTF) / 15-Minute (LTF).
+*   **Logic**: Triggers on the 15m candle where a breakout across the Daily Open occurs.
+    *   **Buy**: 15m candle open <= Daily Open AND 15m candle close > Daily Open.
+    *   **Sell**: 15m candle open >= Daily Open AND 15m candle close < Daily Open.
+*   **Expiry**: Hardcoded to expire at the close of the current Daily candle (EOD).
+
+### 🔹 Strategy 2: Moderate (1h / 3m)
+*   **Timeframes**: 1-Hour (HTF) / 3-Minute (LTF).
+*   **Logic**: Breakout crossover logic applied to 1-hour and 3-minute intervals.
+*   **Expiry**: Fixed duration (default 1 hour) or time until next 1H candle close.
+
+### 🔹 Strategy 3: Fast (15m / 1m)
+*   **Timeframes**: 15-Minute (HTF) / 1-Minute (LTF).
+*   **Logic**: Scalping breakout strategy for rapid volatility expansion.
+*   **Expiry**: Fixed duration (default 15 minutes).
+
+### 🔹 Strategy 4: SNR Price Action
+*   **Logic**: Pure Price Action strategy based on Support, Resistance, and Flip zones.
+*   **Analysis**: Identifies high-conviction zones on 5m/1h timeframes and waits for 1m reversal patterns (Pin Bar, Engulfing, Tweezer) at those zones.
+
+### 🔹 Strategy 5: Synthetic Intelligence Screener (v2.1)
+An advanced engine optimized for Volatility Indices using weighted indicator blocks.
+*   **Architecture**:
+    *   **Trend Block**: EMA 50/200, SuperTrend, ADX.
+    *   **Momentum Block**: RSI, Stoch RSI, MACD Divergence.
+    *   **Volatility Block**: ATR, Bollinger Bands.
+    *   **Structure Block**: 5m Fractals (Scalp) or 1H Order Blocks (Multiplier).
+*   **Execution Modes**: Supports **Rise & Fall** (Scalping) with >=72% confidence and **Multiplier** (Day Trading) with >=68% confidence.
+*   **Adaptive Sensitivity**: Automatically increases confidence thresholds following 3+ consecutive losses on a symbol.
+
+### 🔹 Strategy 6: Intelligence Legacy (v1.0)
+The exhaustive indicator suite from v1.0, featuring over 20 technical indicators.
+*   **Indicator Blocks**: Trend (Weight 3), Momentum (Weight 2), Volatility (Weight 1), Structure (Weight 2).
+*   **Execution**: Normalized confidence score >= 60% across Core (1H), Timing (1m), and Bias (4H) timeframes.
+
+### 🔹 Strategy 7: Intelligent Multi-TF Alignment
+Seek high-conviction entries by aligning signals across three custom timeframes.
+*   **Logic**: Triggers only when the Small, Mid, and High timeframes all report a consistent BUY or SELL recommendation.
+*   **Customization**: Users select any three timeframes (e.g., 1m, 5m, 1h) from the dashboard.
+*   **Intelligence**: Integrates with the bot's autonomous decision engine for ATR-based TP/SL and trailing stops.
+
+---
+
+## 🛠 Advanced Position Management
+
+- **One Trade Per Symbol**: The bot ensures only one active position exists per symbol.
+- **Opposite Cancellation**: Receiving a new signal in the opposite direction automatically closes the existing trade before entering the new one.
+- **Free Ride Protocol**: In intelligent strategies, moves SL to entry + margin once profit reaches 1.5 ATR.
+- **Dynamic Trailing**: Uses SuperTrend (15m) to trail profits once in "Free Ride" mode.
+- **MACD Divergence Exit**: Immediate hard exit if a macro-timeframe MACD divergence prints against the position.
+- **Ghost Cleanup**: Automatically purges expired contracts from internal state if API updates are missed.
+
+---
+
+## ⚙️ Setup & Deployment
+
+1.  **Install Dependencies**:
     ```bash
     pip install -r requirements.txt
     ```
-3.  **Run the Application Locally**:
+2.  **Run the Application**:
     ```bash
     python app.py
     ```
-4.  **Access the Dashboard** - Open your web browser and navigate to `http://localhost:5000`.
-5.  **Configure Settings** - Click the "Config" button to set your OKX API credentials and strategy parameters.
-6.  **Start Trading** - Click "Start" to begin live trading.
-7.  **Monitor Performance** - Watch real-time updates on the dashboard.
+3.  **Access Dashboard**: Open `http://localhost:3000` (or your configured PORT).
+4.  **Configure API**: Click "Config" and enter your **Deriv API Token** and **App ID**.
 
-## Configuration
+---
 
-### General Settings
-- **OKX API Key, Secret, Passphrase** - Your OKX API credentials.
-- **Use Testnet** - Toggle for trading on OKX testnet.
-- **Symbol** - Trading pair (e.g., ETH-USDT-SWAP)
-- **Leverage** - The leverage to be used for trades.
+## ⚠️ Important Notes
 
-### Strategy Parameters
-- **Short Order Market Price Safety Line** - If the market price is below this, no short orders will be placed.
-- **Long Order Market Price Safety Line** - If the market price is above this, no long orders will be placed.
-- **Max Allowed Used (USDT)** - The maximum amount of USDT to be used for all orders combined, which is then divided by the Rate Divisor to determine the Max Amount per order.
-- **Entry Price Offset** - Offset from current market price for the first limit order entry in a batch.
-- **Batch Offset** - Additional offset applied to subsequent orders within a batch.
-- **TP Price Offset** - Offset from entry price for Take Profit.
-- **SL Price Offset** - Offset from entry price for Stop Loss.
-- **Loop Time (seconds)** - Frequency of the main trading loop.
-- **Rate Divisor** - Used in internal calculations to determine order size from Max Allowed Used.
-- **Batch Size Per Loop** - Number of orders to attempt to place in a single trading cycle.
-- **Min Order Amount** - Minimum quantity for an order.
-- **Cancel Unfilled Order (seconds)** - Time after which an unfilled order is cancelled.
-- **Cancel if TP price becomes unfavorable** - If enabled, pending entry orders will be cancelled if the calculated Take Profit price becomes less favorable than the current market price (e.g., TP price drops below market for a long position).
-- **Cancel if Entry price becomes unfavorable** - If enabled, pending entry orders will be cancelled if the entry limit price becomes less favorable than the current market price (e.g., limit buy price is above market price).
+- **Demo First**: Always test strategies with a Deriv Demo account (VRTC) before going live.
+- **UTC Time**: Strategy 1 and breakout logic use UTC time for Daily candle calculations.
+- **Rate Limits**: The bot includes built-in gaps and throttles to respect Deriv API rate limits while maintaining concurrent symbol analysis.
 
-## How It Works
+---
 
-1.  **Initialization** - On startup, the bot connects to OKX, fetches product info, and sets leverage.
-2.  **Signal Detection** - The bot continuously monitors the market price and checks against defined safety lines for potential entry signals (long or short).
-3.  **Batch Order Placement** - If a signal is detected, the bot initiates a batch of limit orders as defined by `Batch Size Per Loop`. Order sizing is now based on `Max Allowed Used` divided by `Rate Divisor` to determine the `Max Amount`. The first order uses the `Entry Price Offset`, and subsequent orders in the batch use an additional `Batch Offset` from the previous order's price.
-4.  **Position Management** - Once an entry order is filled, corresponding Take Profit and Stop Loss algo orders are placed. **(Note: Real-time updates for positions and orders are no longer available via WebSocket due to public-only mode. Position status is checked via REST API.)**
-5.  **Trade Management** - Open orders and positions are continuously monitored for TP/SL hits or cancellation conditions. Pending entry orders are also monitored for new cancellation conditions: if enabled, orders will be cancelled immediately if the TP price or Entry price becomes unfavorable relative to the current market price, overriding the time-based cancellation. **(Note: Real-time updates for orders are no longer available via WebSocket due to public-only mode. Order status is checked via REST API.)**
-6.  **Batch Actions** - Manual controls are available on the dashboard to batch modify TP/SL, cancel all open orders, or trigger an "Emergency SL" which closes all open positions.
+## 🛡 License & Disclaimer
 
-## Technology Stack
-
-- **Backend**: Flask + Flask-SocketIO
-- **Frontend**: Bootstrap 5 + Vanilla JavaScript
-- **Data**: pandas, numpy for processing
-- **API**: OKX REST and Public WebSocket API (Note: Private WebSocket channels for real-time order/position tracking are disabled.)
-
-## Deployment to Railway.com
-
-This section guides you through deploying your OKX Trading Bot Dashboard to Railway.com, a platform that simplifies application hosting.
-
-1.  **Create a GitHub Repository**:
-    *   Go to [GitHub](https://github.com/).
-    *   Log in to your account.
-    *   Click on the `+` sign in the top right corner and select `New repository`.
-    *   Give your repository a name (e.g., `okx-trading-bot`), add a description, and choose whether it's public or private.
-    *   **Do NOT initialize with a README, .gitignore, or license file** as you will be pushing your existing project.
-    *   Click `Create repository`.
-2.  **Initialize and Push Your Local Project to GitHub**:
-    *   Open your terminal in the root directory of your extracted project.
-    *   Initialize a new Git repository:
-        ```bash
-        git init
-        ```
-    *   Add your project files:
-        ```bash
-        git add .
-        ```
-    *   Commit your changes:
-        ```bash
-        git commit -m "Initial commit of OKX Trading Bot Dashboard"
-        ```
-    *   Connect your local repository to the GitHub repository you just created. You'll find the commands on your new GitHub repository page, typically:
-        ```bash
-        git remote add origin https://github.com/your-username/okx-trading-bot.git
-        git branch -M main
-        git push -u origin main
-        ```
-    *   Replace `your-username` and `okx-trading-bot` with your actual GitHub username and repository name.
-3.  **Deploy to Railway.com**:
-    *   Go to [Railway.com](https://railway.app/).
-    *   Log in to your account.
-    *   Click `New Project` -> `Deploy from GitHub Repo`.
-    *   Connect your GitHub account to Railway (if you haven't already) and authorize Railway to access your repositories.
-    *   Select the `okx-trading-bot` repository you just pushed.
-    *   Railway will automatically detect your `Dockerfile` and `requirements.txt` and attempt to build and deploy your application.
-    *   **Important**: You **must** add environment variables for your OKX API Key, Secret, and Passphrase (e.g., `OKX_API_KEY`, `OKX_API_SECRET`, `OKX_PASSPHRASE`) in Railway's project settings under "Variables" to match how your `bot_engine.py` expects them. For production, it's highly recommended to read these from environment variables rather than `config.json`.
-    *   Once deployed, Railway will provide you with a public URL where your bot dashboard will be live.
-
-## Important Notes
-
-⚠️ **Risk Warning**: Trading carries significant risk. Always test with a demo account first.
-
-🔑 **API Credentials**: You need valid OKX API Key, Secret, and Passphrase to use this bot.
-
-🛑 **Configuration Changes**: Stop the bot before modifying configuration.
-
-## Support
-
-For issues or questions about OKX API, visit: https://www.okx.com/docs-v5/en/rest-api/
-
-## License
-
-This is an educational trading bot. Use at your own risk.
+This software is for educational purposes. Trading financial instruments involves significant risk of loss. The authors are not responsible for any financial losses incurred.
