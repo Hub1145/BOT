@@ -1,6 +1,6 @@
-# Deriv Trading Bot Dashboard (Multi-Strategy)
+# Deriv Trading Bot Dashboard (Multi-Strategy v4.0)
 
-A high-performance, multi-strategy trading bot designed for Deriv Volatility Indices. This bot features a real-time web dashboard for monitoring statistics, logs, and active positions with a focus on precision execution and advanced technical analysis.
+A high-performance, multi-strategy trading bot designed for Deriv Volatility Indices. This bot features a real-time web dashboard for monitoring statistics, logs, and active positions with a focus on precision execution and algorithmic market context.
 
 ## 🚀 Key Features
 
@@ -21,51 +21,54 @@ A high-performance, multi-strategy trading bot designed for Deriv Volatility Ind
 
 The bot supports seven distinct trading strategies, ranging from simple breakouts to complex intelligent screeners.
 
-### 🔹 Strategy 1: Slow Breakout (Daily / 15m)
+### 🔹 Strategy 1: Slow Breakout (v4.0 Enhanced)
 *   **Timeframes**: Daily (HTF) / 15-Minute (LTF).
+*   **Macro Filter**: Only takes breakouts aligning with the 4H 100 EMA trend.
+*   **Whipsaw Protection**: Automatically disables for the day if the Daily Open is crossed more than 3 times (ranging market).
 *   **Logic**: Triggers on the 15m candle where a breakout across the Daily Open occurs.
-    *   **Buy**: 15m candle open <= Daily Open AND 15m candle close > Daily Open.
-    *   **Sell**: 15m candle open >= Daily Open AND 15m candle close < Daily Open.
-*   **Expiry**: Hardcoded to expire at the close of the current Daily candle (EOD).
+*   **Dynamic Exit**: Exits at +2 Daily ATR target or if a 15m candle closes back across the Daily Open.
 
-### 🔹 Strategy 2: Moderate (1h / 3m)
+### 🔹 Strategy 2: Moderate (v4.0 Enhanced)
 *   **Timeframes**: 1-Hour (HTF) / 3-Minute (LTF).
+*   **Momentum Qualifier**: Requires 3m RSI(14) > 55 (Buy) or < 45 (Sell) to filter weak breakouts.
+*   **HTF Bias Gate**: Entries allowed only if 4H EMA 21 > 50 (Bullish) or 21 < 50 (Bearish).
 *   **Logic**: Breakout crossover logic applied to 1-hour and 3-minute intervals.
-*   **Expiry**: Fixed duration (default 1 hour) or time until next 1H candle close.
+*   **Distance-Based Expiry**: Reduces expiry to 30m if the signal fires when price is already >1 ATR from the 1H open (exhaustion guard).
 
-### 🔹 Strategy 3: Fast (15m / 1m)
+### 🔹 Strategy 3: Fast (v4.0 Enhanced)
 *   **Timeframes**: 15-Minute (HTF) / 1-Minute (LTF).
-*   **Logic**: Scalping breakout strategy for rapid volatility expansion.
-*   **Expiry**: Fixed duration (default 15 minutes).
+*   **Candle Sequence Filter**: Requires 2 consecutive 1m closes beyond the 15m open to confirm momentum.
+*   **Volatility Regime**: Skips trades if 1m ATR is in the bottom 20th percentile (low-volatility breakout failure guard).
+*   **Overtrading Protection**: Hard cap of 4 entries per symbol per hour.
+*   **Dynamic Expiry**: Sets expiry to remaining 15m candle time + 2 minutes for better temporal alignment.
 
-### 🔹 Strategy 4: SNR Price Action
+### 🔹 Strategy 4: SNR Price Action (v4.0 Enhanced)
 *   **Logic**: Pure Price Action strategy based on Support, Resistance, and Flip zones.
-*   **Analysis**: Identifies high-conviction zones on 5m/1h timeframes and waits for 1m reversal patterns (Pin Bar, Engulfing, Tweezer) at those zones.
+*   **Zone Freshness**: Tracks touch counts; reduces position size after 3 touches and retires zones after 5.
+*   **Pattern Scoring**: Rates 1m reversal patterns (Pin Bars, Engulfing) based on wick ratio (>2:1) and close position.
+*   **Momentum Exhaustion**: Uses 5m RSI filter to avoid fading aggressive moves (e.g., skips bearish pins if 5m RSI > 80).
+*   **Hard Invalidation**: Immediately marks zones as broken if a 1m candle closes through the level.
 
-### 🔹 Strategy 5: Synthetic Intelligence Screener (v3.1)
-An advanced engine optimized for Volatility Indices using weighted indicator blocks and structural geometry.
+### 🔹 Strategy 5: Synthetic Intelligence (v4.0)
+Advanced engine with market regime switching and tiered structural mapping.
+*   **Market Regime Switch**: Automatically toggles weights based on ADX:
+    *   **Trending (ADX > 25)**: 80% Weight to Trend/Volatility; disables oscillators; buys pullbacks.
+    *   **Ranging (ADX < 20)**: 80% Weight to Momentum/Structure; fades extremes.
 *   **Architecture**:
-    *   **Trend Block**: EMA 50/200, SuperTrend, ADX (filter for leverage).
-    *   **Momentum Block**: RSI, Stoch RSI, MACD Divergence (structural exhaustion).
-    *   **Volatility Block**: ATR (dynamic multipliers), Bollinger Bands.
-    *   **Structure Block**: 5m Fractals (Scalp), 1H Order Blocks & **Fair Value Gaps (FVG)** (Multiplier).
-*   **Execution Modes**:
-    *   **Rise & Fall**: Scalping with >=72% confidence. Requires **Stoch RSI extreme** (<=20 or >=80) at Fractal touch.
-    *   **Multiplier**: Day Trading with >=68% confidence. Features tiered structure mapping (FVG + OB overlap for maximum confidence).
-*   **Session Filter**: During low-activity hours (22:00–06:00 UTC), thresholds increase by 5% and Multiplier leverage is capped at 10x.
-*   **Adaptive Sensitivity**: Thresholds increase by 10% after 3+ losses. Reset requires **2 consecutive wins** or **1 win + ADX > 20**.
-*   **Volatility Freeze**: Automatically suspends Rise/Fall execution if 1m ATR drops below 10% of the instrument's 24-hour average.
+    *   **Tiered Structure**: Uses overlapping Order Blocks and Fair Value Gaps (FVG) for high-conviction entries.
+    *   **Execution**: Rise & Fall (Scalp) requires Stoch RSI extremes at Fractal touches. Multipliers cap at 10x during "Dead Hours" (22:00-06:00 UTC).
+*   **Adaptive Reset**: Requires 2 consecutive wins or 1 win + ADX > 20 to return to baseline safety thresholds.
 
-### 🔹 Strategy 6: Intelligence Legacy (v1.0)
-The exhaustive indicator suite from v1.0, featuring over 20 technical indicators.
-*   **Indicator Blocks**: Trend (Weight 3), Momentum (Weight 2), Volatility (Weight 1), Structure (Weight 2).
-*   **Execution**: Normalized confidence score >= 60% across Core (1H), Timing (1m), and Bias (4H) timeframes.
+### 🔹 Strategy 6: Intelligence Legacy (v4.0)
+The exhaustive indicator suite refactored for dimensionality and smoothing.
+*   **Dimensionality Reduction**: Groups 20+ indicators and requires cross-category agreement (Trend + Momentum) to prevent multicollinearity lag.
+*   **Timeframe Smoothing**: Bridges intervals linearly: 1m (Entry) -> 15m (Trend) -> 1H (Macro Bias).
 
-### 🔹 Strategy 7: Intelligent Multi-TF Alignment
-Seek high-conviction entries by aligning signals across three custom timeframes.
-*   **Logic**: Triggers only when the Small, Mid, and High timeframes all report a consistent BUY or SELL recommendation.
-*   **Customization**: Users select any three timeframes (e.g., 1m, 5m, 1h) from the dashboard.
-*   **Intelligence**: Integrates with the bot's autonomous decision engine for ATR-based TP/SL and trailing stops.
+### 🔹 Strategy 7: Pullback Alignment (v4.0)
+High-precision model that enters main trends at the end of micro-pullbacks.
+*   **Pullback Model**: 1H (Macro) and 15m (Intraday) must be aligned, while 1m must show a temporary pullback/oversold state.
+*   **Execution**: Triggers the moment the 1m Small TF flips back to align with the HTF/Mid trend.
+*   **ADR Guard**: Prevents entries if the asset has already moved its Average Daily Range (ADR), avoiding "buying the top."
 
 ---
 
@@ -73,7 +76,7 @@ Seek high-conviction entries by aligning signals across three custom timeframes.
 
 - **One Trade Per Symbol**: The bot ensures only one active position exists per symbol.
 - **Opposite Cancellation**: Receiving a new signal in the opposite direction automatically closes the existing trade before entering the new one.
-- **Free Ride Protocol**: In intelligent strategies, moves SL to entry + margin once profit reaches 1.5 ATR.
+- **Free Ride Protocol**: Moves SL to a structural safety zone (recent 1m Fractal or ATR buffer) once profit reaches 1.5 ATR, protecting against liquidity grab wicks.
 - **Dynamic Trailing**: Uses SuperTrend (15m) to trail profits once in "Free Ride" mode.
 - **MACD Divergence Exit**: Immediate hard exit if a macro-timeframe MACD divergence prints against the position.
 - **Ghost Cleanup**: Automatically purges expired contracts from internal state if API updates are missed.
