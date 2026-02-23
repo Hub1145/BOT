@@ -294,10 +294,11 @@ function updateScreenerTable(symbol, data) {
             const aligned = (d.summary_small === d.summary_mid && d.summary_mid === d.summary_high && d.summary_mid !== 'NEUTRAL');
             col4 = aligned ? '<span class="text-success fw-bold"><i class="bi bi-check-circle-fill"></i> Aligned</span>' : '<span class="text-muted">Mixed</span>';
         } else {
+            const sessionTag = d.is_dead_hours ? ' <span class="text-warning" title="Session Filter Active (22-06 UTC)">🌙</span>' : '';
             if (contractType === 'multiplier') {
-                recValue = `x${d.multiplier} | ATR:${d.atr}`;
+                recValue = `x${d.multiplier}${sessionTag} | ATR:${d.atr}`;
             } else {
-                recValue = `${d.expiry_min}m | 1mATR:${d.atr_1m}`;
+                recValue = `${d.expiry_min}m${sessionTag} | 1mATR:${d.atr_1m}`;
             }
         }
 

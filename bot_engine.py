@@ -315,7 +315,9 @@ class TradingBotEngine:
                 'current_ltf_candle': None,
                 'current_htf_candle': None, # for tracking HTF closes
                 'current_bias_candle': None,
-                'snr_zones': [] # List of { 'price': level, 'type': 'S'|'R'|'Flip', 'touches': n }
+                'snr_zones': [], # List of { 'price': level, 'type': 'S'|'R'|'Flip', 'touches': n }
+                'consecutive_wins': 0,
+                'consecutive_losses': 0
             }
 
     def _fetch_history(self, ws, symbol, granularity, count):
@@ -601,8 +603,7 @@ class TradingBotEngine:
         if len(df) < lookback: return []
 
         obs = []
-        for i in range(len(df) - 5, window := 5, -1):
-            # Check for impulsive move (3 consecutive candles of same color with increasing volume or size)
+        for i in range(len(df) - 5, 5, -1):
             if i < 10: break
 
             # Simple impulse check: body size > 2x average of previous 10
@@ -621,6 +622,33 @@ class TradingBotEngine:
                         break
             if len(obs) >= 5: break
         return obs
+
+    def _calculate_fvg(self, df, lookback=50):
+        """Identify Fair Value Gaps (FVG): Imbalance between 3 candles."""
+        if len(df) < 3: return []
+
+        fvgs = []
+        for i in range(len(df) - 1, len(df) - lookback, -1):
+            if i < 2: break
+
+            # Bullish FVG: High of candle 1 < Low of candle 3
+            if df['high'].iloc[i-2] < df['low'].iloc[i]:
+                fvgs.append({
+                    'top': df['low'].iloc[i],
+                    'bottom': df['high'].iloc[i-2],
+                    'type': 'Bullish FVG',
+                    'epoch': df['epoch'].iloc[i-1]
+                })
+            # Bearish FVG: Low of candle 1 > High of candle 3
+            elif df['low'].iloc[i-2] > df['high'].iloc[i]:
+                fvgs.append({
+                    'top': df['low'].iloc[i-2],
+                    'bottom': df['high'].iloc[i],
+                    'type': 'Bearish FVG',
+                    'epoch': df['epoch'].iloc[i-1]
+                })
+            if len(fvgs) >= 10: break
+        return fvgs
 
     def _detect_macd_divergence(self, df, window=20):
         if len(df) < window + 10: return 0 # No signal
@@ -676,9 +704,12 @@ class TradingBotEngine:
         if is_multiplier:
             if len(htf_candles) < 100: return
             df_core = pd.DataFrame(htf_candles)
-            # Calculate 1H Order Blocks
+            # Calculate 1H Order Blocks & FVGs
             obs = self._calculate_order_blocks(df_core)
-            with self.data_lock: sd['order_blocks'] = obs
+            fvgs = self._calculate_fvg(df_core)
+            with self.data_lock:
+                sd['order_blocks'] = obs
+                sd['fvgs'] = fvgs
         else:
             if len(m5_candles) < 100: return
             df_core = pd.DataFrame(m5_candles)
@@ -689,6 +720,13 @@ class TradingBotEngine:
                 sd['fractal_lows'] = df_core['low'][f_low].tolist()
 
         last_close = df_core['close'].iloc[-1]
+
+        # --- 0. SESSION & INSTRUMENT CONTEXT ---
+        now_utc = datetime.now(timezone.utc)
+        hour = now_utc.hour
+        # Dead Hours: 22:00–06:00 UTC
+        is_dead_hours = (hour >= 22 or hour < 6)
+        session_threshold_bonus = 5 if is_dead_hours else 0
 
         # --- 1. TREND BLOCK ---
         # EMA 50/200, SuperTrend, ADX
@@ -746,20 +784,43 @@ class TradingBotEngine:
 
         vol_score = (v_pos - v_neg) / (v_pos + v_neg) if (v_pos + v_neg) > 0 else 0
 
-        # --- 4. STRUCTURE BLOCK (v2.1 Enhanced) ---
+        # --- 4. STRUCTURE BLOCK (v4.0 Enhanced) ---
         s_pos, s_neg = 0, 0
         dist = (last_close - ema50) / ema50
         if abs(dist) < 0.05: s_pos += 1
         else: s_neg += 1 # Overextended
 
         if is_multiplier:
-            # Multiplier: Order Block Alignment
+            # Multiplier: Order Block & FVG Alignment
             obs = sd.get('order_blocks', [])
+            fvgs = sd.get('fvgs', [])
+
+            # Tiered Structure Mapping:
+            # 1. FVG + OB Overlap = Highest Priority (+5)
+            # 2. OB Only = High Priority (+3)
+            # 3. FVG Only = Minor Bonus (+1)
+
+            ob_hit = None
             for ob in obs:
-                if ob['type'] == 'Bullish OB' and abs(last_close - ob['price']) / ob['price'] < 0.005:
-                    s_pos += 3
-                elif ob['type'] == 'Bearish OB' and abs(last_close - ob['price']) / ob['price'] < 0.005:
-                    s_neg += 3
+                if abs(last_close - ob['price']) / ob['price'] < 0.005:
+                    ob_hit = ob
+                    break
+
+            fvg_hit = None
+            for fvg in fvgs:
+                if last_close >= fvg['bottom'] and last_close <= fvg['top']:
+                    fvg_hit = fvg
+                    break
+
+            if ob_hit and fvg_hit:
+                if ob_hit['type'].startswith('Bullish') and fvg_hit['type'].startswith('Bullish'): s_pos += 5
+                elif ob_hit['type'].startswith('Bearish') and fvg_hit['type'].startswith('Bearish'): s_neg += 5
+            elif ob_hit:
+                if ob_hit['type'].startswith('Bullish'): s_pos += 3
+                else: s_neg += 3
+            elif fvg_hit:
+                if fvg_hit['type'].startswith('Bullish'): s_pos += 1
+                else: s_neg += 1
         else:
             # Rise & Fall: Fractal Retests
             f_highs = sd.get('fractal_highs', [])[-5:]
@@ -810,16 +871,33 @@ class TradingBotEngine:
             else:
                 suggested_multiplier = 5
 
+            # v4.0 Session Filter: Cap Multiplier at 10x during Dead Hours
+            if is_dead_hours:
+                suggested_multiplier = min(suggested_multiplier, 10)
+
         suggested_expiry = 5
         if abs(confidence) > 75: suggested_expiry = 15
         elif abs(confidence) > 60: suggested_expiry = 10
 
-        # Adaptive Threshold Adjustment (Streak Tracking)
-        streak = self.symbol_streaks.get(symbol, 0)
+        # Adaptive Threshold Adjustment (v4.0 Streak Tracking)
+        streak = sd.get('consecutive_losses', 0)
         base_threshold = 72 if not is_multiplier else 68
-        adaptive_threshold = base_threshold
+        adaptive_threshold = base_threshold + session_threshold_bonus
         if streak >= 3:
             adaptive_threshold += 10
+
+        # 1m ATR for Volatility Freeze (v4.0 Instrument Specific)
+        atr_1m = 0
+        atr_24h = 0
+        if ltf_candles:
+            df_1m = pd.DataFrame(ltf_candles)
+            if len(df_1m) >= 14:
+                atr_1m = ta.volatility.AverageTrueRange(df_1m['high'], df_1m['low'], df_1m['close']).average_true_range().iloc[-1]
+
+        # Calculate Baseline ATR from 1H candles (24 periods)
+        if len(htf_candles) >= 24:
+            df_24h = pd.DataFrame(htf_candles[-24:])
+            atr_24h = ta.volatility.AverageTrueRange(df_24h['high'], df_24h['low'], df_24h['close']).average_true_range().iloc[-1]
 
         self.screener_data[symbol] = {
             'confidence': round(confidence, 1),
@@ -835,6 +913,8 @@ class TradingBotEngine:
             'srsi_k': round(srsi_k, 4),
             'atr': round(atr_val, 4),
             'atr_1m': round(atr_1m, 6),
+            'atr_24h': round(atr_24h, 6),
+            'is_dead_hours': is_dead_hours,
             'expiry_min': suggested_expiry,
             'multiplier': suggested_multiplier,
             'st_dir': st_dir.iloc[-1],
@@ -1471,7 +1551,7 @@ class TradingBotEngine:
                                             self.log(f"Strategy 5 MULTIPLIER {direction} on {symbol} - Conf: {metrics['confidence']}% (Threshold: {threshold}%)")
             else:
                 # Mode A: Rise & Fall (Scalping)
-                # Signal Trigger (Adaptive Threshold, v2.1)
+                # Signal Trigger (Adaptive Threshold, v4.0)
                 if abs(metrics['confidence']) >= threshold:
                     direction = metrics['direction']
 
@@ -1483,10 +1563,14 @@ class TradingBotEngine:
                     # 5m Fractals (Resistance for PUT, Support for CALL)
                     f_highs = sd.get('fractal_highs', [])[-3:]
                     f_lows = sd.get('fractal_lows', [])[-3:]
+
+                    fractal_touch = False
                     if direction == 'PUT':
-                        at_structure = any(abs(price_5m - fh) / fh < 0.002 for fh in f_highs)
+                        fractal_touch = any(abs(price_5m - fh) / fh < 0.002 for fh in f_highs)
                     else:
-                        at_structure = any(abs(price_5m - fl) / fl < 0.002 for fl in f_lows)
+                        fractal_touch = any(abs(price_5m - fl) / fl < 0.002 for fl in f_lows)
+
+                    at_structure = fractal_touch
 
                     # Fallback to S/R or BB
                     if not at_structure:
@@ -1508,13 +1592,13 @@ class TradingBotEngine:
                             self.log(f"Strategy 6 SCALP {direction} on {symbol} - Conf: {metrics['confidence']}%")
                             return
 
-                        # v3.0 MANDATORY CO-CONDITION: Stoch RSI Extreme Zone
+                        # v4.0 MANDATORY CO-CONDITION: Stoch RSI Extreme Zone for Fractal touches
                         srsi_k = metrics.get('srsi_k', 0.5)
                         stoch_extreme = (direction == 'CALL' and srsi_k <= 0.2) or \
                                         (direction == 'PUT' and srsi_k >= 0.8)
 
-                        if not stoch_extreme:
-                            # Log reason for no signal if near structure but RSI not extreme
+                        if fractal_touch and not stoch_extreme:
+                            # Mandatory extreme RSI only for fractal setups
                             return
 
                         # 1m chart reversal candle (Trigger)
@@ -1712,9 +1796,14 @@ class TradingBotEngine:
                         self.log(f"Strategy 5 Scalp CANCELLED: Late entry (body {body:.4f} > 30% avg ATR {avg_atr*0.3:.4f})")
                         return
 
-                # 2. Volatility Freeze
-                if metrics.get('atr_1m', 0) < 0.00001: # Baseline threshold (Adjusted for synthetic indices)
-                    self.log(f"Strategy 5 Scalp PAUSED: Volatility too low (1m ATR: {metrics['atr_1m']})")
+                # 2. Volatility Freeze (v4.0 Instrument Specific)
+                atr_1m = metrics.get('atr_1m', 0)
+                atr_24h = metrics.get('atr_24h', 0)
+                if atr_24h > 0 and atr_1m < (atr_24h * 0.1):
+                    self.log(f"Strategy 5 Scalp PAUSED: Volatility too low (1m ATR {atr_1m} < 10% of 24h ATR {atr_24h})")
+                    return
+                elif atr_1m < 0.00001: # Fail-safe absolute baseline
+                    self.log(f"Strategy 5 Scalp PAUSED: Volatility too low (1m ATR: {atr_1m})")
                     return
 
                 # Dynamic expiry based on trigger timeframe
@@ -1865,18 +1954,33 @@ class TradingBotEngine:
                     profit = contract.get('profit', 0)
                     self.log(f"Trade {cid} ({symbol}) closed. PnL: {profit}")
                     self.net_trade_profit += profit
+
+                    sd = self.symbol_data.get(symbol)
+
                     if profit > 0:
                         self.total_trade_profit += profit
                         self.wins_count += 1
-                        # v2.1 Streak Tracking: Reset streak on win
-                        self.symbol_streaks[symbol] = 0
+                        # v4.0 Streak Reset: 2 consecutive wins OR 1 win + ADX > 20
+                        if sd:
+                            sd['consecutive_wins'] = sd.get('consecutive_wins', 0) + 1
+                            sd['consecutive_losses'] = 0
+
+                            metrics = self.screener_data.get(symbol, {})
+                            adx_val = metrics.get('adx', 0)
+
+                            if sd['consecutive_wins'] >= 2 or adx_val > 20:
+                                if sd.get('consecutive_losses', 0) >= 3:
+                                    self.log(f"Adaptive Sensitivity RESET for {symbol} (Wins: {sd['consecutive_wins']}, ADX: {adx_val})")
+                                sd['consecutive_losses'] = 0
                     else:
                         self.total_trade_loss += abs(profit)
                         self.losses_count += 1
-                        # v2.1 Streak Tracking: Increment streak on loss
-                        self.symbol_streaks[symbol] = self.symbol_streaks.get(symbol, 0) + 1
-                        if self.symbol_streaks[symbol] >= 3:
-                            self.log(f"Adaptive Sensitivity: {symbol} on {self.symbol_streaks[symbol]} loss streak. Threshold increased.", "warning")
+                        # v4.0 Streak Tracking: Increment streak on loss
+                        if sd:
+                            sd['consecutive_losses'] += 1
+                            sd['consecutive_wins'] = 0
+                            if sd['consecutive_losses'] >= 3:
+                                self.log(f"Adaptive Sensitivity: {symbol} on {sd['consecutive_losses']} loss streak. Threshold increased.", "warning")
 
                     self.total_trades_count += 1
                     del self.contracts[cid]

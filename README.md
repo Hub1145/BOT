@@ -42,15 +42,19 @@ The bot supports seven distinct trading strategies, ranging from simple breakout
 *   **Logic**: Pure Price Action strategy based on Support, Resistance, and Flip zones.
 *   **Analysis**: Identifies high-conviction zones on 5m/1h timeframes and waits for 1m reversal patterns (Pin Bar, Engulfing, Tweezer) at those zones.
 
-### 🔹 Strategy 5: Synthetic Intelligence Screener (v2.1)
-An advanced engine optimized for Volatility Indices using weighted indicator blocks.
+### 🔹 Strategy 5: Synthetic Intelligence Screener (v3.1)
+An advanced engine optimized for Volatility Indices using weighted indicator blocks and structural geometry.
 *   **Architecture**:
-    *   **Trend Block**: EMA 50/200, SuperTrend, ADX.
-    *   **Momentum Block**: RSI, Stoch RSI, MACD Divergence.
-    *   **Volatility Block**: ATR, Bollinger Bands.
-    *   **Structure Block**: 5m Fractals (Scalp) or 1H Order Blocks (Multiplier).
-*   **Execution Modes**: Supports **Rise & Fall** (Scalping) with >=72% confidence and **Multiplier** (Day Trading) with >=68% confidence.
-*   **Adaptive Sensitivity**: Automatically increases confidence thresholds following 3+ consecutive losses on a symbol.
+    *   **Trend Block**: EMA 50/200, SuperTrend, ADX (filter for leverage).
+    *   **Momentum Block**: RSI, Stoch RSI, MACD Divergence (structural exhaustion).
+    *   **Volatility Block**: ATR (dynamic multipliers), Bollinger Bands.
+    *   **Structure Block**: 5m Fractals (Scalp), 1H Order Blocks & **Fair Value Gaps (FVG)** (Multiplier).
+*   **Execution Modes**:
+    *   **Rise & Fall**: Scalping with >=72% confidence. Requires **Stoch RSI extreme** (<=20 or >=80) at Fractal touch.
+    *   **Multiplier**: Day Trading with >=68% confidence. Features tiered structure mapping (FVG + OB overlap for maximum confidence).
+*   **Session Filter**: During low-activity hours (22:00–06:00 UTC), thresholds increase by 5% and Multiplier leverage is capped at 10x.
+*   **Adaptive Sensitivity**: Thresholds increase by 10% after 3+ losses. Reset requires **2 consecutive wins** or **1 win + ADX > 20**.
+*   **Volatility Freeze**: Automatically suspends Rise/Fall execution if 1m ATR drops below 10% of the instrument's 24-hour average.
 
 ### 🔹 Strategy 6: Intelligence Legacy (v1.0)
 The exhaustive indicator suite from v1.0, featuring over 20 technical indicators.
