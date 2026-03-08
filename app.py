@@ -3,6 +3,7 @@ from flask_socketio import SocketIO, emit
 import json
 import logging
 import os
+import threading
 from bot_engine import TradingBotEngine
 
 logging.basicConfig(
@@ -52,26 +53,12 @@ def update_config():
 
         # Whitelist of all valid parameters
         allowed_params = [
-            'okx_api_key', 'okx_api_secret', 'okx_passphrase', 'okx_demo_api_key', 'okx_demo_api_secret', 'okx_demo_api_passphrase',
-            'dev_api_key', 'dev_api_secret', 'dev_passphrase', 'dev_demo_api_key', 'dev_demo_api_secret', 'dev_demo_api_passphrase',
-            'use_developer_api', 'use_testnet', 'symbol',
-            'short_safety_line_price', 'long_safety_line_price', 'leverage', 'max_allowed_used',
-            'entry_price_offset', 'batch_offset', 'tp_price_offset', 'sl_price_offset',
-            'loop_time_seconds', 'rate_divisor', 'batch_size_per_loop', 'min_order_amount',
-            'target_order_amount', 'cancel_unfilled_seconds', 'cancel_on_tp_price_below_market',
-            'cancel_on_entry_price_below_market', 'cancel_on_tp_price_above_market',
-            'cancel_on_entry_price_above_market', 'direction', 'mode', 'tp_amount', 'sl_amount',
-            'trigger_price', 'tp_mode', 'tp_type', 'use_chg_open_close', 'min_chg_open_close',
-            'max_chg_open_close', 'use_chg_high_low', 'min_chg_high_low', 'max_chg_high_low',
-            'use_chg_high_close', 'min_chg_high_close', 'max_chg_high_close', 'candlestick_timeframe',
-            'use_candlestick_conditions', 'log_level', 'use_pnl_auto_cancel', 'pnl_auto_cancel_threshold', 'okx_pos_mode', 'trade_fee_percentage',
-            'use_pnl_auto_manual', 'pnl_auto_manual_threshold', 'use_pnl_auto_cal', 'pnl_auto_cal_times',
-            'use_pnl_auto_cal_loss', 'pnl_auto_cal_loss_times',
-            'use_auto_margin', 'auto_margin_offset',
-            'use_size_auto_cal', 'size_auto_cal_times', 'use_size_auto_cal_loss', 'size_auto_cal_loss_times',
-            'use_add_pos_auto_cal', 'add_pos_recovery_percent', 'add_pos_profit_multiplier',
-            'add_pos_gap_threshold', 'add_pos_size_pct', 'add_pos_max_count', 'add_pos_step2_offset',
-            'use_add_pos_above_zero', 'use_add_pos_profit_target'
+            'deriv_api_token', 'deriv_app_id', 'symbols',
+            'use_fixed_balance', 'balance_value', 'max_daily_loss_pct',
+            'entry_type', 'is_demo', 'log_level',
+            'tp_enabled', 'tp_value', 'sl_enabled', 'sl_value',
+            'force_close_enabled', 'force_close_duration',
+            'active_strategy', 'contract_type', 'multiplier_value', 'custom_expiry'
         ]
 
         # Update current_config with only allowed and present keys from new_config
@@ -92,15 +79,12 @@ def update_config():
             save_config(current_config)
 
             warning_msg = None
-            if bot_engine and bot_engine.is_running:
+            if bot_engine:
                 # Update the bot's internal config object and trigger dynamic updates
                 result = bot_engine.apply_live_config_update(current_config)
                 if result.get('warnings'):
                     warning_msg = " | ".join(result['warnings'])
                 bot_engine.log("Configuration updated live from dashboard.", level="info")
-            elif bot_engine:
-                 # If not running, just sync the config object
-                 bot_engine.config = current_config
 
             def background_init():
                 global bot_engine
@@ -108,12 +92,10 @@ def update_config():
                 if not bot_engine:
                     bot_engine = TradingBotEngine(config_file, emit_to_client)
 
-                # If not trading, we still refresh credentials for background monitoring
+                # Start passive monitoring for balance if not trading
                 if not bot_engine.is_running:
                     bot_engine.start(passive_monitoring=True)
                 else:
-                    # If already running, we might need to apply new credentials if they changed
-                    # (Though credentials are usually considered sensitive and blocked if changed while running)
                     bot_engine._apply_api_credentials()
                 
                 # Check if the currently selected credentials are valid
@@ -178,41 +160,22 @@ def download_logs():
 def test_api_key_route():
     try:
         data = request.json
-        api_key = data.get('api_key')
-        api_secret = data.get('api_secret')
-        passphrase = data.get('passphrase')
-        use_testnet = data.get('use_testnet')
+        api_token = data.get('api_token')
 
-        if not all([api_key, api_secret, passphrase]):
-            return jsonify({'success': False, 'message': 'All API credentials (Key, Secret, Passphrase) are required.'}), 400
+        if not api_token:
+            return jsonify({'success': False, 'message': 'API Token is required.'}), 400
 
         # Temporarily create a bot_engine instance to test credentials
-        # This bypasses the global bot_engine state
         temp_bot_engine = TradingBotEngine(config_file, emit_to_client)
-        temp_bot_engine.config['okx_api_key'] = api_key
-        temp_bot_engine.config['okx_api_secret'] = api_secret
-        temp_bot_engine.config['okx_passphrase'] = passphrase
-        temp_bot_engine.config['okx_demo_api_key'] = api_key # Also set for demo if testnet is used
-        temp_bot_engine.config['okx_demo_api_secret'] = api_secret
-        temp_bot_engine.config['okx_demo_api_passphrase'] = passphrase
-        temp_bot_engine.config['use_testnet'] = use_testnet
+        temp_bot_engine.config['deriv_api_token'] = api_token
         
-        # Re-initialize global API credentials for the temp bot engine based on the provided data
-        if use_testnet:
-            temp_bot_engine.config['okx_api_key'] = temp_bot_engine.config['okx_demo_api_key']
-            temp_bot_engine.config['okx_api_secret'] = temp_bot_engine.config['okx_demo_api_secret']
-            temp_bot_engine.config['okx_passphrase'] = temp_bot_engine.config['okx_demo_api_passphrase']
-            temp_bot_engine.okx_simulated_trading_header = {'x-simulated-trading': '1'}
-        else:
-            temp_bot_engine.okx_simulated_trading_header = {}
-
         if temp_bot_engine.test_api_credentials():
-            return jsonify({'success': True, 'message': 'API credentials are valid.'})
+            return jsonify({'success': True, 'message': 'API token is valid.'})
         else:
-            return jsonify({'success': False, 'message': 'Invalid API credentials or connection error.'}), 401
+            return jsonify({'success': False, 'message': 'Invalid API token or connection error.'}), 401
 
     except Exception as e:
-        logging.error(f'Error testing API key: {str(e)}', exc_info=True)
+        logging.error(f'Error testing API token: {str(e)}', exc_info=True)
         return jsonify({'success': False, 'message': f'An unexpected error occurred: {str(e)}'}), 500
 
 
@@ -222,7 +185,6 @@ def get_status():
     if not bot_engine:
         try:
             bot_engine = TradingBotEngine(config_file, emit_to_client)
-            # Start background monitoring automatically
             bot_engine.start(passive_monitoring=True)
         except Exception as e:
             logging.error(f"Error initializing bot engine for status: {e}")
@@ -278,12 +240,15 @@ def get_status():
         # Realized profit tracking
         'net_trade_profit': getattr(bot_engine, 'net_trade_profit', 0.0),
         'total_trade_profit': getattr(bot_engine, 'total_trade_profit', 0.0),
-        'total_trade_loss': getattr(bot_engine, 'total_trade_loss', 0.0)
+        'total_trade_loss': getattr(bot_engine, 'total_trade_loss', 0.0),
+        'win_rate': (getattr(bot_engine, 'wins_count', 0) / bot_engine.total_trades_count * 100) if bot_engine.total_trades_count > 0 else 0,
+        'avg_pnl': (getattr(bot_engine, 'net_trade_profit', 0) / bot_engine.total_trades_count) if bot_engine.total_trades_count > 0 else 0
     })
  
 @socketio.on('connect')
-def handle_connect(sid):
+def handle_connect(auth=None):
     global bot_engine
+    sid = request.sid
     logging.info(f'Client connected: {sid}')
     emit('connection_status', {'connected': True}, room=sid)
  
@@ -296,30 +261,32 @@ def handle_connect(sid):
 
     if bot_engine:
         emit('bot_status', {'running': bot_engine.is_running}, room=sid)
-        if bot_engine:
-            # Trigger a sync to ensure metrics are fresh
-            bot_engine.fetch_account_data_sync()
-            
-            payload = {
-                'total_capital': bot_engine.total_equity,
-                'total_capital_2nd': bot_engine.total_capital_2nd,
-                'max_allowed_used_display': bot_engine.max_allowed_display,
-                'max_amount_display': bot_engine.max_amount_display,
-                'used_amount': bot_engine.used_amount_notional,
-                'size_amount': getattr(bot_engine, 'cached_pos_notional', 0.0),
-                'trade_fees': bot_engine.trade_fees,
-                'used_fees': getattr(bot_engine, 'used_fees', 0.0),
-                'size_fees': getattr(bot_engine, 'size_fees', 0.0),
-                'remaining_amount': bot_engine.remaining_amount_notional,
-                'total_balance': bot_engine.account_balance,
-                'available_balance': bot_engine.available_balance,
-                'net_profit': bot_engine.net_profit,
-                'total_trades': len(bot_engine.open_trades) + bot_engine.total_trades_count,
-                'net_trade_profit': bot_engine.net_trade_profit,
-                'total_trade_profit': bot_engine.total_trade_profit,
-                'total_trade_loss': bot_engine.total_trade_loss
-            }
-            emit('account_update', payload, room=sid)
+        # Trigger a sync to ensure metrics are fresh
+        bot_engine.fetch_account_data_sync()
+
+        payload = {
+            'is_demo': bot_engine.config.get('is_demo', True),
+            'total_capital': bot_engine.total_equity,
+            'total_capital_2nd': bot_engine.total_capital_2nd,
+            'max_allowed_used_display': bot_engine.max_allowed_display,
+            'max_amount_display': bot_engine.max_amount_display,
+            'used_amount': bot_engine.used_amount_notional,
+            'size_amount': getattr(bot_engine, 'cached_pos_notional', 0.0),
+            'trade_fees': bot_engine.trade_fees,
+            'used_fees': getattr(bot_engine, 'used_fees', 0.0),
+            'size_fees': getattr(bot_engine, 'size_fees', 0.0),
+            'remaining_amount': bot_engine.remaining_amount_notional,
+            'total_balance': bot_engine.account_balance,
+            'available_balance': bot_engine.available_balance,
+            'net_profit': bot_engine.net_profit,
+            'total_trades': len(bot_engine.open_trades) + bot_engine.total_trades_count,
+            'net_trade_profit': bot_engine.net_trade_profit,
+            'total_trade_profit': bot_engine.total_trade_profit,
+            'total_trade_loss': bot_engine.total_trade_loss,
+            'win_rate': (bot_engine.wins_count / bot_engine.total_trades_count * 100) if bot_engine.total_trades_count > 0 else 0,
+            'avg_pnl': (bot_engine.net_trade_profit / bot_engine.total_trades_count) if bot_engine.total_trades_count > 0 else 0
+        }
+        emit('account_update', payload, room=sid)
         
         emit('trades_update', {'trades': bot_engine.open_trades}, room=sid)
         # Emit current position data
@@ -423,12 +390,20 @@ def handle_emergency_sl(data=None):
     
     bot_engine.emergency_sl()
 
+@socketio.on('close_trade')
+def handle_close_trade(data):
+    global bot_engine
+    if bot_engine:
+        contract_id = data.get('contract_id')
+        if contract_id:
+            bot_engine.log(f"Manual close requested for trade {contract_id}")
+            bot_engine._close_contract(contract_id)
+
 
 if __name__ == '__main__':
-    # Initialize and start in passive monitoring mode on startup
-    # This allows Auto-Cal features to run even before user clicks "Start"
     if not bot_engine:
         bot_engine = TradingBotEngine(config_file, emit_to_client)
         bot_engine.start(passive_monitoring=True)
-        
-    socketio.run(app, host='0.0.0.0', port=5000, debug=False, use_reloader=False, log_output=True)
+
+    port = int(os.environ.get('PORT', 3000))
+    socketio.run(app, host='0.0.0.0', port=port, debug=False, use_reloader=False, log_output=True, allow_unsafe_werkzeug=True)
